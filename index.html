@@ -5,10 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sketchbook – a notebook that opens in your browser</title>
 <meta name="description" content="Realistic notebooks in your browser: draw, write and plan, with pages you turn by hand.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sketchbook – a notebook that opens in your browser">
+<meta property="og:description" content="Realistic notebooks in your browser: draw, write and plan, with pages you turn by hand.">
+<meta property="og:url" content="https://fishfishgg.github.io/Sketchbook/">
+<meta property="og:image" content="https://fishfishgg.github.io/Sketchbook/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#e4e9e6">
 <link rel="icon" href="app/icon-192.png">
 <link rel="apple-touch-icon" href="app/icon-192.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Caveat:wght@500;700&display=swap">
+<style>
+@font-face{font-family: 'Bricolage Grotesque';font-style: normal;font-weight: 400;font-stretch: 100%;font-display: swap;src: url(app/fonts/bricolage-grotesque-latin-ext-90a9a1.woff2) format('woff2');unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;}
+@font-face{font-family: 'Bricolage Grotesque';font-style: normal;font-weight: 400;font-stretch: 100%;font-display: swap;src: url(app/fonts/bricolage-grotesque-latin-ca98c3.woff2) format('woff2');unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family: 'Bricolage Grotesque';font-style: normal;font-weight: 600;font-stretch: 100%;font-display: swap;src: url(app/fonts/bricolage-grotesque-latin-ext-90a9a1.woff2) format('woff2');unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;}
+@font-face{font-family: 'Bricolage Grotesque';font-style: normal;font-weight: 600;font-stretch: 100%;font-display: swap;src: url(app/fonts/bricolage-grotesque-latin-ca98c3.woff2) format('woff2');unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family: 'Bricolage Grotesque';font-style: normal;font-weight: 700;font-stretch: 100%;font-display: swap;src: url(app/fonts/bricolage-grotesque-latin-ext-90a9a1.woff2) format('woff2');unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;}
+@font-face{font-family: 'Bricolage Grotesque';font-style: normal;font-weight: 700;font-stretch: 100%;font-display: swap;src: url(app/fonts/bricolage-grotesque-latin-ca98c3.woff2) format('woff2');unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family: 'Caveat';font-style: normal;font-weight: 400;font-display: swap;src: url(app/fonts/caveat-latin-ext-60fd7f.woff2) format('woff2');unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;}
+@font-face{font-family: 'Caveat';font-style: normal;font-weight: 400;font-display: swap;src: url(app/fonts/caveat-latin-14ecf1.woff2) format('woff2');unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family: 'Caveat';font-style: normal;font-weight: 500;font-display: swap;src: url(app/fonts/caveat-latin-ext-60fd7f.woff2) format('woff2');unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;}
+@font-face{font-family: 'Caveat';font-style: normal;font-weight: 500;font-display: swap;src: url(app/fonts/caveat-latin-14ecf1.woff2) format('woff2');unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family: 'Caveat';font-style: normal;font-weight: 700;font-display: swap;src: url(app/fonts/caveat-latin-ext-60fd7f.woff2) format('woff2');unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;}
+@font-face{font-family: 'Caveat';font-style: normal;font-weight: 700;font-display: swap;src: url(app/fonts/caveat-latin-14ecf1.woff2) format('woff2');unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+</style>
 <style>
 :root{--bg:#e8eeec;--ink:#141f26;--muted:#4b5b63;--line:#c4cfcc;--paper:#fbfbf6;--cover:#23407a;--accent:#e0a526;--onacc:#1a1405;--sh:rgba(20,31,38,.38);
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -227,6 +247,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
 .dg .alt{display:block;text-align:center;margin-top:14px;color:#56626c;font-size:.92rem}
 .note-demo{margin:16px 0 0;padding:10px 12px;border-radius:10px;background:rgba(224,165,38,.22);font-size:.85rem;color:#4a3a08}
 .x{position:absolute;right:12px;top:10px;background:none;border:0;font-size:1.4rem;color:#56626c;padding:6px 10px}
+.btn:disabled{opacity:.6;cursor:default}
 </style>
 </head>
 <body>
@@ -237,8 +258,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
     <a class="l" href="#inside">Features</a>
     <a class="l" href="#pricing">Pricing</a>
     <a class="l" href="#faq">FAQ</a>
-    <button class="btn txt sm" data-open="login">Log in</button>
-    <button class="btn pri sm" data-open="signup">Start free</button>
+    <a class="btn pri sm" href="app/">Start free</a>
   </div>
 </header>
 
@@ -248,7 +268,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
       <h1>A sketchbook that opens in your browser.</h1>
       <p class="lead">Draw, write and stick things down in notebooks that feel like paper. Nothing to install, nothing to carry.</p>
       <div class="cta">
-        <button class="btn pri" data-open="signup">Start free</button>
+        <a class="btn pri" href="app/">Start free</a>
         <a class="btn sec" href="#inside">See what’s inside</a>
       </div>
       <p class="fine">Works on phones, tablets and laptops.</p>
@@ -315,7 +335,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
     <div class="wrap">
       <h2>Start in under a minute</h2>
       <ol class="steps">
-        <li><b>Create your account</b><p>Email and a password. That’s all.</p></li>
+        <li><b>Open the app</b><p>No sign-up needed yet. Accounts arrive with cloud sync.</p></li>
         <li><b>Make a notebook</b><p>Choose portrait or landscape, pick a cover color, and open it.</p></li>
         <li><b>Take it with you<span class="soon">Cloud sync coming</span></b><p>Notebooks are saved in your browser today. Sync across devices is next.</p></li>
       </ol>
@@ -327,7 +347,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
       <h2>Simple pricing</h2>
       <div class="sheet">
         <div class="bill" role="group" aria-label="Billing period">
-          <button id="b-year" aria-pressed="true">Yearly<span class="save">Save 50%</span></button>
+          <button id="b-year" aria-pressed="true">Yearly<span class="save">Save 37%</span></button>
           <button id="b-month" aria-pressed="false">Monthly</button>
         </div>
         <div class="plans">
@@ -335,14 +355,14 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
             <h3>Free</h3>
             <div class="price">€0</div>
             <ul><li>2 notebooks</li><li>Up to 20 pages each</li><li>Every drawing tool</li><li>Stickers, notes and text</li></ul>
-            <button class="btn sec" data-open="signup">Start free</button>
+            <a class="btn sec" href="app/">Start free</a>
           </div>
           <div class="plan">
             <h3>Pro</h3>
             <div class="price"><span id="pp">€29.99</span> <small id="pu">per year</small></div>
             <p class="eq" id="pe">That’s €2.50 a month.</p>
             <ul><li>Unlimited notebooks and pages</li><li>PDF import</li><li>Export to PDF and image</li><li>Cloud sync<span class="soon">soon</span></li></ul>
-            <button class="btn pri" id="pbtn" data-open="signup">Choose Pro yearly</button>
+            <button class="btn pri" id="pbtn" disabled>Pro is coming soon</button>
           </div>
         </div>
         <p class="fine">Preview pricing. Nobody is charged yet. Taxes may apply at checkout.</p>
@@ -365,50 +385,16 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
   <section class="closing">
     <div class="wrap">
       <h2>Open a blank page.</h2>
-      <button class="btn pri" data-open="signup">Start free</button>
+      <a class="btn pri" href="app/">Start free</a>
     </div>
   </section>
 </main>
 
 <footer><div class="wrap">© Sketchbook. A work in progress, made with care.</div></footer>
 
-<dialog id="dlg" aria-labelledby="dt">
-  <button class="x" id="dx" aria-label="Close">×</button>
-  <div class="dg">
-    <h2 id="dt">Welcome back</h2>
-    <p class="sub" id="ds">Log in to open your notebooks.</p>
-    <div class="tabs" role="tablist">
-      <button role="tab" id="t-login" aria-selected="true">Log in</button>
-      <button role="tab" id="t-signup" aria-selected="false">Create account</button>
-    </div>
-    <form id="fm">
-      <label>Email<input type="email" id="em" autocomplete="email" required placeholder="you@example.com"></label>
-      <label>Password<input type="password" id="pw" autocomplete="current-password" required minlength="6" placeholder="At least 6 characters"></label>
-      <button class="btn pri" id="go" type="submit">Log in</button>
-    </form>
-    <a class="alt" id="guest" href="#">Continue without an account</a>
-    <p class="note-demo">Demo screen. No account is created yet, and your password isn’t sent anywhere. Continuing opens the app.</p>
-  </div>
-  <a id="open" href="#" hidden>Open app</a>
-</dialog>
 
 <script>
-const APP_URL='app/';
-const $=s=>document.querySelector(s),dlg=$('#dlg');
-$('#open').href=APP_URL;$('#guest').href=APP_URL;
-function setMode(m){
-  const su=m==='signup';
-  $('#t-login').setAttribute('aria-selected',!su);$('#t-signup').setAttribute('aria-selected',su);
-  $('#dt').textContent=su?'Create your account':'Welcome back';
-  $('#ds').textContent=su?'Free to start. No card needed.':'Log in to open your notebooks.';
-  $('#go').textContent=su?'Create account':'Log in';
-  $('#pw').autocomplete=su?'new-password':'current-password';
-}
-function openDlg(m){setMode(m);if(!dlg.open)dlg.showModal();$('#em').focus()}
-document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openDlg(b.dataset.open)));
-$('#t-login').onclick=()=>setMode('login');$('#t-signup').onclick=()=>setMode('signup');
-$('#dx').onclick=()=>dlg.close();
-dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
+const $=s=>document.querySelector(s);
 const CHIPS=[['Thick cover','Pick a color','Draw on it'],['Cover opens','Thick pages','Stack on both sides'],['Drag to turn','Follows your finger','Real page edge'],['Pen','Pencil','Brush','Marker','Highlighter','Shapes','Fill'],['8 fonts','28 stickers','Sticky notes','Move and rotate'],['Blank','Lined','Grid','Dots','Paper colors'],['Portrait or landscape','Fits each page','Write on top'],['Reorder','Duplicate','Delete','Jump to a page']];
 const demo=$('#demo'),sts=[...document.querySelectorAll('.st')];
 function setStep(i){
@@ -422,13 +408,12 @@ if('IntersectionObserver' in window){
   sts.forEach(el=>io.observe(el));
 }
 setStep(0);
-const bill={y:['€29.99','per year','That’s €2.50 a month.','Choose Pro yearly'],m:['€3.99','per month','Billed monthly. Cancel any time.','Choose Pro monthly']};
+const bill={y:['€29.99','per year','That’s €2.50 a month.','Pro is coming soon'],m:['€3.99','per month','Billed monthly. Cancel any time.','Pro is coming soon']};
 function setBill(k){
   $('#b-year').setAttribute('aria-pressed',k==='y');$('#b-month').setAttribute('aria-pressed',k==='m');
   $('#pp').textContent=bill[k][0];$('#pu').textContent=bill[k][1];$('#pe').textContent=bill[k][2];$('#pbtn').textContent=bill[k][3];
 }
 $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
-$('#fm').addEventListener('submit',e=>{e.preventDefault();$('#open').click();dlg.close()});
 </script>
 </body>
 </html>
