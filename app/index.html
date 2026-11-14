@@ -231,6 +231,16 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #admin .bar{position:sticky;top:0;z-index:1}
 #adm-body{max-width:860px;margin:0 auto;padding:8px 16px 60px}#adm-body h3{margin:26px 0 10px;font-size:1.1em}
 .astats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.aper{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-top:8px}.aper .lk-in{width:auto;min-width:200px;margin:0;text-align:left;min-height:38px}.aper .seg3 button{padding:8px 12px}
+.aplabel{margin:8px 0 0;font-weight:700;opacity:.8}.anote{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,transparent);font-size:.9em}
+.acard.big b{color:#2e9d5b}.acard small{opacity:.6;font-size:.8em}
+.acharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:10px}
+.achart{background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px}.achart>b{display:block;margin-bottom:8px}
+.cbars{display:flex;align-items:flex-end;gap:3px;height:150px}.cbar{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px}
+.cbar i{display:block;width:100%;background:var(--accent);border-radius:4px 4px 0 0}.cbar small{font-size:.65em;opacity:.65;height:1.2em}.cbar .bv{font-size:.6em;opacity:.8;white-space:nowrap}
+.abrks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.abrk{background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px}.abrk>b{display:block;margin-bottom:8px}
+.abr{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:6px 0;font-size:.9em}.abr em{font-style:normal;opacity:.7}.abr i{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:var(--accent);opacity:.8}
 .acard{background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}.acard b{font-size:1.6em}.acard span{opacity:.7;font-size:.9em}
 .acard.wide{grid-column:1/-1}.acard.wide b{font-size:1.05em}
 .aform{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:flex-end;background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px}
@@ -2574,10 +2584,14 @@ function proActiveDoc(p){if(!p)return false;if(!p.days)return true;const s=p.sin
 function proUntil(p){if(!p||!p.days)return null;const s=p.since&&p.since.toMillis?p.since.toMillis():Date.now();return new Date(s+p.days*DAY)}
 const fmtDay=d=>d?new Date(d).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'–';
 const tsMs=t=>t&&t.toMillis?t.toMillis():null;
+function devOS(){const u=navigator.userAgent||'';return /Android/i.test(u)?'android':/iPhone|iPad|iPod/i.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1)?'ios':/CrOS/.test(u)?'chromeos':/Windows/i.test(u)?'windows':/Macintosh|Mac OS/i.test(u)?'mac':/Linux/i.test(u)?'linux':'other'}
+const asApp=()=>!!((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone);
 async function touchProfile(u){
+  const F=ACC.F,ym=ymOf(new Date()),ak='sb-act:'+u.uid;
+  if(lsGet(ak)!==ym){try{await F.setDoc(F.doc(ACC.db,'act',ym+'_'+u.uid),{ym,uid:u.uid,at:F.serverTimestamp()})}catch(e){}lsSet(ak,ym)} // "active this month", once a month
   const k='sb-seen:'+u.uid;if(Date.now()-(+lsGet(k)||0)<12*36e5)return;
-  const F=ACC.F,ref=F.doc(ACC.db,'profiles',u.uid),via=(u.providerData[0]&&u.providerData[0].providerId)||'password';
-  const base={email:u.email||'',name:u.displayName||'',via,seen:F.serverTimestamp()};
+  const ref=F.doc(ACC.db,'profiles',u.uid),via=(u.providerData[0]&&u.providerData[0].providerId)||'password';
+  const base={email:u.email||'',name:u.displayName||'',via,os:devOS(),lang:(navigator.language||'').slice(0,12),app:asApp(),seen:F.serverTimestamp()};
   try{await F.updateDoc(ref,base)}
   catch(e){try{await F.setDoc(ref,{...base,created:F.serverTimestamp()})}catch(e2){return}}
   lsSet(k,String(Date.now()));
@@ -2616,79 +2630,171 @@ function codeBox(box){
 }
 function openCode(){$('#up').classList.add('hidden');openAcc();setTimeout(()=>{const i=$('#a-code');if(i)i.focus()},300)}
 
-/* ----- admin panel ----- */
-function openAdmin(){$('#acct').classList.add('hidden');$('#admin').classList.remove('hidden');adminLoad()}
 function genCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const r=crypto.getRandomValues(new Uint8Array(8));for(const x of r)s+=A[x%A.length];return 'FOLIET-'+s}
 const DUR=[[7,'7 days'],[30,'1 month'],[90,'3 months'],[365,'1 year'],[0,'Forever']];
 const durTxt=d=>!d?'forever':d%365===0?(d/365)+(d===365?' year':' years'):d%30===0?(d/30)+(d===30?' month':' months'):d+' days';
 function durSelect(def){const s=el('select','lk-in');DUR.forEach(([v,t])=>{const o=el('option','',t);o.value=v;if(v===def)o.selected=true;s.append(o)});return s}
+/* ----- admin panel -----
+   Loads everything once (profiles, monthly activity, Pro, codes, redemptions and, once Stripe is connected,
+   payments + subscriptions written by the "Run Payments with Stripe" extension), then shows it for the chosen
+   period without loading again. Fine for thousands of accounts; for much more, switch to count/sum queries. */
+const ADM={data:null,per:'all'};
+const euro=c=>'€'+(c/100).toFixed(2);
+const ymOf=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function perRange(p){ // → [start, end) in ms, plus a label
+  const now=new Date();
+  if(p==='all')return {a:0,b:Infinity,label:'All time'};
+  if(p==='year'){const y=now.getFullYear();return {a:+new Date(y,0,1),b:+new Date(y+1,0,1),label:String(y),y}}
+  if(p==='month'){const y=now.getFullYear(),m=now.getMonth();return {a:+new Date(y,m,1),b:+new Date(y,m+1,1),label:MON[m]+' '+y,y,m}}
+  let r;if((r=/^y(\d{4})$/.exec(p))){const y=+r[1];return {a:+new Date(y,0,1),b:+new Date(y+1,0,1),label:String(y),y}}
+  if((r=/^m(\d{4})-(\d\d)$/.exec(p))){const y=+r[1],m=+r[2]-1;return {a:+new Date(y,m,1),b:+new Date(y,m+1,1),label:MON[m]+' '+y,y,m}}
+  return {a:0,b:Infinity,label:'All time'};
+}
+const inR=(t,R)=>t!=null&&t>=R.a&&t<R.b;
+const payMs=p=>typeof p.created==='number'?p.created*1000:tsMs(p.created);
+const subOf=s=>{const it=(s.items&&s.items[0])||{},pr=it.price||{},pl=it.plan||{};return {iv:(pr.recurring&&pr.recurring.interval)||pl.interval||s.interval||'month',amt:pr.unit_amount??pl.amount??0,on:['active','trialing','past_due'].includes(s.status),start:tsMs(s.created)||(typeof s.created==='number'?s.created*1000:null)}};
+function osName(o){return {android:'Android',ios:'iPhone / iPad',windows:'Windows',mac:'Mac',linux:'Linux',chromeos:'Chromebook'}[o]||'Other / unknown'}
+async function adminFetch(){
+  const F=ACC.F,db=ACC.db,all=c=>F.getDocs(F.collection(db,c)).then(s=>s.docs.map(d=>({id:d.id,...d.data()})));
+  const safe=p=>p.catch(e=>{console.warn('admin',e);return []});
+  const [profiles,act,pro,codes,redeem,payments,subs]=await Promise.all([
+    all('profiles'),safe(all('act')),all('pro'),all('codes'),safe(all('redeem')),
+    safe(F.getDocs(F.collectionGroup(db,'payments')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()})))),
+    safe(F.getDocs(F.collectionGroup(db,'subscriptions')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()}))))]);
+  ADM.data={profiles,act,pro,codes,redeem,payments,subs,at:Date.now()};
+}
+function openAdmin(){$('#acct').classList.add('hidden');$('#admin').classList.remove('hidden');adminLoad()}
 async function adminLoad(){
-  const F=ACC.F,db=ACC.db,B=$('#adm-body');B.innerHTML='';B.append(el('p','muted','Loading…'));
-  try{
-    const now=Date.now(),week=F.Timestamp.fromMillis(now-7*DAY),P=F.collection(db,'profiles');
-    const [cAll,cNew,cAct,proS,codeS,recent]=await Promise.all([
-      F.getCountFromServer(P),F.getCountFromServer(F.query(P,F.where('created','>=',week))),F.getCountFromServer(F.query(P,F.where('seen','>=',week))),
-      F.getDocs(F.collection(db,'pro')),F.getDocs(F.query(F.collection(db,'codes'),F.orderBy('created','desc'),F.limit(100))),
-      F.getDocs(F.query(P,F.orderBy('created','desc'),F.limit(25)))]);
-    const pros=proS.docs.map(d=>({uid:d.id,...d.data()})),active=pros.filter(proActiveDoc);
-    const emails={};recent.docs.forEach(d=>emails[d.id]=d.data().email);
-    await Promise.all(pros.filter(p=>!emails[p.uid]).slice(0,60).map(async p=>{try{const s=await F.getDoc(F.doc(db,'profiles',p.uid));emails[p.uid]=s.exists()?s.data().email:''}catch(e){}}));
-    B.innerHTML='';
-    // overview
-    const st=el('div','astats');
-    [['Accounts',cAll.data().count],['New this week',cNew.data().count],['Active this week',cAct.data().count],['Pro now',active.length],['Pro from codes',active.filter(p=>p.by==='code').length]]
-      .forEach(([k,v])=>{const c=el('div','acard');c.append(el('b','',String(v)),el('span','',k));st.append(c)});
-    const money=el('div','acard wide');money.append(el('b','','Payments'),el('span','','Not live yet. When Stripe is connected, paying subscribers and monthly income appear here.'));st.append(money);
-    B.append(el('h3','','Overview'),st);
-    // promo codes
-    B.append(el('h3','','Promo codes'));
-    const f=el('form','aform');
-    const ci=el('input','lk-in');ci.placeholder='CODE';ci.value=genCode();ci.autocapitalize='characters';
-    const gb=el('button','ib','New code');gb.type='button';gb.onclick=()=>ci.value=genCode();
-    const ds=durSelect(30),mx=el('input','lk-in');mx.type='number';mx.min=1;mx.value=10;mx.title='How many people can use it';
-    const nt=el('input','lk-in');nt.placeholder='Note (who it’s for)';
-    const cb=el('button','btn','Create code');cb.type='submit';const fm=el('p','cmsg');
-    const l=(t,x)=>{const w=el('label','alab');w.append(el('span','',t),x);return w};
-    f.append(l('Code',ci),gb,l('Gives Pro for',ds),l('How many people',mx),l('Note',nt),cb,fm);
-    f.onsubmit=async e=>{e.preventDefault();const code=normCode(ci.value);if(code.length<4){fm.textContent='The code needs at least 4 letters or digits.';return}
-      try{const r=F.doc(db,'codes',code);if((await F.getDoc(r)).exists()){fm.textContent='That code already exists.';return}
-        await F.setDoc(r,{kind:'pro',days:+ds.value,max:Math.max(1,+mx.value||1),used:0,active:true,note:nt.value.trim().slice(0,120),created:F.serverTimestamp()});
-        toast('Code '+code+' created');adminLoad()}catch(e2){fm.textContent='Couldn’t create it: '+(e2.code||e2.message)}};
-    B.append(f,el('p','muted','Discount codes (for example 50% off the first month or the first year) are made in Stripe once payments go live; people type them at checkout.'));
-    const cl=el('div','alist');
-    if(!codeS.size)cl.append(el('p','muted','No codes yet.'));
-    codeS.docs.forEach(d=>{const c=d.data(),r=el('div','arow'+(c.active&&c.used<c.max?'':' off'));
-      const t=el('div','');t.append(el('b','',d.id),el('small','',' Pro '+durTxt(c.days)+' · '+c.used+' / '+c.max+' used'+(c.note?' · '+c.note:'')));
-      const cp=el('button','ib','Copy');cp.onclick=async()=>{try{await navigator.clipboard.writeText(d.id);toast('Copied '+d.id)}catch(e){toast(d.id)}};
-      const tg=el('button','ib',c.active?'Turn off':'Turn on');tg.onclick=async()=>{await F.updateDoc(d.ref,{active:!c.active});adminLoad()};
-      const dl=el('button','ib','Delete');dl.onclick=async()=>{if(dl.dataset.s){await F.deleteDoc(d.ref);adminLoad()}else{dl.dataset.s=1;dl.textContent='Sure?'}};
-      r.append(t,cp,tg,dl);cl.append(r)});
-    B.append(cl);
-    // pro members
-    B.append(el('h3','','Pro members'));
-    const g=el('form','aform');const ge=el('input','lk-in');ge.type='email';ge.placeholder='their@email.com';const gd=durSelect(365);const gbn=el('button','btn','Give Pro');gbn.type='submit';const gm=el('p','cmsg');
-    g.append(l('Email (they must have signed in once)',ge),l('For',gd),gbn,gm);
-    g.onsubmit=async e=>{e.preventDefault();const em=ge.value.trim().toLowerCase();if(!em)return;
-      try{const q=await F.getDocs(F.query(P,F.where('email','==',em),F.limit(1)));
-        if(q.empty){gm.textContent='No account with this email yet. Ask them to sign in to Foliet once.';return}
-        await F.setDoc(F.doc(db,'pro',q.docs[0].id),{by:'admin',since:F.serverTimestamp(),days:+gd.value});toast('Pro given to '+em);adminLoad()}
-      catch(e2){gm.textContent='Couldn’t do it: '+(e2.code||e2.message)}};
-    B.append(g);
-    const pl=el('div','alist');
-    if(!pros.length)pl.append(el('p','muted','Nobody has Pro yet.'));
-    pros.sort((a,b)=>(tsMs(b.since)||0)-(tsMs(a.since)||0)).forEach(p=>{const on=proActiveDoc(p),r=el('div','arow'+(on?'':' off')),u=proUntil(p);
-      const t=el('div','');t.append(el('b','',emails[p.uid]||p.uid),el('small','',' '+(p.by==='code'?'code '+p.code:p.by==='admin'?'given by you':'set in the console')+' · '+(u?(on?'until ':'ended ')+fmtDay(u):'forever')));
-      const rm=el('button','ib','Remove');rm.onclick=async()=>{if(rm.dataset.s){await F.deleteDoc(F.doc(db,'pro',p.uid));adminLoad()}else{rm.dataset.s=1;rm.textContent='Sure?'}};
-      r.append(t,rm);pl.append(r)});
-    B.append(pl);
-    // recent sign-ups
-    B.append(el('h3','','Newest accounts'));
-    const rl=el('div','alist');
-    recent.docs.forEach(d=>{const p=d.data(),r=el('div','arow');const t=el('div','');
-      t.append(el('b','',p.email||'(no email)'),el('small','',' joined '+fmtDay(tsMs(p.created))+' · last seen '+fmtDay(tsMs(p.seen))+(pros.some(x=>x.uid===d.id&&proActiveDoc(x))?' · Pro':'')));r.append(t);rl.append(r)});
-    if(!recent.size)rl.append(el('p','muted','No accounts yet.'));
-    B.append(rl);
-  }catch(e){B.innerHTML='';B.append(el('p','amsg','Couldn’t load the admin data ('+(e.code||e.message)+'). Check that the latest Firestore rules are published.'))}
+  const B=$('#adm-body');B.innerHTML='';B.append(el('p','muted','Loading…'));
+  try{await adminFetch();adminRender()}
+  catch(e){B.innerHTML='';B.append(el('p','amsg','Couldn’t load the admin data ('+(e.code||e.message)+'). Check that the latest Firestore rules are published.'))}
+}
+function adminRender(){
+  const F=ACC.F,db=ACC.db,B=$('#adm-body'),D=ADM.data,R=perRange(ADM.per),now=Date.now();B.innerHTML='';
+  const P=D.profiles.map(p=>({...p,c:tsMs(p.created),s:tsMs(p.seen)}));
+  const email={};P.forEach(p=>email[p.id]=p.email);
+  const paid=D.payments.filter(p=>p.status==='succeeded'),subs=D.subs.map(s=>({...s,...subOf(s)}));
+  const subUids=new Set(subs.filter(s=>s.on).map(s=>s.uid)); // paying subscribers (Stripe) are Pro too
+  const proUids=new Set([...D.pro.filter(proActiveDoc).map(p=>p.id),...subUids]),proOn=[...proUids];
+  const card=(box,v,k,sub,cls)=>{const c=el('div','acard'+(cls?' '+cls:''));c.append(el('b','',String(v)),el('span','',k));if(sub)c.append(el('small','',sub));box.append(c);return c};
+  const sec=t=>B.append(el('h3','',t));
+  // period picker
+  const bar=el('div','aper');const seg=el('div','seg3');
+  [['all','All time'],['year','This year'],['month','This month']].forEach(([v,t])=>{const b=el('button','',t);b.setAttribute('aria-pressed',ADM.per===v);b.onclick=()=>{ADM.per=v;adminRender()};seg.append(b)});
+  const sel=el('select','lk-in');sel.setAttribute('aria-label','Choose a year or month');sel.append(new Option('Choose year or month…',''));
+  const first=Math.min(now,...P.map(p=>p.c||now),...paid.map(payMs).filter(Boolean)),fy=new Date(first).getFullYear(),ny=new Date().getFullYear();
+  for(let y=ny;y>=fy;y--){const g=document.createElement('optgroup');g.label=String(y);g.append(new Option('All of '+y,'y'+y));
+    for(let m=(y===ny?new Date().getMonth():11);m>=0;m--){if(+new Date(y,m+1,1)<=first)break;g.append(new Option(MON[m]+' '+y,'m'+y+'-'+String(m+1).padStart(2,'0')))}sel.append(g)}
+  if(/^[ym]\d/.test(ADM.per))sel.value=ADM.per;
+  sel.onchange=()=>{if(sel.value){ADM.per=sel.value;adminRender()}};
+  const rf=el('small','muted','Updated '+new Date(D.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
+  bar.append(seg,sel,rf);B.append(bar,el('p','aplabel','Showing: '+R.label));
+  // money
+  sec('Money');
+  const pIn=paid.filter(p=>inR(payMs(p),R)),rev=pIn.reduce((s,p)=>s+(p.amount_received??p.amount??0),0);
+  const subOn=subs.filter(s=>s.on),mo=subOn.filter(s=>s.iv==='month'),yr=subOn.filter(s=>s.iv==='year');
+  const mrr=mo.reduce((s,x)=>s+(x.amt||399),0)+yr.reduce((s,x)=>s+(x.amt||2999)/12,0);
+  const payers=new Set(pIn.map(p=>p.uid)).size;
+  const mg=el('div','astats');
+  card(mg,euro(rev),'Revenue',R.label,'big');card(mg,pIn.length,'Payments',R.label);card(mg,payers,'Paying customers',R.label);
+  card(mg,subOn.length,'Active subscriptions',mo.length+' monthly · '+yr.length+' yearly');card(mg,euro(Math.round(mrr)),'Monthly recurring (est.)','≈ '+euro(Math.round(mrr*12))+' a year');
+  card(mg,payers?euro(Math.round(rev/payers)):'–','Average per paying customer',R.label);
+  B.append(mg);
+  if(!D.payments.length&&!D.subs.length)B.append(el('p','anote','Payments aren’t connected yet. When Stripe is set up, revenue, payments and subscriptions fill in here by themselves for any period.'));
+  // users
+  sec('Accounts');
+  const newIn=P.filter(p=>inR(p.c,R)).length;
+  const actIn=R.b===Infinity?P.length:new Set(D.act.filter(a=>{const t=+new Date(+a.ym.slice(0,4),+a.ym.slice(5)-1,1);return t>=R.a&&t<R.b}).map(a=>a.uid)).size;
+  const proNew=D.pro.filter(p=>inR(tsMs(p.since),R)).length+subs.filter(s=>inR(s.start,R)).length;
+  const ug=el('div','astats');
+  card(ug,P.length,'Accounts in total');card(ug,newIn,'New accounts',R.label);card(ug,actIn,'Active accounts',R.b===Infinity?'used Foliet at least once':R.label);
+  card(ug,proOn.length,'Pro right now',P.length?Math.round(proOn.length/P.length*100)+'% of accounts':'');card(ug,proNew,'Pro started',R.label);
+  card(ug,D.redeem.filter(r=>inR(tsMs(r.at),R)).length,'Codes used',R.label);
+  B.append(ug);
+  // charts: by month (year / all time) or by day (one month)
+  const chart=(title,buckets,fmt)=>{const w=el('div','achart');w.append(el('b','',title));const max=Math.max(1,...buckets.map(b=>b.v));const row=el('div','cbars');
+    buckets.forEach(b=>{const c=el('div','cbar');const f=el('i');f.style.height=Math.max(b.v?3:0,b.v/max*100)+'%';c.title=b.l+': '+fmt(b.v);c.setAttribute('aria-label',c.title);
+      const v=el('span','bv',b.v?fmt(b.v):'');c.append(v,f,el('small','',b.s));row.append(c)});w.append(row);return w};
+  let buckets=[];
+  if(R.m!=null){const days=new Date(R.y,R.m+1,0).getDate();for(let d=1;d<=days;d++)buckets.push({a:+new Date(R.y,R.m,d),b:+new Date(R.y,R.m,d+1),l:d+' '+MON[R.m],s:d%5===1?String(d):''})}
+  else{let y0,m0,y1,m1;if(R.y!=null){y0=y1=R.y;m0=0;m1=11}else{const f=new Date(first),t=new Date();y0=f.getFullYear();m0=f.getMonth();y1=t.getFullYear();m1=t.getMonth();const n=(y1-y0)*12+m1-m0;if(n>23){const s=new Date(y1,m1-23,1);y0=s.getFullYear();m0=s.getMonth()}}
+    for(let y=y0,m=m0;y<y1||(y===y1&&m<=m1);m++,(m>11&&(m=0,y++)))buckets.push({a:+new Date(y,m,1),b:+new Date(y,m+1,1),l:MON[m]+' '+y,s:MON[m].charAt(0)})}
+  const cg=el('div','acharts');
+  cg.append(chart('New accounts',buckets.map(k=>({...k,v:P.filter(p=>p.c>=k.a&&p.c<k.b).length})),v=>String(v)));
+  cg.append(chart('Revenue',buckets.map(k=>({...k,v:paid.filter(p=>{const t=payMs(p);return t>=k.a&&t<k.b}).reduce((s,p)=>s+(p.amount_received??p.amount??0),0)})),v=>euro(v)));
+  B.append(cg);
+  // where people come from (accounts that joined in the period)
+  sec('Who uses Foliet');
+  const PJ=P.filter(p=>R.b===Infinity||inR(p.c,R));
+  const brk=(title,f)=>{const m={};PJ.forEach(p=>{const k=f(p);m[k]=(m[k]||0)+1});const w=el('div','abrk');w.append(el('b','',title));
+    Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,6).forEach(([k,v])=>{const r=el('div','abr');const t=el('span','',k);const bar=el('i');bar.style.width=Math.round(v/PJ.length*100)+'%';r.append(t,el('em','',v+' · '+Math.round(v/PJ.length*100)+'%'),bar);w.append(r)});
+    if(!PJ.length)w.append(el('small','muted','No accounts in this period.'));return w};
+  const bg=el('div','abrks');
+  bg.append(brk('Signs in with',p=>p.via==='google.com'?'Google':'Email and password'),brk('Device',p=>osName(p.os)),brk('Installed as an app',p=>p.app?'Yes':p.app===false?'No, in the browser':'Unknown'),brk('Language',p=>(p.lang||'unknown').slice(0,2).toUpperCase()));
+  B.append(bg);
+  // promo codes
+  sec('Promo codes');
+  const f=el('form','aform');
+  const ci=el('input','lk-in');ci.placeholder='CODE';ci.value=genCode();ci.autocapitalize='characters';
+  const gb=el('button','ib','New code');gb.type='button';gb.onclick=()=>ci.value=genCode();
+  const ds=durSelect(30),mx=el('input','lk-in');mx.type='number';mx.min=1;mx.value=10;mx.title='How many people can use it';
+  const nt=el('input','lk-in');nt.placeholder='Note (who it’s for)';
+  const cb=el('button','btn','Create code');cb.type='submit';const fm=el('p','cmsg');
+  const l=(t,x)=>{const w=el('label','alab');w.append(el('span','',t),x);return w};
+  f.append(l('Code',ci),gb,l('Gives Pro for',ds),l('How many people',mx),l('Note',nt),cb,fm);
+  f.onsubmit=async e=>{e.preventDefault();const code=normCode(ci.value);if(code.length<4){fm.textContent='The code needs at least 4 letters or digits.';return}
+    try{const r=F.doc(db,'codes',code);if((await F.getDoc(r)).exists()){fm.textContent='That code already exists.';return}
+      await F.setDoc(r,{kind:'pro',days:+ds.value,max:Math.max(1,+mx.value||1),used:0,active:true,note:nt.value.trim().slice(0,120),created:F.serverTimestamp()});
+      toast('Code '+code+' created');adminLoad()}catch(e2){fm.textContent='Couldn’t create it: '+(e2.code||e2.message)}};
+  B.append(f,el('p','muted','Discount codes (for example 50% off the first month or the first year) are made in Stripe once payments go live; people type them at checkout.'));
+  const cl=el('div','alist');
+  if(!D.codes.length)cl.append(el('p','muted','No codes yet.'));
+  D.codes.sort((a,b)=>(tsMs(b.created)||0)-(tsMs(a.created)||0)).forEach(c=>{const ref=F.doc(db,'codes',c.id),r=el('div','arow'+(c.active&&c.used<c.max?'':' off'));
+    const usedIn=D.redeem.filter(x=>x.code===c.id&&inR(tsMs(x.at),R)).length;
+    const t=el('div','');t.append(el('b','',c.id),el('small','',' Pro '+durTxt(c.days)+' · '+c.used+' / '+c.max+' used'+(R.b!==Infinity?' ('+usedIn+' in '+R.label+')':'')+(c.note?' · '+c.note:'')));
+    const cp=el('button','ib','Copy');cp.onclick=async()=>{try{await navigator.clipboard.writeText(c.id);toast('Copied '+c.id)}catch(e){toast(c.id)}};
+    const tg=el('button','ib',c.active?'Turn off':'Turn on');tg.onclick=async()=>{await F.updateDoc(ref,{active:!c.active});adminLoad()};
+    const dl=el('button','ib','Delete');dl.onclick=async()=>{if(dl.dataset.s){await F.deleteDoc(ref);adminLoad()}else{dl.dataset.s=1;dl.textContent='Sure?'}};
+    r.append(t,cp,tg,dl);cl.append(r)});
+  B.append(cl);
+  // pro members
+  sec('Pro members');
+  const g=el('form','aform');const ge=el('input','lk-in');ge.type='email';ge.placeholder='their@email.com';const gd=durSelect(365);const gbn=el('button','btn','Give Pro');gbn.type='submit';const gm=el('p','cmsg');
+  g.append(l('Email (they must have signed in once)',ge),l('For',gd),gbn,gm);
+  const giveTo=async(uid,days)=>{await F.setDoc(F.doc(db,'pro',uid),{by:'admin',since:F.serverTimestamp(),days:+days})};
+  g.onsubmit=async e=>{e.preventDefault();const em=ge.value.trim().toLowerCase();if(!em)return;const p=P.find(x=>(x.email||'').toLowerCase()===em);
+    if(!p){gm.textContent='No account with this email yet. Ask them to sign in to Foliet once.';return}
+    try{await giveTo(p.id,gd.value);toast('Pro given to '+em);adminLoad()}catch(e2){gm.textContent='Couldn’t do it: '+(e2.code||e2.message)}};
+  B.append(g);
+  const pl=el('div','alist');
+  if(!D.pro.length)pl.append(el('p','muted','Nobody has Pro yet.'));
+  const srcTxt=p=>p.by==='code'?'code '+p.code:p.by==='admin'?'given by you':'set in the console';
+  D.pro.slice().sort((a,b)=>(tsMs(b.since)||0)-(tsMs(a.since)||0)).forEach(p=>{const on=proActiveDoc(p),r=el('div','arow'+(on?'':' off')),u=proUntil(p);
+    const t=el('div','');t.append(el('b','',email[p.id]||p.id),el('small','',' '+srcTxt(p)+' · '+(u?(on?'until ':'ended ')+fmtDay(u):'forever')));
+    const rm=el('button','ib','Remove');rm.onclick=async()=>{if(rm.dataset.s){await F.deleteDoc(F.doc(db,'pro',p.id));adminLoad()}else{rm.dataset.s=1;rm.textContent='Sure?'}};
+    r.append(t,rm);pl.append(r)});
+  B.append(pl);
+  // accounts: search, list, CSV
+  sec('Accounts');
+  const sr=el('div','aform');const si=el('input','lk-in');si.type='search';si.placeholder='Search by email';si.setAttribute('aria-label','Search accounts by email');
+  const csv=el('button','ib','Download all (CSV)');csv.type='button';sr.append(l('Find an account',si),csv);B.append(sr);
+  const al=el('div','alist');B.append(al);
+  const proOf=id=>D.pro.find(x=>x.id===id);
+  const showAcc=()=>{al.innerHTML='';const q=si.value.trim().toLowerCase();
+    const list=P.filter(p=>!q||(p.email||'').toLowerCase().includes(q)).sort((a,b)=>(b.c||0)-(a.c||0)).slice(0,q?50:25);
+    if(!list.length)al.append(el('p','muted',q?'No account matches.':'No accounts yet.'));
+    list.forEach(p=>{const pr=proOf(p.id),paying=subUids.has(p.id),on=paying||proActiveDoc(pr),r=el('div','arow'),t=el('div','');
+      t.append(el('b','',p.email||'(no email)'),el('small','',' joined '+fmtDay(p.c)+' · last seen '+fmtDay(p.s)+' · '+(p.via==='google.com'?'Google':'email')+' · '+osName(p.os)+(p.app?' · app':'')+(paying?' · Pro (paying)':on?' · Pro'+(proUntil(pr)?' until '+fmtDay(proUntil(pr)):''):'')));
+      r.append(t);
+      if(q){const sel2=durSelect(365);sel2.style.maxWidth='130px';const gv=el('button','ib',on?'Change Pro':'Give Pro');gv.onclick=async()=>{await giveTo(p.id,sel2.value);toast('Pro given to '+p.email);adminLoad()};r.append(sel2,gv)}
+      al.append(r)});
+    if(!q&&P.length>25)al.append(el('p','muted','Showing the 25 newest. Search to find anyone else.'))};
+  si.oninput=showAcc;showAcc();
+  csv.onclick=()=>{const esc2=v=>'"'+String(v??'').replace(/"/g,'""')+'"',iso=t=>t?new Date(t).toISOString().slice(0,10):'';
+    const rows=[['email','name','joined','last_seen','sign_in','device','language','installed_app','plan','pro_source','pro_until']];
+    P.forEach(p=>{const pr=proOf(p.id),paying=subUids.has(p.id),on=paying||proActiveDoc(pr),u=proUntil(pr);rows.push([p.email,p.name,iso(p.c),iso(p.s),p.via==='google.com'?'google':'email',osName(p.os),p.lang||'',p.app?'yes':'no',on?'pro':'free',paying?'stripe subscription':pr?srcTxt(pr):'',paying?'':u?iso(+u):(on?'forever':'')])});
+    saveFile('foliet-accounts-'+new Date().toISOString().slice(0,10)+'.csv',new Blob(['﻿'+rows.map(r=>r.map(esc2).join(',')).join('\r\n')],{type:'text/csv'}))};
 }
 
 /* ---------- Locked notebooks ----------

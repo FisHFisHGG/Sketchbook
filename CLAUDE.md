@@ -57,7 +57,13 @@ netlify.toml               configurarea Netlify (fără build, publică rădăci
 - Offline: cine a fost logat ultima dată (`sb-last-uid`) poate lucra și fără internet; un dispozitiv nou are nevoie de internet pentru logare.
 - Pro real = custom claim `stripeRole == 'pro'` (viitoarea extensie Stripe) **sau** documentul `pro/{uid}` = `{by, since, days, code?}` (`days` 0/lipsă = pentru totdeauna; Pro din cod/admin expiră singur – `proActiveDoc()`, iar regulile verifică la fel). Se creează din consolă, din panoul de admin sau prin cod promoțional. Regulile nu permit nimănui să-și dea singur Pro.
 - **Coduri promoționale**: `codes/{COD}` = `{kind:'pro', days, max, used, active, note}`. Utilizatorul îl scrie în fereastra de cont (sau din „Have a promo code?” din fereastra Pro); `redeemCode()` face o tranzacție: `pro/{uid}` + `codes.used+1` + `redeem/{uid_COD}` – regulile verifică totul (cod activ, locuri libere, aceleași zile, o singură folosire de persoană). **Codurile de reducere** (ex. prima lună/primul an mai ieftin) se fac în Stripe la pasul cu plățile.
-- **Panou de admin** (`openAdmin()`, butonul „Admin panel” din cont): pentru conturile din `admins/{uid}` (create de mână în consolă). Arată statistici (conturi, noi/active săptămâna asta, Pro), creează/oprește/șterge coduri, dă/scoate Pro după email, ultimele conturi. Statisticile vin din `profiles/{uid}` = `{email,name,via,created,seen}` (scris de fiecare cont, cel mult de 2 ori pe zi, `touchProfile()`). Adminul **nu** vede caietele nimănui. Venitul apare după Stripe.
+- **Panou de admin** (`openAdmin()`, din meniu → „Admin panel”): pentru conturile din `admins/{uid}` (create de mână în consolă). Încarcă totul o dată (`adminFetch()`), apoi `adminRender()` arată pentru perioada aleasă (`ADM.per`: All time / This year / This month / orice an sau lună din listă):
+  - **Bani** (din datele extensiei Stripe: `customers/{uid}/payments` și `subscriptions`, citite cu collectionGroup): venit, plăți, clienți plătitori, abonamente active (lunar/anual), venit lunar estimat (MRR), medie pe client. Fără Stripe arată €0 și o notă.
+  - **Conturi**: total, noi, active (din `act/{YYYY-MM_uid}`, o înregistrare pe lună pe cont), Pro acum (cod/admin/consolă **plus** abonații Stripe, fiecare o dată), Pro început, coduri folosite.
+  - **Grafice**: conturi noi și venit, pe luni (an / toată perioada, max. 24 de luni) sau pe zile (o lună).
+  - **Cine folosește**: Google vs email, dispozitiv, aplicație instalată, limbă (pentru conturile din perioadă).
+  - Coduri (creare/oprire/ștergere, folosiri în perioadă), membri Pro (dă/scoate după email), căutare cont după email + „Download all (CSV)”.
+  - Statisticile vin din `profiles/{uid}` = `{email,name,via,os,lang,app,created,seen}` (scris de fiecare cont, cel mult de 2 ori pe zi, `touchProfile()`). Adminul **nu** vede caietele nimănui. Încărcarea citește toate profilurile – bine pentru mii de conturi; la foarte multe, trece pe interogări de numărare/sumă.
 - Sincronizare (doar Pro): `users/{uid}` are manifestul `m.{record} = {h, n}`; `users/{uid}/r/{record}` (+ `~~1`, `~~2`…) conține înregistrarea ca JSON, în bucăți de 300.000 caractere. Înregistrările sunt aceleași ca local (`idx`, `b:<id>`, `p:<id>:<i>`, cu `:` → `~`).
 - `syncOnce()` compară 3 hash-uri (dispozitiv, cloud, ultima sincronizare salvată în IDB la `sync:<uid>`): schimbat doar aici → trimite; doar în cloud → aduce; pe ambele → câștigă dispozitivul. Ordinea caietelor se combină. Caietul deschis se actualizează după ce e închis.
 - Doar Pro poate scrie în cloud (protecție de costuri). Dacă Pro expiră, utilizatorul își poate încă citi datele.
@@ -78,6 +84,6 @@ Prețuri Pro: **€3.99 / lună** și **€29.99 / an**. **Nu le schimba fără 
 
 ## Urmează
 1. ~~Conturi + cloud~~ (gata: Firebase)
-2. Pagini legale (GDPR): politică de confidențialitate + termeni – **înainte de lansarea conturilor** (menționează: email + profil pentru statistici, Firebase/Google ca procesator, cloud doar pentru Pro, ștergerea contului)
+2. Pagini legale (GDPR): politică de confidențialitate + termeni – **înainte de lansarea conturilor** (menționează: email + profil pentru statistici – tip dispozitiv, limbă, aplicație instalată, activitate lunară –, Firebase/Google ca procesator, Stripe pentru plăți, cloud doar pentru Pro, ștergerea contului)
 3. Plăți (Stripe, prin extensia „Run Payments with Stripe” pentru Firebase → setează `stripeRole`)
 4. Publicare Android prin PWA

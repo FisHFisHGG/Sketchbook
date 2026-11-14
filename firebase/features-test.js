@@ -47,7 +47,8 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await A.click('#menub');await A.waitForSelector('#madm:not(.hidden)');
   ok(true,'admin sees "Admin panel" in the menu');
   await A.click('#madm');await A.waitForSelector('.astats',{timeout:15000});
-  ok(await A.evaluate(()=>document.querySelector('.astats .acard b').textContent)==='1','admin overview counts accounts (1)');
+  const card=(p,label)=>p.evaluate(l=>{const c=[...document.querySelectorAll('#adm-body .acard')].find(x=>x.querySelector('span').textContent===l);return c?c.querySelector('b').textContent:null},label);
+  ok(await card(A,'Accounts in total')==='1','admin overview counts accounts (1)');
   await A.fill('.aform input[placeholder="CODE"]','TEST-30');await A.selectOption('.aform select','30');await A.fill('.aform input[type=number]','2');
   await A.click('text=Create code');await A.waitForSelector('text=TEST-30',{timeout:10000});
   ok(await (await admin('codes/TEST-30',null,'GET')).json().then(j=>j.fields.days.integerValue==='30'&&j.fields.max.integerValue==='2'),'admin creates a code: Pro for 30 days, 2 people');
@@ -91,6 +92,31 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await admin('pro/'+D.uid,{fields:{by:{stringValue:'admin'},since:{timestampValue:old},days:{integerValue:'1'}}});
   await D.waitForFunction(()=>!ACC.pro,null,{timeout:10000}).catch(()=>{});
   ok(await D.evaluate(()=>!ACC.pro)&&(await plan(D))==='Free plan','Pro that has ended turns itself off');
+  // ---- admin statistics: periods, money (Stripe data), activity, breakdowns, search, CSV
+  const nowS=Math.floor(Date.now()/1000),lastYear=Math.floor(new Date(new Date().getFullYear()-1,5,15).getTime()/1000);
+  const pay=(id,amt,created)=>admin('customers/'+B.uid+'/payments/'+id,{fields:{status:{stringValue:'succeeded'},amount:{integerValue:String(amt)},amount_received:{integerValue:String(amt)},currency:{stringValue:'eur'},created:{integerValue:String(created)}}});
+  await pay('pi_1',2999,nowS);await pay('pi_2',2999,lastYear);await pay('pi_3',399,nowS);
+  await admin('customers/'+B.uid+'/subscriptions/sub_1',{fields:{status:{stringValue:'active'},created:{timestampValue:new Date().toISOString()},items:{arrayValue:{values:[{mapValue:{fields:{price:{mapValue:{fields:{unit_amount:{integerValue:'2999'},recurring:{mapValue:{fields:{interval:{stringValue:'year'}}}}}}}}}}]}}}});
+  await admin('customers/'+C.uid+'/subscriptions/sub_2',{fields:{status:{stringValue:'active'},created:{timestampValue:new Date().toISOString()},items:{arrayValue:{values:[{mapValue:{fields:{price:{mapValue:{fields:{unit_amount:{integerValue:'399'},recurring:{mapValue:{fields:{interval:{stringValue:'month'}}}}}}}}}}]}}}});
+  await A.click('#adm-r');await A.waitForSelector('#adm-body .aper',{timeout:15000});
+  ok(await card(A,'Revenue')==='€63.97'&&await card(A,'Payments')==='3','All time: revenue €63.97 from 3 payments');
+  ok(await card(A,'Active subscriptions')==='2'&&await card(A,'Monthly recurring (est.)')==='€6.49','subscriptions: 2 active, about €6.49 a month');
+  ok(await card(A,'Pro right now')==='2','Pro right now: Bob and Carol, each counted once (code + subscription); Dan\'s Pro has ended');
+  await A.click('#adm-body .aper >> text=This year');await A.waitForTimeout(200);
+  ok(await card(A,'Revenue')==='€33.98'&&await card(A,'Payments')==='2','This year: last year\'s payment is left out (€33.98)');
+  const ly='y'+(new Date().getFullYear()-1);await A.selectOption('#adm-body .aper select',ly);await A.waitForTimeout(200);
+  ok(await card(A,'Revenue')==='€29.99'&&await card(A,'New accounts')==='0','a past year from the list: €29.99, no new accounts then');
+  await A.click('#adm-body .aper >> text=This month');await A.waitForTimeout(200);
+  ok(await card(A,'New accounts')==='4'&&await card(A,'Active accounts')==='4','This month: 4 new accounts, 4 active');
+  ok(await A.evaluate(()=>[...document.querySelectorAll('.achart')].length===2&&document.querySelectorAll('.achart .cbar').length>=56),'charts: new accounts and revenue, day by day for the month');
+  ok(await A.evaluate(()=>/Email and password/.test(document.querySelector('.abrks').textContent)&&/Device/.test(document.querySelector('.abrks').textContent)),'breakdowns: sign-in method, device, installed app, language');
+  await A.fill('#adm-body input[type=search]','carol');await A.waitForTimeout(200);
+  ok(await A.evaluate(()=>{const r=[...document.querySelectorAll('#adm-body .alist')].pop().querySelectorAll('.arow');return r.length===1&&/carol@example\.com/.test(r[0].textContent)}),'search finds an account by email');
+  const [dl]=await Promise.all([A.waitForEvent('download'),A.click('text=Download all (CSV)')]);
+  const csv=fs.readFileSync(await dl.path(),'utf8').trim().split(/\r?\n/);
+  ok(dl.suggestedFilename().endsWith('.csv')&&csv.length===5&&/"email","name","joined"/.test(csv[0])&&csv.slice(1).every(r=>/@example\.com/.test(r)),'CSV download: header + 4 accounts ('+dl.suggestedFilename()+', '+csv.length+' lines)');
+  const r5=await tryWrite(C,async()=>{const F=ACC.F;try{await F.getDocs(F.collectionGroup(ACC.db,'payments'));return 'read!'}catch(e){return e.code}});
+  ok(r5==='permission-denied','users can\'t see payments ('+r5+')');
   // ---- locked notebooks
   await A.click('#adm-x');
   await A.click('.cell:not(.add)');await A.waitForTimeout(800);
