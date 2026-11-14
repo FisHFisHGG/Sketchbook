@@ -85,6 +85,19 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 html{background:var(--desk)}
 #shelf header{display:flex;align-items:center;flex-wrap:wrap;gap:10px 12px;max-width:980px;margin:0 auto 24px}
 #shelf header h1{margin-right:auto}
+.mwrap{position:relative}
+#menub{position:relative}#menub .ndot{position:absolute;right:3px;top:3px;margin:0}
+#menu{position:absolute;right:0;top:calc(100% + 8px);z-index:45;width:min(300px,calc(100vw - 32px));background:var(--bar);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 40px var(--sh);padding:6px}
+@media (max-width:560px){#menu{position:fixed;left:16px;right:16px;width:auto;top:calc(env(safe-area-inset-top,0px) + 78px)}}
+.mhead{display:flex;align-items:center;gap:10px;padding:10px 10px 12px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.mhead .av{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--bar);font-weight:700}
+.mhead b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}.mhead small{opacity:.7}
+.mi{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:8px 10px;border:0;border-radius:10px;background:none;color:inherit;font:inherit;text-align:left}
+button.mi:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}.mi .ic{flex:none;opacity:.8}.mi span{flex:1}
+.mi .ndot{margin:0}
+.seg3{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.seg3 button{border:0;background:none;color:inherit;font:inherit;font-size:.85em;padding:6px 9px;min-width:36px;min-height:34px}
+.seg3 button[aria-pressed="true"]{background:var(--ink);color:var(--bar)}
+#mout{color:#c2473a}#mout .ic{opacity:1}
 #shelf header .btn,#shelf header .ib{flex:none;white-space:nowrap}
 #note{order:9;flex:1 0 100%}
 #note:empty{display:none}
@@ -357,7 +370,7 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 .empty{grid-column:1/-1;text-align:center;opacity:.7;padding:40px 0}
 #set,#tour,#acct{position:fixed;inset:0}
 #acct{z-index:57;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
-#acct.gate{background:var(--desk);z-index:90}#acct.gate #acc-x{display:none}
+#acct.gate{background:var(--desk);z-index:90}#acct.gate #acc-x{display:none}#acct:not(.gate) #acc-theme{display:none}#acc-theme{margin-left:auto}
 #acct .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(400px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #acct h2{margin:0;font-size:1.3em}#acct p{margin:0 0 12px}#acct .muted{opacity:.7;font-size:.88em}#acct .or{text-align:center;opacity:.6;margin:12px 0}
 #acct .amsg{color:#b3402f;font-weight:600}
@@ -369,7 +382,6 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 .af label{display:block;margin:0 0 10px;font-size:.9em}
 .af input{display:block;width:100%;margin-top:4px;font:inherit;color:var(--ink);background:var(--desk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
 .af .btn{width:100%;margin:4px 0 12px;min-height:44px}
-#accb{position:relative}#accb.on::after{content:"";position:absolute;right:3px;top:3px;width:9px;height:9px;border-radius:50%;background:#2e9d5b;border:2px solid var(--bar)}
 #set{z-index:56;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
 #set .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #upd{position:fixed;inset:0;z-index:58;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
@@ -378,7 +390,6 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 .uv{border-top:1px solid var(--line);padding:12px 0}.uv h3{margin:0;font-size:1.05em}.uv small{opacity:.65}.uv ul{margin:8px 0 0;padding-left:20px;line-height:1.55}
 .uempty{opacity:.75;padding:18px 0 6px;text-align:center}
 .ndot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0453a;margin-left:6px;vertical-align:middle}
-#setb{position:relative}#setb.new::after{content:"";position:absolute;right:3px;top:3px;width:9px;height:9px;border-radius:50%;background:#d0453a;border:2px solid var(--bar)}
 #set h2{margin:0 0 2px;font-size:1.3em}#set p{margin:0 0 14px;opacity:.7}
 a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .upl{margin:4px 0 10px;padding-left:20px;line-height:1.6}.upp{margin:0 0 6px}.upn{opacity:.7;font-size:.9em;margin:0 0 14px}
@@ -420,7 +431,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 
 <div id="sv" role="status" aria-live="polite"></div>
 <section id="shelf">
-  <header><h1>My notebooks</h1><span id="note" role="status"></span><button class="ib i" id="accb" aria-label="Account" title="Sign in"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></button><button class="ib i" id="hlpb" aria-label="Help and shortcuts" title="Help and shortcuts (?)"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg></button><button class="ib i" id="setb" aria-label="Settings" title="Settings"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
+  <header><h1>My notebooks</h1><span id="note" role="status"></span><button class="ib i" id="themeb" aria-label="Switch theme"></button><div class="mwrap"><button class="ib i" id="menub" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i class="ndot hidden" id="menud"></i></button><div id="menu" class="hidden" role="menu"><div class="mhead" id="mhead"></div><button role="menuitem" class="mi" id="accb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Account &amp; promo code</span></button><div class="mi mtheme"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>Theme</span><div class="seg3" id="mtheme"><button data-v="auto">Auto</button><button data-v="light" aria-label="Light">☀</button><button data-v="dark" aria-label="Dark">☾</button></div></div><button role="menuitem" class="mi" id="mupd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span>What’s new</span><i class="ndot hidden" id="mupdd"></i></button><button role="menuitem" class="mi" id="setb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Settings</span></button><button role="menuitem" class="mi" id="hlpb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg><span>Help &amp; shortcuts</span></button><button role="menuitem" class="mi hidden" id="madm"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Admin panel</span></button><button role="menuitem" class="mi" id="mout"><svg class="ic" viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/></svg><span>Sign out</span></button></div></div><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
   <nav class="tabs" role="tablist"><button role="tab" id="tb1" aria-selected="true">Notebooks</button><button role="tab" id="tb2" aria-selected="false">Templates</button></nav>
   <div id="lib"><label class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="q" type="search" placeholder="Search notebooks" aria-label="Search notebooks and notes" autocomplete="off"></label>
     <select id="sortb" aria-label="Sort notebooks"><option value="rec">Recently edited</option><option value="name">Name A–Z</option><option value="pages">Most pages</option><option value="new">Newest first</option></select>
@@ -562,7 +573,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </div>
 
 <div id="acct" class="hidden" role="dialog" aria-modal="true" aria-labelledby="acctt"><div class="card">
-  <div class="sh-top"><h2 id="acctt">Your account</h2><button class="ib i" id="acc-x" aria-label="Close">✕</button></div>
+  <div class="sh-top"><h2 id="acctt">Your account</h2><button class="ib i" id="acc-theme" aria-label="Switch theme"></button><button class="ib i" id="acc-x" aria-label="Close">✕</button></div>
   <div id="acc-body"></div>
 </div></div>
 <div id="upd" class="hidden" role="dialog" aria-modal="true" aria-labelledby="updt"><div class="card">
@@ -2238,11 +2249,22 @@ function syncCov(){
 let SET={theme:'auto',desk:'sage',snd:false};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('sb-set')||'{}'))}catch(e){}
 function saveSet(){try{localStorage.setItem('sb-set',JSON.stringify(SET))}catch(e){}}
+/* light / dark: the sun–moon buttons switch to the other look; matching the device again means "auto" */
+const sysDark=()=>!!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+const isDark=()=>SET.theme==='dark'||(SET.theme==='auto'&&sysDark());
+const SUN_IC='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>';
+const MOON_IC='<svg class="ic" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg>';
+function syncThemeBtns(){const d=isDark();['#themeb','#acc-theme'].forEach(q=>{const b=document.querySelector(q);if(!b)return;b.innerHTML=d?SUN_IC:MOON_IC;b.title=d?'Switch to light theme':'Switch to dark theme';b.setAttribute('aria-label',b.title)});
+  document.querySelectorAll('#mtheme button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===SET.theme))}
+function setTheme(t){SET.theme=t;saveSet();applySet();if(typeof syncSet==='function')syncSet()}
+function toggleTheme(){const want=isDark()?'light':'dark';setTheme((want==='dark')===sysDark()?'auto':want)}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applySet())}catch(e){}
 function applySet(){
   const r=document.documentElement;
   if(SET.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',SET.theme);
   if(SET.desk==='sage')r.removeAttribute('data-desk');else r.setAttribute('data-desk',SET.desk);
   try{const m=document.querySelector('meta[name=theme-color]');if(m)m.content=getComputedStyle(r).getPropertyValue('--desk').trim()||'#e4e9e6'}catch(e){}
+  syncThemeBtns();
 }
 applySet();
 let AC=null;
@@ -2478,7 +2500,7 @@ const GICON='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
 function ago2(t){if(!t)return 'not yet';const s=(Date.now()-t)/1000;return s<60?'just now':s<3600?Math.round(s/60)+' min ago':new Date(t).toLocaleString()}
 function renderAcc(){
   const box=$('#acc-body');if(!box)return;
-  const b=$('#accb');if(b){b.classList.toggle('on',!!ACC.user);b.title=ACC.user?'Account: '+(ACC.user.email||''):'Sign in'}
+  if(!$('#menu').classList.contains('hidden'))menuHead();
   if($('#acct').classList.contains('hidden'))return;
   $('#acctt').textContent=ACC.gate?'Welcome to Foliet':'Your account';
   const keep={em:$('#a-em')&&$('#a-em').value,pw:$('#a-pw')&&$('#a-pw').value,f:document.activeElement&&document.activeElement.id};
@@ -2922,7 +2944,7 @@ async function makeWelcome(){
 const APP_VER='Beta';
 const UPDATES=[];
 function updNew(){return UPDATES.length&&lsGet('sb-upd-seen')!==UPDATES[0].v}
-function syncUpdDot(){const n=!!updNew();$('#setb').classList.toggle('new',n);$('#s-updd').classList.toggle('hidden',!n)}
+function syncUpdDot(){const n=!!updNew();$('#menud').classList.toggle('hidden',!n);$('#mupdd').classList.toggle('hidden',!n);$('#s-updd').classList.toggle('hidden',!n)}
 function openUpd(){
   $('#updv').textContent='You’re using Foliet '+APP_VER+(UPDATES.length?'':'.');
   const l=$('#updl');l.innerHTML='';
@@ -2936,6 +2958,24 @@ function openUpd(){
   });
   if(UPDATES.length)lsSet('sb-upd-seen',UPDATES[0].v);
   syncUpdDot();$('#set').classList.add('hidden');$('#upd').classList.remove('hidden');
+}
+/* the shelf menu: account, theme, what's new, settings, help, admin, sign out */
+function menuOpen(v){const m=$('#menu');if(!m)return;m.classList.toggle('hidden',!v);$('#menub').setAttribute('aria-expanded',v);if(v)menuHead()}
+function menuHead(){
+  const h=$('#mhead');if(!h)return;h.innerHTML='';const u=ACC.user;
+  const av=el('span','av',((u&&(u.displayName||u.email))||'?').trim().charAt(0).toUpperCase());
+  const t=el('div','');t.append(el('b','',u?(u.email||u.displayName||'Signed in'):'Not signed in'),el('small','',ACC.pro?'Pro'+(proUntil(ACC.proDoc)?' until '+fmtDay(proUntil(ACC.proDoc)):''):'Free plan'));
+  h.append(av,t);$('#madm').classList.toggle('hidden',!ACC.admin);$('#mout').classList.toggle('hidden',!u);
+}
+function initMenu(){
+  $('#menub').onclick=e=>{e.stopPropagation();menuOpen($('#menu').classList.contains('hidden'))};
+  $('#menu').addEventListener('click',e=>{if(e.target.closest('button.mi'))menuOpen(false)});
+  document.addEventListener('click',e=>{if(!e.target.closest('.mwrap'))menuOpen(false)});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')menuOpen(false)});
+  document.querySelectorAll('#mtheme button').forEach(b=>b.onclick=e=>{e.stopPropagation();setTheme(b.dataset.v)});
+  $('#mupd').onclick=openUpd;$('#madm').onclick=openAdmin;$('#mout').onclick=()=>{if(ACC.F&&ACC.user)accOut()};
+  $('#themeb').onclick=toggleTheme;$('#acc-theme').onclick=toggleTheme;
+  syncThemeBtns();
 }
 function initUpd(){
   $('#s-upd').onclick=openUpd;$('#upd-x').onclick=()=>$('#upd').classList.add('hidden');
@@ -2982,7 +3022,7 @@ function initSettings(){
   $('#s-ok').onclick=()=>d.classList.add('hidden');d.addEventListener('click',e=>{if(e.target===d)d.classList.add('hidden')});
 }
 function syncSet(){
-  document.querySelectorAll('#s-theme button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===SET.theme));
+  document.querySelectorAll('#s-theme button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===SET.theme));syncThemeBtns();
   document.querySelectorAll('#s-desk .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===SET.desk));
   $('#s-snd').checked=SET.snd;
 }
@@ -3345,7 +3385,7 @@ function initExport(){
     }catch(e){console.error(e);busy(0,'Export failed. Please try again.')}
   };
 }
-initExport();initObar();initTools();initKb();initAcc();initUpd();$('#block').onclick=lockSettings;$('#adm-x').onclick=()=>$('#admin').classList.add('hidden');$('#adm-r').onclick=adminLoad;initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');startApp();
+initExport();initObar();initTools();initKb();initAcc();initMenu();initUpd();$('#block').onclick=lockSettings;$('#adm-x').onclick=()=>$('#admin').classList.add('hidden');$('#adm-r').onclick=adminLoad;initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');startApp();
 </script>
 </body>
 </html>

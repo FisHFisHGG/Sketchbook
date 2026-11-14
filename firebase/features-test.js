@@ -28,12 +28,25 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   const A=await user('owner@example.com');
   ok(await A.evaluate(()=>data.length===1&&data[0].welcome===1&&data[0].pages.length===6),'new account starts with the 6-page welcome notebook');
   ok(await A.evaluate(()=>ownBooks())===0,'welcome notebook doesn\'t count toward the free limit');
+  // ---- menu and theme
+  await A.click('#menub');
+  ok(await A.evaluate(()=>!$('#menu').classList.contains('hidden')&&/owner@example\.com/.test($('#mhead').textContent)&&/Free plan/.test($('#mhead').textContent)),'menu opens and shows the account and plan');
+  await A.mouse.click(5,700);await A.waitForTimeout(200);
+  ok(await A.evaluate(()=>$('#menu').classList.contains('hidden')),'tapping outside closes the menu');
+  const dark0=await A.evaluate(()=>isDark());
+  await A.click('#themeb');await A.waitForTimeout(200);
+  ok(await A.evaluate(d=>isDark()!==d&&document.documentElement.getAttribute('data-theme')===(d?'light':'dark'),dark0),'sun/moon button switches the theme');
+  await A.reload();await A.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});
+  ok(await A.evaluate(d=>isDark()!==d,dark0),'the chosen theme stays after reopening the app');
+  await A.click('#menub');await A.click('#mtheme [data-v="auto"]');
+  ok(await A.evaluate(d=>SET.theme==='auto'&&isDark()===d&&!document.documentElement.hasAttribute('data-theme'),dark0),'menu → Theme → Auto follows the device again');
+  await A.click('#menub');
   // ---- admin panel + codes
   await admin('admins/'+A.uid,{fields:{note:{stringValue:'test'}}});
   await A.evaluate(()=>checkAdmin(ACC.user));await A.waitForTimeout(500);
-  await A.click('#accb');await A.waitForSelector('text=Admin panel');
-  ok(true,'admin sees the "Admin panel" button');
-  await A.click('text=Admin panel');await A.waitForSelector('.astats',{timeout:15000});
+  await A.click('#menub');await A.waitForSelector('#madm:not(.hidden)');
+  ok(true,'admin sees "Admin panel" in the menu');
+  await A.click('#madm');await A.waitForSelector('.astats',{timeout:15000});
   ok(await A.evaluate(()=>document.querySelector('.astats .acard b').textContent)==='1','admin overview counts accounts (1)');
   await A.fill('.aform input[placeholder="CODE"]','TEST-30');await A.selectOption('.aform select','30');await A.fill('.aform input[type=number]','2');
   await A.click('text=Create code');await A.waitForSelector('text=TEST-30',{timeout:10000});
@@ -42,7 +55,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   // ---- redeem
   const B=await user('bob@example.com');
   ok(await plan(B)==='Free plan','new user is on the free plan');
-  const redeem=async(p,code)=>{if(await p.evaluate(()=>$('#acct').classList.contains('hidden')))await p.click('#accb');await p.waitForSelector('#a-code');await p.fill('#a-code',code);await p.click('.codebox button');await p.waitForTimeout(1500);const m=await p.evaluate(()=>{const e=document.querySelector('.cmsg');return e?e.textContent:''});return m};
+  const redeem=async(p,code)=>{if(await p.evaluate(()=>$('#acct').classList.contains('hidden'))){await p.click('#menub');await p.click('#accb')}await p.waitForSelector('#a-code');await p.fill('#a-code',code);await p.click('.codebox button');await p.waitForTimeout(1500);const m=await p.evaluate(()=>{const e=document.querySelector('.cmsg');return e?e.textContent:''});return m};
   let m=await redeem(B,'nope-0000');ok(/doesn’t exist/.test(m),'unknown code is refused ('+m+')');
   m=await redeem(B,'test-30');
   await B.waitForFunction(()=>ACC.pro,null,{timeout:10000}).catch(()=>{});
@@ -67,7 +80,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   m=await redeem(D,'TEST-30');ok(/used up|expired/.test(m),'third person: code is used up ('+m+')');
   await D.click('#acc-x').catch(()=>{});
   // ---- admin gives Pro by email; expired Pro
-  await A.click('#accb');await A.click('text=Admin panel');await A.waitForSelector('.astats',{timeout:15000});
+  await A.click('#menub');await A.click('#madm');await A.waitForSelector('.astats',{timeout:15000});
   await A.fill('.aform input[type=email]','dan@example.com');await A.selectOption('.aform >> nth=1 >> select','365');await A.click('text=Give Pro');
   await D.waitForFunction(()=>ACC.pro,null,{timeout:15000}).catch(()=>{});
   ok(await D.evaluate(()=>ACC.pro),'admin gives Pro to dan@example.com by email → it turns on for Dan right away');

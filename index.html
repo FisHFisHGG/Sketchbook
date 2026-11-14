@@ -27,13 +27,14 @@
  {"@type":"WebApplication","name":"Foliet Sketchbook","alternateName":"Foliet","url":"https://fishfishgg.github.io/Sketchbook/app/","image":"https://fishfishgg.github.io/Sketchbook/og.png",
   "description":"A digital sketchbook and notebook in your browser: draw, write and plan on paper-like pages you turn by hand.",
   "applicationCategory":"DesignApplication","operatingSystem":"Any (web browser), Android, iOS, Windows, macOS","browserRequirements":"Requires a modern browser",
-  "featureList":["Pen, pencil, brush, marker, highlighter, shapes and fill","Text in 8 fonts, stickers and sticky notes","Blank, lined, grid and dot pages","Lock notebooks with a PIN or password","Fingerprint unlock on Android","Works offline","PDF import and export (Pro)","Cloud sync across devices (Pro)"],
+  "featureList":["Pen, pencil, brush, marker, highlighter, shapes and fill","Text in 8 fonts, stickers and sticky notes","Blank, lined, grid and dot pages","Lock notebooks with a PIN or password","Fingerprint unlock on Android","Works offline","Light and dark theme","PDF import and export (Pro)","Cloud sync across devices (Pro)"],
   "offers":[{"@type":"Offer","name":"Free","price":"0","priceCurrency":"EUR"},
             {"@type":"Offer","name":"Pro monthly","price":"3.99","priceCurrency":"EUR"},
             {"@type":"Offer","name":"Pro yearly","price":"29.99","priceCurrency":"EUR"}]}
 ]}
 </script>
 <meta name="theme-color" content="#e4e9e6">
+<script>try{var t=(JSON.parse(localStorage.getItem('sb-set')||'{}').theme)||'auto';if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <link rel="icon" href="app/icon-192.png">
 <link rel="apple-touch-icon" href="app/icon-192.png">
 <style>
@@ -78,6 +79,9 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:co
 .btn.sec:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}
 .btn.txt{background:none;color:var(--ink);padding-inline:10px}
 .btn.sm{padding:8px 16px}
+.themeb{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.themeb:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.themeb svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 @media (max-width:640px){.nav{gap:8px}.nav a.l{display:none}.btn.sm{padding:8px 12px}}
 
 /* Hero */
@@ -286,6 +290,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
     <a class="l" href="#pricing">Pricing</a>
     <a class="l" href="#faq">FAQ</a>
     <a class="l" href="app/">Log in</a>
+    <button class="themeb" id="themeb" type="button" aria-label="Switch theme"></button>
     <a class="btn pri sm" href="app/">Start free</a>
   </div>
 </header>
@@ -428,6 +433,18 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
 
 <script>
 const $=s=>document.querySelector(s);
+/* light / dark: follows the device until the visitor picks; the choice is shared with the app (sb-set) */
+const R=document.documentElement,mq=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
+const SUN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>',
+      MOON='<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg>';
+function readSet(){try{return JSON.parse(localStorage.getItem('sb-set')||'{}')}catch(e){return {}}}
+function themeNow(){const t=readSet().theme||'auto';return t==='auto'?(mq&&mq.matches?'dark':'light'):t}
+function paintTheme(){const t=readSet().theme||'auto';if(t==='auto')R.removeAttribute('data-theme');else R.setAttribute('data-theme',t);
+  const d=themeNow()==='dark',b=$('#themeb');b.innerHTML=d?SUN:MOON;b.title=d?'Switch to light theme':'Switch to dark theme';b.setAttribute('aria-label',b.title);
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=getComputedStyle(R).getPropertyValue('--bg').trim()||'#e4e9e6'}
+$('#themeb').onclick=()=>{const want=themeNow()==='dark'?'light':'dark',sys=mq&&mq.matches?'dark':'light',st=readSet();st.theme=want===sys?'auto':want;try{localStorage.setItem('sb-set',JSON.stringify(st))}catch(e){}paintTheme()};
+if(mq&&mq.addEventListener)mq.addEventListener('change',paintTheme);
+paintTheme();
 const scue=$('#scue');if(scue)addEventListener('scroll',()=>scue.classList.toggle('gone',scrollY>60),{passive:true});
 const CHIPS=[['Thick cover','Pick a color','Draw on it'],['Cover opens','Thick pages','Stack on both sides'],['Drag to turn','Follows your finger','Real page edge'],['Pen','Pencil','Brush','Marker','Highlighter','Shapes','Fill'],['8 fonts','28 stickers','Sticky notes','Move and rotate'],['Blank','Lined','Grid','Dots','Paper colors'],['Portrait or landscape','Fits each page','Write on top'],['Reorder','Duplicate','Delete','Jump to a page'],['PIN or password','Fingerprint on Android','Included free']];
 const demo=$('#demo'),sts=[...document.querySelectorAll('.st')];

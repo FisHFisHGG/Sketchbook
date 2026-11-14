@@ -25,13 +25,14 @@ const URL0='http://127.0.0.1:5175/app/?emu=127.0.0.1';
     catch(e){console.log('DEBUG',await p.evaluate(()=>({u:ACC.user&&ACC.user.email,lib:ACC.libUid,gate:ACC.gate,body:document.querySelector('#acc-body').innerText.slice(0,300)})),errs);throw e}
     await p.waitForTimeout(300);
   };
-  const out=async()=>{await p.click('#accb');await p.click('text=Sign out');await p.waitForFunction(()=>!ACC.user&&ACC.gate,null,{timeout:10000});await p.waitForTimeout(200)};
+  const out=async()=>{await p.click('#menub');await p.click('#mout');await p.waitForFunction(()=>!ACC.user&&ACC.gate,null,{timeout:10000});await p.waitForTimeout(200)};
   // notebooks left by the older app version, before any account existed
   await p.goto(URL0);await p.waitForTimeout(500);
   await p.evaluate(async()=>{const c=document.createElement('canvas');c.width=900;c.height=1200;c.getContext('2d').fillRect(0,0,50,50);
     await idbSet('schita-v1',[{id:1,title:'Old diary',color:'#23407a',cover:null,pages:[c.toDataURL('image/webp',.8)],objs:[],pv:[],cobjs:[],cpv:null,bg:[],ps:[],lay:[],o:'p',u:1}])});
   await p.reload();await p.waitForTimeout(800);
   ok(await gate(),'opening the app shows the sign-in screen');
+  ok(await p.evaluate(()=>!!document.querySelector('#acc-theme').offsetParent),'the sign-in screen has the sun/moon theme button');
   ok(await p.evaluate(()=>data.length)===0,'no notebooks visible before signing in');
   ok(await p.evaluate(()=>!document.querySelector('#acc-x').offsetParent),'the sign-in screen can\'t be closed');
   await sign('first@example.com',true);

@@ -103,7 +103,7 @@ async function grantPro(uid){
   await B.click('#bclose');await B.waitForTimeout(500);await settle(B);
   ok(whileOpen==='Trip to Rome'&&(await books(B)).startsWith('Rome['),'B: open notebook not changed under your hands; updated after closing ('+whileOpen+' → '+await books(B)+')');
   // sign out keeps notebooks
-  await settle(A);const before=await books(A);await A.click('#accb');await A.waitForSelector('text=Sign out');await A.click('text=Sign out');
+  await settle(A);const before=await books(A);await A.click('#menub');await A.click('#mout');
   await A.waitForFunction(()=>!ACC.user&&ACC.gate,null,{timeout:10000});
   ok(await A.evaluate(()=>data.length)===0,'A: signed out → sign-in screen, notebooks hidden');
   await signIn(A,'ana@example.com','secret123',false);await A.waitForFunction(()=>ACC.pro,null,{timeout:15000});
