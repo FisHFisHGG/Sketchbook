@@ -43,12 +43,14 @@ netlify.toml               configurarea Netlify (fără build, publică rădăci
 - Planul Pro nu se poate cumpăra încă. `plan` = 'pro' dacă contul are Pro (real) sau, doar local, cu `app/?demo=pro` (`?demo=free` ca să revii). Demo-ul nu pornește sincronizarea.
 
 ## Conturi și cloud (Firebase, proiect `sketchbook-b1de1`)
-- Login: Google + email/parolă (`fbLoad()`, `accUser()`, fereastra `#acct`). Firebase se încarcă **doar** dacă cineva deschide contul sau a fost logat (`sb-acct`) – utilizatorii fără cont nu contactează Google.
+- **Contul e obligatoriu.** Aplicația pornește pe ecranul de logare (`startApp()` → `showGate()`, `#acct.gate`); Google + email/parolă. Prețurile/reducerea: anualul economisește **37%** – nu scrie alt procent fără să schimbi prețurile (și să mă întrebi).
+- Fiecare cont are caietele lui pe dispozitiv (`openLibrary(uid)`): primul cont logat pe dispozitiv (`sb-owner`) preia caietele existente (prefix `v2:`), celelalte au prefix `v2u:<uid>:`. La deconectare caietele se ascund (`closeLibrary()`), nu se șterg.
+- Offline: cine a fost logat ultima dată (`sb-last-uid`) poate lucra și fără internet; un dispozitiv nou are nevoie de internet pentru logare.
 - Pro real = custom claim `stripeRole == 'pro'` (viitoarea extensie Stripe) **sau** documentul `pro/{uid}` în Firestore (creat de mână în consolă, pentru teste/prieteni). Regulile nu permit nimănui să-și dea singur Pro.
 - Sincronizare (doar Pro): `users/{uid}` are manifestul `m.{record} = {h, n}`; `users/{uid}/r/{record}` (+ `~~1`, `~~2`…) conține înregistrarea ca JSON, în bucăți de 300.000 caractere. Înregistrările sunt aceleași ca local (`idx`, `b:<id>`, `p:<id>:<i>`, cu `:` → `~`).
 - `syncOnce()` compară 3 hash-uri (dispozitiv, cloud, ultima sincronizare salvată în IDB la `sync:<uid>`): schimbat doar aici → trimite; doar în cloud → aduce; pe ambele → câștigă dispozitivul. Ordinea caietelor se combină. Caietul deschis se actualizează după ce e închis.
 - Doar Pro poate scrie în cloud (protecție de costuri). Dacă Pro expiră, utilizatorul își poate încă citi datele.
-- Test local: simulatorul Firebase (`firebase emulators:exec --only auth,firestore`) + `app/?emu=127.0.0.1` (funcționează doar pe localhost).
+- Teste: `firebase/sync-test.js` (două dispozitive) și `firebase/gate-test.js` (logare obligatorie, conturi separate, offline), cu simulatorul Firebase; aplicația se leagă de simulator cu `app/?emu=127.0.0.1` (doar pe localhost).
 
 ## Planuri
 | | Free | Pro |

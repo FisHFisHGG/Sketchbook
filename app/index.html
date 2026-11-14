@@ -325,6 +325,7 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 .empty{grid-column:1/-1;text-align:center;opacity:.7;padding:40px 0}
 #set,#tour,#acct{position:fixed;inset:0}
 #acct{z-index:57;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
+#acct.gate{background:var(--desk);z-index:90}#acct.gate #acc-x{display:none}
 #acct .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(400px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #acct h2{margin:0;font-size:1.3em}#acct p{margin:0 0 12px}#acct .muted{opacity:.7;font-size:.88em}#acct .or{text-align:center;opacity:.6;margin:12px 0}
 #acct .amsg{color:#b3402f;font-weight:600}#acct .srow>span{width:96px}
@@ -588,7 +589,8 @@ function idb(){return dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('
 async function idbGet(k){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>res(t.result);t.onerror=()=>rej(t.error)})}
 async function idbSet(k,v){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
 async function idbDel(k){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').delete(k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-const P2='v2:',PK=['pages','objs','pv','bg','ps','lay'];
+let P2='v2:'; // this account's records on the device (see openLibrary)
+const PK=['pages','objs','pv','bg','ps','lay'];
 let snaps=new Map(),usingLS=false;
 /* cheap fingerprint: small values as JSON, long strings (images) compared by identity */
 function sig(v){const big=[];const j=JSON.stringify(v,(k,x)=>typeof x==='string'&&x.length>256?(big.push(x),'\u0001'+(big.length-1)):x);return {j,big}}
@@ -623,7 +625,7 @@ async function saveNow(){
   }catch(e){
     if(!usingLS&&!(e&&/quota/i.test(e.name+' '+e.message))){try{dbp=null;await flushSave();note('');svMsg('saved');return}catch(e3){e=e3}}
     if(!usingLS&&e&&/quota/i.test(e.name+' '+e.message)){note('Browser storage is full. Back up your notebooks in Settings, then delete some pages.',1);svMsg('err');return}
-    try{localStorage.setItem(KEY,JSON.stringify(data));usingLS=true;note('');svMsg('saved')}catch(e2){note('Browser storage is full.',1);svMsg('err')}
+    try{localStorage.setItem(lsKey(),JSON.stringify(data));usingLS=true;note('');svMsg('saved')}catch(e2){note('Browser storage is full.',1);svMsg('err')}
   }
 }
 function persist(){
@@ -656,10 +658,12 @@ async function loadV2(){
   snaps=new Map();m.forEach((v,k)=>snaps.set(k,used.has(k)?sig(v):{j:'\u0000old',big:[]}));
   return out;
 }
-async function initData(){
-  let d=null,old=false;
+const lsKey=()=>P2==='v2:'?KEY:KEY+'@'+P2;
+async function initData(legacy){
+  let d=null,old=false;usingLS=false;
   try{d=await loadV2()}catch(e){usingLS=true}
-  if(!d){
+  if(!d&&usingLS){try{d=JSON.parse(localStorage.getItem(lsKey()))}catch(e){}}
+  if(!d&&legacy){ // notebooks saved by an older version of the app (only for the first account on this device)
     old=true;
     if(!usingLS){try{d=await idbGet(KEY)}catch(e){}}
     if(!d){try{d=JSON.parse(localStorage.getItem(KEY))}catch(e){}}
@@ -2190,18 +2194,52 @@ function fbLoad(){
     const emu=new URLSearchParams(location.search).get('emu');
     if(emu&&/^(localhost|127\.0\.0\.1)$/.test(emu)&&(location.protocol==='file:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))){F.connectAuthEmulator(auth,'http://'+emu+':9099',{disableWarnings:true});F.connectFirestoreEmulator(db,emu,8080)}
     Object.assign(ACC,{F,auth,db});
-    F.onAuthStateChanged(auth,u=>accUser(u));
+    let q=Promise.resolve();F.onAuthStateChanged(auth,u=>{q=q.then(()=>accUser(u)).catch(e=>console.warn(e))}); // one at a time
     F.getRedirectResult(auth).catch(accErr);
     return F;
   })();
   fbLoading.catch(()=>{fbLoading=null});
   return fbLoading;
 }
+/* An account is required. Each account has its own notebooks on the device:
+   the first account that signs in here keeps the notebooks that were already on the device (prefix v2:),
+   any other account gets its own (prefix v2u:<uid>:). Signing out hides them until that account signs in again. */
+const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+async function openLibrary(uid){
+  if(ACC.libUid===uid)return;
+  await closeLibrary();
+  let owner=lsGet('sb-owner');if(!owner){lsSet('sb-owner',uid);owner=uid}
+  P2=owner===uid?'v2:':'v2u:'+uid+':';
+  snaps=new Map();hcache.clear();ACC.libUid=uid;lsSet('sb-last-uid',uid);
+  await initData(P2==='v2:');
+}
+async function closeLibrary(){
+  if(!ACC.libUid)return;
+  try{if(!$('#ed').classList.contains('hidden')){endFloat();await savesDone()}}catch(e){}
+  await saveNow();
+  closeSheet();
+  ['#ed','#bv','#ov'].forEach(q=>{const e=$(q);if(e)e.classList.add('hidden')});$('#shelf').classList.remove('hidden');
+  cur=null;data=[];snaps=new Map();hcache.clear();ACC.libUid=null;renderShelf();
+}
+function showGate(){ACC.gate=true;const a=$('#acct');a.classList.add('gate');a.classList.remove('hidden');renderAcc()}
+function hideGate(){ACC.gate=false;const a=$('#acct');a.classList.remove('gate');a.classList.add('hidden')}
+async function startApp(){
+  showGate();
+  try{await fbLoad()}
+  catch(e){
+    // offline: whoever used the app here last can keep working; sign-in is checked when back online
+    const last=lsGet('sb-last-uid');
+    if(last){await openLibrary(last);hideGate();toast('You’re offline. Your notebooks are here; sign-in is checked when you’re back online.')}
+    else{ACC.offline=true;renderAcc()}
+  }
+}
+window.addEventListener('online',()=>{if(!ACC.F){ACC.offline=false;fbLoad().then(renderAcc).catch(()=>{ACC.offline=true;renderAcc()})}});
 async function accUser(u){
   if(ACC.unPro){ACC.unPro();ACC.unPro=null}
   syncStop();
-  ACC.user=u||null;ACC.claimPro=false;ACC.docPro=false;ACC.err='';
-  try{localStorage.setItem('sb-acct',u?'1':'')}catch(e){}
+  ACC.user=u||null;ACC.claimPro=false;ACC.docPro=false;ACC.err='';ACC.offline=false;
+  if(u){await openLibrary(u.uid);hideGate()}
+  else{lsSet('sb-last-uid','');ACC.mode='in';await closeLibrary();showGate()}
   if(u){
     try{const t=await u.getIdTokenResult();ACC.claimPro=t.claims.stripeRole==='pro'}catch(e){}
     const F=ACC.F;
@@ -2349,12 +2387,14 @@ function renderAcc(){
   const box=$('#acc-body');if(!box)return;
   const b=$('#accb');if(b){b.classList.toggle('on',!!ACC.user);b.title=ACC.user?'Account: '+(ACC.user.email||''):'Sign in'}
   if($('#acct').classList.contains('hidden'))return;
+  $('#acctt').textContent=ACC.gate?'Welcome to Foliet':'Your account';
   const keep={em:$('#a-em')&&$('#a-em').value,pw:$('#a-pw')&&$('#a-pw').value,f:document.activeElement&&document.activeElement.id};
   const u=ACC.user;box.innerHTML='';
   const p=(t,c)=>{const e=document.createElement('p');if(c)e.className=c;e.textContent=t;box.append(e);return e};
+  if(ACC.offline){p('You’re offline. Connect to the internet to sign in.');const r=document.createElement('button');r.className='btn';r.textContent='Try again';r.onclick=()=>{ACC.offline=false;renderAcc();startApp()};box.append(r);return}
   if(!ACC.F){p('Connecting…','muted');return}
   if(!u){
-    p('Sign in to keep your notebooks in the cloud and open them on any device. Cloud sync is part of Pro.');
+    p(ACC.gate?'Sign in or create a free account to start. With Pro, your notebooks also sync across your devices.':'Sign in to keep your notebooks in the cloud and open them on any device. Cloud sync is part of Pro.');
     const g=document.createElement('button');g.className='ib gbtn';g.innerHTML=GICON+'<span>Continue with Google</span>';g.onclick=accGoogle;box.append(g);
     p('or','or');
     const up=ACC.mode==='up';
@@ -2368,7 +2408,7 @@ function renderAcc(){
     l.append(a1);
     if(!up){const a2=document.createElement('a');a2.href='#';a2.textContent='Forgot password?';a2.onclick=e=>{e.preventDefault();accReset()};l.append(' · ',a2)}
     box.append(l);
-    p('Your notebooks always stay on this device too. We only keep your email and, with Pro, a copy of your notebooks.','muted');
+    p('Your notebooks are saved on this device. We only keep your email and, with Pro, a copy of your notebooks in the cloud.','muted');
     return;
   }
   p('Signed in as '+(u.email||u.displayName||'you'));
@@ -2380,7 +2420,7 @@ function renderAcc(){
   if(ACC.pro){const s=document.createElement('button');s.className='ib';s.textContent='Sync now';s.onclick=()=>syncRun();acts.append(s)}
   const o=document.createElement('button');o.className='ib';o.textContent='Sign out';o.onclick=accOut;acts.append(o);
   box.append(acts);
-  p('Signing out keeps the notebooks on this device.','muted');
+  p('After you sign out, your notebooks stay saved on this device for when you sign in again.','muted');
 }
 async function accGoogle(){
   ACC.msg='';const F=ACC.F,pr=new F.GoogleAuthProvider();pr.setCustomParameters({prompt:'select_account'});
@@ -2399,14 +2439,12 @@ async function accReset(){
   try{await ACC.F.sendPasswordResetEmail(ACC.auth,em);ACC.msg='If there is an account for '+em+', we sent it a link to set a new password.'}catch(e){accErr(e)}
   renderAcc();
 }
-async function accOut(){if(ACC.pro)await syncRun();await ACC.F.signOut(ACC.auth);ACC.msg='';toast('Signed out. Your notebooks are still on this device.')}
+async function accOut(){if(ACC.pro)await syncRun();$('#acct').classList.add('hidden');await ACC.F.signOut(ACC.auth);ACC.msg=''}
 function openAcc(){$('#acct').classList.remove('hidden');renderAcc();fbLoad().then(renderAcc).catch(()=>{$('#acc-body').textContent='Can’t reach the sign-in service. Check your internet connection.'})}
 function initAcc(){
   $('#accb').onclick=openAcc;
-  $('#acc-x').onclick=()=>$('#acct').classList.add('hidden');
-  $('#acct').addEventListener('click',e=>{if(e.target===$('#acct'))$('#acct').classList.add('hidden')});
-  let was='';try{was=localStorage.getItem('sb-acct')||''}catch(e){}
-  if(was)setTimeout(()=>fbLoad().catch(()=>{}),600);
+  $('#acc-x').onclick=()=>{if(!ACC.gate)$('#acct').classList.add('hidden')};
+  $('#acct').addEventListener('click',e=>{if(e.target===$('#acct')&&!ACC.gate)$('#acct').classList.add('hidden')});
 }
 
 /* Backup: one .json file with every notebook. Restore adds the notebooks from such a file. */
@@ -2811,7 +2849,7 @@ function initExport(){
     }catch(e){console.error(e);busy(0,'Export failed. Please try again.')}
   };
 }
-initExport();initObar();initTools();initKb();initAcc();initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');initData();
+initExport();initObar();initTools();initKb();initAcc();initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');startApp();
 </script>
 </body>
 </html>
