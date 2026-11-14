@@ -1,7 +1,8 @@
-# Foliet – regulile proiectului
+# Foliet Sketchbook – regulile proiectului
 
-**Foliet** (fostul nume de lucru: Sketchbook) este o aplicație de desen în browser, cu caiete 3D (landing + aplicație).
-Găzduire: **GitHub Pages până la lansare** (`https://fishfishgg.github.io/Sketchbook/`, aplicația la `app/`), apoi **Netlify** (`netlify.toml` e pregătit). La mutare: schimbă `og:url`/`og:image` din `index.html` și adaugă domeniul în Firebase → Authentication → Authorized domains. Repo-ul se numește încă `Sketchbook`.
+**Foliet Sketchbook** (marca: **Foliet**, descriptorul „Sketchbook” stă mereu lângă nume) este o aplicație de desen în browser, cu caiete 3D (landing + aplicație). Acum suntem în **beta**; lansarea publică = versiunea **1.0**.
+- Titluri: landing „Foliet Sketchbook – a digital sketchbook that opens in your browser”; în aplicație tab-ul arată „Foliet Sketchbook”, iar cu un caiet deschis „<nume caiet> – Foliet Sketchbook” (`docTitle()`). Logo-ul de pe landing: „Foliet” + mic „Sketchbook”.
+Găzduire: **GitHub Pages până la 1.0** (`https://fishfishgg.github.io/Sketchbook/`, aplicația la `app/`), apoi **Netlify** (`netlify.toml` e pregătit). La mutare schimbă adresa în: `index.html` (canonical, `og:url`, `og:image`, `twitter:image`, JSON-LD), `robots.txt`, `sitemap.xml`; și adaugă domeniul în Firebase → Authentication → Authorized domains. Repo-ul se numește încă `Sketchbook`.
 
 ## Cum lucrezi cu mine (utilizatorul)
 - Răspunde-mi mereu în **română**, simplu; nu sunt programator.
@@ -20,9 +21,11 @@ app/vendor/pdfjs/          pdf.js 3.11.174 pentru importul PDF (local, offline)
 app/vendor/firebase.js     Firebase JS SDK 11.10.0 (app + auth + firestore), un singur fișier (window.FB)
 firebase/firestore.rules   regulile de securitate Firestore (se lipesc în consola Firebase)
 firebase/storage.rules     Storage blocat complet (nu-l folosim)
+firebase/*-test.js         teste cu simulatorul Firebase (vezi mai jos)
 og.png                     imaginea de previzualizare a site-ului (link-uri distribuite)
+robots.txt, sitemap.xml    pentru motoarele de căutare (aplicația app/ are noindex; landing-ul e indexat)
 netlify.toml               configurarea Netlify (fără build, publică rădăcina)
-.github/workflows/pages.yml  publică pe GitHub Pages la push pe main (doar index.html, og.png, .nojekyll, app/)
+.github/workflows/pages.yml  publică pe GitHub Pages la push pe main (doar index.html, og.png, robots.txt, sitemap.xml, .nojekyll, app/)
 ```
 - Butoanele din landing care deschid aplicația duc la `app/`.
 - Folosește căi relative (fără `/` la început): site-ul merge și la `/` (Netlify), și la `/Sketchbook/` (GitHub Pages).
@@ -41,17 +44,23 @@ netlify.toml               configurarea Netlify (fără build, publică rădăci
   - La ieșirea din aplicație se salvează imediat (`saveOnLeave()`). Settings are backup/restaurare (.json) și cere stocare permanentă.
 - Undo: ultimul pas e o imagine întreagă, cei vechi doar dreptunghiul schimbat (`histAdd()`), până la 60 de pași / 60 MB.
 - **Updates** (Settings → What’s new): lista `UPDATES` din `app/index.html`. Acum suntem în **beta** (`APP_VER='Beta'`) și lista e **goală**. Începând cu **versiunea 1.0**, la fiecare lansare: pune `APP_VER` la versiunea nouă și adaugă **sus** în `UPDATES` `{v:'1.0', date:'AAAA-LL-ZZ', items:['…']}` (texte în engleză). O versiune nouă aprinde un punct roșu pe butonul Settings până e citită.
+- **Caietul de bun venit** (`makeWelcome()`): orice bibliotecă nouă începe cu el – copertă + 6 pagini care prezintă funcțiile (unelte, fonturi, autocolante, stiluri de pagină, blocare, backup, Pro). Are `b.welcome=1`, **nu intră în limita Free** (`ownBooks()`), iar cât timp nu e editat (`b.u===b.wu`) un dispozitiv nou îl lasă deoparte în favoarea celui din cloud. Când adaugi o funcție importantă, adaug-o și aici, și pe landing.
+- **Paginile noi** („New pages”): fereastra `#npd` întreabă cum arată (ca ultima pagină, goale, cu linii, pătrățele, puncte); culoarea hârtiei rămâne.
+- **Caiete blocate** (gratuit, pe toate planurile): `b.lock={t:'pin'|'pw',s,i,h}` (PBKDF2), se sincronizează cu caietul. Butonul lacăt din bara caietului (`lockSettings()`); deschiderea trece prin `unlockBook()`. Pe raft, coperta unui caiet blocat nu-și arată desenul, iar paginile lui nu apar în căutare. La ieșirea în fundal se blochează din nou. **Doar pe Android** există și amprenta (WebAuthn cu cititorul telefonului, credențial doar pe acel telefon: `sb-bio:<uid>`, `sb-bioon:<uid>`). „Forgot the PIN?” → confirmă contul (parola sau Google) → lacătul se scoate. E o protecție în aplicație, nu criptarea fișierelor – nu promite mai mult de atât.
 - Planul Pro nu se poate cumpăra încă. `plan` = 'pro' dacă contul are Pro (real) sau, doar local, cu `app/?demo=pro` (`?demo=free` ca să revii). Demo-ul nu pornește sincronizarea.
 
 ## Conturi și cloud (Firebase, proiect `sketchbook-b1de1`)
 - **Contul e obligatoriu.** Aplicația pornește pe ecranul de logare (`startApp()` → `showGate()`, `#acct.gate`); Google + email/parolă. Prețurile/reducerea: anualul economisește **37%** – nu scrie alt procent fără să schimbi prețurile (și să mă întrebi).
 - Fiecare cont are caietele lui pe dispozitiv (`openLibrary(uid)`): primul cont logat pe dispozitiv (`sb-owner`) preia caietele existente (prefix `v2:`), celelalte au prefix `v2u:<uid>:`. La deconectare caietele se ascund (`closeLibrary()`), nu se șterg.
 - Offline: cine a fost logat ultima dată (`sb-last-uid`) poate lucra și fără internet; un dispozitiv nou are nevoie de internet pentru logare.
-- Pro real = custom claim `stripeRole == 'pro'` (viitoarea extensie Stripe) **sau** documentul `pro/{uid}` în Firestore (creat de mână în consolă, pentru teste/prieteni). Regulile nu permit nimănui să-și dea singur Pro.
+- Pro real = custom claim `stripeRole == 'pro'` (viitoarea extensie Stripe) **sau** documentul `pro/{uid}` = `{by, since, days, code?}` (`days` 0/lipsă = pentru totdeauna; Pro din cod/admin expiră singur – `proActiveDoc()`, iar regulile verifică la fel). Se creează din consolă, din panoul de admin sau prin cod promoțional. Regulile nu permit nimănui să-și dea singur Pro.
+- **Coduri promoționale**: `codes/{COD}` = `{kind:'pro', days, max, used, active, note}`. Utilizatorul îl scrie în fereastra de cont (sau din „Have a promo code?” din fereastra Pro); `redeemCode()` face o tranzacție: `pro/{uid}` + `codes.used+1` + `redeem/{uid_COD}` – regulile verifică totul (cod activ, locuri libere, aceleași zile, o singură folosire de persoană). **Codurile de reducere** (ex. prima lună/primul an mai ieftin) se fac în Stripe la pasul cu plățile.
+- **Panou de admin** (`openAdmin()`, butonul „Admin panel” din cont): pentru conturile din `admins/{uid}` (create de mână în consolă). Arată statistici (conturi, noi/active săptămâna asta, Pro), creează/oprește/șterge coduri, dă/scoate Pro după email, ultimele conturi. Statisticile vin din `profiles/{uid}` = `{email,name,via,created,seen}` (scris de fiecare cont, cel mult de 2 ori pe zi, `touchProfile()`). Adminul **nu** vede caietele nimănui. Venitul apare după Stripe.
 - Sincronizare (doar Pro): `users/{uid}` are manifestul `m.{record} = {h, n}`; `users/{uid}/r/{record}` (+ `~~1`, `~~2`…) conține înregistrarea ca JSON, în bucăți de 300.000 caractere. Înregistrările sunt aceleași ca local (`idx`, `b:<id>`, `p:<id>:<i>`, cu `:` → `~`).
 - `syncOnce()` compară 3 hash-uri (dispozitiv, cloud, ultima sincronizare salvată în IDB la `sync:<uid>`): schimbat doar aici → trimite; doar în cloud → aduce; pe ambele → câștigă dispozitivul. Ordinea caietelor se combină. Caietul deschis se actualizează după ce e închis.
 - Doar Pro poate scrie în cloud (protecție de costuri). Dacă Pro expiră, utilizatorul își poate încă citi datele.
-- Teste: `firebase/sync-test.js` (două dispozitive) și `firebase/gate-test.js` (logare obligatorie, conturi separate, offline), cu simulatorul Firebase; aplicația se leagă de simulator cu `app/?emu=127.0.0.1` (doar pe localhost).
+- Teste cu simulatorul Firebase (în `firebase/`, `npx firebase emulators:exec --only auth,firestore --project sketchbook-b1de1 "node <test>.js"`): `sync-test.js` (două dispozitive), `gate-test.js` (logare obligatorie, conturi separate, offline), `features-test.js` (caiet de bun venit, coduri, reguli, admin, Pro care expiră, blocare, pagini noi), `fingerprint-test.js` (amprenta pe Android, cu cititor virtual). Aplicația se leagă de simulator cu `app/?emu=127.0.0.1` (doar pe localhost). După orice schimbare la reguli/conturi/sincronizare, rulează-le pe toate.
+- **Regulile din `firebase/firestore.rules` trebuie lipite în consola Firebase de fiecare dată când se schimbă** – spune-i utilizatorului.
 
 ## Planuri
 | | Free | Pro |
@@ -59,6 +68,7 @@ netlify.toml               configurarea Netlify (fără build, publică rădăci
 | Caiete | 2 | nelimitat |
 | Pagini / caiet | 20 | nelimitat |
 | Straturi / pagină | 2 | 8 |
+| Caiete blocate (PIN/parolă, amprentă pe Android) | da | da |
 | Import PDF | – | da |
 | Export PDF / PNG | – | da |
 
@@ -66,6 +76,6 @@ Prețuri Pro: **€3.99 / lună** și **€29.99 / an**. **Nu le schimba fără 
 
 ## Urmează
 1. ~~Conturi + cloud~~ (gata: Firebase)
-2. Pagini legale (GDPR): politică de confidențialitate + termeni – **înainte de lansarea conturilor**
+2. Pagini legale (GDPR): politică de confidențialitate + termeni – **înainte de lansarea conturilor** (menționează: email + profil pentru statistici, Firebase/Google ca procesator, cloud doar pentru Pro, ștergerea contului)
 3. Plăți (Stripe, prin extensia „Run Payments with Stripe” pentru Firebase → setează `stripeRole`)
 4. Publicare Android prin PWA

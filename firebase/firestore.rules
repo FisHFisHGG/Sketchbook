@@ -4,17 +4,40 @@ rules_version = '2';
 //
 // users/{uid}            manifest of a user's cloud copy: m.{record} = {h: hash, n: chunks}
 // users/{uid}/r/{rec}    one notebook record (or a chunk of it): {h, n, i, d}
-// pro/{uid}              exists = this user has Pro (created by you in the console, for now)
+// pro/{uid}              Pro for this user: {by, since, days, code?}. days 0 / missing = forever.
+//                        Made by you in the console, from the admin panel, or by redeeming a code.
+// codes/{CODE}           promo codes: {kind:'pro', days, max, used, active, note, created}
+// redeem/{uid_CODE}      who used which code (one use per person per code)
+// profiles/{uid}         {email, name, via, created, seen} – for the admin panel's statistics
+// admins/{uid}           exists = admin (made by hand in the console)
 //
-// Only the owner can read their data. Only Pro users can write (so free users can't create costs).
+// Only the owner can read their notebooks. Only Pro users can write them (so free users can't create costs).
 // If Pro ends, the owner can still read (download) what they saved.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function owner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function proActive(p) {
+      return !('days' in p) || p.days == 0 || p.since + duration.value(p.days, 'd') > request.time;
+    }
     function isPro() {
+      let path = /databases/$(database)/documents/pro/$(request.auth.uid);
       return signedIn() && (request.auth.token.get('stripeRole', '') == 'pro'
-        || exists(/databases/$(database)/documents/pro/$(request.auth.uid)));
+        || (exists(path) && proActive(get(path).data)));
+    }
+    // a code being redeemed in this same write (pro + codes + redeem together)
+    function validRedeem(uid) {
+      let d = request.resource.data;
+      let cp = /databases/$(database)/documents/codes/$(d.code);
+      let c = get(cp).data;
+      return d.keys().hasOnly(['code', 'by', 'since', 'days'])
+        && d.code is string && d.code.matches('^[A-Z0-9-]{4,24}$')
+        && d.by == 'code' && d.since == request.time
+        && c.active == true && c.kind == 'pro' && c.used < c.max && d.days == c.days
+        && getAfter(cp).data.used == c.used + 1
+        && !exists(/databases/$(database)/documents/redeem/$(uid + '_' + d.code))
+        && existsAfter(/databases/$(database)/documents/redeem/$(uid + '_' + d.code));
     }
 
     match /users/{uid} {
@@ -35,8 +58,51 @@ service cloud.firestore {
     }
 
     match /pro/{uid} {
-      allow read: if owner(uid);
-      allow write: if false; // only from the console (later: from the Stripe extension)
+      allow get: if owner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow write: if isAdmin();
+      allow create: if owner(uid) && validRedeem(uid);
+      allow update: if owner(uid) && validRedeem(uid) && !proActive(resource.data);
+    }
+
+    match /codes/{code} {
+      allow get: if signedIn();
+      allow list, create, delete: if isAdmin();
+      allow update: if isAdmin()
+        || (signedIn()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used'])
+          && request.resource.data.used == resource.data.used + 1
+          && !exists(/databases/$(database)/documents/redeem/$(request.auth.uid + '_' + code))
+          && existsAfter(/databases/$(database)/documents/redeem/$(request.auth.uid + '_' + code))
+          && getAfter(/databases/$(database)/documents/pro/$(request.auth.uid)).data.code == code);
+    }
+
+    match /redeem/{rid} {
+      allow get, list: if isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'code', 'at'])
+        && request.resource.data.uid == request.auth.uid
+        && rid == request.auth.uid + '_' + request.resource.data.code
+        && request.resource.data.at == request.time
+        && getAfter(/databases/$(database)/documents/pro/$(request.auth.uid)).data.code == request.resource.data.code;
+    }
+
+    match /profiles/{uid} {
+      allow get: if owner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if owner(uid)
+        && request.resource.data.keys().hasOnly(['email', 'name', 'via', 'created', 'seen'])
+        && request.resource.data.created == request.time && request.resource.data.seen == request.time
+        && request.resource.data.email == request.auth.token.get('email', '');
+      allow update: if owner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['seen', 'name', 'email', 'via'])
+        && request.resource.data.seen == request.time
+        && request.resource.data.email == request.auth.token.get('email', '');
+    }
+
+    match /admins/{uid} {
+      allow get: if owner(uid);
+      allow write: if false; // only from the console
     }
 
     match /{other=**} {

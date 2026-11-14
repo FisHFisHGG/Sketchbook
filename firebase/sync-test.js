@@ -37,7 +37,7 @@ async function grantPro(uid){
   const A=await device(b,'A');
   await signIn(A,'ana@example.com','secret123',true);
   // A works on the free plan first
-  await A.evaluate(()=>{data[0].title='Trip';data[0].pages=[null,null,null];data[0].objs=[[{k:'note',c:'#ffe14d',t:'pack',x:1,y:1,w:9,h:9,f:40,r:0}]];persist()});
+  await A.evaluate(()=>{const t=mk('Trip',0);t.pages=[null,null,null];t.objs=[[{k:'note',c:'#ffe14d',t:'pack',x:1,y:1,w:9,h:9,f:40,r:0}]];data=[ens(t)];persist();renderShelf()}); // replaces the welcome notebook
   await A.waitForTimeout(500);
   ok(await A.evaluate(()=>ACC.user.email)==='ana@example.com','A: account created and signed in');
   ok(await A.evaluate(()=>!ACC.pro&&document.querySelector('#plan').textContent==='Free plan'),'A: free plan, no sync');

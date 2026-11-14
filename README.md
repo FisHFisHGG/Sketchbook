@@ -1,4 +1,4 @@
-# Foliet
+# Foliet Sketchbook
 
 Caiete realiste în browser: desen, scris și planificare, cu pagini care se întorc ca la un caiet adevărat.
 
@@ -16,6 +16,7 @@ app/vendor/firebase.js     Firebase (conturi + cloud)
 firebase/                  regulile de securitate Firebase
 netlify.toml               configurarea Netlify
 og.png                     imaginea afișată când distribui linkul
+robots.txt, sitemap.xml    pentru motoarele de căutare
 .nojekyll                  îi spune lui GitHub Pages să publice fișierele exact cum sunt
 .github/workflows/pages.yml  publicarea automată
 CLAUDE.md                  regulile proiectului

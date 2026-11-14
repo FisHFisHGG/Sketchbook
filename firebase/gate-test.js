@@ -40,7 +40,7 @@ const URL0='http://127.0.0.1:5175/app/?emu=127.0.0.1';
   await out();
   ok(await gate()&&await p.evaluate(()=>data.length)===0,'after sign out: sign-in screen, notebooks hidden');
   await sign('second@example.com',true);
-  ok(await titles()==='Sketches','second account on the same device sees only its own notebooks ('+await titles()+')');
+  ok(await titles()==='Welcome to Foliet','second account on the same device sees only its own notebooks ('+await titles()+')');
   await p.evaluate(()=>{data[0].title='Bob notes';persist()});await p.waitForTimeout(600);
   await out();
   await sign('first@example.com',false);
