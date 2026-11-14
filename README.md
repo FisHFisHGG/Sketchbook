@@ -23,7 +23,7 @@ CLAUDE.md                  regulile proiectului
 
 ## Publicare
 
-Site-ul e găzduit pe **Netlify** (fără build: Netlify publică rădăcina repo-ului, vezi `netlify.toml`).
-Există și o copie pe GitHub Pages (`.github/workflows/pages.yml`).
+Până la lansare, site-ul e pe **GitHub Pages**: `https://fishfishgg.github.io/Sketchbook/` (se publică singur la fiecare push pe `main`, vezi `.github/workflows/pages.yml`; Settings → Pages → Source: **GitHub Actions**).
+La lansare se mută pe **Netlify** (fără build, vezi `netlify.toml`).
 
 Datele utilizatorilor stau deocamdată doar pe dispozitivul lor (IndexedDB). Din Settings pot face o copie de siguranță (.json). Cu un cont Pro, caietele se sincronizează și în cloud (Firebase). Plățile urmează.

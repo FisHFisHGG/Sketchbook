@@ -1,7 +1,7 @@
 # Foliet – regulile proiectului
 
 **Foliet** (fostul nume de lucru: Sketchbook) este o aplicație de desen în browser, cu caiete 3D (landing + aplicație).
-Găzduire: **Netlify** (landing la `/`, aplicația la `/app/`). Repo-ul se numește încă `Sketchbook`.
+Găzduire: **GitHub Pages până la lansare** (`https://fishfishgg.github.io/Sketchbook/`, aplicația la `app/`), apoi **Netlify** (`netlify.toml` e pregătit). La mutare: schimbă `og:url`/`og:image` din `index.html` și adaugă domeniul în Firebase → Authentication → Authorized domains. Repo-ul se numește încă `Sketchbook`.
 
 ## Cum lucrezi cu mine (utilizatorul)
 - Răspunde-mi mereu în **română**, simplu; nu sunt programator.
@@ -22,7 +22,7 @@ firebase/firestore.rules   regulile de securitate Firestore (se lipesc în conso
 firebase/storage.rules     Storage blocat complet (nu-l folosim)
 og.png                     imaginea de previzualizare a site-ului (link-uri distribuite)
 netlify.toml               configurarea Netlify (fără build, publică rădăcina)
-.github/workflows/pages.yml  publică și pe GitHub Pages la push pe main (copie de test)
+.github/workflows/pages.yml  publică pe GitHub Pages la push pe main (doar index.html, og.png, .nojekyll, app/)
 ```
 - Butoanele din landing care deschid aplicația duc la `app/`.
 - Folosește căi relative (fără `/` la început): site-ul merge și la `/` (Netlify), și la `/Sketchbook/` (GitHub Pages).
