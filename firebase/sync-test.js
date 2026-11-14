@@ -18,7 +18,7 @@ async function device(b,name){
 }
 const signIn=async(p,em,pw,create)=>{
   await p.waitForSelector('#a-em',{timeout:15000}); // the app opens on the sign-in screen
-  if(create){await p.click('text=New here? Create an account');await p.waitForSelector('text=Create account')}
+  if(create){await p.click('.btn2');await p.waitForSelector('text=Sign in instead')}
   await p.fill('#a-em',em);await p.fill('#a-pw',pw);await p.click('#acc-body button[type=submit]');
   try{await p.waitForFunction(()=>ACC.user,null,{timeout:15000})}catch(e){console.log('SIGNIN DEBUG:',await p.evaluate(()=>document.querySelector('#acc-body').innerText.slice(0,400)),p.errs);throw e}
   await p.waitForFunction(()=>ACC.libUid&&document.querySelector('#acct').classList.contains('hidden'),null,{timeout:15000});

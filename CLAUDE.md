@@ -40,6 +40,7 @@ netlify.toml               configurarea Netlify (fără build, publică rădăci
   - Proprietățile care încep cu `_` nu se salvează.
   - La ieșirea din aplicație se salvează imediat (`saveOnLeave()`). Settings are backup/restaurare (.json) și cere stocare permanentă.
 - Undo: ultimul pas e o imagine întreagă, cei vechi doar dreptunghiul schimbat (`histAdd()`), până la 60 de pași / 60 MB.
+- **Updates** (Settings → What’s new): lista `UPDATES` din `app/index.html`. Acum suntem în **beta** (`APP_VER='Beta'`) și lista e **goală**. Începând cu **versiunea 1.0**, la fiecare lansare: pune `APP_VER` la versiunea nouă și adaugă **sus** în `UPDATES` `{v:'1.0', date:'AAAA-LL-ZZ', items:['…']}` (texte în engleză). O versiune nouă aprinde un punct roșu pe butonul Settings până e citită.
 - Planul Pro nu se poate cumpăra încă. `plan` = 'pro' dacă contul are Pro (real) sau, doar local, cu `app/?demo=pro` (`?demo=free` ca să revii). Demo-ul nu pornește sincronizarea.
 
 ## Conturi și cloud (Firebase, proiect `sketchbook-b1de1`)

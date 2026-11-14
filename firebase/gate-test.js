@@ -19,7 +19,7 @@ const URL0='http://127.0.0.1:5175/app/?emu=127.0.0.1';
   const titles=()=>p.evaluate(()=>data.map(b=>b.title).sort().join(', '));
   const sign=async(em,create)=>{
     await p.waitForSelector('#a-em',{timeout:15000});
-    if(create){await p.click('text=New here? Create an account');await p.waitForSelector('text=Create account')}
+    if(create){await p.click('.btn2');await p.waitForSelector('text=Sign in instead')}
     await p.fill('#a-em',em);await p.fill('#a-pw','secret123');await p.click('#acc-body button[type=submit]');
     try{await p.waitForFunction(()=>ACC.user&&ACC.libUid&&document.querySelector('#acct').classList.contains('hidden'),null,{timeout:15000})}
     catch(e){console.log('DEBUG',await p.evaluate(()=>({u:ACC.user&&ACC.user.email,lib:ACC.libUid,gate:ACC.gate,body:document.querySelector('#acc-body').innerText.slice(0,300)})),errs);throw e}

@@ -328,7 +328,11 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 #acct.gate{background:var(--desk);z-index:90}#acct.gate #acc-x{display:none}
 #acct .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(400px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #acct h2{margin:0;font-size:1.3em}#acct p{margin:0 0 12px}#acct .muted{opacity:.7;font-size:.88em}#acct .or{text-align:center;opacity:.6;margin:12px 0}
-#acct .amsg{color:#b3402f;font-weight:600}#acct .srow>span{width:96px}
+#acct .amsg{color:#b3402f;font-weight:600}
+#acct .alink{display:block;margin:-4px auto 10px;padding:6px 10px;background:none;border:0;color:var(--accent);font-size:.95em;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+#acct .sep{text-align:center;opacity:.75;margin:14px 0 8px;font-size:.92em}
+.btn2{display:block;width:100%;min-height:44px;margin:0 0 14px;background:transparent;color:var(--ink);border:2px solid var(--ink);border-radius:999px;font-weight:600;padding:10px 18px}
+.btn2:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}#acct .srow>span{width:96px}
 .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:44px;background:#fff!important;color:#1f1f1f!important;border:1px solid #dadce0!important;font-weight:600}
 .af label{display:block;margin:0 0 10px;font-size:.9em}
 .af input{display:block;width:100%;margin-top:4px;font:inherit;color:var(--ink);background:var(--desk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
@@ -336,6 +340,13 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 #accb{position:relative}#accb.on::after{content:"";position:absolute;right:3px;top:3px;width:9px;height:9px;border-radius:50%;background:#2e9d5b;border:2px solid var(--bar)}
 #set{z-index:56;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
 #set .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#upd{position:fixed;inset:0;z-index:58;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
+#upd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(440px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#upd h2{margin:0;font-size:1.3em}#updv{opacity:.7;margin:4px 0 14px}
+.uv{border-top:1px solid var(--line);padding:12px 0}.uv h3{margin:0;font-size:1.05em}.uv small{opacity:.65}.uv ul{margin:8px 0 0;padding-left:20px;line-height:1.55}
+.uempty{opacity:.75;padding:18px 0 6px;text-align:center}
+.ndot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0453a;margin-left:6px;vertical-align:middle}
+#setb{position:relative}#setb.new::after{content:"";position:absolute;right:3px;top:3px;width:9px;height:9px;border-radius:50%;background:#d0453a;border:2px solid var(--bar)}
 #set h2{margin:0 0 2px;font-size:1.3em}#set p{margin:0 0 14px;opacity:.7}
 a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .upl{margin:4px 0 10px;padding-left:20px;line-height:1.6}.upp{margin:0 0 6px}.upn{opacity:.7;font-size:.9em;margin:0 0 14px}
@@ -521,6 +532,11 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <div class="sh-top"><h2 id="acctt">Your account</h2><button class="ib i" id="acc-x" aria-label="Close">✕</button></div>
   <div id="acc-body"></div>
 </div></div>
+<div id="upd" class="hidden" role="dialog" aria-modal="true" aria-labelledby="updt"><div class="card">
+  <div class="sh-top"><h2 id="updt">Updates</h2><button class="ib i" id="upd-x" aria-label="Close">✕</button></div>
+  <p id="updv"></p>
+  <div id="updl"></div>
+</div></div>
 <div id="set" class="hidden" role="dialog" aria-modal="true" aria-labelledby="sett"><div class="card">
   <h2 id="sett">Settings</h2><p>Make the app feel like yours.</p>
   <div class="srow"><span>Theme</span><div class="seg2" id="s-theme"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div></div>
@@ -528,6 +544,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <label class="chk" style="margin:14px 0"><input type="checkbox" id="s-snd"> Page-turn sound</label>
   <div class="srow"><span>Tour</span><button class="ib" id="s-tour">Show the tour again</button></div>
   <div class="srow"><span>Help</span><button class="ib" id="s-help">Shortcuts &amp; gestures</button></div>
+  <div class="srow"><span>Updates</span><button class="ib" id="s-upd">What’s new<i class="ndot hidden" id="s-updd"></i></button></div>
   <div class="srow"><span>Backup</span><div class="grp" style="flex-wrap:wrap;gap:6px"><button class="ib" id="s-bak">Back up all notebooks</button><button class="ib" id="s-res">Restore from a backup</button></div></div>
   <small id="s-store" style="display:block;opacity:.7;margin:-4px 0 6px 96px"></small>
   <input type="file" id="resf" accept=".json,application/json" hidden>
@@ -2237,9 +2254,9 @@ window.addEventListener('online',()=>{if(!ACC.F){ACC.offline=false;fbLoad().then
 async function accUser(u){
   if(ACC.unPro){ACC.unPro();ACC.unPro=null}
   syncStop();
-  ACC.user=u||null;ACC.claimPro=false;ACC.docPro=false;ACC.err='';ACC.offline=false;
+  const had=ACC.user;ACC.user=u||null;ACC.claimPro=false;ACC.docPro=false;ACC.err='';ACC.offline=false;
   if(u){await openLibrary(u.uid);hideGate()}
-  else{lsSet('sb-last-uid','');ACC.mode='in';await closeLibrary();showGate()}
+  else{lsSet('sb-last-uid','');if(had)ACC.mode='in';await closeLibrary();showGate()} // after signing out, show "Sign in" again
   if(u){
     try{const t=await u.getIdTokenResult();ACC.claimPro=t.claims.stripeRole==='pro'}catch(e){}
     const F=ACC.F;
@@ -2402,12 +2419,11 @@ function renderAcc(){
     f.innerHTML='<label>Email<input type="email" id="a-em" autocomplete="email" required></label><label>Password<input type="password" id="a-pw" minlength="6" required autocomplete="'+(up?'new-password':'current-password')+'"></label><button class="btn" type="submit">'+(up?'Create account':'Sign in')+'</button>';
     f.onsubmit=e=>{e.preventDefault();accEmail(up)};box.append(f);
     if(keep.em)$('#a-em').value=keep.em;if(keep.pw)$('#a-pw').value=keep.pw;if(keep.f==='a-em'||keep.f==='a-pw')$('#'+keep.f).focus(); // typing survives a refresh
+    if(!up){const fp=document.createElement('button');fp.type='button';fp.className='alink';fp.textContent='Forgot password?';fp.onclick=accReset;box.append(fp)}
     if(ACC.msg){const m=p(ACC.msg,'amsg');m.setAttribute('role','alert')}
-    const l=document.createElement('p');l.className='muted';
-    const a1=document.createElement('a');a1.href='#';a1.textContent=up?'I already have an account':'New here? Create an account';a1.onclick=e=>{e.preventDefault();ACC.mode=up?'in':'up';ACC.msg='';renderAcc()};
-    l.append(a1);
-    if(!up){const a2=document.createElement('a');a2.href='#';a2.textContent='Forgot password?';a2.onclick=e=>{e.preventDefault();accReset()};l.append(' · ',a2)}
-    box.append(l);
+    p(up?'Already have an account?':'New to Foliet?','sep');
+    const sw=document.createElement('button');sw.type='button';sw.className='btn2';sw.textContent=up?'Sign in instead':'Create a free account';
+    sw.onclick=()=>{ACC.mode=up?'in':'up';ACC.msg='';renderAcc()};box.append(sw);
     p('Your notebooks are saved on this device. We only keep your email and, with Pro, a copy of your notebooks in the cloud.','muted');
     return;
   }
@@ -2447,6 +2463,32 @@ function initAcc(){
   $('#acct').addEventListener('click',e=>{if(e.target===$('#acct')&&!ACC.gate)$('#acct').classList.add('hidden')});
 }
 
+/* Updates ("What's new" in Settings). Listed only from version 1.0 on – until then the list stays empty.
+   For every release from 1.0: add an entry at the TOP, e.g.
+   {v:'1.0',date:'2027-02-01',items:['First public version','…']}  (date as YYYY-MM-DD) */
+const APP_VER='Beta';
+const UPDATES=[];
+function updNew(){return UPDATES.length&&lsGet('sb-upd-seen')!==UPDATES[0].v}
+function syncUpdDot(){const n=!!updNew();$('#setb').classList.toggle('new',n);$('#s-updd').classList.toggle('hidden',!n)}
+function openUpd(){
+  $('#updv').textContent='You’re using Foliet '+APP_VER+(UPDATES.length?'':'.');
+  const l=$('#updl');l.innerHTML='';
+  if(!UPDATES.length){const e=document.createElement('p');e.className='uempty';e.textContent='No updates yet. Starting with version 1.0, every update will be listed here with its date.';l.append(e)}
+  UPDATES.forEach(u=>{
+    const d=document.createElement('div');d.className='uv';
+    const h=document.createElement('h3');h.textContent='Version '+u.v;
+    const t=document.createElement('small');try{t.textContent=new Date(u.date+'T12:00:00').toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'})}catch(e){t.textContent=u.date}
+    const ul=document.createElement('ul');(u.items||[]).forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.append(li)});
+    d.append(h,t,ul);l.append(d);
+  });
+  if(UPDATES.length)lsSet('sb-upd-seen',UPDATES[0].v);
+  syncUpdDot();$('#set').classList.add('hidden');$('#upd').classList.remove('hidden');
+}
+function initUpd(){
+  $('#s-upd').onclick=openUpd;$('#upd-x').onclick=()=>$('#upd').classList.add('hidden');
+  $('#upd').addEventListener('click',e=>{if(e.target===$('#upd'))$('#upd').classList.add('hidden')});
+  syncUpdDot();
+}
 /* Backup: one .json file with every notebook. Restore adds the notebooks from such a file. */
 async function backupAll(){
   if(!$('#ed').classList.contains('hidden'))await savePage();
@@ -2733,7 +2775,7 @@ function initKeys(){
     const tg=e.target,tn=tg&&tg.tagName;
     if(/INPUT|TEXTAREA|SELECT/.test(tn)||(tg&&tg.isContentEditable))return;
     const k=e.key,lk=k.toLowerCase(),mod=e.ctrlKey||e.metaKey;
-    const modals=['#set','#xd','#shd','#hd','#csheet'].map($).filter(x=>x&&!x.classList.contains('hidden'));
+    const modals=['#set','#upd','#xd','#shd','#hd','#csheet'].map($).filter(x=>x&&!x.classList.contains('hidden'));
     if(k==='Escape'&&modals.length){modals[modals.length-1].classList.add('hidden');return}
     if(modals.length||!$('#tour').classList.contains('hidden')||!$('#dlg').classList.contains('hidden')||!$('#up').classList.contains('hidden'))return;
     if(k==='?'){e.preventDefault();toggleHelp(true);return}
@@ -2849,7 +2891,7 @@ function initExport(){
     }catch(e){console.error(e);busy(0,'Export failed. Please try again.')}
   };
 }
-initExport();initObar();initTools();initKb();initAcc();initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');startApp();
+initExport();initObar();initTools();initKb();initAcc();initUpd();initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');startApp();
 </script>
 </body>
 </html>
