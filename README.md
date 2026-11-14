@@ -10,6 +10,9 @@ app/index.html             aplicația
 app/manifest.webmanifest   datele pentru instalare pe telefon (PWA)
 app/sw.js                  funcționare offline
 app/icon-*.png             iconițele aplicației
+app/fonts/                 fonturile, incluse în proiect
+app/vendor/pdfjs/          biblioteca pentru importul PDF
+og.png                     imaginea afișată când distribui linkul
 .nojekyll                  îi spune lui GitHub Pages să publice fișierele exact cum sunt
 .github/workflows/pages.yml  publicarea automată
 CLAUDE.md                  regulile proiectului
@@ -23,4 +26,4 @@ Settings → Pages → Build and deployment → Source: **GitHub Actions**.
 
 Adresa va fi: `https://<utilizator>.github.io/Sketchbook/`
 
-Datele utilizatorilor stau deocamdată doar pe dispozitivul lor (IndexedDB). Conturile, sincronizarea și plățile urmează.
+Datele utilizatorilor stau deocamdată doar pe dispozitivul lor (IndexedDB). Din Settings pot face o copie de siguranță (.json). Conturile, sincronizarea și plățile urmează.
