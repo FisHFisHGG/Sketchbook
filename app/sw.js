@@ -1,5 +1,5 @@
-/* Sketchbook service worker: the app and its fonts open offline; other files (like the PDF library) are cached on first use. */
-const V = 'sb-v3';
+/* Foliet service worker: the app and its fonts open offline; other files (like the PDF library) are cached on first use. */
+const V = 'sb-v4';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
   'fonts/baloo-2-latin-4a324d.woff2',
   'fonts/baloo-2-latin-ext-0d1ee7.woff2',

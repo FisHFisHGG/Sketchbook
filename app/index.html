@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sketchbook</title>
+<title>Foliet</title>
 <meta name="theme-color" content="#e4e9e6">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Sketchbook">
+<meta name="apple-mobile-web-app-title" content="Foliet">
 <style>/* fonts are part of the app (no requests to Google, works offline) */
 @font-face{font-family: 'Baloo 2';font-style: normal;font-weight: 400;font-display: swap;src: url(fonts/baloo-2-latin-ext-0d1ee7.woff2) format('woff2');unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;}
 @font-face{font-family: 'Baloo 2';font-style: normal;font-weight: 400;font-display: swap;src: url(fonts/baloo-2-latin-4a324d.woff2) format('woff2');unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
@@ -323,7 +323,16 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 .cap mark,.snip mark{background:color-mix(in srgb,var(--accent) 28%,transparent);color:inherit;border-radius:3px;padding:0 1px}
 .snip{display:block;font-weight:400;opacity:.8;font-size:.85em;margin-top:2px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .empty{grid-column:1/-1;text-align:center;opacity:.7;padding:40px 0}
-#set,#tour{position:fixed;inset:0}
+#set,#tour,#acct{position:fixed;inset:0}
+#acct{z-index:57;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
+#acct .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(400px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#acct h2{margin:0;font-size:1.3em}#acct p{margin:0 0 12px}#acct .muted{opacity:.7;font-size:.88em}#acct .or{text-align:center;opacity:.6;margin:12px 0}
+#acct .amsg{color:#b3402f;font-weight:600}#acct .srow>span{width:96px}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:44px;background:#fff!important;color:#1f1f1f!important;border:1px solid #dadce0!important;font-weight:600}
+.af label{display:block;margin:0 0 10px;font-size:.9em}
+.af input{display:block;width:100%;margin-top:4px;font:inherit;color:var(--ink);background:var(--desk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+.af .btn{width:100%;margin:4px 0 12px;min-height:44px}
+#accb{position:relative}#accb.on::after{content:"";position:absolute;right:3px;top:3px;width:9px;height:9px;border-radius:50%;background:#2e9d5b;border:2px solid var(--bar)}
 #set{z-index:56;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
 #set .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #set h2{margin:0 0 2px;font-size:1.3em}#set p{margin:0 0 14px;opacity:.7}
@@ -362,12 +371,12 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </style>
 </head>
 <body>
-<div id="oldb" style="position:fixed;inset:0;z-index:999;display:none;place-items:center;padding:24px;background:#e4e9e6;color:#1c2428;font:16px/1.5 system-ui,sans-serif;text-align:center"><div><b style="font-size:1.2em">Sketchbook needs a newer browser</b><p>Please update Safari or Chrome, or open this page in a current version of Chrome, Edge, Firefox or Safari (2023 or newer).</p></div></div>
+<div id="oldb" style="position:fixed;inset:0;z-index:999;display:none;place-items:center;padding:24px;background:#e4e9e6;color:#1c2428;font:16px/1.5 system-ui,sans-serif;text-align:center"><div><b style="font-size:1.2em">Foliet needs a newer browser</b><p>Please update Safari or Chrome, or open this page in a current version of Chrome, Edge, Firefox or Safari (2023 or newer).</p></div></div>
 <script>try{if(!(window.CSS&&CSS.supports('container-type','inline-size')&&CSS.supports('aspect-ratio','1')&&window.IntersectionObserver))document.getElementById('oldb').style.display='grid'}catch(e){document.getElementById('oldb').style.display='grid'}</script>
 
 <div id="sv" role="status" aria-live="polite"></div>
 <section id="shelf">
-  <header><h1>My notebooks</h1><span id="note" role="status"></span><button class="ib i" id="hlpb" aria-label="Help and shortcuts" title="Help and shortcuts (?)"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg></button><button class="ib i" id="setb" aria-label="Settings" title="Settings"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
+  <header><h1>My notebooks</h1><span id="note" role="status"></span><button class="ib i" id="accb" aria-label="Account" title="Sign in"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></button><button class="ib i" id="hlpb" aria-label="Help and shortcuts" title="Help and shortcuts (?)"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg></button><button class="ib i" id="setb" aria-label="Settings" title="Settings"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
   <nav class="tabs" role="tablist"><button role="tab" id="tb1" aria-selected="true">Notebooks</button><button role="tab" id="tb2" aria-selected="false">Templates</button></nav>
   <div id="lib"><label class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="q" type="search" placeholder="Search notebooks" aria-label="Search notebooks and notes" autocomplete="off"></label>
     <select id="sortb" aria-label="Sort notebooks"><option value="rec">Recently edited</option><option value="name">Name A–Z</option><option value="pages">Most pages</option><option value="new">Newest first</option></select>
@@ -488,7 +497,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </section>
 
 <div id="up" class="hidden" role="dialog" aria-modal="true" aria-labelledby="upt"><div class="card">
-  <h2 id="upt">Sketchbook Pro</h2><p id="upm"></p>
+  <h2 id="upt">Foliet Pro</h2><p id="upm"></p>
   <ul class="upl"><li>Unlimited notebooks and pages</li><li>Up to 8 layers per page</li><li>PDF import</li><li>Export to PDF and image</li></ul>
   <p class="upp"><b>€3.99</b> a month or <b>€29.99</b> a year</p>
   <p class="upn">Pro isn’t on sale yet. Payments open together with accounts and cloud sync. Everything you make on the free plan stays yours.</p>
@@ -507,6 +516,10 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   </div>
 </div>
 
+<div id="acct" class="hidden" role="dialog" aria-modal="true" aria-labelledby="acctt"><div class="card">
+  <div class="sh-top"><h2 id="acctt">Your account</h2><button class="ib i" id="acc-x" aria-label="Close">✕</button></div>
+  <div id="acc-body"></div>
+</div></div>
 <div id="set" class="hidden" role="dialog" aria-modal="true" aria-labelledby="sett"><div class="card">
   <h2 id="sett">Settings</h2><p>Make the app feel like yours.</p>
   <div class="srow"><span>Theme</span><div class="seg2" id="s-theme"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div></div>
@@ -606,7 +619,7 @@ async function saveNow(){
   clearTimeout(pt);pt=null;
   try{
     if(usingLS)throw new Error('no idb');
-    await flushSave();note('');svMsg('saved');askPersist();
+    await flushSave();note('');svMsg('saved');askPersist();syncSoon(3000);
   }catch(e){
     if(!usingLS&&!(e&&/quota/i.test(e.name+' '+e.message))){try{dbp=null;await flushSave();note('');svMsg('saved');return}catch(e3){e=e3}}
     if(!usingLS&&e&&/quota/i.test(e.name+' '+e.message)){note('Browser storage is full. Back up your notebooks in Settings, then delete some pages.',1);svMsg('err');return}
@@ -710,7 +723,7 @@ function renderShelf(){
   g.append(a);
 }
 async function newNotebook(){if(data.length>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}const o=await askOrient('New notebook','p','Choose the page orientation.');if(!o)return;const b=mk('Notebook '+(data.length+1),data.length,o);data.push(b);persist();showBrowse(b)}
-function closeBook(){$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null}
+function closeBook(){$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;syncSoon(300)}
 
 /* Book: cover + pages. State cs: -1 = closed cover; s>=0: left=2s-1 (s=0: inside of cover), right=2s */
 const L=s=>s<0?'x':2*s,R=s=>s<0?'c':2*s+1,SM=()=>Math.max(0,(cur.pages.length-1)>>1);
@@ -2086,14 +2099,15 @@ function initOv(){
 /* Plan limits (free: 2 notebooks, 20 pages each, no PDF import) */
 /* Plans. Pro can't be bought yet, so the app runs on the free plan.
    For testing, open the app with ?demo=pro (and ?demo=free to go back). */
-let plan='free';
-try{const q=new URLSearchParams(location.search).get('demo');if(q==='pro'||q==='free')localStorage.setItem('sb-plan',q);plan=localStorage.getItem('sb-plan')==='pro'?'pro':'free'}catch(e){}
+let demoPlan='free';
+try{const q=new URLSearchParams(location.search).get('demo');if(q==='pro'||q==='free')localStorage.setItem('sb-plan',q);demoPlan=localStorage.getItem('sb-plan')==='pro'?'pro':'free'}catch(e){}
+let plan=demoPlan; // becomes 'pro' for real when the signed-in account has Pro
 const LIM=()=>plan==='pro'?{nb:1e9,pg:1e9,ly:8}:{nb:2,pg:20,ly:2};
 function upsell(msg){$('#upm').textContent=msg;$('#upm').classList.toggle('hidden',!msg);$('#up').classList.remove('hidden')}
-function setPlanBtn(){const b=$('#plan');b.textContent=plan==='pro'?'Pro (demo)':'Free plan';b.title=plan==='pro'?'Pro demo for testing. Open the app with ?demo=free to turn it off.':'See what Pro adds'}
+function setPlanBtn(){const b=$('#plan');if(!b)return;b.textContent=ACC.pro?'Pro':plan==='pro'?'Pro (demo)':'Free plan';b.title=plan==='pro'?'Pro demo for testing. Open the app with ?demo=free to turn it off.':'See what Pro adds'}
 function initPlan(){
   setPlanBtn();
-  $('#plan').onclick=()=>{if(plan==='pro')toast('Pro demo is on. Open the app with ?demo=free to turn it off.');else upsell('')};
+  $('#plan').onclick=()=>{if(ACC.pro){openAcc();return}if(plan==='pro')toast('Pro demo is on. Open the app with ?demo=free to turn it off.');else upsell('')};
   $('#upno').onclick=()=>$('#up').classList.add('hidden');
 }
 
@@ -2152,19 +2166,262 @@ function playTurn(){
   }catch(e){}
 }
 const DESKS=[['sage','#e4e9e6'],['warm','#efe7da'],['blue','#e1e8f3'],['rose','#f2e3e6']];
+/* ---------- Account + cloud sync (Firebase) ----------
+   Firebase is loaded only when someone opens the account window or was signed in before,
+   so people without an account never contact Google.
+   Cloud copy (Pro only), in Firestore:
+     users/{uid}            m.{record} = {h: hash, n: chunks}   (what is in the cloud)
+     users/{uid}/r/{record} the record as JSON, split in chunks of CH characters ({record}~~1, ~~2...)
+     pro/{uid}              exists = Pro (made by hand in the console until payments exist)
+   Records are the same as on the device: idx, b:<id>, p:<id>:<i>.
+   For every record the sync compares three hashes: this device, the cloud, and the last sync. */
+const FB_CFG={apiKey:"AIzaSyDIlAlVdivTKEJ7nv4BfjdZS3PeERxIcms",authDomain:"sketchbook-b1de1.firebaseapp.com",projectId:"sketchbook-b1de1",storageBucket:"sketchbook-b1de1.firebasestorage.app",messagingSenderId:"924673664913",appId:"1:924673664913:web:f25d4423a121208ea1dc30"};
+const CH=300000;
+const ACC={F:null,auth:null,db:null,user:null,pro:false,claimPro:false,docPro:false,man:null,unPro:null,unMan:null,state:null,busy:false,again:false,timer:0,last:0,err:'',mode:'in',msg:''};
+let fbLoading=null;
+function fbLoad(){
+  if(fbLoading)return fbLoading;
+  fbLoading=(async()=>{
+    await loadScript('vendor/firebase.js');
+    const F=window.FB,app=F.initializeApp(FB_CFG);
+    const auth=F.initializeAuth(app,{persistence:[F.indexedDBLocalPersistence,F.browserLocalPersistence],popupRedirectResolver:F.browserPopupRedirectResolver});
+    const db=F.initializeFirestore(app,{experimentalAutoDetectLongPolling:true});
+    // local test servers only (never on the real site)
+    const emu=new URLSearchParams(location.search).get('emu');
+    if(emu&&/^(localhost|127\.0\.0\.1)$/.test(emu)&&(location.protocol==='file:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))){F.connectAuthEmulator(auth,'http://'+emu+':9099',{disableWarnings:true});F.connectFirestoreEmulator(db,emu,8080)}
+    Object.assign(ACC,{F,auth,db});
+    F.onAuthStateChanged(auth,u=>accUser(u));
+    F.getRedirectResult(auth).catch(accErr);
+    return F;
+  })();
+  fbLoading.catch(()=>{fbLoading=null});
+  return fbLoading;
+}
+async function accUser(u){
+  if(ACC.unPro){ACC.unPro();ACC.unPro=null}
+  syncStop();
+  ACC.user=u||null;ACC.claimPro=false;ACC.docPro=false;ACC.err='';
+  try{localStorage.setItem('sb-acct',u?'1':'')}catch(e){}
+  if(u){
+    try{const t=await u.getIdTokenResult();ACC.claimPro=t.claims.stripeRole==='pro'}catch(e){}
+    const F=ACC.F;
+    ACC.unPro=F.onSnapshot(F.doc(ACC.db,'pro',u.uid),s=>{ACC.docPro=s.exists();setPro()},()=>{ACC.docPro=false;setPro()});
+  }
+  setPro();
+}
+function setPro(){
+  const was=ACC.pro;ACC.pro=!!ACC.user&&(ACC.claimPro||ACC.docPro);
+  plan=ACC.pro?'pro':demoPlan;setPlanBtn();
+  if(ACC.pro&&!was)syncStart();
+  if(!ACC.pro&&was)syncStop();
+  renderAcc();
+}
+const AUTH_MSG={'auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong email or password.','auth/user-not-found':'There is no account with this email yet.','auth/email-already-in-use':'There is already an account with this email. Sign in instead.','auth/weak-password':'Use at least 6 characters for the password.','auth/invalid-email':'That email address doesn’t look right.','auth/missing-password':'Type your password.','auth/too-many-requests':'Too many tries. Wait a few minutes and try again.','auth/network-request-failed':'No internet connection. Try again when you’re online.','auth/unauthorized-domain':'Sign-in isn’t enabled for this website yet.','auth/operation-not-allowed':'This sign-in method isn’t enabled yet.','auth/account-exists-with-different-credential':'This email already signs in another way. Use that method.'};
+function accErr(e){const c=e&&e.code||'';if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request'||c==='auth/no-auth-event')return;ACC.msg=AUTH_MSG[c]||'Something went wrong. Please try again.';renderAcc()}
+
+/* ----- hashing: the same content always gives the same hash, on every device ----- */
+function canon(v){return JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.keys(x).sort().reduce((o,q)=>(o[q]=x[q],o),{}):x)}
+function cyrb(s){let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677)}a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909);b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);return(b>>>0).toString(36)+'.'+(a>>>0).toString(36)+'.'+s.length.toString(36)}
+const hcache=new Map();
+function recHash(k,v){const s=sig(v),c=hcache.get(k);if(c&&same(c.s,s))return c.h;const h=cyrb(canon(v));hcache.set(k,{s,h});return h}
+const k2c=k=>k.replace(/:/g,'~'),c2k=c=>c.replace(/~/g,':'),chunkId=(c,i)=>i?c+'~~'+i:c;
+function localRecs(){
+  const m=new Map();m.set('idx',data.map(b=>String(b.id)));
+  for(const b of data){m.set('b:'+b.id,metaOf(b));for(let i=0;i<b.pages.length;i++)m.set('p:'+b.id+':'+i,pageOf(b,i))}
+  return m;
+}
+const isStarter=b=>b.pages.length===1&&!b.pages[0]&&!b.cover&&!b.cpv&&!(b.objs[0]||[]).length&&!(b.cobjs||[]).length&&!b.bg[0]&&!b.lay[0];
+const openBookId=()=>cur&&$('#shelf').classList.contains('hidden')?String(cur.id):null;
+
+/* ----- cloud reads and writes ----- */
+async function pushRec(k,v){
+  const F=ACC.F,db=ACC.db,uid=ACC.user.uid,c=k2c(k),old=ACC.man[c],b=F.writeBatch(db),udoc=F.doc(db,'users',uid);
+  if(v===undefined){
+    for(let i=0;i<(old?old.n:1);i++)b.delete(F.doc(db,'users',uid,'r',chunkId(c,i)));
+    b.set(udoc,{m:{[c]:F.deleteField()}},{merge:true});await b.commit();delete ACC.man[c];return null;
+  }
+  const j=canon(v),h=cyrb(j),n=Math.max(1,Math.ceil(j.length/CH));
+  for(let i=0;i<n;i++)b.set(F.doc(db,'users',uid,'r',chunkId(c,i)),{h,n,i,d:j.slice(i*CH,(i+1)*CH)});
+  for(let i=n;i<(old?old.n:0);i++)b.delete(F.doc(db,'users',uid,'r',chunkId(c,i)));
+  b.set(udoc,{m:{[c]:{h,n}},v:1},{merge:true});await b.commit();ACC.man[c]={h,n};return h;
+}
+async function pullRec(k){
+  const F=ACC.F,db=ACC.db,uid=ACC.user.uid,c=k2c(k),r=ACC.man[c];if(!r)return null;
+  const parts=await Promise.all([...Array(r.n||1).keys()].map(i=>F.getDoc(F.doc(db,'users',uid,'r',chunkId(c,i)))));
+  if(parts.some(p=>!p.exists()||p.data().h!==r.h))return undefined; // changing right now; next round
+  const j=parts.map(p=>p.data().d).join('');
+  return cyrb(j)===r.h?JSON.parse(j):undefined;
+}
+function applyRec(k,v){ // v=null deletes
+  if(k.startsWith('b:')){
+    const id=k.slice(2);let b=data.find(x=>String(x.id)===id);
+    if(v==null){if(b)data.splice(data.indexOf(b),1);return}
+    if(!b){b=ens({id:v.id,pages:[null]});data.push(b)}
+    for(const f of Object.keys(b))if(!PK.includes(f)&&f[0]!=='_'&&!(f in v))delete b[f];
+    for(const f in v)if(f!=='n')b[f]=v[f];
+    const n=v.n||1;PK.forEach(a=>{if(b[a].length>n)b[a].length=n});while(b.pages.length<n)b.pages.push(null);
+  }else if(k.startsWith('p:')){
+    const j=k.lastIndexOf(':'),id=k.slice(2,j),i=+k.slice(j+1),b=data.find(x=>String(x.id)===id);if(!b)return;
+    if(v==null){if(i<b.pages.length){b.pages[i]=null;['objs','pv','bg','ps','lay'].forEach(a=>{delete b[a][i]})}return}
+    while(b.pages.length<=i)b.pages.push(null);
+    b.pages[i]=v.pg??null;
+    [['objs','o'],['pv','pv'],['bg','bg'],['ps','ps'],['lay','lay']].forEach(([a,f])=>{if(v[f]!=null)b[a][i]=v[f];else delete b[a][i]});
+  }
+}
+function applyOrder(ids){
+  const pos=new Map(ids.map((id,i)=>[id,i]));
+  data.sort((x,y)=>(pos.has(String(x.id))?pos.get(String(x.id)):1e9)-(pos.has(String(y.id))?pos.get(String(y.id)):1e9));
+}
+
+/* ----- one sync round ----- */
+async function syncOnce(){
+  const man=ACC.man,st=ACC.state;if(!man||!st)return;
+  await savesDone();await flushSave();
+  const base=st.h,open=openBookId();
+  // a brand-new device: don't upload the empty starter notebook if the cloud already has notebooks
+  if(!Object.keys(base).length&&Object.keys(man).length>1){const keep=data.filter(b=>!isStarter(b)||String(b.id)===open);if(keep.length!==data.length){data=keep}}
+  const L=localRecs(),keys=new Set([...L.keys(),...Object.keys(man).map(c2k),...Object.keys(base)]);
+  const push=[],pull=[];let idx=null,changedHere=false;
+  for(const k of keys){
+    const lv=L.get(k),lh=lv===undefined?null:recHash(k,lv),r=man[k2c(k)],rh=r?r.h:null,bh=base[k]??null;
+    if(lh===rh){if(lh===null)delete base[k];else base[k]=lh;continue}
+    if(k==='idx'){idx={lh,rh,bh};continue}
+    const lch=lh!==bh,rch=rh!==bh;
+    if(rch&&!lch){ // changed in the cloud only
+      const id=k.split(':')[1];if(id===open)continue; // the open notebook updates when you close it
+      pull.push(k);
+    }else push.push(k); // changed here (or on both sides: this device wins)
+  }
+  // 1) bring cloud changes here (notebooks first, then pages)
+  pull.sort((a,b)=>(a[0]==='b'?0:1)-(b[0]==='b'?0:1));
+  for(const k of pull){
+    const v=await pullRec(k);if(v===undefined)continue;
+    applyRec(k,v);changedHere=true;
+    const r=man[k2c(k)];if(r)base[k]=r.h;else delete base[k];
+  }
+  // 2) the notebook order (merged when both sides changed it)
+  if(idx){
+    const local=data.map(b=>String(b.id));let order=null;
+    if(idx.rh!==null&&idx.lh===idx.bh){order=await pullRec('idx')}
+    else if(idx.rh!==null&&idx.lh!==idx.bh&&idx.rh!==idx.bh){
+      const remote=await pullRec('idx');
+      if(remote){const was=new Set(st.idx||[]),now=new Set(local);order=remote.filter(id=>!(was.has(id)&&!now.has(id)));local.forEach(id=>{if(!was.has(id)&&!order.includes(id))order.push(id)})}
+    }
+    if(order){applyOrder(order);changedHere=true}
+  }
+  if(changedHere){await flushSave();if(!$('#shelf').classList.contains('hidden'))renderShelf()}
+  // 3) send this device's changes (fresh copy of the records, in case something changed meanwhile)
+  const L2=localRecs();
+  const todo=[...push.filter(k=>k!=='idx'),'idx'];
+  for(const k of todo){
+    const lv=L2.get(k),r=ACC.man[k2c(k)];
+    if(k==='idx'){const h=recHash('idx',lv);if(r&&r.h===h){base.idx=h;st.idx=lv;continue}}
+    const h=await pushRec(k,lv);
+    if(h===null)delete base[k];else base[k]=h;
+    if(k==='idx')st.idx=lv;
+  }
+  try{await idbSet('sync:'+ACC.user.uid,{h:base,idx:st.idx||null})}catch(e){}
+  ACC.last=Date.now();ACC.err='';
+}
+async function syncRun(){
+  if(!ACC.pro||!ACC.man)return;
+  if(ACC.busy){ACC.again=true;return}
+  ACC.busy=true;renderAcc();
+  try{do{ACC.again=false;await syncOnce()}while(ACC.again)}
+  catch(e){ACC.err=e&&(e.code==='unavailable'||!navigator.onLine)?'offline':'error';console.warn('sync',e)}
+  finally{ACC.busy=false;renderAcc()}
+}
+function syncSoon(ms){if(!ACC.pro)return;clearTimeout(ACC.timer);ACC.timer=setTimeout(syncRun,ms)}
+async function syncStart(){
+  const F=ACC.F,u=ACC.user;
+  try{ACC.state=(await idbGet('sync:'+u.uid))||{h:{},idx:null}}catch(e){ACC.state={h:{},idx:null}}
+  if(!ACC.state.h)ACC.state.h={};
+  ACC.unMan=F.onSnapshot(F.doc(ACC.db,'users',u.uid),s=>{ACC.man={...((s.exists()&&s.data().m)||{})};syncSoon(400)},e=>{ACC.err='error';renderAcc();console.warn(e)});
+}
+function syncStop(){if(ACC.unMan){ACC.unMan();ACC.unMan=null}clearTimeout(ACC.timer);ACC.man=null;ACC.state=null}
+window.addEventListener('online',()=>syncSoon(500));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncSoon(800);else if(ACC.pro)syncRun()});
+
+/* ----- account window ----- */
+const GICON='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+function ago2(t){if(!t)return 'not yet';const s=(Date.now()-t)/1000;return s<60?'just now':s<3600?Math.round(s/60)+' min ago':new Date(t).toLocaleString()}
+function renderAcc(){
+  const box=$('#acc-body');if(!box)return;
+  const b=$('#accb');if(b){b.classList.toggle('on',!!ACC.user);b.title=ACC.user?'Account: '+(ACC.user.email||''):'Sign in'}
+  if($('#acct').classList.contains('hidden'))return;
+  const keep={em:$('#a-em')&&$('#a-em').value,pw:$('#a-pw')&&$('#a-pw').value,f:document.activeElement&&document.activeElement.id};
+  const u=ACC.user;box.innerHTML='';
+  const p=(t,c)=>{const e=document.createElement('p');if(c)e.className=c;e.textContent=t;box.append(e);return e};
+  if(!ACC.F){p('Connecting…','muted');return}
+  if(!u){
+    p('Sign in to keep your notebooks in the cloud and open them on any device. Cloud sync is part of Pro.');
+    const g=document.createElement('button');g.className='ib gbtn';g.innerHTML=GICON+'<span>Continue with Google</span>';g.onclick=accGoogle;box.append(g);
+    p('or','or');
+    const up=ACC.mode==='up';
+    const f=document.createElement('form');f.className='af';f.noValidate=true;
+    f.innerHTML='<label>Email<input type="email" id="a-em" autocomplete="email" required></label><label>Password<input type="password" id="a-pw" minlength="6" required autocomplete="'+(up?'new-password':'current-password')+'"></label><button class="btn" type="submit">'+(up?'Create account':'Sign in')+'</button>';
+    f.onsubmit=e=>{e.preventDefault();accEmail(up)};box.append(f);
+    if(keep.em)$('#a-em').value=keep.em;if(keep.pw)$('#a-pw').value=keep.pw;if(keep.f==='a-em'||keep.f==='a-pw')$('#'+keep.f).focus(); // typing survives a refresh
+    if(ACC.msg){const m=p(ACC.msg,'amsg');m.setAttribute('role','alert')}
+    const l=document.createElement('p');l.className='muted';
+    const a1=document.createElement('a');a1.href='#';a1.textContent=up?'I already have an account':'New here? Create an account';a1.onclick=e=>{e.preventDefault();ACC.mode=up?'in':'up';ACC.msg='';renderAcc()};
+    l.append(a1);
+    if(!up){const a2=document.createElement('a');a2.href='#';a2.textContent='Forgot password?';a2.onclick=e=>{e.preventDefault();accReset()};l.append(' · ',a2)}
+    box.append(l);
+    p('Your notebooks always stay on this device too. We only keep your email and, with Pro, a copy of your notebooks.','muted');
+    return;
+  }
+  p('Signed in as '+(u.email||u.displayName||'you'));
+  const row=(k,v)=>{const d=document.createElement('div');d.className='srow';const a=document.createElement('span');a.textContent=k;const b2=document.createElement('b');b2.style.fontWeight='600';b2.textContent=v;d.append(a,b2);box.append(d)};
+  row('Plan',ACC.pro?'Pro':'Free');
+  row('Cloud sync',!ACC.pro?'Off (part of Pro)':ACC.busy?'Syncing…':ACC.err==='offline'?'Waiting for internet':ACC.err?'Couldn’t sync, will retry':'On · '+ago2(ACC.last));
+  if(!ACC.pro)p('Pro isn’t on sale yet. Your notebooks are saved on this device.','muted');
+  const acts=document.createElement('div');acts.className='acts2';
+  if(ACC.pro){const s=document.createElement('button');s.className='ib';s.textContent='Sync now';s.onclick=()=>syncRun();acts.append(s)}
+  const o=document.createElement('button');o.className='ib';o.textContent='Sign out';o.onclick=accOut;acts.append(o);
+  box.append(acts);
+  p('Signing out keeps the notebooks on this device.','muted');
+}
+async function accGoogle(){
+  ACC.msg='';const F=ACC.F,pr=new F.GoogleAuthProvider();pr.setCustomParameters({prompt:'select_account'});
+  try{await F.signInWithPopup(ACC.auth,pr)}
+  catch(e){if(e&&/popup-blocked|operation-not-supported|web-storage-unsupported/.test(e.code||'')){try{await F.signInWithRedirect(ACC.auth,pr)}catch(e2){accErr(e2)}}else accErr(e)}
+}
+async function accEmail(up){
+  const em=$('#a-em').value.trim(),pw=$('#a-pw').value;ACC.msg='';
+  if(!em||!pw){ACC.msg=!em?'Type your email.':'Type your password.';renderAcc();return}
+  try{await(up?ACC.F.createUserWithEmailAndPassword:ACC.F.signInWithEmailAndPassword)(ACC.auth,em,pw)}
+  catch(e){accErr(e)}
+}
+async function accReset(){
+  const em=($('#a-em')&&$('#a-em').value.trim())||'';
+  if(!em){ACC.msg='Type your email above, then tap “Forgot password?” again.';renderAcc();return}
+  try{await ACC.F.sendPasswordResetEmail(ACC.auth,em);ACC.msg='If there is an account for '+em+', we sent it a link to set a new password.'}catch(e){accErr(e)}
+  renderAcc();
+}
+async function accOut(){if(ACC.pro)await syncRun();await ACC.F.signOut(ACC.auth);ACC.msg='';toast('Signed out. Your notebooks are still on this device.')}
+function openAcc(){$('#acct').classList.remove('hidden');renderAcc();fbLoad().then(renderAcc).catch(()=>{$('#acc-body').textContent='Can’t reach the sign-in service. Check your internet connection.'})}
+function initAcc(){
+  $('#accb').onclick=openAcc;
+  $('#acc-x').onclick=()=>$('#acct').classList.add('hidden');
+  $('#acct').addEventListener('click',e=>{if(e.target===$('#acct'))$('#acct').classList.add('hidden')});
+  let was='';try{was=localStorage.getItem('sb-acct')||''}catch(e){}
+  if(was)setTimeout(()=>fbLoad().catch(()=>{}),600);
+}
+
 /* Backup: one .json file with every notebook. Restore adds the notebooks from such a file. */
 async function backupAll(){
   if(!$('#ed').classList.contains('hidden'))await savePage();
   await savesDone();
-  const clean=(k,v)=>k&&k[0]==='_'?undefined:v,parts=['{"app":"sketchbook","v":1,"saved":',JSON.stringify(new Date().toISOString()),',"books":['];
+  const clean=(k,v)=>k&&k[0]==='_'?undefined:v,parts=['{"app":"foliet","v":1,"saved":',JSON.stringify(new Date().toISOString()),',"books":['];
   data.forEach((b,i)=>{if(i)parts.push(',');parts.push(JSON.stringify(b,clean))});parts.push(']}');
   const day=new Date().toISOString().slice(0,10);
-  if(await saveFile('sketchbook-backup-'+day+'.json',new Blob(parts,{type:'application/json'})))toast('Backup saved. Keep the file somewhere safe.');
+  if(await saveFile('foliet-backup-'+day+'.json',new Blob(parts,{type:'application/json'})))toast('Backup saved. Keep the file somewhere safe.');
 }
 async function restoreFrom(f){
   let j=null;try{j=JSON.parse(await f.text())}catch(e){}
-  const books=j&&j.app==='sketchbook'&&Array.isArray(j.books)?j.books:(Array.isArray(j)?j:null);
-  if(!books||!books.every(b=>b&&Array.isArray(b.pages))){toast('This file is not a Sketchbook backup.');return}
+  const books=j&&(j.app==='foliet'||j.app==='sketchbook')&&Array.isArray(j.books)?j.books:(Array.isArray(j)?j:null);
+  if(!books||!books.every(b=>b&&Array.isArray(b.pages))){toast('This file is not a Foliet backup.');return}
   const ids=new Set(data.map(b=>String(b.id)));let n=0;
   books.forEach(b=>{b=ens(b);if(ids.has(String(b.id))){b.id=Date.now()+Math.random();b.title=(b.title||'Untitled')+' (restored)'}ids.add(String(b.id));data.push(b);n++});
   persist();renderShelf();storeInfo();
@@ -2372,7 +2629,7 @@ main{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
 footer{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
 button{font:inherit;color:inherit;background:var(--bar);border:1px solid rgba(128,128,128,.4);border-radius:10px;min-width:46px;height:40px;cursor:pointer}button:disabled{opacity:.35;cursor:default}
 #c{min-width:120px;text-align:center}
-</style></head><body><header><h1>${esc(title)}</h1><small>View only · made with Sketchbook</small></header><main id="m"></main>
+</style></head><body><header><h1>${esc(title)}</h1><small>View only · made with Foliet</small></header><main id="m"></main>
 <footer><button id="p" aria-label="Previous">‹</button><span id="c" aria-live="polite"></span><button id="n" aria-label="Next">›</button></footer>
 <script type="application/json" id="d">${data}<\/script>
 <script>
@@ -2474,7 +2731,7 @@ function syncInstall(){
 }
 function initPwa(){
   addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;syncInstall()});
-  addEventListener('appinstalled',()=>{deferredInstall=null;syncInstall();toast('Sketchbook was added to your device')});
+  addEventListener('appinstalled',()=>{deferredInstall=null;syncInstall();toast('Foliet was added to your device')});
   $('#s-inst').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();try{await deferredInstall.userChoice}catch(e){}deferredInstall=null;syncInstall()};
   addEventListener('offline',()=>toast('You are offline. Your work is still saved on this device.'));
   addEventListener('online',()=>toast('Back online'));
@@ -2554,7 +2811,7 @@ function initExport(){
     }catch(e){console.error(e);busy(0,'Export failed. Please try again.')}
   };
 }
-initExport();initObar();initTools();initKb();initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');initData();
+initExport();initObar();initTools();initKb();initAcc();initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');initData();
 </script>
 </body>
 </html>

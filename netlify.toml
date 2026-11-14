@@ -1,0 +1,28 @@
+# Netlify: the site is a plain folder, no build step.
+# Landing at /, the app at /app/.
+[build]
+  publish = "."
+
+# Always check for a new app version (the service worker decides what to cache).
+[[headers]]
+  for = "/app/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Internal files that don't need to be public
+[[redirects]]
+  from = "/CLAUDE.md"
+  to = "/"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/firebase/*"
+  to = "/"
+  status = 404
+  force = true

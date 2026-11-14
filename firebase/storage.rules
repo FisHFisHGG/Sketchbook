@@ -1,0 +1,10 @@
+rules_version = '2';
+// Foliet does not use Cloud Storage (everything is in Firestore).
+// Paste into Firebase console → Storage → Rules → Publish, so nobody can upload files there.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
