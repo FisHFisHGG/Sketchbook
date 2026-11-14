@@ -6,6 +6,8 @@ const {chromium}=require('playwright');const fs=require('fs'),path=require('path
 const ROOT=path.join(__dirname,'..','app'),PID='sketchbook-b1de1';
 const mime={'.html':'text/html','.js':'text/javascript','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2'};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+// the one-time "How did you find Foliet?" question appears after a new account; answer it so the test can go on
+const answerSurvey=async(p,v='youtube')=>{try{await p.waitForSelector('#srv',{timeout:4000})}catch(e){return false}await p.click('#srv .srv-opt[data-v="'+v+'"]');await p.click('#srv .btn');await p.waitForSelector('#srv',{state:'detached'});return true};
 let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 async function device(b,name){
   const ctx=await b.newContext({viewport:{width:1000,height:800}});
@@ -22,6 +24,7 @@ const signIn=async(p,em,pw,create)=>{
   await p.fill('#a-em',em);await p.fill('#a-pw',pw);await p.click('#acc-body button[type=submit]');
   try{await p.waitForFunction(()=>ACC.user,null,{timeout:15000})}catch(e){console.log('SIGNIN DEBUG:',await p.evaluate(()=>document.querySelector('#acc-body').innerText.slice(0,400)),p.errs);throw e}
   await p.waitForFunction(()=>ACC.libUid&&document.querySelector('#acct').classList.contains('hidden'),null,{timeout:15000});
+  await answerSurvey(p);
 };
 const books=p=>p.evaluate(()=>data.map(b=>b.title+'['+b.pages.map(x=>x?'img':'-').join('')+']'+(b.objs.flat().filter(Boolean).map(o=>o.t).join('/')||'')).sort().join(' | '));
 const settle=async p=>{await p.waitForTimeout(600);await p.waitForFunction(()=>!ACC.busy&&!ACC.timer||!ACC.busy,null,{timeout:20000});await p.evaluate(()=>syncRun());await p.waitForFunction(()=>!ACC.busy,null,{timeout:20000});await p.waitForTimeout(300)};

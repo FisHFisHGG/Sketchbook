@@ -251,6 +251,16 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #adm-body .muted{opacity:.7;font-size:.9em}#adm-body .amsg{color:#c2473a;font-weight:600}
 .codebox .crow{display:flex;gap:8px}.codebox .lk-in{margin:0;text-align:left;text-transform:uppercase}.codebox .btn{flex:none;min-height:46px}.cmsg{min-height:1.2em;font-size:.9em;margin:6px 0 0}
 #up .alink{display:block;margin:12px auto 0;background:none;border:0;color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+#srv{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:20px}
+#srv .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#srv h2{margin:0 0 4px;font-size:1.3em}.srv-sub{opacity:.75;margin:0 0 14px}
+.srv-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.srv-opt{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:none;color:inherit;font:inherit;text-align:left}
+.srv-opt i{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--line)}
+.srv-opt[aria-checked="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}.srv-opt[aria-checked="true"] i{border:6px solid var(--accent)}
+.srv-o label{display:block;font-size:.85em;opacity:.8;margin:2px 0 4px}.srv-o .lk-in{text-align:left}
+#srv .btn{width:100%;min-height:46px}#srv .btn:disabled{opacity:.45}
+.sva{display:flex;flex-direction:column;padding:6px 0;border-top:1px solid var(--line)}.sva small{opacity:.6}
 #lockd{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:20px}
 #lockd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(380px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
 #lockd h2{margin:6px 0 4px;font-size:1.25em}.lk-sub{opacity:.75;margin:0 0 14px}.lk-note{opacity:.65;font-size:.85em;margin:8px 0 12px}
@@ -2368,7 +2378,7 @@ async function accUser(u){
       ACC.proDoc=s.exists()?s.data():null;ACC.docPro=proActiveDoc(ACC.proDoc);
       clearTimeout(ACC.proT);const end=proUntil(ACC.proDoc);if(ACC.docPro&&end)ACC.proT=setTimeout(()=>{ACC.docPro=false;setPro()},Math.min(end-Date.now()+1000,2e9)); // Pro from a code ends by itself
       setPro()},()=>{ACC.docPro=false;setPro()});
-    touchProfile(u);checkAdmin(u);
+    touchProfile(u);checkAdmin(u);checkSurvey(u);
   }
   setPro();
 }
@@ -2502,7 +2512,7 @@ async function syncStart(){
   ACC.unMan=F.onSnapshot(F.doc(ACC.db,'users',u.uid),s=>{ACC.man={...((s.exists()&&s.data().m)||{})};syncSoon(400)},e=>{ACC.err='error';renderAcc();console.warn(e)});
 }
 function syncStop(){if(ACC.unMan){ACC.unMan();ACC.unMan=null}clearTimeout(ACC.timer);ACC.man=null;ACC.state=null}
-window.addEventListener('online',()=>syncSoon(500));
+window.addEventListener('online',()=>{syncSoon(500);if(ACC.user&&ACC.F)checkSurvey(ACC.user)});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncSoon(800);else if(ACC.pro)syncRun()});
 
 /* ----- account window ----- */
@@ -2634,6 +2644,53 @@ function genCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const r=c
 const DUR=[[7,'7 days'],[30,'1 month'],[90,'3 months'],[365,'1 year'],[0,'Forever']];
 const durTxt=d=>!d?'forever':d%365===0?(d/365)+(d===365?' year':' years'):d%30===0?(d/30)+(d===30?' month':' months'):d+' days';
 function durSelect(def){const s=el('select','lk-in');DUR.forEach(([v,t])=>{const o=el('option','',t);o.value=v;if(v===def)o.selected=true;s.append(o)});return s}
+/* ----- "How did you find Foliet?" -----
+   Asked once per account, right after signing up (and once to older accounts). It can't be closed or skipped;
+   "Somewhere else" needs a few words. Saved in survey/{uid} = {src, other, at}. If there's no internet the answer
+   waits on the device (sb-src:<uid>:p) and is sent later, so nobody gets stuck. */
+const SRC=[['youtube','YouTube'],['instagram','Instagram'],['facebook','Facebook'],['ai','An AI assistant (ChatGPT, Gemini…)'],['other','Somewhere else']];
+const srcName=k=>(SRC.find(x=>x[0]===k)||['','Not answered yet'])[1];
+async function saveSurvey(u,a){
+  const F=ACC.F;
+  try{await F.setDoc(F.doc(ACC.db,'survey',u.uid),{src:a.src,other:a.other||'',at:F.serverTimestamp()})}
+  catch(e){if(!(e&&e.code==='permission-denied'))throw e} // permission-denied = already answered
+  lsSet('sb-src:'+u.uid,'1');lsSet('sb-src:'+u.uid+':p','');
+}
+async function checkSurvey(u){
+  const k='sb-src:'+u.uid;if(lsGet(k)==='1')return;
+  const pend=lsGet(k+':p');
+  if(pend){try{await saveSurvey(u,JSON.parse(pend))}catch(e){}return}
+  try{const s=await ACC.F.getDoc(ACC.F.doc(ACC.db,'survey',u.uid));if(s.exists()){lsSet(k,'1');return}}catch(e){return} // offline: ask next time
+  if(ACC.user!==u||document.querySelector('#srv'))return;
+  askSurvey(u);
+}
+function askSurvey(u){
+  const ov=el('div','');ov.id='srv';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-labelledby','srvt');
+  const c=el('div','card');ov.append(c);
+  c.append(el('h2','','One quick question'));c.lastChild.id='srvt';
+  c.append(el('p','srv-sub','How did you find Foliet? It helps us know where to share it.'));
+  const list=el('div','srv-list');list.setAttribute('role','radiogroup');list.setAttribute('aria-label','How did you find Foliet?');
+  let pick='';
+  const other=el('input','lk-in');other.id='srv-other';other.placeholder='Where? For example a friend, a blog or a search';other.maxLength=200;other.autocomplete='off';
+  const wrap=el('div','srv-o hidden');wrap.append(el('label','',''),other);wrap.firstChild.htmlFor='srv-other';wrap.firstChild.textContent='Tell us where (required)';
+  const go=el('button','btn','Continue');go.disabled=true;
+  const err=el('p','lk-err');err.setAttribute('role','alert');
+  const valid=()=>pick&&(pick!=='other'||other.value.trim().length>=2);
+  const sync=()=>{list.querySelectorAll('button').forEach(b=>b.setAttribute('aria-checked',b.dataset.v===pick));wrap.classList.toggle('hidden',pick!=='other');go.disabled=!valid()};
+  SRC.forEach(([v,t])=>{const b=el('button','srv-opt');b.type='button';b.setAttribute('role','radio');b.dataset.v=v;b.append(el('i',''),el('span','',t));
+    b.onclick=()=>{pick=v;sync();if(v==='other')setTimeout(()=>other.focus(),30)};list.append(b)});
+  other.oninput=sync;
+  go.onclick=async()=>{
+    if(!valid()){err.textContent=pick==='other'?'Please write where you found Foliet.':'Please choose one.';return}
+    const a={src:pick,other:pick==='other'?other.value.trim().slice(0,200):''};go.disabled=true;
+    try{await saveSurvey(u,a)}catch(e){lsSet('sb-src:'+u.uid+':p',JSON.stringify(a))} // no internet: send it later
+    ov.remove();toast('Thank you!');
+  };
+  c.append(list,wrap,err,go);
+  document.body.append(ov);
+  ov.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation()}},true);
+}
+
 /* ----- admin panel -----
    Loads everything once (profiles, monthly activity, Pro, codes, redemptions and, once Stripe is connected,
    payments + subscriptions written by the "Run Payments with Stripe" extension), then shows it for the chosen
@@ -2658,11 +2715,12 @@ function osName(o){return {android:'Android',ios:'iPhone / iPad',windows:'Window
 async function adminFetch(){
   const F=ACC.F,db=ACC.db,all=c=>F.getDocs(F.collection(db,c)).then(s=>s.docs.map(d=>({id:d.id,...d.data()})));
   const safe=p=>p.catch(e=>{console.warn('admin',e);return []});
-  const [profiles,act,pro,codes,redeem,payments,subs]=await Promise.all([
+  const [profiles,act,pro,codes,redeem,payments,subs,survey]=await Promise.all([
     all('profiles'),safe(all('act')),all('pro'),all('codes'),safe(all('redeem')),
     safe(F.getDocs(F.collectionGroup(db,'payments')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()})))),
-    safe(F.getDocs(F.collectionGroup(db,'subscriptions')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()}))))]);
-  ADM.data={profiles,act,pro,codes,redeem,payments,subs,at:Date.now()};
+    safe(F.getDocs(F.collectionGroup(db,'subscriptions')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()})))),
+    safe(all('survey'))]);
+  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,at:Date.now()};
 }
 function openAdmin(){$('#acct').classList.add('hidden');$('#admin').classList.remove('hidden');adminLoad()}
 async function adminLoad(){
@@ -2734,6 +2792,18 @@ function adminRender(){
   bg.append(brk('Signs in with',p=>p.via==='google.com'?'Google':'Email and password'),brk('Device',p=>osName(p.os)),brk('Installed as an app',p=>p.app?'Yes':p.app===false?'No, in the browser':'Unknown'),brk('Language',p=>(p.lang||'unknown').slice(0,2).toUpperCase()));
   B.append(bg);
   // promo codes
+  sec('How people found Foliet');
+  const SV=D.survey.map(a=>({...a,t:tsMs(a.at)})),SVin=SV.filter(a=>R.b===Infinity||inR(a.t,R));
+  const sg=el('div','abrks');const sb=el('div','abrk');sb.append(el('b','',SVin.length+' answer'+(SVin.length===1?'':'s')+' · '+R.label));
+  SRC.map(([k])=>[k,SVin.filter(a=>a.src===k).length]).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{const r=el('div','abr');const bar=el('i');bar.style.width=(SVin.length?Math.round(v/SVin.length*100):0)+'%';
+    r.append(el('span','',srcName(k)),el('em','',v+' · '+(SVin.length?Math.round(v/SVin.length*100):0)+'%'),bar);sb.append(r)});
+  const answered=new Set(D.survey.map(a=>a.id)),notYet=PJ.filter(p=>!answered.has(p.id)).length;
+  if(notYet)sb.append(el('small','muted',notYet+' account'+(notYet===1?' hasn’t':'s haven’t')+' answered yet (they’re asked the next time they open Foliet).'));
+  const ob=el('div','abrk');const others=SVin.filter(a=>a.src==='other'&&a.other).sort((a,b)=>(b.t||0)-(a.t||0));
+  ob.append(el('b','','“Somewhere else” answers ('+others.length+')'));
+  if(!others.length)ob.append(el('small','muted','None in this period.'));
+  others.slice(0,200).forEach(a=>{const r=el('div','sva');r.append(el('span','',a.other),el('small','',fmtDay(a.t)+(email[a.id]?' · '+email[a.id]:'')));ob.append(r)});
+  sg.append(sb,ob);B.append(sg);
   sec('Promo codes');
   const f=el('form','aform');
   const ci=el('input','lk-in');ci.placeholder='CODE';ci.value=genCode();ci.autocapitalize='characters';
@@ -2792,8 +2862,9 @@ function adminRender(){
     if(!q&&P.length>25)al.append(el('p','muted','Showing the 25 newest. Search to find anyone else.'))};
   si.oninput=showAcc;showAcc();
   csv.onclick=()=>{const esc2=v=>'"'+String(v??'').replace(/"/g,'""')+'"',iso=t=>t?new Date(t).toISOString().slice(0,10):'';
-    const rows=[['email','name','joined','last_seen','sign_in','device','language','installed_app','plan','pro_source','pro_until']];
-    P.forEach(p=>{const pr=proOf(p.id),paying=subUids.has(p.id),on=paying||proActiveDoc(pr),u=proUntil(pr);rows.push([p.email,p.name,iso(p.c),iso(p.s),p.via==='google.com'?'google':'email',osName(p.os),p.lang||'',p.app?'yes':'no',on?'pro':'free',paying?'stripe subscription':pr?srcTxt(pr):'',paying?'':u?iso(+u):(on?'forever':'')])});
+    const svOf={};D.survey.forEach(a=>svOf[a.id]=a.src==='other'?'other: '+a.other:srcName(a.src));
+    const rows=[['email','name','joined','last_seen','sign_in','device','language','installed_app','found_via','plan','pro_source','pro_until']];
+    P.forEach(p=>{const pr=proOf(p.id),paying=subUids.has(p.id),on=paying||proActiveDoc(pr),u=proUntil(pr);rows.push([p.email,p.name,iso(p.c),iso(p.s),p.via==='google.com'?'google':'email',osName(p.os),p.lang||'',p.app?'yes':'no',svOf[p.id]||'',on?'pro':'free',paying?'stripe subscription':pr?srcTxt(pr):'',paying?'':u?iso(+u):(on?'forever':'')])});
     saveFile('foliet-accounts-'+new Date().toISOString().slice(0,10)+'.csv',new Blob(['﻿'+rows.map(r=>r.map(esc2).join(',')).join('\r\n')],{type:'text/csv'}))};
 }
 

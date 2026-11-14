@@ -10,6 +10,7 @@ rules_version = '2';
 // redeem/{uid_CODE}      who used which code (one use per person per code)
 // profiles/{uid}         {email, name, via, os, lang, app, created, seen} – for the admin panel's statistics
 // act/{YYYY-MM_uid}      this account used Foliet in that month (one tiny record per month)
+// survey/{uid}           how this person found Foliet: {src, other, at} (asked once, after signing up)
 // admins/{uid}           exists = admin (made by hand in the console)
 // customers/{uid}/...    written by the "Run Payments with Stripe" extension (payments, subscriptions)
 //
@@ -128,6 +129,17 @@ service cloud.firestore {
     match /products/{id} {
       allow read: if true;
       match /prices/{pid} { allow read: if true; }
+    }
+
+    match /survey/{uid} {
+      allow get: if owner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if owner(uid)
+        && request.resource.data.keys().hasOnly(['src', 'other', 'at'])
+        && request.resource.data.src in ['youtube', 'instagram', 'facebook', 'ai', 'other']
+        && request.resource.data.other is string && request.resource.data.other.size() <= 200
+        && (request.resource.data.src != 'other' || request.resource.data.other.size() >= 2)
+        && request.resource.data.at == request.time;
     }
 
     match /admins/{uid} {

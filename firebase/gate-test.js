@@ -5,6 +5,8 @@
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','app');
 const mime={'.html':'text/html','.js':'text/javascript','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2'};
+// the one-time "How did you find Foliet?" question appears after a new account; answer it so the test can go on
+const answerSurvey=async(p,v='youtube')=>{try{await p.waitForSelector('#srv',{timeout:4000})}catch(e){return false}await p.click('#srv .srv-opt[data-v="'+v+'"]');await p.click('#srv .btn');await p.waitForSelector('#srv',{state:'detached'});return true};
 let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 const URL0='http://127.0.0.1:5175/app/?emu=127.0.0.1';
 (async()=>{
@@ -23,7 +25,7 @@ const URL0='http://127.0.0.1:5175/app/?emu=127.0.0.1';
     await p.fill('#a-em',em);await p.fill('#a-pw','secret123');await p.click('#acc-body button[type=submit]');
     try{await p.waitForFunction(()=>ACC.user&&ACC.libUid&&document.querySelector('#acct').classList.contains('hidden'),null,{timeout:15000})}
     catch(e){console.log('DEBUG',await p.evaluate(()=>({u:ACC.user&&ACC.user.email,lib:ACC.libUid,gate:ACC.gate,body:document.querySelector('#acc-body').innerText.slice(0,300)})),errs);throw e}
-    await p.waitForTimeout(300);
+    await answerSurvey(p);await p.waitForTimeout(300);
   };
   const out=async()=>{await p.click('#menub');await p.click('#mout');await p.waitForFunction(()=>!ACC.user&&ACC.gate,null,{timeout:10000});await p.waitForTimeout(200)};
   // notebooks left by the older app version, before any account existed

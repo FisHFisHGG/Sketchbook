@@ -5,6 +5,8 @@
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','app'),PID='sketchbook-b1de1',DB='http://127.0.0.1:8080/v1/projects/'+PID+'/databases/(default)/documents';
 const mime={'.html':'text/html','.js':'text/javascript','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2'};
+// the one-time "How did you find Foliet?" question appears after a new account; answer it so the test can go on
+const answerSurvey=async(p,v='youtube')=>{try{await p.waitForSelector('#srv',{timeout:4000})}catch(e){return false}await p.click('#srv .srv-opt[data-v="'+v+'"]');await p.click('#srv .btn');await p.waitForSelector('#srv',{state:'detached'});return true};
 let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorization:'Bearer owner','Content-Type':'application/json'},body:body&&JSON.stringify(body)});
@@ -13,14 +15,15 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
     f=path.join(ROOT,f.slice(4));if(f.endsWith(path.sep)||f===ROOT)f=path.join(f,'index.html');
     if(f.startsWith(ROOT)&&fs.existsSync(f)&&fs.statSync(f).isFile()){res.writeHead(200,{'Content-Type':mime[path.extname(f)]||'application/octet-stream'});res.end(fs.readFileSync(f))}else{res.writeHead(404);res.end('nf')}}).listen(5178,'127.0.0.1');
   const b=await chromium.launch();
-  const user=async(em)=>{
+  const user=async(em,opts={})=>{
     const ctx=await b.newContext({viewport:{width:1100,height:820}});
     await ctx.addInitScript(()=>{try{localStorage.setItem('sb-tour','99')}catch(e){}});
     await ctx.route(u=>u.hostname!=='127.0.0.1',r=>r.abort());
     const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(em+': '+e.message));
     await p.goto('http://127.0.0.1:5178/app/?emu=127.0.0.1');await p.waitForSelector('#a-em',{timeout:15000});
     await p.click('.btn2');await p.fill('#a-em',em);await p.fill('#a-pw','secret123');await p.click('#acc-body button[type=submit]');
-    await p.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});await p.waitForTimeout(500);
+    await p.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});
+    if(!opts.skipSurvey)await answerSurvey(p);await p.waitForTimeout(500);
     p.uid=await p.evaluate(()=>ACC.user.uid);return p;
   };
   const plan=p=>p.evaluate(()=>document.querySelector('#plan').textContent);
@@ -114,9 +117,30 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(await A.evaluate(()=>{const r=[...document.querySelectorAll('#adm-body .alist')].pop().querySelectorAll('.arow');return r.length===1&&/carol@example\.com/.test(r[0].textContent)}),'search finds an account by email');
   const [dl]=await Promise.all([A.waitForEvent('download'),A.click('text=Download all (CSV)')]);
   const csv=fs.readFileSync(await dl.path(),'utf8').trim().split(/\r?\n/);
-  ok(dl.suggestedFilename().endsWith('.csv')&&csv.length===5&&/"email","name","joined"/.test(csv[0])&&csv.slice(1).every(r=>/@example\.com/.test(r)),'CSV download: header + 4 accounts ('+dl.suggestedFilename()+', '+csv.length+' lines)');
+  ok(dl.suggestedFilename().endsWith('.csv')&&csv.length===5&&/found_via/.test(csv[0])&&csv.slice(1).every(r=>/YouTube/.test(r))&&/"email","name","joined"/.test(csv[0])&&csv.slice(1).every(r=>/@example\.com/.test(r)),'CSV download: header + 4 accounts ('+dl.suggestedFilename()+', '+csv.length+' lines)');
   const r5=await tryWrite(C,async()=>{const F=ACC.F;try{await F.getDocs(F.collectionGroup(ACC.db,'payments'));return 'read!'}catch(e){return e.code}});
   ok(r5==='permission-denied','users can\'t see payments ('+r5+')');
+  // ---- "How did you find Foliet?": mandatory, can't be closed, "Somewhere else" needs words; answers in the admin panel
+  const E=await user('eve@example.com',{skipSurvey:true});
+  await E.waitForSelector('#srv',{timeout:8000});
+  ok(true,'a new account is asked "How did you find Foliet?"');
+  ok(await E.evaluate(()=>!document.querySelector('#srv [aria-label="Close"]')&&document.querySelector('#srv .btn').disabled),'no close button, Continue is off until something is chosen');
+  await E.keyboard.press('Escape');await E.mouse.click(5,5);await E.waitForTimeout(300);
+  ok(await E.evaluate(()=>!!document.querySelector('#srv')),'Escape and tapping outside don\'t close it');
+  await E.click('#srv .srv-opt[data-v="other"]');
+  ok(await E.evaluate(()=>document.querySelector('#srv .btn').disabled&&!document.querySelector('.srv-o').classList.contains('hidden')),'"Somewhere else" shows a box that must be filled in');
+  const r6=await tryWrite(E,async()=>{const F=ACC.F;try{await F.setDoc(F.doc(ACC.db,'survey',ACC.user.uid),{src:'other',other:'',at:F.serverTimestamp()});return 'saved!'}catch(e){return e.code}});
+  ok(r6==='permission-denied','the rules also refuse "Somewhere else" without words ('+r6+')');
+  await E.fill('#srv-other','A friend at school');await E.click('#srv .btn');await E.waitForSelector('#srv',{state:'detached'});
+  ok(await E.evaluate(()=>localStorage.getItem('sb-src:'+ACC.user.uid))==='1','answer saved, the window goes away');
+  await E.reload();await E.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});await E.waitForTimeout(2500);
+  ok(await E.evaluate(()=>!document.querySelector('#srv')),'it isn\'t asked again');
+  await A.click('#adm-r');await A.waitForSelector('#adm-body .aper',{timeout:15000});await A.click('#adm-body .aper >> text=All time');await A.waitForTimeout(200);
+  const sv=await A.evaluate(()=>{const h=[...document.querySelectorAll('#adm-body h3')].find(x=>x.textContent==='How people found Foliet');const box=h.nextElementSibling;return box.textContent});
+  ok(/5 answers/.test(sv)&&/YouTube4 · 80%/.test(sv)&&/A friend at school/.test(sv)&&/eve@example\.com/.test(sv),'admin: 5 answers, YouTube 80%, and Eve\'s own words with her email');
+  await A.selectOption('#adm-body .aper select',ly);await A.waitForTimeout(200);
+  ok(await A.evaluate(()=>/0 answers/.test([...document.querySelectorAll('#adm-body h3')].find(x=>x.textContent==='How people found Foliet').nextElementSibling.textContent)),'a past year: no answers then');
+  await A.click('#adm-body .aper >> text=All time');await A.waitForTimeout(200);
   // ---- locked notebooks
   await A.click('#adm-x');
   await A.click('.cell:not(.add)');await A.waitForTimeout(800);

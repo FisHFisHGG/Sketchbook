@@ -5,6 +5,8 @@
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','app');
 const mime={'.html':'text/html','.js':'text/javascript','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2'};
+// the one-time "How did you find Foliet?" question appears after a new account; answer it so the test can go on
+const answerSurvey=async(p,v='youtube')=>{try{await p.waitForSelector('#srv',{timeout:4000})}catch(e){return false}await p.click('#srv .srv-opt[data-v="'+v+'"]');await p.click('#srv .btn');await p.waitForSelector('#srv',{state:'detached'});return true};
 let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 const ANDROID='Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36';
 (async()=>{
@@ -21,7 +23,7 @@ const ANDROID='Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTM
     await cdp.send('WebAuthn.addVirtualAuthenticator',{options:{protocol:'ctap2',transport:'internal',hasResidentKey:true,hasUserVerification:true,isUserVerified:true,automaticPresenceSimulation:true}});
     await p.goto('http://localhost:5179/app/?emu=127.0.0.1');await p.waitForSelector('#a-em',{timeout:15000});
     await p.tap('.btn2');await p.fill('#a-em',label+'@example.com');await p.fill('#a-pw','secret123');await p.tap('#acc-body button[type=submit]');
-    await p.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});await p.waitForTimeout(400);
+    await p.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});await answerSurvey(p);await p.waitForTimeout(400);
     await p.tap('.cell:not(.add)');await p.waitForTimeout(700);await p.tap('#block');await p.waitForSelector('#lockd:not(.hidden)');
     const offered=await p.evaluate(()=>/fingerprint/i.test(document.querySelector('#lockc').textContent));
     const ins=await p.$$('#lockc .lk-in');await ins[0].fill('2468');await ins[1].fill('2468');await p.tap('text=Lock notebook');
