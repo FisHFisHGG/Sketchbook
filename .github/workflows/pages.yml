@@ -1,6 +1,7 @@
 name: Publish site
 
-# Publică rădăcina repo-ului pe GitHub Pages la fiecare push pe main.
+# Publică site-ul (landing + aplicație) pe GitHub Pages la fiecare push pe main.
+# Se publică doar fișierele site-ului, nu și cele interne (CLAUDE.md, firebase/, README...).
 on:
   push:
     branches: [main]
@@ -24,8 +25,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Collect the site files
+        run: |
+          mkdir _site
+          cp -r index.html og.png .nojekyll app _site/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

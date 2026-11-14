@@ -1,0 +1,46 @@
+rules_version = '2';
+// Foliet – Firestore security rules.
+// Paste into Firebase console → Firestore Database → Rules → Publish.
+//
+// users/{uid}            manifest of a user's cloud copy: m.{record} = {h: hash, n: chunks}
+// users/{uid}/r/{rec}    one notebook record (or a chunk of it): {h, n, i, d}
+// pro/{uid}              exists = this user has Pro (created by you in the console, for now)
+//
+// Only the owner can read their data. Only Pro users can write (so free users can't create costs).
+// If Pro ends, the owner can still read (download) what they saved.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function owner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isPro() {
+      return signedIn() && (request.auth.token.get('stripeRole', '') == 'pro'
+        || exists(/databases/$(database)/documents/pro/$(request.auth.uid)));
+    }
+
+    match /users/{uid} {
+      allow read: if owner(uid);
+      allow create, update: if owner(uid) && isPro()
+        && request.resource.data.keys().hasOnly(['m', 'v'])
+        && request.resource.data.m is map;
+      allow delete: if owner(uid);
+
+      match /r/{rec} {
+        allow read: if owner(uid);
+        allow create, update: if owner(uid) && isPro()
+          && request.resource.data.keys().hasOnly(['h', 'n', 'i', 'd'])
+          && request.resource.data.d is string
+          && request.resource.data.d.size() <= 400000;
+        allow delete: if owner(uid);
+      }
+    }
+
+    match /pro/{uid} {
+      allow read: if owner(uid);
+      allow write: if false; // only from the console (later: from the Stripe extension)
+    }
+
+    match /{other=**} {
+      allow read, write: if false;
+    }
+  }
+}
