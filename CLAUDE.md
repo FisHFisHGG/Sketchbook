@@ -22,6 +22,8 @@ app/icon-*.png             iconițe
 ## Reguli tehnice
 - Aplicația este **un singur fișier**: `app/index.html` (HTML/CSS/JS, **fără framework**).
 - Este PWA: `app/sw.js` + `app/manifest.webmanifest`. Când schimbi fișierele din shell, crește versiunea cache-ului din `sw.js`.
+- Casetele de text (unealta Text) sunt „bucăți” de text cu stil: `o.rs = [{t, c, f, b, i, fm}]` (culoare, mărime, bold, italic, font); doar ce diferă de stilul casetei se salvează. `o.t` e textul simplu (pentru căutare). Desenarea pe canvas e în `drawRuns()`, editarea în funcțiile `rt*`.
+- Cu tastatura deschisă, editorul se potrivește în zona vizibilă (`initKb()`, clasa `kb`), iar bara de text rămâne deasupra tastaturii.
 - Datele stau **local în browser** (IndexedDB / localStorage). Conturile și sincronizarea în cloud vin mai târziu.
 
 ## Planuri

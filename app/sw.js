@@ -1,5 +1,5 @@
 /* Sketchbook service worker: the app shell opens offline; fonts and libraries are cached on first use. */
-const V = 'sb-v1', RT = 'sb-rt';
+const V = 'sb-v2', RT = 'sb-rt';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(SHELL.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))).then(() => self.skipWaiting()));
