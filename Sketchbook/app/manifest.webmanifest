@@ -1,0 +1,17 @@
+{
+  "name": "Sketchbook",
+  "short_name": "Sketchbook",
+  "description": "Sketch, write and plan in realistic notebooks.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#e4e9e6",
+  "theme_color": "#e4e9e6",
+  "categories": ["productivity", "graphics"],
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

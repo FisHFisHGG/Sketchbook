@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sketchbook – a notebook that opens in your browser</title>
+<meta name="description" content="Realistic notebooks in your browser: draw, write and plan, with pages you turn by hand.">
+<meta name="theme-color" content="#e4e9e6">
+<link rel="icon" href="app/icon-192.png">
+<link rel="apple-touch-icon" href="app/icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Caveat:wght@500;700&display=swap">
+<style>
+:root{--bg:#e8eeec;--ink:#141f26;--muted:#4b5b63;--line:#c4cfcc;--paper:#fbfbf6;--cover:#23407a;--accent:#e0a526;--onacc:#1a1405;--sh:rgba(20,31,38,.38);
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11181b;--ink:#e9efed;--muted:#9fb0b7;--line:#2b3940;--sh:rgba(0,0,0,.6)}}
+:root[data-theme="dark"]{--bg:#11181b;--ink:#e9efed;--muted:#9fb0b7;--line:#2b3940;--sh:rgba(0,0,0,.6)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 "Bricolage Grotesque",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+a{color:inherit}
+button,a.btn{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:20px;height:64px}
+.logo{font-weight:700;font-size:1.2rem;letter-spacing:-.02em;text-decoration:none;display:flex;align-items:center;gap:10px;margin-right:auto}
+.logo i{display:block;width:20px;height:26px;background:var(--cover);border-radius:2px 5px 5px 2px;box-shadow:inset 4px 0 0 rgba(0,0,0,.25),2px 2px 0 #0f1e40}
+.nav a.l{text-decoration:none;color:var(--muted);font-weight:600}
+.nav a.l:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2px solid transparent;border-radius:999px;padding:11px 22px;font-weight:700;text-decoration:none;line-height:1.1;white-space:nowrap}
+.btn.pri{background:var(--accent);color:var(--onacc)}
+.btn.pri:hover{filter:brightness(1.07)}
+.btn.sec{border-color:var(--ink);background:none;color:var(--ink)}
+.btn.sec:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.btn.txt{background:none;color:var(--ink);padding-inline:10px}
+.btn.sm{padding:8px 16px}
+@media (max-width:640px){.nav{gap:8px}.nav a.l{display:none}.btn.sm{padding:8px 12px}}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:40px;padding:64px 0 72px}
+h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;font-weight:700;margin:0 0 22px;max-width:13ch}
+.lead{font-size:1.2rem;color:var(--muted);max-width:34ch;margin:0 0 30px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.fine{margin:18px 0 0;font-size:.9rem;color:var(--muted)}
+@media (max-width:860px){.hero{grid-template-columns:1fr;padding-top:36px}.stage{justify-self:center}}
+
+/* The book */
+.stage{--pw:clamp(118px,28vw,270px);position:relative;width:calc(var(--pw)*2);height:calc(var(--pw)*1.62);display:grid;place-items:center;perspective:1500px}
+.book{position:relative;width:var(--pw);height:calc(var(--pw)*1.333);transform-style:preserve-3d;animation:bk 11s ease-in-out infinite}
+.pgs{position:absolute;inset:0;isolation:isolate;border-radius:3px 10px 10px 3px;background:var(--paper);overflow:visible;
+  box-shadow:1px 1px 0 #fff,2px 2px 0 #d3d0c4,3px 3px 0 #fff,4px 4px 0 #d3d0c4,5px 5px 0 #fff,6px 6px 0 #d3d0c4,7px 7px 0 #fff,8px 8px 0 #d3d0c4,0 36px 42px -14px var(--sh)}
+.pgs::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle,rgba(60,90,140,.32) 1.2px,transparent 1.7px) 0 0/calc(var(--pw)/9) calc(var(--pw)/9)}
+.pgs h3,.pgs .tag{position:absolute;margin:0;font-family:Caveat,cursive;font-weight:700;color:#1d2b4a}
+.pgs h3{left:9%;top:7%;font-size:calc(var(--pw)*.16);line-height:1}
+.pgs h3::after{content:"";position:absolute;left:-3%;right:-3%;bottom:8%;height:36%;background:rgba(224,165,38,.55);z-index:-1;transform:rotate(-1.5deg)}
+.pgs svg{position:absolute;overflow:visible}
+.note{position:absolute;left:12%;bottom:10%;width:42%;aspect-ratio:1;background:#f7c9dd;border-radius:3px;transform:rotate(-5deg);box-shadow:0 6px 12px rgba(0,0,0,.22);padding:7% 8%;font-family:Caveat,cursive;font-weight:700;font-size:calc(var(--pw)*.105);line-height:1.1;color:#3a2a33}
+.cv{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;animation:cv 11s cubic-bezier(.62,0,.3,1) infinite}
+.cv>div{position:absolute;inset:0;border-radius:3px 10px 10px 3px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.f{background:var(--cover);display:grid;place-items:center;
+  box-shadow:inset 8px 0 0 rgba(0,0,0,.22),1px 1px 0 #1d3566,2px 2px 0 #1b3262,3px 3px 0 #192f5e,4px 4px 0 #172c5a,5px 5px 0 #152956,6px 6px 0 #132652,7px 7px 0 #11234e,8px 8px 0 #0f204a,9px 9px 0 #0d1d46,10px 10px 0 #0b1a42,0 36px 42px -14px var(--sh)}
+.f span{background:var(--paper);color:#222;padding:.55em .9em;font-weight:700;font-size:calc(var(--pw)*.075);border-radius:2px}
+.b{transform:rotateY(180deg);border-radius:10px 3px 3px 10px!important;background:var(--paper) linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.28) 0) 0 0/100% calc(var(--pw)/9);box-shadow:inset -10px 0 14px -10px rgba(0,0,0,.18);font-family:Caveat,cursive;font-weight:700;font-size:calc(var(--pw)*.1);color:#1d2b4a;padding:14% 10%}
+@keyframes cv{0%,9%{transform:rotateY(0)}33%,72%{transform:rotateY(-168deg)}93%,100%{transform:rotateY(0)}}
+@keyframes bk{0%,9%{transform:rotateX(8deg) translateX(0)}33%,72%{transform:rotateX(8deg) translateX(50%)}93%,100%{transform:rotateX(8deg) translateX(0)}}
+@media (prefers-reduced-motion:reduce){.book,.cv{animation:none}.book{transform:rotateX(8deg) translateX(50%)}.cv{transform:rotateY(-168deg)}html{scroll-behavior:auto}}
+
+/* Scroll tour */
+/* page style picker */
+.ps{position:absolute;left:50%;top:50%;width:calc(var(--pw)*1.9);transform:translate(-50%,-46%) scale(.94);background:var(--paper);color:#1b2430;border-radius:14px;padding:calc(var(--pw)*.1);box-shadow:0 18px 40px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .5s,transform .5s;font-size:calc(var(--pw)*.09)}
+.demo[data-s="5"] .ps{opacity:1;transform:translate(-50%,-50%)}
+.demo[data-s="5"] .dbook{opacity:0}
+.ps b{display:block;margin-bottom:.7em;font-size:1.1em}
+.pm{display:grid;grid-template-columns:repeat(4,1fr);gap:.8em}
+.pm span{display:flex;flex-direction:column;align-items:center;gap:.4em;font-weight:600;font-size:.85em;padding:.5em .3em;border:2px solid #d5d8d0;border-radius:10px;animation:psel 8s infinite}
+.pm span:nth-child(2){animation-delay:2s}.pm span:nth-child(3){animation-delay:4s}.pm span:nth-child(4){animation-delay:6s}
+.pm i{display:block;width:100%;aspect-ratio:3/4;border:1px solid #d5d8d0;border-radius:3px;background-color:#fdfdfa;background-size:calc(var(--pw)*.1) calc(var(--pw)*.1)}
+.pm .a{background-image:none}
+.pm .b{background-image:linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.45) 0)}
+.pm .c{background-image:linear-gradient(rgba(60,90,140,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(60,90,140,.4) 1px,transparent 1px)}
+.pm .d{background-image:radial-gradient(circle,rgba(60,90,140,.7) 1px,transparent 1.5px)}
+@keyframes psel{0%,24%{border-color:#23407a;background:rgba(35,64,122,.1)}25%,100%{border-color:#d5d8d0;background:none}}
+.pc{display:flex;gap:.6em;margin-top:1em;align-items:center}
+.pc u{width:1.5em;height:1.5em;border-radius:50%;box-shadow:0 0 0 1px #c9cfcb}
+.pc u:nth-child(1){background:#fdfdfa}.pc u:nth-child(2){background:#f6efe0}.pc u:nth-child(3){background:#e6eef7}.pc u:nth-child(4){background:#eaf3e7}.pc u:nth-child(5){background:#2b2f36}
+.pc em{margin-left:auto;font-style:normal;opacity:.65;font-size:.85em}
+
+.mi{display:inline-block;width:12px;height:15px;margin-right:6px;vertical-align:-2px;border-radius:2px;background:#fbfbf6;background-size:4px 4px}
+.mi.m1{background-image:linear-gradient(transparent 3px,rgba(60,90,140,.6) 0);background-size:100% 4px}
+.mi.m2{background-image:linear-gradient(rgba(60,90,140,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(60,90,140,.55) 1px,transparent 1px)}
+.mi.m3{background-image:radial-gradient(circle,rgba(60,90,140,.8) .8px,transparent 1.2px)}
+.sub{color:var(--muted);margin:-18px 0 30px;max-width:46ch}
+.tour{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:start}
+.st{min-height:78vh;display:flex;flex-direction:column;justify-content:center;opacity:.28;transition:opacity .4s}
+.st.on{opacity:1}
+.st h3{font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-.025em;line-height:1.08;margin:0 0 12px}
+.st p{margin:0;color:var(--muted);max-width:40ch}
+.st .soon{margin-left:10px}
+.tour-demo{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);height:min(calc(100vh - 120px),620px);display:grid;place-items:center}
+@media (max-width:860px){.tour{grid-template-columns:1fr;gap:0}.tour-demo{order:-1;top:calc(env(safe-area-inset-top,0px) + 64px);height:46vh;z-index:5;background:linear-gradient(var(--bg) 88%,transparent)}.st{min-height:60vh}}
+.demo{--pw:clamp(84px,16vw,178px);display:grid;gap:22px;justify-items:center;pointer-events:none}
+@media (max-width:860px){.demo{--pw:clamp(66px,23vw,118px);gap:12px}}
+.dstage{position:relative;width:calc(var(--pw)*2);height:calc(var(--pw)*1.333);perspective:1400px}
+.dbook{position:absolute;inset:0;transform-style:preserve-3d;transform:translateX(calc(var(--pw)*-.5)) rotateX(6deg);transition:transform 1s cubic-bezier(.6,0,.3,1),opacity .5s}
+.g1 .dbook{transform:rotateX(6deg)}
+.g7 .dbook{opacity:.1}
+.dpr{position:absolute;left:50%;top:0;width:50%;height:100%;z-index:1;background:var(--paper);border-radius:0 8px 8px 0;isolation:isolate;
+  box-shadow:1px 1px 0 #fff,2px 2px 0 #d3d0c4,3px 3px 0 #fff,4px 4px 0 #d3d0c4,5px 5px 0 #fff,6px 6px 0 #d3d0c4,0 26px 34px -12px var(--sh)}
+.dpr>*{position:absolute}
+.pat{inset:0;border-radius:inherit}
+.pl-lines{background:linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.3) 0) 0 0/100% calc(var(--pw)/7)}
+.pl-grid{background:linear-gradient(rgba(60,90,140,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(60,90,140,.3) 1px,transparent 1px);background-size:calc(var(--pw)/7) calc(var(--pw)/7)}
+.pl-dots{background:radial-gradient(circle,rgba(60,90,140,.45) 1.2px,transparent 1.7px) 0 0/calc(var(--pw)/7) calc(var(--pw)/7)}
+@keyframes ls{0%{opacity:0}6%,30%{opacity:1}36%,100%{opacity:0}}
+.ink{inset:0;width:100%;height:100%;opacity:0;fill:none;stroke:#1d1d1b;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ink path{stroke-dasharray:1;stroke-dashoffset:1}
+.g3 .ink{opacity:1}
+.g3 .ink path{animation:dr 1.1s ease forwards}
+.g3 .ink .p2{animation-delay:.9s;stroke:#c0392b}
+.g3 .ink .p3{animation-delay:1.6s;stroke:#23407a}
+.g3 .ink .p4{animation-delay:2.2s;stroke:#23407a}
+@keyframes dr{to{stroke-dashoffset:0}}
+.txt{left:10%;top:6%;font-family:Caveat,cursive;font-weight:700;font-size:calc(var(--pw)*.22);color:#1d2b4a;opacity:0;line-height:1}
+.g4 .txt{animation:pop .5s both}
+.stk{right:8%;top:14%;width:30%;opacity:0}
+.g4 .stk{animation:pop .5s .3s both}
+.snote{left:10%;bottom:9%;width:44%;aspect-ratio:1;background:#f7c9dd;border-radius:3px;padding:6%;font-family:Caveat,cursive;font-weight:700;font-size:calc(var(--pw)*.14);line-height:1.05;color:#3a2a33;opacity:0;box-shadow:0 6px 12px rgba(0,0,0,.22)}
+.g4 .snote{animation:drop .6s .7s both}
+@keyframes pop{0%{transform:scale(0) rotate(-20deg);opacity:0}70%{transform:scale(1.15)}100%{transform:none;opacity:1}}
+@keyframes drop{from{transform:translateY(-34px) rotate(-12deg);opacity:0}to{transform:rotate(-5deg);opacity:1}}
+.leaf{position:absolute;left:50%;top:0;width:50%;height:100%;z-index:3;transform-origin:left center;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.6,0,.3,1)}
+.g2 .leaf{transform:rotateY(-180deg);z-index:5}
+.leaf>div,.cvr>div{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.lf{background:var(--paper) linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.28) 0) 0 0/100% calc(var(--pw)/7);border-radius:0 8px 8px 0;box-shadow:1px 1px 0 #fff,2px 2px 0 #d3d0c4;padding:12% 10%;font-family:Caveat,cursive;font-weight:700;color:#1d2b4a;font-size:calc(var(--pw)*.2)}
+.lf small{display:block;margin-top:8%;font-size:calc(var(--pw)*.1);color:#56626c;line-height:1.3}
+.lb{transform:rotateY(180deg);background:var(--paper) linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.28) 0) 0 0/100% calc(var(--pw)/7);border-radius:8px 0 0 8px;box-shadow:inset -8px 0 12px -8px rgba(0,0,0,.16),-1px 1px 0 #fff,-2px 2px 0 #d3d0c4}
+.cvr{position:absolute;left:50%;top:0;width:50%;height:100%;z-index:4;transform-origin:left center;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.6,0,.3,1)}
+.g1 .cvr{transform:rotateY(-180deg)}
+.cf{background:var(--cover);border-radius:0 8px 8px 0;display:grid;place-items:center;
+  box-shadow:inset 6px 0 0 rgba(0,0,0,.22),1px 1px 0 #1d3566,2px 2px 0 #1b3262,3px 3px 0 #192f5e,4px 4px 0 #172c5a,5px 5px 0 #152956,6px 6px 0 #132652,7px 7px 0 #11234e,8px 8px 0 #0f204a,0 26px 34px -12px var(--sh)}
+.cf span{background:var(--paper);color:#222;padding:.5em .8em;font-weight:700;font-size:calc(var(--pw)*.12);border-radius:2px}
+.cb{transform:rotateY(180deg);background:var(--paper) linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.28) 0) 0 0/100% calc(var(--pw)/7);border-radius:8px 0 0 8px;box-shadow:inset -8px 0 12px -8px rgba(0,0,0,.16),-1px 1px 0 #1d3566,-2px 2px 0 #1b3262,-3px 3px 0 #192f5e,-4px 4px 0 #172c5a;padding:12% 10%;font-family:Caveat,cursive;font-weight:700;font-size:calc(var(--pw)*.17);color:#1d2b4a;line-height:1.05}
+.pdfp{position:absolute;left:50%;top:0;width:50%;height:100%;z-index:2;background:#fff;border-radius:0 8px 8px 0;overflow:hidden;opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s;box-shadow:0 26px 34px -12px var(--sh)}
+.g6 .pdfp{opacity:1;transform:none}
+.g7 .pdfp{opacity:0}
+.pdfp .bar{background:#3b4048;color:#fff;font-size:calc(var(--pw)*.08);padding:3% 6%;font-weight:600}
+.pdfp .doc{padding:8% 8%}
+.pdfp .doc b{display:block;height:calc(var(--pw)*.07);width:60%;background:#23407a;border-radius:2px;margin-bottom:8%}
+.pdfp .doc i{display:block;height:calc(var(--pw)*.035);background:#cfd4d8;border-radius:2px;margin-bottom:5%}
+.pdfp .doc i.s{width:70%}
+.pdfp .chart{display:flex;align-items:flex-end;gap:6%;height:24%;margin-top:8%}
+.pdfp .chart u{flex:1;background:#9db3d6;border-radius:2px 2px 0 0}
+.pdfp .chart u:nth-child(1){height:40%}.pdfp .chart u:nth-child(2){height:75%}.pdfp .chart u:nth-child(3){height:55%}.pdfp .chart u:nth-child(4){height:95%}
+.pdfp svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#c0392b;stroke-width:1.8;stroke-linecap:round}
+.pdfp svg path{stroke-dasharray:1;stroke-dashoffset:1}
+.g6 .pdfp svg path{animation:dr 1s .5s ease forwards}
+.pdfp .pro{position:absolute;right:6%;top:12%;background:var(--accent);color:var(--onacc);font-weight:700;font-size:calc(var(--pw)*.08);padding:2% 6%;border-radius:999px}
+.ovl{position:absolute;inset:-6% -8%;display:grid;grid-template-columns:repeat(4,1fr);gap:7%;align-content:center;opacity:0;transform:scale(.94);transition:opacity .5s,transform .5s}
+.g7 .ovl{opacity:1;transform:none}
+.ovl span{aspect-ratio:3/4;background:var(--paper);border-radius:3px;box-shadow:0 5px 12px rgba(0,0,0,.3);background-image:linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.3) 0);background-size:100% 12%}
+.ovl span:nth-child(5){outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:calc(var(--pw)*2.4);min-height:34px}
+.chips span{padding:5px 12px;border-radius:999px;background:color-mix(in srgb,var(--ink) 10%,transparent);font-size:.85rem;font-weight:600;animation:chip .4s both}
+@keyframes chip{from{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){.dbook,.leaf,.cvr,.pdfp,.ovl{transition:none}.g3 .ink path,.g6 .pdfp svg path{animation:none;stroke-dashoffset:0}.g4 .txt,.g4 .stk,.g4 .snote{animation:none;opacity:1}.g5 .pat{animation:none}.g5 .pl-grid{opacity:1}.chips span{animation:none}}
+/* FAQ */
+details{border-top:1px solid var(--line);padding:18px 0}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;font-weight:700;font-size:1.12rem;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:1.4rem;line-height:1;color:var(--muted)}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);max-width:62ch;margin:10px 0 0}
+.faq{max-width:820px}
+/* Sections */
+section{padding:72px 0}
+h2{font-size:clamp(1.9rem,4vw,2.9rem);letter-spacing:-.03em;line-height:1.05;margin:0 0 36px;font-weight:700;max-width:18ch}
+.index{list-style:none;margin:0;padding:0;border-bottom:1px solid var(--line)}
+.index li{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:8px 40px;padding:22px 0;border-top:1px solid var(--line)}
+.index b{font-size:1.25rem;letter-spacing:-.015em}
+.index p{margin:0;color:var(--muted);max-width:58ch}
+@media (max-width:700px){.index li{grid-template-columns:1fr}}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;margin-bottom:14px}
+.steps b{display:block;font-size:1.2rem;margin-bottom:4px}
+.steps p{margin:0;color:var(--muted)}
+.soon{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent) 30%,transparent);font-size:.78rem;font-weight:700;vertical-align:middle}
+@media (max-width:700px){.steps{grid-template-columns:1fr}}
+
+/* Pricing: a lined notebook page */
+.sheet{position:relative;background:var(--paper) linear-gradient(transparent 33px,rgba(60,90,140,.22) 34px) 0 0/100% 34px;color:#1b2430;border-radius:4px 14px 14px 4px;padding:34px 34px 34px 84px;box-shadow:1px 1px 0 #fff,3px 3px 0 #d3d0c4,5px 5px 0 #fff,7px 7px 0 #d3d0c4,0 40px 50px -20px var(--sh)}
+.sheet::before{content:"";position:absolute;left:58px;top:0;bottom:0;width:2px;background:rgba(200,70,70,.4)}
+.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 56px}
+.plan h3{margin:0;font-size:1.5rem;line-height:34px}
+.price{font-size:2.2rem;font-weight:700;letter-spacing:-.03em;line-height:68px}
+.price small{font-size:1rem;font-weight:400;color:#56626c;letter-spacing:0}
+.plan ul{list-style:none;margin:0 0 34px;padding:0}
+.plan li{line-height:34px}
+.sheet .btn.sec{border-color:#1b2430;color:#1b2430}
+.sheet .btn.sec:hover{background:rgba(27,36,48,.08)}
+.sheet .fine{color:#56626c;margin-top:22px}
+@media (max-width:700px){.plans{grid-template-columns:1fr}.sheet{padding-left:64px}.sheet::before{left:40px}}
+.bill{display:inline-flex;border:2px solid #1b2430;border-radius:999px;overflow:hidden;margin:0 0 34px;height:40px}
+.bill button{white-space:nowrap;background:none;border:0;padding:0 14px;font-weight:700;color:#1b2430;display:flex;align-items:center;gap:8px}
+.bill button[aria-pressed="true"]{background:#1b2430;color:#fbfbf6}
+.save{white-space:nowrap;font-size:.75rem;padding:2px 8px;border-radius:999px;background:var(--accent);color:var(--onacc)}
+.eq{margin:0;line-height:34px;color:#56626c;font-size:.95rem}
+.plan li.no{color:#8a949b;text-decoration:line-through}
+.closing{text-align:left}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:.92rem}
+
+/* Login dialog */
+dialog{border:0;border-radius:18px;padding:0;width:min(420px,calc(100% - 32px));background:var(--paper);color:#1b2430;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(8,12,14,.6)}
+.dg{padding:26px}
+.dg h2{font-size:1.7rem;margin:0 0 4px}
+.dg .sub{margin:0 0 18px;color:#56626c;font-size:.95rem}
+.tabs{display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid #d5d8d0}
+.tabs button{background:none;border:0;padding:8px 14px;font-weight:700;color:#56626c;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:#1b2430;border-color:var(--cover)}
+label{display:block;font-weight:600;font-size:.92rem;margin-bottom:12px}
+input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px solid #b9c0bd;border-radius:10px;font:inherit;background:#fff;color:#1b2430}
+.dg .btn{width:100%;margin-top:6px}
+.dg .alt{display:block;text-align:center;margin-top:14px;color:#56626c;font-size:.92rem}
+.note-demo{margin:16px 0 0;padding:10px 12px;border-radius:10px;background:rgba(224,165,38,.22);font-size:.85rem;color:#4a3a08}
+.x{position:absolute;right:12px;top:10px;background:none;border:0;font-size:1.4rem;color:#56626c;padding:6px 10px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top"><i></i>Sketchbook</a>
+    <a class="l" href="#inside">Features</a>
+    <a class="l" href="#pricing">Pricing</a>
+    <a class="l" href="#faq">FAQ</a>
+    <button class="btn txt sm" data-open="login">Log in</button>
+    <button class="btn pri sm" data-open="signup">Start free</button>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <h1>A sketchbook that opens in your browser.</h1>
+      <p class="lead">Draw, write and stick things down in notebooks that feel like paper. Nothing to install, nothing to carry.</p>
+      <div class="cta">
+        <button class="btn pri" data-open="signup">Start free</button>
+        <a class="btn sec" href="#inside">See what’s inside</a>
+      </div>
+      <p class="fine">Works on phones, tablets and laptops.</p>
+    </div>
+    <div class="stage" role="img" aria-label="A blue notebook with a thick cover opening to a page of sketches and a pink sticky note">
+      <div class="book">
+        <div class="pgs">
+          <h3>Ideas</h3>
+          <svg style="right:10%;top:9%;width:30%" viewBox="0 0 100 100"><path d="M50 8l12 28 30 3-23 20 7 30-26-16-26 16 7-30L8 39l30-3z" fill="#ffd23f" stroke="#e0a800" stroke-width="5" stroke-linejoin="round"/></svg>
+          <svg style="left:8%;top:26%;width:62%" viewBox="0 0 120 50"><path d="M4 38c14-30 26-30 34-6s18 22 30-6 22-20 48-20" fill="none" stroke="#1d1d1b" stroke-width="3.2" stroke-linecap="round"/></svg>
+          <div class="note">buy more paper</div>
+        </div>
+        <div class="cv"><div class="f"><span>Sketches</span></div><div class="b">This one is yours.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <section id="inside">
+    <div class="wrap">
+      <h2>See what’s inside</h2>
+      <p class="sub">Scroll down. The notebook next to the text shows each feature as it comes up.</p>
+      <div class="tour">
+        <div class="tour-text">
+          <article class="st on" data-s="0"><h3>A notebook with weight</h3><p>A thick cover with a stack of pages behind it. Choose the cover color, then draw or put a photo on it.</p></article>
+          <article class="st" data-s="1"><h3>It opens like the real thing</h3><p>Tap the cover and it swings open. Pages have thickness, and you can see the stack on both sides.</p></article>
+          <article class="st" data-s="2"><h3>Pages you turn by hand</h3><p>Drag a page and it follows your finger. You see its edge as it turns, then it settles flat.</p></article>
+          <article class="st" data-s="3"><h3>Drawing tools that behave</h3><p>Pen, pencil, a brush that thins as you move faster, marker, highlighter, shapes and fill. Each tool remembers its size, and opacity is one slider away.</p></article>
+          <article class="st" data-s="4"><h3>Words, stickers and notes</h3><p>Eight fonts, 28 stickers and sticky notes. Every one stays movable. Resize, rotate or edit it any time.</p></article>
+          <article class="st" data-s="5"><h3>Pages set up your way</h3><p>Choose how each page looks: blank, lined, grid or dots, on several paper colors, in portrait or landscape. Apply it to one page or to all of them.</p></article>
+          <article class="st" data-s="6"><h3>Your PDFs, ready to mark up<span class="soon">Pro</span></h3><p>Choose portrait or landscape and each PDF page fits a notebook page. Write, circle and annotate on top.</p></article>
+          <article class="st" data-s="7"><h3>Every page at a glance</h3><p>See the whole notebook at once. Reorder pages, duplicate them, delete them, or jump straight to one.</p></article>
+        </div>
+        <div class="tour-demo" aria-hidden="true">
+          <div class="demo g0" id="demo" data-s="0">
+            <div class="dstage">
+              <div class="dbook">
+                <div class="dpr">
+                  <div class="pat pl-lines"></div>
+                  <svg class="ink" viewBox="0 0 100 133" preserveAspectRatio="none">
+                    <path class="p1" pathLength="1" d="M10 70L28 48L42 64L58 38L76 66L90 52"/>
+                    <path class="p2" pathLength="1" d="M74 24a8 8 0 1 0 0.1 0"/>
+                    <path class="p3" pathLength="1" d="M18 100H62M53 93L62 100L53 107"/>
+                    <path class="p4" pathLength="1" d="M70 92h18a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H70a3 3 0 0 1-3-3V95a3 3 0 0 1 3-3z"/>
+                  </svg>
+                  <div class="txt">Plan</div>
+                  <svg class="stk" viewBox="0 0 100 100"><path d="M50 8l12 28 30 3-23 20 7 30-26-16-26 16 7-30L8 39l30-3z" fill="#ffd23f" stroke="#e0a800" stroke-width="5" stroke-linejoin="round"/></svg>
+                  <div class="snote">water the plants</div>
+                </div>
+                <div class="pdfp"><div class="bar">report.pdf</div><div class="doc"><b></b><i></i><i></i><i class="s"></i><div class="chart"><u></u><u></u><u></u><u></u></div></div><svg viewBox="0 0 100 133"><path pathLength="1" d="M52 78c-2-12 22-18 34-8s6 22-12 24-24-4-22-16z"/></svg><span class="pro">Pro</span></div>
+                <div class="leaf"><div class="lf">Welcome<small>This one is yours.</small></div><div class="lb"></div></div>
+                <div class="cvr"><div class="cf"><span>Sketches</span></div><div class="cb">Day one</div></div>
+              </div>
+              <div class="ps"><b>Page style</b><div class="pm"><span><i class="a"></i>Blank</span><span><i class="b"></i>Lined</span><span><i class="c"></i>Grid</span><span><i class="d"></i>Dots</span></div><div class="pc"><u></u><u></u><u></u><u></u><u></u><em>Paper color</em></div></div>
+              <div class="ovl"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="chips" id="chips"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Start in under a minute</h2>
+      <ol class="steps">
+        <li><b>Create your account</b><p>Email and a password. That’s all.</p></li>
+        <li><b>Make a notebook</b><p>Choose portrait or landscape, pick a cover color, and open it.</p></li>
+        <li><b>Take it with you<span class="soon">Cloud sync coming</span></b><p>Notebooks are saved in your browser today. Sync across devices is next.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="wrap">
+      <h2>Simple pricing</h2>
+      <div class="sheet">
+        <div class="bill" role="group" aria-label="Billing period">
+          <button id="b-year" aria-pressed="true">Yearly<span class="save">Save 50%</span></button>
+          <button id="b-month" aria-pressed="false">Monthly</button>
+        </div>
+        <div class="plans">
+          <div class="plan">
+            <h3>Free</h3>
+            <div class="price">€0</div>
+            <ul><li>2 notebooks</li><li>Up to 20 pages each</li><li>Every drawing tool</li><li>Stickers, notes and text</li></ul>
+            <button class="btn sec" data-open="signup">Start free</button>
+          </div>
+          <div class="plan">
+            <h3>Pro</h3>
+            <div class="price"><span id="pp">€29.99</span> <small id="pu">per year</small></div>
+            <p class="eq" id="pe">That’s €2.50 a month.</p>
+            <ul><li>Unlimited notebooks and pages</li><li>PDF import</li><li>Export to PDF and image</li><li>Cloud sync<span class="soon">soon</span></li></ul>
+            <button class="btn pri" id="pbtn" data-open="signup">Choose Pro yearly</button>
+          </div>
+        </div>
+        <p class="fine">Preview pricing. Nobody is charged yet. Taxes may apply at checkout.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap faq">
+      <h2>Questions</h2>
+      <details><summary>Is it really free?</summary><p>Yes. The free plan gives you 2 notebooks with up to 20 pages each, every drawing tool, stickers, notes and text. Pro adds unlimited notebooks and pages, PDF import and export.</p></details>
+      <details><summary>Where are my notebooks saved?</summary><p>Today, in your browser on the device you use. Cloud sync is coming, so you can open the same notebooks on your phone and your laptop. Until then, clearing your browser data would remove them.</p></details>
+      <details><summary>Does it work on my phone or tablet?</summary><p>Yes, in any modern browser. It works with touch and with a stylus, and it reads pen pressure when your device provides it.</p></details>
+      <details><summary>Can I import a PDF?</summary><p>With Pro. You choose portrait or landscape, and each PDF page is fitted onto a notebook page so you can write on top of it.</p></details>
+      <details><summary>Can I cancel any time?</summary><p>Yes. Monthly plans can be cancelled whenever you like, and yearly plans simply don’t renew. Nobody is charged yet, because paid plans haven’t launched.</p></details>
+      <details><summary>What happens if I go back to the free plan?</summary><p>Your notebooks stay. You just can’t add more pages or notebooks beyond the free limits.</p></details>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <h2>Open a blank page.</h2>
+      <button class="btn pri" data-open="signup">Start free</button>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">© Sketchbook. A work in progress, made with care.</div></footer>
+
+<dialog id="dlg" aria-labelledby="dt">
+  <button class="x" id="dx" aria-label="Close">×</button>
+  <div class="dg">
+    <h2 id="dt">Welcome back</h2>
+    <p class="sub" id="ds">Log in to open your notebooks.</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="t-login" aria-selected="true">Log in</button>
+      <button role="tab" id="t-signup" aria-selected="false">Create account</button>
+    </div>
+    <form id="fm">
+      <label>Email<input type="email" id="em" autocomplete="email" required placeholder="you@example.com"></label>
+      <label>Password<input type="password" id="pw" autocomplete="current-password" required minlength="6" placeholder="At least 6 characters"></label>
+      <button class="btn pri" id="go" type="submit">Log in</button>
+    </form>
+    <a class="alt" id="guest" href="#">Continue without an account</a>
+    <p class="note-demo">Demo screen. No account is created yet, and your password isn’t sent anywhere. Continuing opens the app.</p>
+  </div>
+  <a id="open" href="#" hidden>Open app</a>
+</dialog>
+
+<script>
+const APP_URL='app/';
+const $=s=>document.querySelector(s),dlg=$('#dlg');
+$('#open').href=APP_URL;$('#guest').href=APP_URL;
+function setMode(m){
+  const su=m==='signup';
+  $('#t-login').setAttribute('aria-selected',!su);$('#t-signup').setAttribute('aria-selected',su);
+  $('#dt').textContent=su?'Create your account':'Welcome back';
+  $('#ds').textContent=su?'Free to start. No card needed.':'Log in to open your notebooks.';
+  $('#go').textContent=su?'Create account':'Log in';
+  $('#pw').autocomplete=su?'new-password':'current-password';
+}
+function openDlg(m){setMode(m);if(!dlg.open)dlg.showModal();$('#em').focus()}
+document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openDlg(b.dataset.open)));
+$('#t-login').onclick=()=>setMode('login');$('#t-signup').onclick=()=>setMode('signup');
+$('#dx').onclick=()=>dlg.close();
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
+const CHIPS=[['Thick cover','Pick a color','Draw on it'],['Cover opens','Thick pages','Stack on both sides'],['Drag to turn','Follows your finger','Real page edge'],['Pen','Pencil','Brush','Marker','Highlighter','Shapes','Fill'],['8 fonts','28 stickers','Sticky notes','Move and rotate'],['Blank','Lined','Grid','Dots','Paper colors'],['Portrait or landscape','Fits each page','Write on top'],['Reorder','Duplicate','Delete','Jump to a page']];
+const demo=$('#demo'),sts=[...document.querySelectorAll('.st')];
+function setStep(i){
+  demo.dataset.s=i;
+  for(let k=1;k<=7;k++)demo.classList.toggle('g'+k,i>=k);
+  sts.forEach((el,k)=>el.classList.toggle('on',k===i));
+  $('#chips').innerHTML=CHIPS[i].map((t,k)=>'<span style="animation-delay:'+k*70+'ms">'+t+'</span>').join('');
+}
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)setStep(+e.target.dataset.s)}),{rootMargin:'-42% 0px -48% 0px'});
+  sts.forEach(el=>io.observe(el));
+}
+setStep(0);
+const bill={y:['€29.99','per year','That’s €2.50 a month.','Choose Pro yearly'],m:['€3.99','per month','Billed monthly. Cancel any time.','Choose Pro monthly']};
+function setBill(k){
+  $('#b-year').setAttribute('aria-pressed',k==='y');$('#b-month').setAttribute('aria-pressed',k==='m');
+  $('#pp').textContent=bill[k][0];$('#pu').textContent=bill[k][1];$('#pe').textContent=bill[k][2];$('#pbtn').textContent=bill[k][3];
+}
+$('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
+$('#fm').addEventListener('submit',e=>{e.preventDefault();$('#open').click();dlg.close()});
+</script>
+</body>
+</html>
