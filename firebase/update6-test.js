@@ -194,6 +194,9 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.click('#tb2');await B.waitForSelector('.skinds');
   const kinds={};for(const k of ['cov','lbl','stk']){await B.click('.skinds [data-k="'+k+'"]');await B.waitForTimeout(300);kinds[k]=await B.evaluate(()=>[document.querySelectorAll('#tpl .tcardx').length,document.querySelectorAll('#tpl .tcardx.lock').length])}
   ok(kinds.cov+''==='22,6'&&kinds.lbl+''==='12,6'&&kinds.stk+''==='5,3','store: 22 covers (6 paid), 12 labels (6 paid), 5 sticker packs (3 paid) ('+JSON.stringify(kinds)+')');
+  await B.click('.skinds [data-k="stk"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="stk-treats"]');await B.waitForSelector('#lockc .tbuy-pv');await B.waitForTimeout(300);
+  ok(await B.evaluate(()=>{const p=$('#lockc .tbuy-pv').getBoundingClientRect(),c=$('#lockc').getBoundingClientRect(),im=[...document.querySelectorAll('#lockc .tbuy-pv img')];return im.length===6&&im.every(i=>{const r=i.getBoundingClientRect();return r.width>10&&r.right<=p.right+1&&r.bottom<=p.bottom+1})&&p.height<c.height/3}),'the sticker pack window shows its 6 stickers small, inside the preview');
+  await B.click('#lockc >> text=Not now');
   await admin('codes/GALAXY-1',{fields:{kind:{stringValue:'tpl'},tpl:{stringValue:'cov-galaxy'},max:{integerValue:'5'},used:{integerValue:'0'},active:{booleanValue:true},note:{stringValue:''}}});
   await B.click('.skinds [data-k="cov"]');await B.waitForTimeout(300);
   await B.click('#tpl .tcardx[data-t="cov-galaxy"]');await B.waitForSelector('#t-code');
