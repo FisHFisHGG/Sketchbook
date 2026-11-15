@@ -6,11 +6,14 @@ rules_version = '2';
 // users/{uid}/r/{rec}    one notebook record (or a chunk of it): {h, n, i, d}
 // pro/{uid}              Pro for this user: {by, since, days, code?}. days 0 / missing = forever.
 //                        Made by you in the console, from the admin panel, or by redeeming a code.
-// codes/{CODE}           promo codes: {kind:'pro', days, max, used, active, note, created}
+// codes/{CODE}           promo codes: {kind:'pro', days, …} or {kind:'tpl', tpl: template id | 'all', …},
+//                        plus {max, used, active, note, created}
+// owned/{uid}            paid templates this person has: {t: [ids | 'all'], last: CODE | 'admin'}
 // redeem/{uid_CODE}      who used which code (one use per person per code)
 // profiles/{uid}         {email, name, via, os, lang, app, created, seen} – for the admin panel's statistics
 // act/{YYYY-MM_uid}      this account used Foliet in that month (one tiny record per month)
 // survey/{uid}           how this person found Foliet: {src, other, at} (asked once, after signing up)
+// feedback/{id}          messages sent from the app: {uid, email, type, text, reply, os, ver, w, at, done?}
 // admins/{uid}           exists = admin (made by hand in the console)
 // customers/{uid}/...    written by the "Run Payments with Stripe" extension (payments, subscriptions)
 //
@@ -42,6 +45,26 @@ service cloud.firestore {
         && !exists(/databases/$(database)/documents/redeem/$(uid + '_' + d.code))
         && existsAfter(/databases/$(database)/documents/redeem/$(uid + '_' + d.code));
     }
+    // a template code being redeemed in this same write (owned + codes + redeem together)
+    function validTplRedeem(uid, prev) {
+      let d = request.resource.data;
+      let cp = /databases/$(database)/documents/codes/$(d.last);
+      let c = get(cp).data;
+      return d.keys().hasOnly(['t', 'last'])
+        && d.last is string && d.last.matches('^[A-Z0-9-]{4,24}$')
+        && c.active == true && c.kind == 'tpl' && c.used < c.max
+        && d.t == prev.concat([c.tpl])
+        && getAfter(cp).data.used == c.used + 1
+        && !exists(/databases/$(database)/documents/redeem/$(uid + '_' + d.last))
+        && existsAfter(/databases/$(database)/documents/redeem/$(uid + '_' + d.last));
+    }
+    // this code was really used in this same write: by the Pro record or by the templates record
+    function redeemedHere(uid, code) {
+      let pp = /databases/$(database)/documents/pro/$(uid);
+      let op = /databases/$(database)/documents/owned/$(uid);
+      return (existsAfter(pp) && getAfter(pp).data.get('code', '') == code)
+        || (existsAfter(op) && getAfter(op).data.get('last', '') == code);
+    }
 
     match /users/{uid} {
       allow read: if owner(uid);
@@ -64,6 +87,7 @@ service cloud.firestore {
       allow get: if owner(uid) || isAdmin();
       allow list: if isAdmin();
       allow write: if isAdmin();
+      allow delete: if owner(uid); // deleting the account
       allow create: if owner(uid) && validRedeem(uid);
       allow update: if owner(uid) && validRedeem(uid) && !proActive(resource.data);
     }
@@ -77,7 +101,7 @@ service cloud.firestore {
           && request.resource.data.used == resource.data.used + 1
           && !exists(/databases/$(database)/documents/redeem/$(request.auth.uid + '_' + code))
           && existsAfter(/databases/$(database)/documents/redeem/$(request.auth.uid + '_' + code))
-          && getAfter(/databases/$(database)/documents/pro/$(request.auth.uid)).data.code == code);
+          && redeemedHere(request.auth.uid, code));
     }
 
     match /redeem/{rid} {
@@ -87,7 +111,15 @@ service cloud.firestore {
         && request.resource.data.uid == request.auth.uid
         && rid == request.auth.uid + '_' + request.resource.data.code
         && request.resource.data.at == request.time
-        && getAfter(/databases/$(database)/documents/pro/$(request.auth.uid)).data.code == request.resource.data.code;
+        && redeemedHere(request.auth.uid, request.resource.data.code);
+    }
+
+    match /owned/{uid} {
+      allow get: if owner(uid) || isAdmin();
+      allow list, write: if isAdmin();
+      allow delete: if owner(uid); // deleting the account
+      allow create: if owner(uid) && validTplRedeem(uid, []);
+      allow update: if owner(uid) && validTplRedeem(uid, resource.data.t);
     }
 
     function profileOk(d) {
@@ -99,6 +131,7 @@ service cloud.firestore {
     match /profiles/{uid} {
       allow get: if owner(uid) || isAdmin();
       allow list: if isAdmin();
+      allow delete: if owner(uid);
       allow create: if owner(uid)
         && request.resource.data.keys().hasOnly(['email', 'name', 'via', 'os', 'lang', 'app', 'created', 'seen'])
         && request.resource.data.created == request.time && profileOk(request.resource.data);
@@ -108,7 +141,8 @@ service cloud.firestore {
     }
 
     match /act/{id} {
-      allow get, list: if isAdmin();
+      allow get, list: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
       allow create: if signedIn()
         && request.resource.data.keys().hasOnly(['ym', 'uid', 'at'])
         && request.resource.data.uid == request.auth.uid
@@ -134,11 +168,28 @@ service cloud.firestore {
     match /survey/{uid} {
       allow get: if owner(uid) || isAdmin();
       allow list: if isAdmin();
+      allow delete: if owner(uid);
       allow create: if owner(uid)
         && request.resource.data.keys().hasOnly(['src', 'other', 'at'])
         && request.resource.data.src in ['youtube', 'instagram', 'facebook', 'ai', 'other']
         && request.resource.data.other is string && request.resource.data.other.size() <= 200
         && (request.resource.data.src != 'other' || request.resource.data.other.size() >= 2)
+        && request.resource.data.at == request.time;
+    }
+
+    match /feedback/{id} {
+      allow get, list, update, delete: if isAdmin();
+      allow get, list, delete: if signedIn() && resource.data.uid == request.auth.uid; // your own messages
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'type', 'text', 'reply', 'os', 'ver', 'w', 'at'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.get('email', '')
+        && request.resource.data.type in ['idea', 'problem', 'other']
+        && request.resource.data.text is string && request.resource.data.text.size() >= 3 && request.resource.data.text.size() <= 2000
+        && request.resource.data.reply is bool
+        && request.resource.data.os is string && request.resource.data.os.size() <= 20
+        && request.resource.data.ver is string && request.resource.data.ver.size() <= 20
+        && request.resource.data.w is int
         && request.resource.data.at == request.time;
     }
 

@@ -35,7 +35,8 @@
 </script>
 <meta name="theme-color" content="#e4e9e6">
 <script>try{var t=(JSON.parse(localStorage.getItem('sb-set')||'{}').theme)||'auto';if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
-<link rel="icon" href="app/icon-192.png">
+<link rel="icon" href="app/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="app/icon-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="app/icon-192.png">
 <style>
 @font-face{font-family: 'Bricolage Grotesque';font-style: normal;font-weight: 400;font-stretch: 100%;font-display: swap;src: url(app/fonts/bricolage-grotesque-latin-ext-90a9a1.woff2) format('woff2');unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;}
@@ -97,26 +98,58 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 @media (prefers-reduced-motion:reduce){.scrollcue svg{animation:none}}
 @media (max-width:860px){.hero{grid-template-columns:1fr;padding-top:36px}.stage{justify-self:center}}
 
-/* The book */
-.stage{--pw:clamp(118px,28vw,270px);position:relative;width:calc(var(--pw)*2);height:calc(var(--pw)*1.62);display:grid;place-items:center;perspective:1500px}
-.book{position:relative;width:var(--pw);height:calc(var(--pw)*1.333);transform-style:preserve-3d;animation:bk 11s ease-in-out infinite}
-.pgs{position:absolute;inset:0;isolation:isolate;border-radius:3px 10px 10px 3px;background:var(--paper);overflow:visible;
-  box-shadow:1px 1px 0 #fff,2px 2px 0 #d3d0c4,3px 3px 0 #fff,4px 4px 0 #d3d0c4,5px 5px 0 #fff,6px 6px 0 #d3d0c4,7px 7px 0 #fff,8px 8px 0 #d3d0c4,0 36px 42px -14px var(--sh)}
-.pgs::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle,rgba(60,90,140,.32) 1.2px,transparent 1.7px) 0 0/calc(var(--pw)/9) calc(var(--pw)/9)}
-.pgs h3,.pgs .tag{position:absolute;margin:0;font-family:Caveat,cursive;font-weight:700;color:#1d2b4a}
-.pgs h3{left:9%;top:7%;font-size:calc(var(--pw)*.16);line-height:1}
-.pgs h3::after{content:"";position:absolute;left:-3%;right:-3%;bottom:8%;height:36%;background:rgba(224,165,38,.55);z-index:-1;transform:rotate(-1.5deg)}
-.pgs svg{position:absolute;overflow:visible}
-.note{position:absolute;left:12%;bottom:10%;width:42%;aspect-ratio:1;background:#f7c9dd;border-radius:3px;transform:rotate(-5deg);box-shadow:0 6px 12px rgba(0,0,0,.22);padding:7% 8%;font-family:Caveat,cursive;font-weight:700;font-size:calc(var(--pw)*.105);line-height:1.1;color:#3a2a33}
-.cv{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;animation:cv 11s cubic-bezier(.62,0,.3,1) infinite}
-.cv>div{position:absolute;inset:0;border-radius:3px 10px 10px 3px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
-.f{background:var(--cover);display:grid;place-items:center;
-  box-shadow:inset 8px 0 0 rgba(0,0,0,.22),1px 1px 0 #1d3566,2px 2px 0 #1b3262,3px 3px 0 #192f5e,4px 4px 0 #172c5a,5px 5px 0 #152956,6px 6px 0 #132652,7px 7px 0 #11234e,8px 8px 0 #0f204a,9px 9px 0 #0d1d46,10px 10px 0 #0b1a42,0 36px 42px -14px var(--sh)}
-.f span{background:var(--paper);color:#222;padding:.55em .9em;font-weight:700;font-size:calc(var(--pw)*.075);border-radius:2px}
-.b{transform:rotateY(180deg);border-radius:10px 3px 3px 10px!important;background:var(--paper) linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.28) 0) 0 0/100% calc(var(--pw)/9);box-shadow:inset -10px 0 14px -10px rgba(0,0,0,.18);font-family:Caveat,cursive;font-weight:700;font-size:calc(var(--pw)*.1);color:#1d2b4a;padding:14% 10%}
-@keyframes cv{0%,9%{transform:rotateY(0)}33%,72%{transform:rotateY(-168deg)}93%,100%{transform:rotateY(0)}}
-@keyframes bk{0%,9%{transform:rotateX(8deg) translateX(0)}33%,72%{transform:rotateX(8deg) translateX(50%)}93%,100%{transform:rotateX(8deg) translateX(0)}}
-@media (prefers-reduced-motion:reduce){.book,.cv{animation:none}.book{transform:rotateX(8deg) translateX(50%)}.cv{transform:rotateY(-168deg)}html{scroll-behavior:auto}}
+/* The hero notebook: opens, then keeps turning its pages (album, sketches, planner) */
+.stage{--pw:clamp(130px,26vw,262px);position:relative;width:calc(var(--pw)*2 + 24px);height:calc(var(--pw)*1.333 + 40px);display:grid;place-items:center;perspective:1700px}
+@media (max-width:860px){.stage{--pw:clamp(130px,41vw,240px)}}
+.hb{position:relative;width:calc(var(--pw)*2);height:calc(var(--pw)*1.333);transform-style:preserve-3d;transform:rotateX(7deg);transition:transform 1.3s cubic-bezier(.6,0,.3,1)}
+.hb.closed{transform:rotateX(7deg) translateX(calc(var(--pw)*-.5))}
+.hb-l,.hb-r,.hb-leaf{position:absolute;top:0;width:var(--pw);height:100%}
+.hb-l{left:0;border-radius:10px 3px 3px 10px;box-shadow:-1px 1px 0 #fff,-2px 2px 0 #d3d0c4,-3px 3px 0 #fff,-4px 4px 0 #d3d0c4,-5px 5px 0 #fff,-6px 6px 0 #d3d0c4,0 30px 40px -16px var(--sh)}
+.hb.closed .hb-l,.hb.noleft .hb-l{opacity:0}
+.hb-r{left:var(--pw);border-radius:3px 10px 10px 3px;box-shadow:1px 1px 0 #fff,2px 2px 0 #d3d0c4,3px 3px 0 #fff,4px 4px 0 #d3d0c4,5px 5px 0 #fff,6px 6px 0 #d3d0c4,7px 7px 0 #fff,8px 8px 0 #d3d0c4,0 30px 40px -16px var(--sh)}
+.hb-leaf{left:var(--pw);transform-origin:left center;transform-style:preserve-3d;z-index:3;visibility:hidden}
+.hb-leaf.turn{visibility:visible;animation:hbturn 1.25s cubic-bezier(.55,.05,.35,1) forwards}
+.hb-leaf.shut{visibility:visible;animation:hbshut 1.25s cubic-bezier(.55,.05,.35,1) forwards}
+.hb-leaf>div{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.hb-back{transform:rotateY(180deg)}
+.hb-leaf>div::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 30%);opacity:0}
+.hb-leaf.turn>div::after,.hb-leaf.shut>div::after{animation:hbshade 1.25s ease forwards}
+@keyframes hbturn{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}
+@keyframes hbshut{from{transform:rotateY(-180deg)}to{transform:rotateY(0)}}
+@keyframes hbshade{50%{opacity:1}100%{opacity:0}}
+/* page kinds */
+.pp{position:absolute;inset:0;overflow:hidden;font-family:Caveat,cursive;font-weight:700;color:#1d2b4a;background:#fbfaf4}
+.hb-l .pp,.hb-back .pp{border-radius:10px 3px 3px 10px;box-shadow:inset -12px 0 16px -12px rgba(0,0,0,.28)}
+.hb-r .pp,.hb-front .pp{border-radius:3px 10px 10px 3px;box-shadow:inset 12px 0 16px -12px rgba(0,0,0,.28)}
+.pp.dots{background:#fbfaf4 radial-gradient(circle,rgba(60,90,140,.3) 1.1px,transparent 1.6px) 0 0/calc(var(--pw)/9) calc(var(--pw)/9)}
+.pp.lines{background:#fbfaf4 linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.26) 0) 0 calc(var(--pw)*.06)/100% calc(var(--pw)/10.5)}
+.pp.album{background:#e8dbc2 radial-gradient(rgba(120,85,40,.09) 1px,transparent 1.5px) 0 0/6px 6px;color:#3b2f22}
+.pp.album .ph{box-shadow:0 4px 10px rgba(70,45,20,.32)}
+.pp.inside{background:var(--cover) repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 6px);box-shadow:inset -10px 0 12px -6px rgba(0,0,0,.35)!important}
+.pp.inside .tag{position:absolute;left:14%;right:14%;top:32%;padding:9% 8%;background:#fbf8ef;border-radius:5px;box-shadow:0 4px 10px rgba(0,0,0,.3),inset 0 0 0 3px #fbf8ef,inset 0 0 0 4px rgba(35,48,74,.3);text-align:center}
+.pp.inside .tag p{margin:0;font-size:calc(var(--pw)*.075);opacity:.7}.pp.inside .tag b{display:block;font-size:calc(var(--pw)*.16);margin-top:.15em;border-bottom:2px solid rgba(35,64,122,.35);line-height:1.1}
+.hb.atcover .hb-l{box-shadow:-2px 2px 0 #1b3466,-3px 3px 0 #162b56,0 30px 40px -16px var(--sh)} /* just the cover board on the left: no pages yet */
+.pp.cover{background:var(--cover);box-shadow:inset 9px 0 0 rgba(0,0,0,.24)!important;display:grid;place-items:center}
+.pp.cover span{background:#fbf8ef;color:#23304a;padding:.35em .8em .3em;font-size:calc(var(--pw)*.15);border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.3),inset 0 0 0 3px #fbf8ef,inset 0 0 0 4px rgba(35,48,74,.3)}
+.pp .ab{position:absolute;margin:0;line-height:1.05}
+.pp h4.ab{font-size:calc(var(--pw)*.15);font-weight:700}
+.pp .t{font-size:calc(var(--pw)*.085)}
+.pp .s{font-size:calc(var(--pw)*.07);opacity:.85}
+.hl{background:linear-gradient(transparent 52%,rgba(255,214,77,.75) 0 88%,transparent 0);padding:0 .1em}
+.ph{position:absolute;background:#fff;padding:4% 4% 13%;box-shadow:0 5px 12px rgba(0,0,0,.45)}
+.ph svg{display:block;width:100%;height:auto}
+.ph b{position:absolute;left:0;right:0;bottom:2%;text-align:center;color:#33333a;font-size:calc(var(--pw)*.06);font-weight:700}
+.tape{position:absolute;width:30%;height:9%;background:rgba(255,184,208,.75);transform:rotate(-8deg)}
+.pp svg.dw{position:absolute;overflow:visible;fill:none;stroke:#2b2f3a;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.snt{position:absolute;padding:8%;background:#ffd5e5;box-shadow:0 5px 10px rgba(0,0,0,.2);font-size:calc(var(--pw)*.075);line-height:1.05;color:#3a2a33}
+.ck{display:flex;align-items:center;gap:.35em;font-size:calc(var(--pw)*.08);line-height:1}
+.ck i{flex:none;width:.7em;height:.7em;border:2px solid #23304a;border-radius:3px;position:relative}
+.ck.on i::after{content:"";position:absolute;left:18%;top:-30%;width:40%;height:90%;border:solid #2e9d5b;border-width:0 3px 3px 0;transform:rotate(40deg)}
+.ck.on span{text-decoration:line-through;text-decoration-thickness:2px;opacity:.6}
+.cal{position:absolute;display:grid;grid-template-columns:repeat(7,1fr);gap:2px;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:600;font-size:calc(var(--pw)*.042);color:#3d4a66;text-align:center}
+.cal b{font-weight:700;opacity:.55}.cal .on{position:relative}.cal .on::before{content:"";position:absolute;inset:-28% -8%;border:2px solid #e5484d;border-radius:50%;transform:rotate(-8deg)}
+.hstk{position:absolute}
+@media (prefers-reduced-motion:reduce){.hb,.hb-l{transition:none}html{scroll-behavior:auto}}
 
 /* Scroll tour */
 /* page style picker */
@@ -135,7 +168,7 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 @keyframes psel{0%,24%{border-color:#23407a;background:rgba(35,64,122,.1)}25%,100%{border-color:#d5d8d0;background:none}}
 .pc{display:flex;gap:.6em;margin-top:1em;align-items:center}
 .pc u{width:1.5em;height:1.5em;border-radius:50%;box-shadow:0 0 0 1px #c9cfcb}
-.pc u:nth-child(1){background:#fdfdfa}.pc u:nth-child(2){background:#f6efe0}.pc u:nth-child(3){background:#e6eef7}.pc u:nth-child(4){background:#eaf3e7}.pc u:nth-child(5){background:#2b2f36}
+.pc u:nth-child(1){background:#fff}.pc u:nth-child(2){background:#faf1d7}.pc u:nth-child(3){background:#e6eef7}.pc u:nth-child(4){background:#eaf3e7}.pc u:nth-child(5){background:#000}
 .pc em{margin-left:auto;font-style:normal;opacity:.65;font-size:.85em}
 
 .mi{display:inline-block;width:12px;height:15px;margin-right:6px;vertical-align:-2px;border-radius:2px;background:#fbfbf6;background-size:4px 4px}
@@ -306,16 +339,8 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
       </div>
       <p class="fine">Works on phones, tablets and laptops.</p>
     </div>
-    <div class="stage" role="img" aria-label="A blue notebook with a thick cover opening to a page of sketches and a pink sticky note">
-      <div class="book">
-        <div class="pgs">
-          <h3>Ideas</h3>
-          <svg style="right:10%;top:9%;width:30%" viewBox="0 0 100 100"><path d="M50 8l12 28 30 3-23 20 7 30-26-16-26 16 7-30L8 39l30-3z" fill="#ffd23f" stroke="#e0a800" stroke-width="5" stroke-linejoin="round"/></svg>
-          <svg style="left:8%;top:26%;width:62%" viewBox="0 0 120 50"><path d="M4 38c14-30 26-30 34-6s18 22 30-6 22-20 48-20" fill="none" stroke="#1d1d1b" stroke-width="3.2" stroke-linecap="round"/></svg>
-          <div class="note">buy more paper</div>
-        </div>
-        <div class="cv"><div class="f"><span>Sketches</span></div><div class="b">This one is yours.</div></div>
-      </div>
+    <div class="stage" role="img" aria-label="An open notebook turning its pages: a photo album with white-framed photos on black pages, then sketches, then a weekly plan">
+      <div class="hb closed" id="hb"><div class="hb-l"></div><div class="hb-r"></div><div class="hb-leaf"><div class="hb-front"></div><div class="hb-back"></div></div></div>
     </div>
   </div>
 
@@ -327,12 +352,12 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
       <p class="sub">Scroll down. The notebook next to the text shows each feature as it comes up.</p>
       <div class="tour">
         <div class="tour-text">
-          <article class="st on" data-s="0"><h3>A notebook with weight</h3><p>A thick cover with a stack of pages behind it. Choose the cover color, then draw or put a photo on it.</p></article>
+          <article class="st on" data-s="0"><h3>A notebook with weight</h3><p>A thick cover with a stack of pages behind it. Choose the color and a design, add a name label you can move anywhere, and draw on it. With Pro, put a photo on it too.</p></article>
           <article class="st" data-s="1"><h3>It opens like the real thing</h3><p>Tap the cover and it swings open. Pages have thickness, and you can see the stack on both sides.</p></article>
           <article class="st" data-s="2"><h3>Pages you turn by hand</h3><p>Drag a page and it follows your finger. You see its edge as it turns, then it settles flat.</p></article>
           <article class="st" data-s="3"><h3>Drawing tools that behave</h3><p>Pen, pencil, a brush that thins as you move faster, marker, highlighter, shapes and fill. Each tool remembers its size, and opacity is one slider away.</p></article>
           <article class="st" data-s="4"><h3>Words, stickers and notes</h3><p>Eight fonts, 28 stickers and sticky notes. Every one stays movable. Resize, rotate or edit it any time.</p></article>
-          <article class="st" data-s="5"><h3>Pages set up your way</h3><p>Choose how each page looks: blank, lined, grid or dots, on several paper colors, in portrait or landscape. Apply it to one page or to all of them.</p></article>
+          <article class="st" data-s="5"><h3>Pages set up your way</h3><p>Choose how each page looks: blank, lined, grid, dots or one of your templates, on paper from bright white and warm white (easier on the eyes) to black, or any color you like. Portrait or landscape. Apply it to one page or to all of them.</p></article>
           <article class="st" data-s="6"><h3>Your PDFs, ready to mark up<span class="soon">Pro</span></h3><p>Choose portrait or landscape and each PDF page fits a notebook page. Write, circle and annotate on top.</p></article>
           <article class="st" data-s="7"><h3>Every page at a glance</h3><p>See the whole notebook at once. Reorder pages, duplicate them, delete them, or jump straight to one.</p></article>
           <article class="st" data-s="8"><h3>Private notebooks<span class="soon">Free</span></h3><p>Lock any notebook with a 4-digit PIN or a password. On Android you can also open it with your fingerprint.</p></article>
@@ -372,7 +397,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
       <h2>Start in under a minute</h2>
       <ol class="steps">
         <li><b>Create your free account</b><p>Continue with Google, or use your email and a password.</p></li>
-        <li><b>Make a notebook</b><p>Choose portrait or landscape, pick a cover color, and open it.</p></li>
+        <li><b>Make a notebook</b><p>Start with a blank one or a ready-made template, pick a cover, and open it.</p></li>
         <li><b>Take it with you<span class="soon">Pro</span></b><p>Your notebooks are always saved on your device, and with Pro they sync across your phone, tablet and laptop.</p></li>
       </ol>
     </div>
@@ -390,14 +415,14 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
           <div class="plan">
             <h3>Free</h3>
             <div class="price">€0</div>
-            <ul><li>2 notebooks</li><li>Up to 20 pages each</li><li>Every drawing tool</li><li>Stickers, notes and text</li><li>Lock notebooks with a PIN, password or fingerprint (Android)</li></ul>
+            <ul><li>2 notebooks</li><li>Up to 20 pages each</li><li>Every drawing tool</li><li>Stickers, notes and text</li><li>Free templates, covers, labels and stickers</li><li>Lock notebooks with a PIN, password or fingerprint (Android)</li></ul>
             <a class="btn sec" href="app/">Start free</a>
           </div>
           <div class="plan">
             <h3>Pro</h3>
             <div class="price"><span id="pp">€29.99</span> <small id="pu">per year</small></div>
             <p class="eq" id="pe">That’s €2.50 a month.</p>
-            <ul><li>Unlimited notebooks and pages</li><li>PDF import</li><li>Export to PDF and image</li><li>Cloud sync across your devices</li></ul>
+            <ul><li>Unlimited notebooks and pages</li><li>PDF import</li><li>A photo on the cover, to draw on</li><li>Export to PDF and image</li><li>Cloud sync across your devices</li></ul>
             <button class="btn pri" id="pbtn" disabled>Pro is coming soon</button>
           </div>
         </div>
@@ -414,7 +439,8 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
       <details><summary>Where are my notebooks saved?</summary><p>Always on the device you use, so they open even without internet. With Pro they’re also saved to the cloud, so the same notebooks open on your phone and your laptop. You can also download a backup from Settings at any time.</p></details>
       <details><summary>Can I keep a notebook private?</summary><p>Yes, on every plan. Lock a notebook with a 4-digit PIN or a password, and on Android you can also unlock it with your fingerprint. Anyone using the app on your device needs the PIN to open it.</p></details>
       <details><summary>Does it work on my phone or tablet?</summary><p>Yes, in any modern browser. It works with touch and with a stylus, and it reads pen pressure when your device provides it.</p></details>
-      <details><summary>Can I import a PDF?</summary><p>With Pro. You choose portrait or landscape, and each PDF page is fitted onto a notebook page so you can write on top of it.</p></details>
+      <details><summary>What’s in the store?</summary><p>Templates, cover designs, name labels and sticker packs. Lots are free: 8 templates (weekly planner, daily agenda, to-do lists, math grid, Cornell notes, journal, storyboard, sheet music), 16 covers, 6 label shapes and 6 sticker packs (7 stickers each). The rest – like a habit tracker, budget, recipe book, a galaxy or art deco cover, a kraft tag or gold foil label, and packs of cute animals, space and sweet treats – cost €0.99 each on any plan. Buy once and use it as often as you like. Paid items go on sale together with Pro.</p></details>
+      <details><summary>Can I import a PDF?</summary><p>With Pro, up to 500 pages per PDF. The first page becomes the cover, and every other page is fitted onto a notebook page so you can write on top of it.</p></details>
       <details><summary>Can I cancel any time?</summary><p>Yes. Monthly plans can be cancelled whenever you like, and yearly plans simply don’t renew. Nobody is charged yet, because paid plans haven’t launched.</p></details>
       <details><summary>What happens if I go back to the free plan?</summary><p>Your notebooks stay. You just can’t add more pages or notebooks beyond the free limits.</p></details>
     </div>
@@ -428,7 +454,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
   </section>
 </main>
 
-<footer><div class="wrap">© Foliet Sketchbook. A work in progress, made with care.</div></footer>
+<footer><div class="wrap">© Foliet Sketchbook. A work in progress, made with care. · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Use</a></div></footer>
 
 
 <script>
@@ -465,6 +491,66 @@ function setBill(k){
   $('#pp').textContent=bill[k][0];$('#pu').textContent=bill[k][1];$('#pe').textContent=bill[k][2];$('#pbtn').textContent=bill[k][3];
 }
 $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
+/* hero notebook: closed → opens (inside cover + hello) → album → sketches → planner → closes → again (pauses when not on screen) */
+(function(){
+  const hb=document.getElementById('hb');if(!hb)return;
+  const L=hb.querySelector('.hb-l'),Rp=hb.querySelector('.hb-r'),leaf=hb.querySelector('.hb-leaf'),F=leaf.firstElementChild,B=leaf.lastElementChild;
+  const scene={
+    sunset:'<svg viewBox="0 0 100 78"><defs><linearGradient id="hs1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8f6b"/><stop offset=".62" stop-color="#ffd27f"/></linearGradient></defs><rect width="100" height="78" fill="url(#hs1)"/><circle cx="52" cy="47" r="13" fill="#fff4cc"/><rect y="50" width="100" height="28" fill="#3d6ea5"/><path d="M8 58h26M48 62h40M18 68h30" stroke="#a8c9ec" stroke-width="1.4"/><path d="M70 30q4-3 8 0q4-3 8 0" stroke="#7a4b3a" stroke-width="1.2" fill="none"/></svg>',
+    peaks:'<svg viewBox="0 0 100 78"><rect width="100" height="78" fill="#a9dbf5"/><circle cx="80" cy="16" r="7" fill="#fff6c9"/><path d="M0 62L26 26L44 48L62 20L100 64V78H0Z" fill="#5f7f9d"/><path d="M26 26l-6 8 6-2 5 3zM62 20l-7 9 7-3 6 4z" fill="#fff"/><path d="M0 70Q30 58 60 66T100 64V78H0Z" fill="#6bb36b"/></svg>',
+    lake:'<svg viewBox="0 0 100 78"><rect width="100" height="78" fill="#d5ecdf"/><path d="M0 50h100v28H0z" fill="#5b9fc4"/><g fill="#2f6b4a"><path d="M8 50L16 24L24 50Z"/><path d="M20 50L30 16L40 50Z"/><path d="M62 50L70 26L78 50Z"/><path d="M76 50L86 20L96 50Z"/></g><path d="M10 58h20M60 62h30" stroke="#b9dcef" stroke-width="1.4"/></svg>',
+    city:'<svg viewBox="0 0 100 78"><rect width="100" height="78" fill="#1d2b4f"/><circle cx="78" cy="16" r="6" fill="#fff3c0"/><g fill="#33466f"><rect x="6" y="36" width="18" height="42"/><rect x="28" y="24" width="16" height="54"/><rect x="48" y="40" width="20" height="38"/><rect x="72" y="30" width="20" height="48"/></g><g fill="#ffd66b"><rect x="10" y="42" width="3" height="3"/><rect x="17" y="50" width="3" height="3"/><rect x="32" y="30" width="3" height="3"/><rect x="38" y="44" width="3" height="3"/><rect x="53" y="46" width="3" height="3"/><rect x="60" y="56" width="3" height="3"/><rect x="77" y="36" width="3" height="3"/><rect x="84" y="50" width="3" height="3"/></g></svg>'
+  };
+  const star='<svg class="hstk" viewBox="0 0 100 100" style="WIDTH"><path d="M50 8l12 28 30 3-23 20 7 30-26-16-26 16 7-30L8 39l30-3z" fill="#ffd23f" stroke="#e0a800" stroke-width="5" stroke-linejoin="round"/></svg>';
+  const heart='<svg class="hstk" viewBox="0 0 100 100" style="WIDTH"><path d="M50 88C14 62 6 40 18 24c10-12 26-8 32 4 6-12 22-16 32-4 12 16 4 38-32 64z" fill="#ff5d7a" stroke="#d63a58" stroke-width="5" stroke-linejoin="round"/></svg>';
+  const P=(cls,html)=>'<div class="pp '+cls+'">'+html+'</div>';
+  const ph=(sc,cap,css)=>'<div class="ph" style="'+css+'">'+scene[sc]+'<b>'+cap+'</b></div>';
+  const cal='<div class="cal" style="left:12%;top:24%;width:76%">'+['M','T','W','T','F','S','S'].map(d=>'<b>'+d+'</b>').join('')+'<span></span><span></span>'+[...Array(30).keys()].map(i=>'<span'+(i===13?' class="on"':'')+'>'+(i+1)+'</span>').join('')+'</div>';
+  const COVER=P('cover','<span>Sketches</span>');
+  const INSIDE=P('inside','<div class="tag"><p>this sketchbook belongs to</p><b>Ana</b></div>'); // inside of the cover (the board, no paper)
+  const HELLO=P('dots','<h4 class="ab" style="left:12%;top:8%">Hello!</h4><p class="ab t" style="left:12%;top:27%">ideas, trips,<br><span class="hl">doodles</span> &amp; plans</p>'
+        +'<svg class="dw" viewBox="0 0 100 100" style="left:46%;top:50%;width:40%"><circle cx="50" cy="50" r="16"/><path d="M50 18v-12M50 94v-12M18 50h-12M94 50h-12M27 27l-8-8M81 81l-8-8M27 73l-8 8M81 19l-8 8"/></svg>'
+        +'<p class="ab s" style="left:12%;top:84%">June 2026</p>'+star.replace('WIDTH','left:14%;top:56%;width:22%'));
+  const S=[ // [left page, right page]; the first spread is the inside of the cover + the first page
+    [INSIDE,HELLO],
+    [P('album','<h4 class="ab" style="left:10%;top:6%">Summer ’26</h4>'+ph('sunset','sea at sunset','left:7%;top:20%;width:58%;transform:rotate(-4deg)')+'<p class="ab s" style="left:68%;top:30%">12 July</p>'
+        +ph('peaks','the hike','left:38%;top:61%;width:50%;transform:rotate(5deg)')+'<i class="tape" style="left:54%;top:58%"></i><p class="ab s" style="left:8%;top:74%">15 July</p>'),
+     P('album',ph('lake','quiet lake','left:30%;top:7%;width:58%;transform:rotate(3deg)')+'<p class="ab s" style="left:8%;top:14%">16<br>July</p>'
+        +ph('city','city lights','left:7%;top:50%;width:50%;transform:rotate(-5deg)')+'<p class="ab t" style="left:63%;top:72%">best trip<br>ever ♥</p>')],
+    [P('dots','<h4 class="ab" style="left:10%;top:6%"><span class="hl">Sketches</span></h4>'
+        +'<svg class="dw" viewBox="0 0 100 100" style="left:12%;top:30%;width:44%"><path d="M20 40h50v28a16 16 0 0 1-16 16H36a16 16 0 0 1-16-16z"/><path d="M70 48h6a9 9 0 0 1 0 18h-6"/><path d="M34 30c-4-6 4-8 0-14M48 30c-4-6 4-8 0-14"/><path d="M14 92h64"/></svg>'
+        +'<svg class="dw" viewBox="0 0 100 120" style="left:58%;top:44%;width:34%"><path d="M30 72h40l-6 40H36z"/><path d="M50 72V36"/><path d="M50 52c-18-2-24-14-22-26 14 2 22 12 22 26z"/><path d="M50 44c14-4 20-16 18-28-12 2-18 14-18 28z"/></svg>'
+        +'<p class="ab s" style="left:12%;top:84%">coffee &amp; plants</p>'),
+     P('dots','<svg class="dw" viewBox="0 0 100 100" style="left:14%;top:10%;width:58%"><path d="M24 40L18 14L40 30M76 40L82 14L60 30"/><path d="M20 52a30 26 0 1 0 60 0a30 26 0 1 0-60 0"/><circle cx="38" cy="52" r="3" fill="#2b2f3a"/><circle cx="62" cy="52" r="3" fill="#2b2f3a"/><path d="M46 62l4 3 4-3M50 65v5M10 60l18 2M10 70l18-2M90 60l-18 2M90 70l-18-2"/></svg>'
+        +'<div class="snt" style="left:38%;top:58%;width:48%;transform:rotate(4deg)">draw a little<br>every day</div>'+star.replace('WIDTH','left:10%;top:66%;width:26%'))],
+    [P('lines','<h4 class="ab" style="left:10%;top:5%">This week</h4><div class="ab" style="left:10%;top:24%;display:grid;gap:calc(var(--pw)*.045)">'
+        +'<div class="ck on"><i></i><span>finish the poster</span></div><div class="ck"><i></i><span>call grandma</span></div><div class="ck on"><i></i><span>gym × 3</span></div><div class="ck"><i></i><span class="hl">read 20 pages</span></div><div class="ck"><i></i><span>plan the trip</span></div></div>'),
+     P('lines','<h4 class="ab" style="left:12%;top:5%">July</h4>'+cal+'<p class="ab t" style="left:46%;top:70%;color:#c0392b">Mia’s<br>birthday!</p>'+heart.replace('WIDTH','left:16%;top:70%;width:22%'))]
+  ];
+  // -1 = closed. open → turn, turn, turn → close → open … (like a real notebook)
+  let i=-1,busy=false,timer=0;
+  const flip=(cls,front,back,end)=>{F.innerHTML=front;B.innerHTML=back;leaf.className='hb-leaf';void leaf.offsetWidth;leaf.className='hb-leaf '+cls;setTimeout(()=>{end();leaf.className='hb-leaf';busy=false},1260)};
+  function step(){
+    if(busy)return;busy=true;
+    if(i<0){ // open the cover: the left side stays empty until the cover lands there
+      Rp.innerHTML=S[0][1];hb.classList.add('noleft');hb.classList.remove('closed');
+      flip('turn',COVER,S[0][0],()=>{L.innerHTML=S[0][0];hb.classList.add('atcover');hb.classList.remove('noleft');i=0});
+    }else if(i<S.length-1){ // turn a page
+      const j=i+1;Rp.innerHTML=S[j][1];
+      flip('turn',S[i][1],S[j][0],()=>{L.innerHTML=S[j][0];hb.classList.remove('atcover');i=j});
+    }else{ // last spread: close the notebook (the left side folds back over), then start again
+      hb.classList.add('noleft','closed');hb.classList.remove('atcover');
+      flip('shut',COVER,S[i][0],()=>{Rp.innerHTML=COVER;L.innerHTML='';hb.classList.remove('noleft');i=-1});
+    }
+  }
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){L.innerHTML=S[1][0];Rp.innerHTML=S[1][1];hb.classList.remove('closed');return}
+  Rp.innerHTML=COVER;hb.classList.add('closed');
+  let visible=true,first=true;
+  const loop=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(visible&&!document.hidden){step();first=false}loop()},i<0?(first?1600:2600):3600)};
+  if('IntersectionObserver' in window)new IntersectionObserver(es=>{visible=es[0].isIntersecting}).observe(hb);
+  loop();
+})();
 </script>
 </body>
 </html>

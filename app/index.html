@@ -8,6 +8,8 @@
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#e4e9e6">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -84,7 +86,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 #shelf{position:fixed;inset:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top,0px) + 24px) 20px 44px;background:var(--desk);overscroll-behavior:contain}
 html{background:var(--desk)}
 #shelf header{display:flex;align-items:center;flex-wrap:wrap;gap:10px 12px;max-width:980px;margin:0 auto 24px}
-#shelf header h1{margin-right:auto}
+#shelf header h1{margin-right:auto;display:flex;align-items:center;gap:12px}
+.bk{display:inline-block;flex:none;width:.72em;height:.95em;background:#23407a;border-radius:2px 5px 5px 2px;box-shadow:inset .16em 0 0 rgba(0,0,0,.28),2px 2px 0 #0f1e40}
+.gbk{font-size:28px;margin-right:10px}#acct:not(.gate) .gbk{display:none}
 .mwrap{position:relative}
 #menub{position:relative}#menub .ndot{position:absolute;right:3px;top:3px;margin:0}
 #menu{position:absolute;right:0;top:calc(100% + 8px);z-index:45;width:min(300px,calc(100vw - 32px));background:var(--bar);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 40px var(--sh);padding:6px}
@@ -93,7 +97,7 @@ html{background:var(--desk)}
 .mhead .av{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--bar);font-weight:700}
 .mhead b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}.mhead small{opacity:.7}
 .mi{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:8px 10px;border:0;border-radius:10px;background:none;color:inherit;font:inherit;text-align:left}
-button.mi:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}.mi .ic{flex:none;opacity:.8}.mi span{flex:1}
+a.mi{text-decoration:none}a.mi:hover,button.mi:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}.mi .ic{flex:none;opacity:.8}.mi span{flex:1}
 .mi .ndot{margin:0}
 .seg3{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.seg3 button{border:0;background:none;color:inherit;font:inherit;font-size:.85em;padding:6px 9px;min-width:36px;min-height:34px}
 .seg3 button[aria-pressed="true"]{background:var(--ink);color:var(--bar)}
@@ -119,10 +123,15 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .cover{position:absolute;inset:0}
 .front{position:absolute;inset:0;border-radius:2px 7px 7px 2px}
 .inside{display:none}
-.front{background-color:var(--c);background-image:var(--ct,none);box-shadow:inset 8px 0 0 rgba(0,0,0,.22);overflow:hidden}
+.front{background-color:var(--c);background-image:var(--ct,none);background-size:100% 100%,auto;background-repeat:no-repeat,repeat;box-shadow:inset 8px 0 0 rgba(0,0,0,.22);overflow:hidden;container-type:inline-size}
 .front img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .inside{transform:rotateY(180deg);background:#f1f1ea}
-.lbl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1;background:#fbfbf6;color:#222;padding:10px 12px;width:62%;text-align:center;font-weight:600;font-size:.9em;border-radius:2px;word-break:break-word}
+.lbl{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:1;width:68%;padding:6cqw 6cqw 5cqw;background:#fbf8ef;color:#23304a;border-radius:2.5cqw;text-align:center;font:700 11cqw/1.05 "Caveat",cursive;overflow-wrap:anywhere;
+  box-shadow:0 1.5cqw 4cqw rgba(0,0,0,.32),inset 0 0 0 1.4cqw #fbf8ef,inset 0 0 0 1.8cqw rgba(35,48,74,.3)}
+.lbl::after{content:"";display:block;width:55%;margin:3cqw auto 0;border-top:.7cqw solid rgba(35,48,74,.32)}
+.pg.cv,.sl.cv{container-type:inline-size}
+.cph{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.eg.lb{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.eg.lb button{width:auto;height:auto;padding:6px;border-radius:10px;background:color-mix(in srgb,var(--ink) 6%,transparent)}.eg.lb img{display:block;max-width:130px;max-height:64px}.shmore{margin-top:10px}.cph .hint2{flex-basis:100%;margin:0} /* the label is sized from the cover's width, also while it turns */
 .add .pages,.add .front{background:transparent;box-shadow:none;border:2px dashed var(--line)}
 .plus{position:absolute;inset:0;display:grid;place-items:center;font-size:44px;opacity:.45}
 
@@ -162,6 +171,7 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #etl{font-weight:600}
 .sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--bar);box-shadow:0 0 0 1px var(--line);padding:0}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent)}
+#pcols{flex-wrap:wrap;gap:8px}#pcn{font-size:1em;margin-left:6px}.cpk[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent)}
 .paper{position:relative;width:min(100cqw - 20px,(100cqh - 20px)*var(--pr,.75));aspect-ratio:var(--ar,3/4);background-color:var(--paper);background-image:var(--tex);border-radius:2px 6px 6px 2px;box-shadow:0 12px 32px var(--sh)}
 #cv{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
 #ph{position:absolute;touch-action:none;outline:2px dashed var(--accent);cursor:move}
@@ -261,12 +271,21 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .srv-o label{display:block;font-size:.85em;opacity:.8;margin:2px 0 4px}.srv-o .lk-in{text-align:left}
 #srv .btn{width:100%;min-height:46px}#srv .btn:disabled{opacity:.45}
 .sva{display:flex;flex-direction:column;padding:6px 0;border-top:1px solid var(--line)}.sva small{opacity:.6}
+#fbk{position:fixed;inset:0;z-index:62;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
+#fbk .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(460px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#fbk h2{margin:0;font-size:1.3em}.fb-sub{opacity:.75;margin:4px 0 12px}.fb-note{opacity:.6;font-size:.82em;margin:6px 0}
+#fbk .seg2{margin:0 0 10px}.fb-ta{display:block;width:100%;font:inherit;color:var(--ink);background:var(--desk);border:1px solid var(--line);border-radius:12px;padding:10px 12px;resize:vertical;min-height:120px}
+.fb-cnt{display:block;text-align:right;opacity:.6;font-size:.8em;margin:4px 0}
+.fbr>div{display:flex;flex-direction:column;gap:4px}.fbx{margin:0;white-space:pre-wrap}
+.fbt{align-self:flex-start;font-size:.75em;font-weight:700;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.fbt-problem{background:rgba(229,72,77,.18);color:#c2473a}.fbt-idea{background:rgba(46,157,91,.18);color:#2e7d5b}
 #lockd{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:20px}
 #lockd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(380px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
 #lockd h2{margin:6px 0 4px;font-size:1.25em}.lk-sub{opacity:.75;margin:0 0 14px}.lk-note{opacity:.65;font-size:.85em;margin:8px 0 12px}
 .lk-ic{display:grid;place-items:center;width:52px;height:52px;margin:0 auto;border-radius:50%;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}.lk-ic .ic{width:26px;height:26px}
 .lk-in{display:block;width:100%;margin:0 0 10px;font:inherit;color:var(--ink);background:var(--desk);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-height:46px;text-align:center}
 .lk-in.pin{font-size:28px;letter-spacing:.6em;padding-left:.6em;width:min(220px,100%);margin-left:auto;margin-right:auto}
+.pdfprog{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border-radius:999px;background:var(--ink);color:var(--desk);box-shadow:0 8px 24px var(--sh)}.pdfprog .ib{color:var(--desk);border-color:color-mix(in srgb,var(--desk) 40%,transparent)}
 .lk-lab{display:block}.lk-lab span{display:block;font-size:.85em;opacity:.75;margin:0 0 4px}
 .lk-err{color:#c2473a;font-weight:600;min-height:1.2em;margin:4px 0 8px}
 #lockd .seg2{margin:0 0 12px}#lockd .chk{justify-content:center;margin:4px 0 6px}#lockd .acts2{justify-content:center;flex-wrap:wrap}#lockd .alink{margin-top:12px}
@@ -276,7 +295,15 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #block.on{color:var(--accent);border-color:var(--accent)}
 .lkb{position:absolute;right:8%;top:6%;z-index:2;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.92);color:#23304a;box-shadow:0 2px 6px rgba(0,0,0,.25)}.lkb .ic{width:17px;height:17px}
 #npd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(460px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}#npd h2{margin:0 0 4px;font-size:1.3em}#npd p{margin:0 0 14px;opacity:.7}
-#npd .opts2{grid-template-columns:repeat(auto-fill,minmax(78px,1fr));margin-bottom:16px}
+#npd .opts2{grid-template-columns:repeat(auto-fill,minmax(78px,1fr));margin-bottom:6px}
+.tplrow{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;margin-bottom:8px;scroll-snap-type:x proximity}
+.tplrow button{flex:none;width:80px;display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 4px;border:2px solid var(--line);border-radius:12px;background:none;color:inherit;font:inherit;font-size:.74em;line-height:1.15;text-align:center;scroll-snap-align:start}
+.tplrow button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.mini.tm{background-size:cover;background-position:center}.mini.tm.l{aspect-ratio:4/3;margin:auto 0}
+#dpg .opts2{margin-bottom:4px}#dpg .sec{display:flex;align-items:center;justify-content:space-between;opacity:1;color:color-mix(in srgb,var(--ink) 62%,transparent)}#dpg .alink{background:none;border:0;padding:2px 0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer}
+#dlg .card{max-height:calc(100vh - 40px);overflow-y:auto}#dlg p.dnote{font-size:.85em;margin:0 0 14px}
+.tl-own{color:#2e7d5b;font-weight:700;margin:0 0 4px!important;opacity:1!important}
+#lockd .tadd .lk-in{text-align:left;margin-bottom:8px;text-transform:none}#lockd .tadd .crow{display:flex;gap:8px}#lockd .tadd .crow .lk-in{margin:0}#lockd .tadd .crow .ib{flex:none;min-height:46px}
 #npd,#dlg,#up{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
 #dlg .card,#up .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #dlg h2,#up h2{margin:0 0 4px;font-size:1.3em}
@@ -287,6 +314,8 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .shape{display:block;background:var(--paper);border:2px solid var(--line);border-radius:4px;box-shadow:0 3px 8px var(--sh)}
 .shape.p{width:42px;height:56px}
 .shape.l{width:64px;height:48px}
+#dlg.pg .opts{margin-bottom:10px}#dlg.pg .opts button{flex-direction:row;justify-content:center;padding:10px 8px}#dlg.pg .shape.p{width:21px;height:28px}#dlg.pg .shape.l{width:32px;height:24px}
+#dlg.pg .opts2 button{padding:6px 4px}#dlg.pg #dpats .mini{width:70%}
 .acts2{display:flex;justify-content:flex-end;gap:10px}
 #tools{flex:1 1 0;min-width:0;overflow-x:auto;scrollbar-width:none;justify-content:flex-start}
 #tools::-webkit-scrollbar{display:none}
@@ -302,6 +331,7 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #pbg.pt-grid{background-image:linear-gradient(var(--lc) 1px,transparent 1px),linear-gradient(90deg,var(--lc) 1px,transparent 1px);background-size:calc(var(--sp)*1cqw) calc(var(--sp)*1cqw)}
 #pbg.pt-dots{background-image:radial-gradient(circle,var(--lc) 1.3px,transparent 1.8px);background-size:calc(var(--sp)*1cqw) calc(var(--sp)*1cqw)}
 .opts2{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
+#psheet{overflow-y:auto}#psheet>*{flex-shrink:0}#psheet .opts2{grid-template-columns:repeat(4,minmax(0,64px))}#psheet .opts2 button{padding:6px 4px}
 .opts2 button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border:2px solid var(--line);border-radius:12px;background:none;font-size:.85em}
 .opts2 button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .mini{display:block;width:100%;aspect-ratio:3/4;border:1px solid var(--line);border-radius:4px;background-color:#fdfdfa}
@@ -394,6 +424,8 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 #acct .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(400px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #acct h2{margin:0;font-size:1.3em}#acct p{margin:0 0 12px}#acct .muted{opacity:.7;font-size:.88em}#acct .or{text-align:center;opacity:.6;margin:12px 0}
 #acct .amsg{color:#b3402f;font-weight:600}
+.acc-legal{margin-top:10px!important;font-size:.85em}.acc-legal a{color:inherit}.acc-del{color:#c2473a!important}
+.btn.danger{background:#c2473a;color:#fff}.lk-ic.del{background:rgba(194,71,58,.14);color:#c2473a}
 #acct .alink{display:block;margin:-4px auto 10px;padding:6px 10px;background:none;border:0;color:var(--accent);font-size:.95em;font-weight:600;text-decoration:underline;text-underline-offset:3px}
 #acct .sep{text-align:center;opacity:.75;margin:14px 0 8px;font-size:.92em}
 .btn2{display:block;width:100%;min-height:44px;margin:0 0 14px;background:transparent;color:var(--ink);border:2px solid var(--ink);border-radius:999px;font-weight:600;padding:10px 18px}
@@ -431,6 +463,17 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .tcardx .pv{width:100%;aspect-ratio:3/4;border-radius:4px 8px 8px 4px;background:#fbfbf6 center/cover;box-shadow:inset 7px 0 0 rgba(0,0,0,.2),0 10px 20px var(--sh);border:1px solid var(--line)}
 .tcardx.l .pv{aspect-ratio:4/3}
 .tcardx b{display:block}.tcardx span{opacity:.65;font-size:.88em;display:block}.tcardx .go{font-weight:600;color:var(--accent);margin-top:2px}
+.tstore{grid-column:1/-1}.skinds{display:flex;gap:4px;margin:0 0 12px;border-bottom:1px solid var(--line);overflow-x:auto}.skinds button{border:0;background:none;color:inherit;font:inherit;font-weight:600;padding:8px 14px;border-bottom:3px solid transparent;opacity:.7;white-space:nowrap}.skinds button[aria-selected="true"]{opacity:1;border-color:var(--accent)}
+.tcardx .pv.cov{border-radius:4px 10px 10px 4px}.desmore{align-self:center;opacity:.7}.tcardx .pv.lblp,.tbuy-pv.k-lbl{display:grid;place-items:center;background:#2c5f8a radial-gradient(rgba(255,255,255,.08) 1px,transparent 1.5px) 0 0/8px 8px}.lblp img{display:block;max-width:84%;max-height:70%}
+.tcardx .pv.stkp,.tbuy-pv.k-stk{display:grid;grid-template-columns:1fr 1fr;place-items:center;padding:8%;gap:4%}.stkp img{display:block;width:88%;height:auto;max-height:100%;object-fit:contain}.tbuy-pv{overflow:hidden}.tbuy-pv.k-stk{width:220px;aspect-ratio:auto;grid-template-columns:repeat(4,1fr);padding:10px;gap:6px;background:#fbfbf6}
+.tbuy-pv.k-cov{border-radius:4px 10px 10px 4px}.tstore h2{margin:0 0 4px;font-size:1.3em}.tstore p{margin:0 0 12px;opacity:.75;max-width:640px}
+.tchips{display:flex;flex-wrap:wrap;gap:8px}.tchips button{border:1px solid var(--line);background:var(--bar);color:inherit;font:inherit;font-size:.9em;padding:7px 14px;border-radius:999px;min-height:38px}
+.tchips button[aria-pressed="true"]{background:var(--ink);color:var(--bar);border-color:var(--ink)}
+.tcardx .pv{position:relative}.tprice{position:absolute;top:8px;right:8px;font-size:.78em!important;font-weight:700;opacity:1!important;padding:3px 9px;border-radius:999px;background:#23407a;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.tprice.free{background:#2e7d5b}.tprice.own{background:#fff;color:#2e7d5b}
+.tcardx.lock .pv::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,transparent 55%,rgba(255,255,255,.55))}
+.tbuy-pv{width:150px;aspect-ratio:3/4;margin:0 auto 8px;border-radius:4px 8px 8px 4px;background:#fbfbf6 center/cover;box-shadow:inset 6px 0 0 rgba(0,0,0,.2),0 10px 22px rgba(0,0,0,.25);border:1px solid var(--line)}.tbuy-pv.l{width:200px;aspect-ratio:4/3}
+#lockd .tbuy{width:100%;min-height:46px}#lockd .codebox .sep{text-align:center;opacity:.75;margin:14px 0 8px;font-size:.92em}
 @media (prefers-color-scheme:light){:root[data-desk="warm"]:not([data-theme="dark"]){--desk:#efe7da;--bar:#faf5ea;--line:#d8cdb9}:root[data-desk="blue"]:not([data-theme="dark"]){--desk:#e1e8f3;--bar:#f4f7fc;--line:#c3cfe2}:root[data-desk="rose"]:not([data-theme="dark"]){--desk:#f2e3e6;--bar:#fbf4f5;--line:#e0c8cd}}
 :root[data-theme="light"][data-desk="warm"]{--desk:#efe7da;--bar:#faf5ea;--line:#d8cdb9}:root[data-theme="light"][data-desk="blue"]{--desk:#e1e8f3;--bar:#f4f7fc;--line:#c3cfe2}:root[data-theme="light"][data-desk="rose"]{--desk:#f2e3e6;--bar:#fbf4f5;--line:#e0c8cd}
 /* touch screens: bigger targets (about 40px), easier to hit with a finger */
@@ -451,8 +494,8 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 
 <div id="sv" role="status" aria-live="polite"></div>
 <section id="shelf">
-  <header><h1>My notebooks</h1><span id="note" role="status"></span><button class="ib i" id="themeb" aria-label="Switch theme"></button><div class="mwrap"><button class="ib i" id="menub" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i class="ndot hidden" id="menud"></i></button><div id="menu" class="hidden" role="menu"><div class="mhead" id="mhead"></div><button role="menuitem" class="mi" id="accb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Account &amp; promo code</span></button><div class="mi mtheme"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>Theme</span><div class="seg3" id="mtheme"><button data-v="auto">Auto</button><button data-v="light" aria-label="Light">☀</button><button data-v="dark" aria-label="Dark">☾</button></div></div><button role="menuitem" class="mi" id="mupd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span>What’s new</span><i class="ndot hidden" id="mupdd"></i></button><button role="menuitem" class="mi" id="setb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Settings</span></button><button role="menuitem" class="mi" id="hlpb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg><span>Help &amp; shortcuts</span></button><button role="menuitem" class="mi hidden" id="madm"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Admin panel</span></button><button role="menuitem" class="mi" id="mout"><svg class="ic" viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/></svg><span>Sign out</span></button></div></div><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
-  <nav class="tabs" role="tablist"><button role="tab" id="tb1" aria-selected="true">Notebooks</button><button role="tab" id="tb2" aria-selected="false">Templates</button></nav>
+  <header><h1><i class="bk" aria-hidden="true"></i>My notebooks</h1><span id="note" role="status"></span><button class="ib i" id="themeb" aria-label="Switch theme"></button><div class="mwrap"><button class="ib i" id="menub" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i class="ndot hidden" id="menud"></i></button><div id="menu" class="hidden" role="menu"><div class="mhead" id="mhead"></div><button role="menuitem" class="mi" id="accb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Account &amp; promo code</span></button><div class="mi mtheme"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>Theme</span><div class="seg3" id="mtheme"><button data-v="auto">Auto</button><button data-v="light" aria-label="Light">☀</button><button data-v="dark" aria-label="Dark">☾</button></div></div><button role="menuitem" class="mi" id="mupd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span>What’s new</span><i class="ndot hidden" id="mupdd"></i></button><button role="menuitem" class="mi" id="setb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Settings</span></button><button role="menuitem" class="mi" id="mfb"><svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><span>Send feedback</span></button><button role="menuitem" class="mi" id="hlpb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg><span>Help &amp; shortcuts</span></button><a role="menuitem" class="mi" id="mlegal" href="../privacy.html" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span>Privacy &amp; terms</span></a><button role="menuitem" class="mi hidden" id="madm"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Admin panel</span></button><button role="menuitem" class="mi" id="mout"><svg class="ic" viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/></svg><span>Sign out</span></button></div></div><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
+  <nav class="tabs" role="tablist"><button role="tab" id="tb1" aria-selected="true">Notebooks</button><button role="tab" id="tb2" aria-selected="false">Store</button></nav>
   <div id="lib"><label class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="q" type="search" placeholder="Search notebooks" aria-label="Search notebooks and notes" autocomplete="off"></label>
     <select id="sortb" aria-label="Sort notebooks"><option value="rec">Recently edited</option><option value="name">Name A–Z</option><option value="pages">Most pages</option><option value="new">Newest first</option></select>
     <div class="grp" id="vw"><button class="ib i" data-v="grid" aria-label="Shelf view" title="Shelf view"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg></button><button class="ib i" data-v="list" aria-label="List view" title="List view"><svg class="ic" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></button></div></div>
@@ -537,7 +580,9 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
         <button data-p="grid"><i class="mini pt-grid"></i>Grid</button>
         <button data-p="dots"><i class="mini pt-dots"></i>Dots</button>
       </div>
-      <div class="sec">Paper color</div>
+      <div class="sec">Templates</div>
+      <div class="tplrow" id="ptpl"></div>
+      <div class="sec">Paper color <small id="pcn"></small></div>
       <div class="grp" id="pcols"></div>
       <label class="chk"><input type="checkbox" id="pall"> Apply to all pages</label>
     </div>
@@ -561,11 +606,14 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
     <div id="csheet" class="hidden" role="dialog" aria-label="Cover style">
       <div class="sh-top"><strong>Cover style</strong><button class="ib i" id="csx" aria-label="Close">✕</button></div>
       <div class="sec">Color</div><div class="grp cgrid" id="ccols"></div>
+      <div class="sec">Design</div><div class="txg" id="cdes"></div>
       <div class="sec">Texture</div><div class="txg" id="ctex"></div>
-      <p class="hint2" style="margin-top:10px">Tip: draw on the cover, or add stickers and a photo with the + button.</p>
+      <div class="sec">Photo <span class="soon">Pro</span></div>
+      <div class="cph"><button class="ib" id="cph">Add a photo</button><button class="ib hidden" id="cphx">Remove photo</button><small class="hint2">The photo fills the cover, and you can draw on top of it.</small></div>
+      <p class="hint2" style="margin-top:10px">Tip: draw on the cover, or add a label, stickers and notes with the + button.</p>
     </div>
     <div id="sheet" class="hidden" role="dialog" aria-label="Add">
-      <div class="sh-top"><nav class="tabs sm" id="stabs"><button data-p="emoji" aria-selected="true">Emoji</button><button data-p="stick" aria-selected="false">Stickers</button><button data-p="note" aria-selected="false">Notes</button></nav><button class="ib i" id="shx" aria-label="Close">✕</button></div>
+      <div class="sh-top"><nav class="tabs sm" id="stabs"><button data-p="emoji" aria-selected="true">Emoji</button><button data-p="stick" aria-selected="false">Stickers</button><button data-p="note" aria-selected="false">Notes</button><button data-p="label" aria-selected="false">Labels</button></nav><button class="ib i" id="shx" aria-label="Close">✕</button></div>
       <div id="spane"></div>
     </div>
   </div>
@@ -573,7 +621,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 
 <div id="up" class="hidden" role="dialog" aria-modal="true" aria-labelledby="upt"><div class="card">
   <h2 id="upt">Foliet Pro</h2><p id="upm"></p>
-  <ul class="upl"><li>Unlimited notebooks and pages</li><li>Up to 8 layers per page</li><li>PDF import</li><li>Export to PDF and image</li></ul>
+  <ul class="upl"><li>Unlimited notebooks and pages</li><li>Up to 8 layers per page</li><li>PDF import</li><li>A photo on the cover</li><li>Export to PDF and image</li></ul>
   <p class="upp"><b>€3.99</b> a month or <b>€29.99</b> a year</p>
   <p class="upn">Pro isn’t on sale yet. Payments open together with accounts and cloud sync. Everything you make on the free plan stays yours.</p>
   <div class="acts2"><button class="ib" id="upno">OK</button><a class="btn" id="upgo" href="../#pricing" target="_blank" rel="noopener">Compare plans</a></div>
@@ -593,7 +641,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </div>
 
 <div id="acct" class="hidden" role="dialog" aria-modal="true" aria-labelledby="acctt"><div class="card">
-  <div class="sh-top"><h2 id="acctt">Your account</h2><button class="ib i" id="acc-theme" aria-label="Switch theme"></button><button class="ib i" id="acc-x" aria-label="Close">✕</button></div>
+  <div class="sh-top"><i class="bk gbk" aria-hidden="true"></i><h2 id="acctt">Your account</h2><button class="ib i" id="acc-theme" aria-label="Switch theme"></button><button class="ib i" id="acc-x" aria-label="Close">✕</button></div>
   <div id="acc-body"></div>
 </div></div>
 <div id="upd" class="hidden" role="dialog" aria-modal="true" aria-labelledby="updt"><div class="card">
@@ -646,11 +694,19 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
     <button data-p="grid"><i class="mini pt-grid"></i>Grid</button>
     <button data-p="dots"><i class="mini pt-dots"></i>Dots</button>
   </div>
+  <div class="sec">Your templates</div><div class="tplrow" id="nptpl"></div>
   <div class="acts2"><button class="ib" id="npno">Cancel</button><button class="btn" id="npyes">Add pages</button></div>
 </div></div>
 <div id="dlg" class="hidden" role="dialog" aria-modal="true" aria-labelledby="dt"><div class="card">
   <h2 id="dt"></h2><p id="dsub"></p>
   <div class="opts"><button data-o="p" aria-pressed="true"><i class="shape p"></i>Portrait</button><button data-o="l" aria-pressed="false"><i class="shape l"></i>Landscape</button></div>
+  <div id="dpg" class="hidden">
+    <div class="sec">Pages</div>
+    <div class="opts2" id="dpats"><button data-p="blank"><i class="mini pt-blank"></i>Blank</button><button data-p="lines"><i class="mini pt-lines"></i>Lined</button><button data-p="grid"><i class="mini pt-grid"></i>Grid</button><button data-p="dots"><i class="mini pt-dots"></i>Dots</button></div>
+    <div class="sec">Your templates <button class="alink" id="dmore" type="button">More in the store ›</button></div>
+    <div class="tplrow" id="dtpl"></div>
+    <p class="dnote">Every page starts like this, and new pages you add look the same. You can change any page later with Page style.</p>
+  </div>
   <div class="acts2"><button class="ib" id="dno">Cancel</button><button class="btn" id="dyes">Create</button></div>
 </div></div>
 
@@ -792,7 +848,7 @@ function askPersist(){if(persistAsked)return;persistAsked=true;try{const S=navig
 function makeBook(b){
   const el=document.createElement('div');el.className='book';el.style.aspectRatio=b.o==='l'?'4/3':'3/4';
   el.innerHTML='<div class="pages"></div><div class="cover"><div class="front"><div class="lbl"></div></div><div class="inside"></div></div>';
-  const f=el.querySelector('.front');f.style.setProperty('--c',b.color);f.style.setProperty('--ct',texUrl(b));
+  const f=el.querySelector('.front');f.style.setProperty('--c',b.color);f.style.setProperty('--ct',covImg(b));
   if(b.lock){const k=document.createElement('i');k.className='lkb';k.innerHTML=LOCK_IC;f.append(k)}
   const cv0=b.lock?null:(b.cpv||b.cover);
   if(cv0){const m=new Image();m.alt='';m.src=cv0;f.prepend(m);f.querySelector('.lbl').remove()}
@@ -827,7 +883,14 @@ function renderShelf(){
   g.append(a);
 }
 const ownBooks=()=>data.filter(b=>!b.welcome).length; // the welcome notebook doesn't count toward the free limit
-async function newNotebook(){if(ownBooks()>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}const o=await askOrient('New notebook','p','Choose the page orientation.');if(!o)return;const b=mk('Notebook '+(data.length+1),data.length,o);data.push(b);persist();showBrowse(b)}
+async function newNotebook(){
+  if(ownBooks()>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}
+  const r=await askOrient('New notebook','p','Choose the orientation and how the pages look.','Create',true);if(!r)return;
+  const b=mk('Notebook '+(data.length+1),data.length,r.o),T=r.pg.startsWith('tpl:')&&tplById(r.pg.slice(4));
+  if(T&&ownsTpl(T)){await tplFonts();tplPages(b,T,0,1,PAPER)}
+  else if(r.pg!=='blank'){b.ps[0]={...DEF,p:r.pg};cur=b;setDims(b);await rebuildPv(0)}
+  data.push(b);persist();showBrowse(b);
+}
 function closeBook(){if(cur)UNL.delete(String(cur.id));$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;docTitle();syncSoon(300)}
 /* browser tab: "Foliet Sketchbook", or "<notebook> – Foliet Sketchbook" while a notebook is open */
 function docTitle(){document.title=cur&&$('#shelf').classList.contains('hidden')?(cur.title||'Untitled')+' – Foliet Sketchbook':'Foliet Sketchbook'}
@@ -835,12 +898,12 @@ function docTitle(){document.title=cur&&$('#shelf').classList.contains('hidden')
 /* Book: cover + pages. State cs: -1 = closed cover; s>=0: left=2s-1 (s=0: inside of cover), right=2s */
 const L=s=>s<0?'x':2*s,R=s=>s<0?'c':2*s+1,SM=()=>Math.max(0,(cur.pages.length-1)>>1);
 function setImg(el,i){
-  el.innerHTML='';el.style.backgroundImage='';el.style.backgroundColor='';el.style.boxShadow='';el.style.visibility=i==='x'?'hidden':'';
+  el.innerHTML='';el.style.backgroundImage='';el.style.backgroundColor='';el.style.backgroundSize='';el.style.backgroundRepeat='';el.style.boxShadow='';el.style.visibility=i==='x'?'hidden':'';
   el.classList.toggle('ghost',typeof i==='number'&&i>=cur.pages.length);
   el.classList.toggle('cv',i==='c');
   let s=null;
   if(i==='c'){
-    el.style.backgroundColor=cur.color;if(cur.tex&&TEX[cur.tex])el.style.backgroundImage=texUrl(cur);s=cur.cpv||cur.cover;
+    paintCover(el,cur);s=cur.cpv||cur.cover;
     if(!s){const l=document.createElement('div');l.className='lbl';l.textContent=cur.title||'Untitled';el.append(l)}
   }else if(i===-1){
     const o=document.createElement('div');o.style.cssText='position:absolute;inset:0;background:'+shade(cur.color,.15);
@@ -983,7 +1046,9 @@ function resume(b,target){
   setTimeout(step,700);
 }
 $('#bclose').onclick=()=>{if(!flipping)closeBook()};
-$('#btitle').oninput=e=>{cur.title=e.target.value;docTitle();persist()};
+let rnT=0,rnFrom=null;
+$('#btitle').oninput=e=>{if(rnFrom===null)rnFrom=cur.title;cur.title=e.target.value;docTitle();persist();
+  clearTimeout(rnT);const b=cur;rnT=setTimeout(()=>{const f=rnFrom;rnFrom=null;if(f!==b.title)relabel(b,f,b.title||'Untitled')},700)};
 let zs=0;
 function resetZoom(){if(!zs)return;zs=0;$('#bzoom').setAttribute('aria-pressed',false);const t=$('#tilt');t.style.transition='none';applyZoom();t.offsetWidth;t.style.transition=''}
 function applyZoom(){
@@ -999,27 +1064,36 @@ $('#bprev').onclick=()=>flip(cs-1);
 $('#bnext').onclick=()=>flip(cs+1);
 /* New pages: choose how they look (like the last page, blank, lined, grid or dots). The paper color stays. */
 function askPageStyle(last,add){
-  return new Promise(res=>{
-    const d=$('#npd'),bs=[...d.querySelectorAll('#npats button')];let v='same';
+  return new Promise(async res=>{
+    const d=$('#npd');let v='same';
     $('#npsub').textContent='Adding '+add+' page'+(add>1?'s':'')+'. How should '+(add>1?'they':'it')+' look?';
-    $('#npsame').className='mini pt-'+((last&&last.p)||'blank');
-    const mark=()=>bs.forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===v));mark();
-    bs.forEach(b=>b.onclick=()=>{v=b.dataset.p;mark()});
+    const sm=$('#npsame'),LT=isTplPg(last)&&tplById(last.t);
+    sm.className='mini '+(LT?'tm'+(cur.o==='l'?' l':''):'pt-'+((last&&last.p)||'blank'));sm.style.backgroundImage=LT?'url('+tplThumbO(LT,cur.o)+')':'';
+    const all=()=>[...d.querySelectorAll('#npats button,#nptpl button')];
+    const mark=()=>all().forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===v));
+    d.querySelectorAll('#npats button').forEach(b=>b.onclick=()=>{v=b.dataset.p;mark()});
     const done=x=>{d.classList.add('hidden');res(x)};
     $('#npyes').onclick=()=>done(v);$('#npno').onclick=()=>done(null);
     d.onclick=e=>{if(e.target===d)done(null)};
-    d.classList.remove('hidden');
+    d.classList.remove('hidden');mark();
+    await tplRow($('#nptpl'),cur.o,()=>false,(t,b)=>{v=b.dataset.p;mark()});mark();
   });
 }
 $('#badd').onclick=async()=>{
   const n0=cur.pages.length,last0=cur.ps[n0-1],room=LIM().pg-n0;
   if(room<=0){upsell('The free plan includes '+LIM().pg+' pages per notebook. Upgrade to Pro for unlimited pages.');return}
   const add=Math.min(n0%2===0?2:3,room),pick=await askPageStyle(last0,add);if(!pick)return;
-  const last=pick==='same'?last0:(pick==='blank'&&(!last0||last0.c===PAPER)?null:{...DEF,...(last0||{}),p:pick});
+  const tid=pick.startsWith('tpl:')?pick.slice(4):(pick==='same'&&isTplPg(last0)?last0.t:null),T=tid&&tplById(tid);
+  const c0=(last0&&last0.c)||PAPER;
   for(let k=0;k<add;k++)cur.pages.push(null);
-  if(last)for(let k=n0;k<cur.pages.length;k++)cur.ps[k]={...last};
+  if(T){await tplFonts();tplPages(cur,T,n0,add,c0)} // template pages, numbered after the ones before
+  else{
+    const base=isTplPg(last0)?{...DEF,c:c0}:last0;
+    const last=pick==='same'?base:(pick==='blank'&&c0===PAPER?null:{...DEF,c:c0,p:pick});
+    if(last&&styled(last))for(let k=n0;k<cur.pages.length;k++)cur.ps[k]={...last};
+  }
   persist();
-  if(last)await Promise.all([...Array(cur.pages.length-n0).keys()].map(k=>rebuildPv(n0+k)));
+  if(T?c0!==PAPER:cur.ps[n0])await Promise.all([...Array(cur.pages.length-n0).keys()].map(k=>rebuildPv(n0+k)));
   flip(SM());
 };
 document.addEventListener('keydown',e=>{if($('#bv').classList.contains('hidden')||e.target.id==='btitle')return;if(e.key==='ArrowRight')flip(cs+1);if(e.key==='ArrowLeft')flip(cs-1)});
@@ -1076,11 +1150,11 @@ function showEditor(i){
 function loadPage(){
   endFloat();ctx.clearRect(0,0,W,H);hist=[];redo=[];resetEz();
   applyPS();
-  const bgS=pi<0?null:cur.bg[pi];$('#bgimg').classList.toggle('on',!!bgS);if(bgS)$('#bgimg').src=bgS;
+  showBgImg();
   const lay=pi<0?null:cur.lay[pi],d=pi<0?cur.cover:(lay?lay.L[lay.a].s:cur.pages[pi]),t=++token;
   if(d){const im=new Image();im.onload=()=>{if(t===token)ctx.drawImage(im,0,0)};im.src=d}
   buildLayerEls();$('#lyb').classList.toggle('hidden',pi<0);
-  renderObjs();
+  renderObjs();if(pi<0)ensureCoverLabel();
 }
 $('#back').onclick=async()=>{endFloat();closeSheet();await savesDone();if(pi>=0)await rebuildPv(pi);showBrowse()};
 /* Undo history. The newest entry is the whole page before the last change; older entries keep only the
@@ -1136,8 +1210,19 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
 /* Text tool */
 function endFloat(){const e=rtEditing();if(e)rtFinish(e);commitSel();const a=$('#ph');if(a)a.remove()}
 function pushHist(){histAdd();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1}
-$('#photo').onclick=()=>$('#file').click();
-$('#file').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>placePhoto(im);im.src=r.result};r.readAsDataURL(f)};
+/* A photo on the cover is Pro: it fills the cover as its background (cur.cbg), under the drawing, so you can draw on it.
+   Photos on pages stay free (movable objects). */
+let photoCover=false;
+const coverPhotoPro=()=>{if(plan==='pro')return true;upsell('A photo on the cover is part of Pro. You can still draw on the cover and add a label, stickers and notes.');return false};
+$('#photo').onclick=()=>{if(pi<0&&!coverPhotoPro())return;photoCover=pi<0;$('#file').click()};
+$('#file').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>photoCover&&pi<0?setCoverPhoto(im):placePhoto(im);im.src=r.result};r.readAsDataURL(f)};
+function coverFill(im){ // the photo cropped to fill the cover
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),k=Math.max(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*k,h=im.naturalHeight*k;
+  x.drawImage(im,(W-w)/2,(H-h)/2,w,h);return c.toDataURL('image/webp',.85);
+}
+function showBgImg(){const s=pi<0?cur.cbg:cur.bg[pi];$('#bgimg').classList.toggle('on',!!s);if(s)$('#bgimg').src=s;else $('#bgimg').removeAttribute('src');syncCovPhoto()}
+function syncCovPhoto(){const has=!!(cur&&cur.cbg);$('#cph').textContent=has?'Change photo':'Add a photo';$('#cphx').classList.toggle('hidden',!has)}
+async function setCoverPhoto(im){cur.cbg=im?coverFill(im):null;if(!cur.cbg)delete cur.cbg;showBgImg();await savePage()}
 /* Objects: photos, emoji, stickers, notes. Movable in view mode */
 let view=false,selO=null;
 const objList=()=>pi<0?cur.cobjs:(cur.objs[pi]=cur.objs[pi]||[]);
@@ -1211,7 +1296,7 @@ function syncBar(){
   const hint=$('#ohint');hint.classList.toggle('hidden',has||!view);$('#obar').classList.toggle('hidden',!view&&!has);
   hint.textContent=objList().length?'Tap an object to select it. Drag to move, corner to resize, top dot to rotate.':'Nothing here yet. Add photos, stickers or notes with +';
   ['o-dup','o-front','o-del'].forEach(i=>$('#'+i).classList.toggle('hidden',!has));
-  $('#o-edit').classList.toggle('hidden',!note);$('#o-cols').classList.toggle('hidden',!note||selO._o.c==='transparent');syncText();
+  $('#o-edit').classList.toggle('hidden',!note&&!(has&&selO._o.lb));$('#o-cols').classList.toggle('hidden',!note||selO._o.c==='transparent');syncText();
 }
 function setView(v){
   commitText();view=v;
@@ -1240,6 +1325,35 @@ function newText(e){
   const d=addObj({k:'note',c:'transparent',tc:color,fm:tdef.fm,b:tdef.b,i:tdef.i,al:tdef.al,t:'',x,y,w,h,f,r:0},true);editNote(d);
 }
 function recolor(c){const d=selText();if(tool==='text'&&d)rtApply(d,{c})}
+/* Labels: image objects {k:'img', src, lb:{id, t}} drawn by labelURL(); ✎ retypes them */
+const LTH={};
+function lblThumb(L,t){const k=L.id+'|'+t;if(!LTH[k]){const c=lblDraw(L,t),q=document.createElement('canvas'),s=Math.min(260/c.width,120/c.height);q.width=Math.round(c.width*s);q.height=Math.round(c.height*s);q.getContext('2d').drawImage(c,0,0,q.width,q.height);LTH[k]=q.toDataURL()}return LTH[k]}
+function lblBox(L){const w=W*L.w*(L.a>1?1:(W>H?.75:1)),h=w*L.a,k=Math.min(1,H*.86/h);return {w:w*k,h:h*k}}
+async function addLabel(L,text){
+  await lblFonts();const t=(text||cur.title||'Untitled').slice(0,60),{w,h}=lblBox(L),cy=objList().some(o=>o.lb)?.62:.4; // a second label goes lower
+  return addObj({k:'img',src:labelURL(L.id,t),lb:{id:L.id,t},x:(W-w)/2,y:Math.max(0,Math.min(H-h,H*cy-h/2)),w,h,r:0});
+}
+function editLabel(d){
+  const o=d._o;
+  lockDlg((c,close)=>{
+    c.append(el('h2','','Label text'));const f=el('form');const i=el('input','lk-in');i.id='lb-t';i.value=o.lb.t||'';i.maxLength=60;i.setAttribute('aria-label','Label text');f.append(i);c.append(f);
+    const acts=el('div','acts2');const no=el('button','ib','Cancel');no.type='button';no.onclick=()=>close(false);const ok=el('button','btn','Save');ok.type='submit';acts.append(no,ok);f.append(acts);
+    f.onsubmit=async e=>{e.preventDefault();const t=i.value.trim()||'Untitled';close(true);await lblFonts();o.lb.t=t;o.src=labelURL(o.lb.id,t);renderObjs();selectObj(elOf(o));savePage()};
+    setTimeout(()=>{i.focus();i.select()},50);
+  });
+}
+async function relabel(b,from,to){ // the notebook was renamed: labels that showed the old name follow
+  const ls=(b.cobjs||[]).filter(o=>o.lb&&o.lb.t===from);if(!ls.length)return;
+  await lblFonts();ls.forEach(o=>{o.lb.t=to;o.src=labelURL(o.lb.id,to)});
+  if(b===cur){b.cpv=await compose(b.cover,b.cobjs,b.cbg,null);if(!$('#bv').classList.contains('hidden'))renderBrowse()}
+  persist();
+}
+async function ensureCoverLabel(){ // first time a plain cover is edited, its name tag becomes a label you can move
+  const b=cur;if(pi>=0||b.cover||b.cbg||b.cpv||(b.cobjs||[]).length||b.lbl0)return;
+  b.lbl0=1;await lblFonts();if(pi>=0||cur!==b)return;
+  const L=LABELS[0],{w,h}=lblBox(L),t=b.title||'Untitled';
+  b.cobjs=b.cobjs||[];b.cobjs.push({k:'img',src:labelURL(L.id,t),lb:{id:L.id,t},x:(W-w)/2,y:H*.4-h/2,w,h,r:0});renderObjs();savePage();
+}
 function placeNote(c){const d=addObj({k:'note',c,t:'',x:W*.27,y:H*.3,w:W*.45,h:W*.45,f:40,r:0});editNote(d)}
 /* Rich text boxes. The text is a list of runs: [{t:'abc', c:color, f:size, b:1, i:1, fm:'serif'}].
    A run only stores what differs from the box default (o.tc, o.f, o.b, o.i, o.fm). o.t keeps the plain text (search). */
@@ -1524,7 +1638,7 @@ async function savePage0(){
     if(svSeq[key]!==seq||b._sv!==sv)return;
   }
   if(idx<0)b.cover=ink;else b.pages[idx]=flat;
-  const bg=idx<0?null:b.bg[idx],st=idx<0?null:b.ps[idx],pv=(objs.length||bg||styled(st))?await compose(flat,objs,bg,st):null;
+  const bg=idx<0?b.cbg:b.bg[idx],st=idx<0?null:b.ps[idx],pv=(objs.length||bg||styled(st))?await compose(flat,objs,bg,st):null;
   if(b._sv!==sv)return;
   if(idx<0)b.cpv=pv;else if(pv)b.pv[idx]=pv;else delete b.pv[idx];
   persist();
@@ -1535,7 +1649,7 @@ function initObar(){
   $('#o-del').onclick=()=>{if(!selO)return;const l=objList();l.splice(l.indexOf(selO._o),1);renderObjs();savePage()};
   $('#o-dup').onclick=()=>{if(!selO)return;const n={...selO._o,x:selO._o.x+30,y:selO._o.y+30};objList().push(n);renderObjs();selectObj(elOf(n));savePage()};
   $('#o-front').onclick=()=>{if(!selO)return;const o=selO._o,l=objList();l.splice(l.indexOf(o),1);l.push(o);renderObjs();selectObj(elOf(o));savePage()};
-  $('#o-edit').onclick=()=>{if(selO&&selO._o.k==='note')editNote(selO)};
+  $('#o-edit').onclick=()=>{if(!selO)return;if(selO._o.lb)editLabel(selO);else if(selO._o.k==='note')editNote(selO)};
   NC.forEach(c=>{const b=document.createElement('button');b.className='sw';b.style.background=c;b.setAttribute('aria-label','Note color');b.onclick=()=>{if(selO&&selO._o.k==='note'){selO._o.c=c;selO.style.background=c;savePage()}};$('#o-cols').append(b)});
   document.addEventListener('keydown',e=>{
     if(!view||$('#ed').classList.contains('hidden')||/TEXTAREA|INPUT|SELECT/.test(e.target.tagName)||e.target.isContentEditable)return;
@@ -2073,9 +2187,17 @@ function pane(p){
       box.append(h,g);
     }
   }else if(p==='stick'){
-    const g=document.createElement('div');g.className='eg st';
-    STK.forEach((u,i)=>{const b=document.createElement('button');b.setAttribute('aria-label','Sticker '+(i+1));const m=new Image();m.src=u;m.alt='';b.append(m);b.onclick=()=>{closeSheet();const im=new Image();im.onload=()=>placePhoto(im,.3);im.src=u};g.append(b)});
-    box.append(g);
+    STPK.filter(ownsItem).forEach(pk=>{
+      const h=el('div','sec',pk.n);const g=document.createElement('div');g.className='eg st';g.dataset.pk=pk.id;
+      pk.items.forEach((u,i)=>{const b=document.createElement('button');b.setAttribute('aria-label',pk.n+' sticker '+(i+1));const m=new Image();m.src=u;m.alt='';b.append(m);b.onclick=()=>{closeSheet();const im=new Image();im.onload=()=>placePhoto(im,.3);im.src=u};g.append(b)});
+      box.append(h,g)});
+    if(STPK.some(pk=>!ownsItem(pk)))box.append(el('p','hint2 shmore','More sticker packs are in the Store.'));
+  }else if(p==='label'){
+    const g=el('div','eg lb');lblFonts().then(()=>{
+      LABELS.filter(ownsItem).forEach(L=>{const b=el('button','');b.dataset.l=L.id;b.setAttribute('aria-label',L.n+' label');b.title=L.n;const m=new Image();m.alt='';m.src=lblThumb(L,cur.title);b.append(m);
+        b.onclick=()=>{closeSheet();addLabel(L)};g.append(b)})});
+    box.append(el('p','hint2','A label with the notebook’s name. Move it, resize it or turn it anywhere; tap ✎ to change the words.'),g);
+    if(LABELS.some(L=>!ownsItem(L)))box.append(el('p','hint2 shmore','More labels are in the Store.'));
   }else{
     const g=document.createElement('div');g.className='eg nt';
     NC.forEach(c=>{const b=document.createElement('button');b.style.background=c;b.setAttribute('aria-label','Note');b.onclick=()=>{closeSheet();placeNote(c)};g.append(b)});
@@ -2098,15 +2220,20 @@ function wrapText(t,maxW){
 }
 
 /* Orientation dialog + PDF import */
-function askOrient(title,pre,sub,yes){
+function askOrient(title,pre,sub,yes,pages){ // pages: also ask how the pages look → {o, pg}
   return new Promise(res=>{
-    const dlg=$('#dlg'),btns=[...dlg.querySelectorAll('.opts button')];let o=pre;
+    const dlg=$('#dlg'),btns=[...dlg.querySelectorAll('.opts button')];let o=pre,pg='blank';
     $('#dt').textContent=title;$('#dsub').textContent=sub;$('#dyes').textContent=yes||'Create';
+    $('#dpg').classList.toggle('hidden',!pages);dlg.classList.toggle('pg',!!pages);
+    const markP=()=>dlg.querySelectorAll('#dpats button,#dtpl button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===pg));
+    const row=()=>pages?tplRow($('#dtpl'),o,()=>false,(t,b)=>{pg=b.dataset.p;markP()}).then(markP):null;
     const mark=()=>btns.forEach(b=>b.setAttribute('aria-pressed',b.dataset.o===o));mark();
-    btns.forEach(b=>b.onclick=()=>{o=b.dataset.o;mark()});
+    btns.forEach(b=>b.onclick=()=>{if(o===b.dataset.o)return;o=b.dataset.o;mark();row()});
+    dlg.querySelectorAll('#dpats button').forEach(b=>b.onclick=()=>{pg=b.dataset.p;markP()});markP();
     const done=v=>{dlg.classList.add('hidden');res(v)};
-    $('#dyes').onclick=()=>done(o);$('#dno').onclick=()=>done(null);
-    dlg.classList.remove('hidden');
+    $('#dyes').onclick=()=>done(pages?{o,pg}:o);$('#dno').onclick=()=>done(null);
+    $('#dmore').onclick=()=>{done(null);$('#tb2').click()};
+    dlg.classList.remove('hidden');row();
   });
 }
 const PDFJS='vendor/pdfjs/'; // pdf.js 3.11.174 (Mozilla, Apache-2.0), kept in the project so it works offline
@@ -2122,8 +2249,14 @@ async function renderPdfPage(doc,i){
   x.fillStyle='#fff';x.fillRect(0,0,W,H);
   x.translate((W-vp.width)/2,(H-vp.height)/2);
   await pg.render({canvasContext:x,viewport:vp}).promise;
-  return c.toDataURL('image/webp',.82);
+  try{pg.cleanup()}catch(e){}
+  return canvasURL(c,.8);
 }
+function pdfProgress(onCancel){
+  const w=el('div','pdfprog');w.setAttribute('role','status');const t=el('span','','Importing…');const c=el('button','ib','Cancel');c.onclick=onCancel;w.append(t,c);document.body.append(w);
+  return {set:x=>t.textContent=x,done:()=>w.remove()};
+}
+const PDF_MAX=500; // pages per PDF (Pro). About 200 KB a page on the device and in the cloud.
 $('#pdfb').onclick=()=>{if(plan!=='pro'){upsell('PDF import is included in Pro.');return}$('#pdff').click()};
 $('#pdff').onchange=async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
@@ -2131,18 +2264,33 @@ $('#pdff').onchange=async e=>{
     note('Reading PDF…');
     const lib=await pdfLib(),doc=await lib.getDocument({data:await f.arrayBuffer(),isEvalSupported:false}).promise;
     const v=(await doc.getPage(1)).getViewport({scale:1});
-    const n=Math.min(doc.numPages,60);
-    const o=await askOrient('Import PDF',v.width>v.height?'l':'p',n+(n<doc.numPages?' of '+doc.numPages:'')+' pages. Is this PDF portrait or landscape? Each page is fitted exactly onto a notebook page.','Import');
+    const N=Math.min(doc.numPages,PDF_MAX);
+    const o=await askOrient('Import PDF',v.width>v.height?'l':'p',(doc.numPages>PDF_MAX?'This PDF has '+doc.numPages+' pages; the first '+PDF_MAX+' will be imported. ':N+(N===1?' page. ':' pages. ')+'')+'The first page becomes the cover. Is this PDF portrait or landscape?','Import');
     if(!o){note('');return}
     const b=mk(f.name.replace(/\.pdf$/i,'').slice(0,40)||'PDF',data.length,o);b.pages=[];
     setDims(b);
-    for(let i=1;i<=n;i++){note('Importing page '+i+' of '+n+'…');b.pages.push(null);b.bg[i-1]=await renderPdfPage(doc,i)}
-    data.push(b);persist();note('');showBrowse(b);
+    // the first PDF page is the cover's photo (you can draw on it); the pages inside start with page 2
+    const cov=await renderPdfPage(doc,1);
+    b.cbg=cov;b.cpv=await compose(null,[],cov,null);
+    const first=N>1?2:1;
+    data.push(b);
+    let stop=false;const pr=pdfProgress(()=>stop=true);
+    for(let i=first;i<=N&&!stop;i++){
+      pr.set('Importing page '+(i-first+1)+' of '+(N-first+1)+'…');
+      b.pages.push(null);b.bg[b.pages.length-1]=await renderPdfPage(doc,i);
+      if((i-first+1)%25===0){persist();await new Promise(r=>setTimeout(r,0))} // saved as it goes
+    }
+    pr.done();try{doc.destroy()}catch(e){}
+    if(!b.pages.length)b.pages=[null];
+    persist();note('');renderShelf();showBrowse(b);
+    if(stop)toast('Import stopped – '+b.pages.length+' pages were kept.');
   }catch(err){note('Could not import this PDF.',1);console.error(err)}
 };
 
 /* Page style (background) */
-const PAPER='#fdfdfa',DEF={p:'blank',c:PAPER},PAPERS=['#fdfdfa','#f6efe0','#e9e9e9','#e3edf7','#26292e'];
+const PAPER='#fdfdfa',DEF={p:'blank',c:PAPER};
+const PAPERN=[['#fdfdfa','Paper white'],['#ffffff','Bright white'],['#faf1d7','Warm white – easier on the eyes'],['#f6efe0','Cream'],['#e9e9e9','Light gray'],['#e3edf7','Light blue'],['#e7f1e3','Mint'],['#f8e6ec','Blush'],['#26292e','Dark gray'],['#000000','Black']];
+const PAPERS=PAPERN.map(x=>x[0]),paperName=c=>(PAPERN.find(x=>x[0]===c)||[0,'Your color'])[1];
 const styled=st=>!!st&&(st.p!=='blank'||st.c!==PAPER);
 const lumOf=h=>{const v=parseInt(h.slice(1),16);return(.2126*(v>>16)+.7152*(v>>8&255)+.0722*(v&255))/255};
 function drawBg(x,st){
@@ -2158,13 +2306,16 @@ function applyPS(){
   pb.className='pt-'+(pi<0?'blank':st.p);
   pb.style.setProperty('--lc',lumOf(st.c||PAPER)<.35?'rgba(255,255,255,.2)':'rgba(60,90,140,.28)');
   $('#paper').style.backgroundColor=pi<0?cur.color:(st.c===PAPER?'':st.c);
-  $('#paper').style.backgroundImage=(pi<0&&cur.tex&&TEX[cur.tex])?texUrl(cur):'';
+  if(pi<0)paintCover($('#paper'),cur);else{const pp=$('#paper').style;pp.backgroundImage='';pp.backgroundSize='';pp.backgroundRepeat=''}
   syncPS();
 }
 function syncPS(){
   const st=(pi<0?null:cur&&cur.ps[pi])||DEF;
   document.querySelectorAll('#pats button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===st.p));
+  document.querySelectorAll('#ptpl button').forEach(b=>b.setAttribute('aria-pressed',isTplPg(st)&&b.dataset.p==='tpl:'+st.t));
   document.querySelectorAll('#pcols .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===st.c));
+  const pk=$('#pcpk'),own=!PAPERS.includes(st.c);if(pk){pk.setAttribute('aria-pressed',own);if(own)pk.value=st.c}
+  $('#pcn').textContent=paperName(st.c);
 }
 async function rebuildPv(i){
   const st=cur.ps[i],o=cur.objs[i]||[],bg=cur.bg[i];
@@ -2173,17 +2324,38 @@ async function rebuildPv(i){
 async function setPS(patch){
   if(pi<0)return;
   const all=$('#pall').checked,b=cur,idx=pi,t=all?[...Array(b.pages.length).keys()]:[idx];
-  t.forEach(i=>{b.ps[i]=Object.assign({},DEF,b.ps[i]||{},patch)});
+  const T=patch.p==='tpl'?tplById(patch.t):null;if(patch.p==='tpl'&&!T)return;
+  if(T||patch.c)await tplFonts();
+  let kept=0;
+  for(const i of t){
+    const old=b.ps[i]||{},wasT=isTplPg(old);
+    if(T){ // this template on the page (a page from a PDF keeps its PDF)
+      if(b.bg[i]&&!wasT){kept++;continue}
+      const c=old.c||PAPER;let k=0;for(let j=0;j<i;j++)if(isTplPg(b.ps[j])&&b.ps[j].t===T.id)k++;
+      b.ps[i]={p:'tpl',t:T.id,k,c};b.bg[i]=tplBgURL(T,k,b.o,c);
+    }else{
+      const n=Object.assign({},DEF,old,patch);
+      if(patch.p&&wasT){delete n.t;delete n.k;delete b.bg[i]} // back to a plain page
+      else if(patch.c&&wasT&&(lumOf(patch.c)<.35)!==(lumOf(old.c||PAPER)<.35)){const O=tplById(old.t);if(O)b.bg[i]=tplBgURL(O,old.k||0,b.o,patch.c)} // light lines on dark paper
+      b.ps[i]=n;
+    }
+  }
+  if(kept)toast(all?'Pages from a PDF keep their PDF.':'This page comes from a PDF, so it keeps the PDF.');
+  const bgS=b.bg[idx];$('#bgimg').classList.toggle('on',!!bgS);if(bgS)$('#bgimg').src=bgS;
   applyPS();
-  if(patch.c&&lumOf(patch.c)<.35&&color==='#1d1d1b'){color='#ffffff';cmem.i=color;buildCols()}
+  if(patch.c&&lumOf(patch.c)<.35&&color==='#1d1d1b'){color='#ffffff';cmem.i=color;buildCols()} // dark paper: white ink
+  else if(patch.c&&lumOf(patch.c)>=.35&&color==='#ffffff'){color='#1d1d1b';cmem.i=color;buildCols()} // and back to black ink on light paper
   await savePage();
   if(all){for(const i of t){if(i!==idx)await rebuildPv(i)}persist()}
 }
 function initPS(){
-  $('#pstyle').onclick=()=>{const open=!$('#psheet').classList.contains('hidden');closeSheet();if(!open){$('#psheet').classList.remove('hidden');syncPS()}};
+  $('#pstyle').onclick=async()=>{const open=!$('#psheet').classList.contains('hidden');closeSheet();if(!open){$('#psheet').classList.remove('hidden');syncPS();
+    await tplRow($('#ptpl'),cur.o,()=>false,t=>setPS({p:'tpl',t:t.id}));syncPS()}};
   $('#psx').onclick=()=>$('#psheet').classList.add('hidden');
   document.querySelectorAll('#pats button').forEach(b=>b.onclick=()=>setPS({p:b.dataset.p}));
-  PAPERS.forEach(c=>{const b=document.createElement('button');b.className='sw';b.style.background=c;b.dataset.c=c;b.setAttribute('aria-label','Paper color');b.onclick=()=>setPS({c});$('#pcols').append(b)});
+  PAPERN.forEach(([c,n])=>{const b=document.createElement('button');b.className='sw';b.style.background=c;b.dataset.c=c;b.setAttribute('aria-label',n);b.title=n;b.onclick=()=>setPS({c});$('#pcols').append(b)});
+  const pk=document.createElement('input');pk.type='color';pk.className='cpk';pk.id='pcpk';pk.value='#fff8e1';pk.title='Any color';pk.setAttribute('aria-label','Any paper color');
+  pk.onchange=e=>setPS({c:e.target.value.toLowerCase()});$('#pcols').append(pk);
 }
 
 /* All pages overview */
@@ -2247,6 +2419,228 @@ const TEX={
 const TEXSZ={leather:160,linen:4,kraft:160,dots:40,stripes:20};
 function texData(b){const k=b.tex,z=TEXSZ[k];return 'data:image/svg+xml,'+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='"+z+"' height='"+z+"'>"+TEX[k]+'</svg>')}
 function texUrl(b){return b&&b.tex&&TEX[b.tex]?'url("'+texData(b)+'")':'none'}
+/* Cover designs: artwork over the cover color (and texture). Drawn in a 300×400 box and stretched to the cover.
+   Mostly white/black with transparency, so every design works with every cover color. Saved as b.design. */
+const W5='rgba(255,255,255,.5)',W3='rgba(255,255,255,.3)',W2='rgba(255,255,255,.18)',K3='rgba(0,0,0,.28)';
+const DES={
+  frame:"<rect x='18' y='18' width='264' height='364' rx='8' fill='none' stroke='"+W5+"' stroke-width='3'/><rect x='28' y='28' width='244' height='344' rx='5' fill='none' stroke='"+W3+"' stroke-width='1.2'/>"+
+    [[28,28],[272,28],[28,372],[272,372]].map(([x,y])=>"<circle cx='"+x+"' cy='"+y+"' r='5' fill='"+W5+"'/>").join(''),
+  classic:"<rect width='56' height='400' fill='"+K3+"'/><rect x='56' width='2' height='400' fill='"+W2+"'/><path d='M300 0V78L222 0Z' fill='"+K3+"'/><path d='M300 400V322L222 400Z' fill='"+K3+"'/>",
+  band:"<rect x='246' width='14' height='400' fill='rgba(0,0,0,.34)'/><rect x='246' width='4' height='400' fill='"+W2+"'/><rect x='0' y='0' width='300' height='400' fill='none'/>",
+  waves:[0,1,2,3].map(i=>"<path d='M0 "+(300+i*26)+" C60 "+(280+i*26)+" 110 "+(330+i*26)+" 170 "+(306+i*26)+" S260 "+(286+i*26)+" 300 "+(300+i*26)+" V400 H0Z' fill='rgba(255,255,255,"+(0.1+i*0.06)+")'/>").join(''),
+  mountains:"<circle cx='212' cy='120' r='34' fill='rgba(255,236,170,.75)'/><path d='M0 300 L70 220 L120 270 L190 180 L300 290 V400 H0Z' fill='"+W3+"'/><path d='M0 340 L90 270 L160 320 L230 250 L300 320 V400 H0Z' fill='rgba(0,0,0,.22)'/><path d='M174 196 l16 -16 l18 22 l-12 -4 l-8 8z' fill='rgba(255,255,255,.65)'/>",
+  botanical:(()=>{let s='';const leaf=(x,y,r,k)=>"<g transform='translate("+x+" "+y+") rotate("+r+") scale("+k+")'><path d='M0 0 C10 -18 34 -22 46 -12 C34 -2 12 4 0 0Z' fill='"+W3+"'/><path d='M0 0 L40 -12' stroke='"+W5+"' stroke-width='1'/></g>";
+    s+="<path d='M300 400 C260 330 250 260 270 190' stroke='"+W5+"' stroke-width='2.5' fill='none'/>";
+    [[262,350,-120,1.2],[256,310,-60,1.1],[255,270,-130,1],[262,232,-55,.95],[270,196,-100,.8]].forEach(a=>s+=leaf(...a));
+    s+="<path d='M0 0 C40 50 50 110 30 170' stroke='"+W3+"' stroke-width='2' fill='none'/>";[[36,40,40,.9],[46,90,110,.85],[40,135,30,.75]].forEach(a=>s+=leaf(...a));return s})(),
+  stars:(()=>{let s="<path d='M236 60a28 28 0 1 0 22 46a24 24 0 1 1 -22 -46z' fill='rgba(255,240,180,.85)'/>";
+    [[40,40,2],[90,80,1.4],[150,30,1.8],[60,150,1.2],[200,160,1.6],[120,200,2.2],[30,260,1.4],[250,240,1.2],[170,290,1.8],[80,340,1.4],[220,360,2],[270,320,1.2],[140,120,1.2],[30,90,1]].forEach(([x,y,r])=>s+="<circle cx='"+x+"' cy='"+y+"' r='"+r+"' fill='rgba(255,255,255,.85)'/>");
+    [[110,150],[230,210],[60,220]].forEach(([x,y])=>s+="<path d='M"+x+" "+(y-7)+"L"+(x+2)+" "+(y-2)+"L"+(x+7)+" "+y+"L"+(x+2)+" "+(y+2)+"L"+x+" "+(y+7)+"L"+(x-2)+" "+(y+2)+"L"+(x-7)+" "+y+"L"+(x-2)+" "+(y-2)+"Z' fill='rgba(255,255,255,.9)'/>");return s})(),
+  confetti:(()=>{let s='';const C=['#ffd23f','#ff8fb8','#7be0c3','#ffffff','#9ec5ff'];let k=7;const r=()=>(k=(k*9301+49297)%233280)/233280;
+    for(let i=0;i<46;i++){const x=r()*300,y=r()*400,c=C[i%5],t=i%3;s+=t===0?"<circle cx='"+x.toFixed(0)+"' cy='"+y.toFixed(0)+"' r='"+(2+r()*3).toFixed(1)+"' fill='"+c+"' opacity='.8'/>":t===1?"<rect x='"+x.toFixed(0)+"' y='"+y.toFixed(0)+"' width='9' height='4' rx='1' fill='"+c+"' opacity='.8' transform='rotate("+(r()*180).toFixed(0)+" "+x.toFixed(0)+" "+y.toFixed(0)+")'/>":"<path d='M"+x.toFixed(0)+" "+y.toFixed(0)+" l5 9 h-10z' fill='"+c+"' opacity='.75'/>"}return s})(),
+  geo:(()=>{let s='';let k=3;const r=()=>(k=(k*9301+49297)%233280)/233280;for(let y=0;y<400;y+=50)for(let x=0;x<300;x+=50){const a=(r()*.2).toFixed(2),b=(r()*.18).toFixed(2);
+    s+="<path d='M"+x+" "+y+"h50v50z' fill='rgba(255,255,255,"+a+")'/><path d='M"+x+" "+y+"v50h50z' fill='rgba(0,0,0,"+b+")'/>"}return s})(),
+  retro:"<rect y='250' width='300' height='22' fill='#f2a541' opacity='.9'/><rect y='272' width='300' height='22' fill='#f7d26b' opacity='.9'/><rect y='294' width='300' height='22' fill='#4fb3a9' opacity='.9'/><rect y='316' width='300' height='22' fill='#e5677a' opacity='.85'/>",
+  plaid:[0,1,2,3,4,5].map(i=>"<rect x='"+(i*60+20)+"' width='18' height='400' fill='"+W2+"'/><rect y='"+(i*80+30)+"' width='300' height='18' fill='"+W2+"'/><rect x='"+(i*60+45)+"' width='3' height='400' fill='"+K3+"'/><rect y='"+(i*80+60)+"' width='300' height='3' fill='"+K3+"'/>").join(''),
+  hearts:(()=>{let s='';[[40,50,1],[150,90,1.4],[250,40,.9],[90,170,1.1],[220,200,1.5],[40,280,1.2],[160,300,.9],[260,330,1.1],[110,370,1.3]].forEach(([x,y,k])=>s+="<path transform='translate("+x+" "+y+") scale("+k+")' d='M0 6C-10 -4 -18 4 -12 12L0 22L12 12C18 4 10 -4 0 6Z' fill='rgba(255,255,255,.42)'/>");return s})()
+};
+/* ----- More cover designs (the store's covers). Free ones draw with light/dark see-through ink so they suit any
+   cover color; the paid ones are full pictures. ----- */
+const rnd=seed=>{let k=seed;return ()=>(k=(k*9301+49297)%233280)/233280};
+const f1=v=>(+v).toFixed(1);
+Object.assign(DES,{
+  sunrise:(()=>{let s='';for(let i=0;i<12;i++){const a1=Math.PI+i*Math.PI/12,a2=a1+Math.PI/24;s+="<path d='M150 400L"+f1(150+620*Math.cos(a1))+" "+f1(400+620*Math.sin(a1))+"L"+f1(150+620*Math.cos(a2))+" "+f1(400+620*Math.sin(a2))+"Z' fill='rgba(255,255,255,.13)'/>"}
+    return s+"<circle cx='150' cy='400' r='118' fill='rgba(255,214,107,.55)'/><circle cx='150' cy='400' r='78' fill='rgba(255,170,80,.75)'/>"})(),
+  citrus:(()=>{const r=rnd(41);let s='';
+    const sl=(x,y,R,a,c1,c2)=>{let g="<g transform='translate("+x+" "+y+") rotate("+f1(a)+")'><circle r='"+R+"' fill='"+c1+"'/><circle r='"+f1(R*.87)+"' fill='#fffbea'/><circle r='"+f1(R*.79)+"' fill='"+c2+"'/>";
+      for(let i=0;i<8;i++){const t=i*Math.PI/4;g+="<path d='M0 0L"+f1(R*.79*Math.cos(t))+" "+f1(R*.79*Math.sin(t))+"' stroke='#fffbea' stroke-width='"+f1(R*.07)+"'/>"}
+      return g+"<circle r='"+f1(R*.1)+"' fill='#fffbea'/></g>"};
+    const lf=(x,y,a)=>"<path transform='translate("+x+" "+y+") rotate("+a+")' d='M0 0C8 -11 24 -11 31 0C24 11 8 11 0 0Z' fill='#6fbf73'/><path transform='translate("+x+" "+y+") rotate("+a+")' d='M2 0H28' stroke='#4e9a55' stroke-width='1.4'/>";
+    s+=lf(84,82,30)+lf(236,150,-150)+lf(96,362,-20)+lf(204,296,60);
+    [[62,62,34],[222,112,40],[112,204,30],[252,262,28],[62,332,38],[182,352,26],[156,38,17],[30,200,15],[272,378,17]].forEach(([x,y,R],i)=>s+=sl(x,y,R,r()*90,i%3===1?'#ff9f43':'#ffd43b',i%3===1?'#ffc27a':'#ffe878'));
+    return s})(),
+  leaves:(()=>{let s='';const r=rnd(11),C=['rgba(255,255,255,.34)','rgba(255,255,255,.22)','rgba(0,0,0,.16)'];
+    for(let i=0;i<22;i++){const x=r()*300,y=r()*400,a=r()*360,k=.7+r()*.9;
+      s+="<g transform='translate("+f1(x)+" "+f1(y)+") rotate("+f1(a)+") scale("+f1(k)+")'><path d='M0 -22C14 -12 14 12 0 22C-14 12 -14 -12 0 -22Z' fill='"+C[i%3]+"'/><path d='M0 -20V20' stroke='rgba(255,255,255,.4)' stroke-width='1.4'/></g>"}return s})(),
+  polka:(()=>{let s='';for(let y=0,row=0;y<430;y+=46,row++)for(let x=(row%2)*30;x<330;x+=60)s+="<circle cx='"+x+"' cy='"+y+"' r='11' fill='rgba(255,255,255,.24)'/>";return s})(),
+  galaxy:(()=>{const r=rnd(5);let s="<defs><radialGradient id='g1' cx='.3' cy='.35' r='.7'><stop offset='0' stop-color='#6a3fb5'/><stop offset='.55' stop-color='#241a5c'/><stop offset='1' stop-color='#0b0d2a'/></radialGradient>"
+      +"<radialGradient id='g2' cx='.5' cy='.5' r='.5'><stop offset='0' stop-color='#ff6fb5' stop-opacity='.55'/><stop offset='1' stop-color='#ff6fb5' stop-opacity='0'/></radialGradient>"
+      +"<radialGradient id='g3' cx='.5' cy='.5' r='.5'><stop offset='0' stop-color='#4fd1ff' stop-opacity='.45'/><stop offset='1' stop-color='#4fd1ff' stop-opacity='0'/></radialGradient>"
+      +"<linearGradient id='g4' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#ffd28a'/><stop offset='1' stop-color='#ff8a5b'/></linearGradient></defs>"
+      +"<rect width='300' height='400' fill='url(#g1)'/><ellipse cx='90' cy='150' rx='150' ry='90' fill='url(#g2)' transform='rotate(-25 90 150)'/><ellipse cx='220' cy='290' rx='140' ry='80' fill='url(#g3)' transform='rotate(-30 220 290)'/>";
+    for(let i=0;i<90;i++)s+="<circle cx='"+f1(r()*300)+"' cy='"+f1(r()*400)+"' r='"+f1(.4+r()*1.4)+"' fill='#fff' opacity='"+f1(.4+r()*.6)+"'/>";
+    s+="<g transform='translate(222 92) rotate(-18)'><ellipse rx='46' ry='11' fill='none' stroke='#ffe2b0' stroke-width='5' opacity='.85'/><circle r='26' fill='url(#g4)'/><path d='M-46 0A46 11 0 0 0 46 0' fill='none' stroke='#ffe2b0' stroke-width='5'/></g>"
+      +"<circle cx='62' cy='330' r='16' fill='#d9dcef'/><circle cx='56' cy='326' r='4' fill='#b9bdd8'/><circle cx='68' cy='336' r='3' fill='#b9bdd8'/>";
+    [[150,60],[40,210],[262,210],[160,360]].forEach(([x,y])=>s+="<path d='M"+x+" "+(y-9)+"L"+(x+2.5)+" "+(y-2.5)+"L"+(x+9)+" "+y+"L"+(x+2.5)+" "+(y+2.5)+"L"+x+" "+(y+9)+"L"+(x-2.5)+" "+(y+2.5)+"L"+(x-9)+" "+y+"L"+(x-2.5)+" "+(y-2.5)+"Z' fill='#fff'/>");return s})(),
+  marble:(()=>{let s="<rect width='300' height='400' fill='#f3f1ee'/>";const r=rnd(19);
+    for(let i=0;i<9;i++){let y=r()*420-10,d="M-10 "+f1(y);for(let x=30;x<=330;x+=40){y+=(r()-.5)*60;d+=" Q"+f1(x-20)+" "+f1(y+(r()-.5)*50)+" "+x+" "+f1(y)}
+      s+="<path d='"+d+"' fill='none' stroke='rgba(90,90,100,"+f1(.08+r()*.18)+")' stroke-width='"+f1(1+r()*5)+"'/>"}
+    s+="<path d='M-10 120 Q60 150 110 128 T210 170 T320 150' fill='none' stroke='#c9a24a' stroke-width='3.2'/><path d='M-10 300 Q80 270 150 300 T320 280' fill='none' stroke='#d8b45c' stroke-width='2.2'/>";return s})(),
+  floral:(()=>{let s='';const fl=(x,y,k,c)=>{let g="<g transform='translate("+x+" "+y+") scale("+k+")'>";for(let i=0;i<5;i++)g+="<ellipse cx='0' cy='-12' rx='8' ry='12' fill='"+c+"' transform='rotate("+i*72+")'/>";return g+"<circle r='6' fill='#ffd166'/></g>"};
+    const lf=(x,y,a)=>"<path transform='translate("+x+" "+y+") rotate("+a+")' d='M0 0C8 -10 22 -10 28 0C22 10 8 10 0 0Z' fill='#5c9e6e'/>";
+    [[150,40,0],[40,120,1],[260,120,0],[30,290,1],[270,300,0],[150,370,1]].forEach(([x,y,o])=>{s+=lf(x-26,y+4,200)+lf(x+4,y+6,-20)+lf(x-8,y-20,-110);s+=fl(x,y,1.25,o?'#ff9fb8':'#fff3f6')+fl(x+(o?22:-22),y+16,.7,o?'#fff3f6':'#ffb3c7')});
+    [[95,70],[205,70],[60,200],[240,210],[95,345],[210,350]].forEach(([x,y])=>s+="<circle cx='"+x+"' cy='"+y+"' r='3' fill='#ffd166'/><circle cx='"+(x+8)+"' cy='"+(y+6)+"' r='2' fill='#fff'/>");return s})(),
+  ocean:(()=>{let s="<defs><linearGradient id='o1' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ffb38a'/><stop offset='.55' stop-color='#ffd9a8'/><stop offset='1' stop-color='#bfe3f0'/></linearGradient></defs>"
+      +"<rect width='300' height='250' fill='url(#o1)'/><circle cx='190' cy='200' r='42' fill='#fff1c9'/>";
+    const W2=['#5fa8d3','#3d84b8','#2a6592','#1b4a73'];W2.forEach((c,i)=>{const y=230+i*44;s+="<path d='M0 "+y+" Q37 "+(y-14)+" 75 "+y+" T150 "+y+" T225 "+y+" T300 "+y+" V400 H0Z' fill='"+c+"'/>"});
+    s+="<g transform='translate(70 222)'><path d='M-24 0H24L16 10H-16Z' fill='#5a3d2b'/><path d='M0 -2V-46L22 -6Z' fill='#fff'/><path d='M-2 -4V-36L-18 -6Z' fill='#ffe0d1'/></g>";
+    [[120,90],[150,70],[240,110]].forEach(([x,y])=>s+="<path d='M"+(x-8)+" "+y+"q4 -5 8 0q4 -5 8 0' fill='none' stroke='#5a4a4a' stroke-width='1.6'/>");return s})(),
+  skyline:(()=>{const r=rnd(29);let s="<defs><linearGradient id='n1' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#0f1638'/><stop offset='1' stop-color='#3b2d6b'/></linearGradient></defs><rect width='300' height='400' fill='url(#n1)'/>";
+    for(let i=0;i<40;i++)s+="<circle cx='"+f1(r()*300)+"' cy='"+f1(r()*200)+"' r='"+f1(.5+r()*1.1)+"' fill='#fff' opacity='"+f1(.4+r()*.6)+"'/>";
+    s+="<circle cx='230' cy='70' r='24' fill='#fff4cf'/><circle cx='240' cy='64' r='22' fill='#141c45'/>";
+    let x=0;const B=[];while(x<300){const w=26+r()*36,h=90+r()*170;B.push([x,w,h]);x+=w+2}
+    B.forEach(([bx,bw,bh],i)=>{const y=400-bh,c=i%2?'#1c2350':'#252d63';s+="<rect x='"+f1(bx)+"' y='"+f1(y)+"' width='"+f1(bw)+"' height='"+f1(bh)+"' fill='"+c+"'/>";
+      for(let wy=y+10;wy<392;wy+=14)for(let wx=bx+6;wx<bx+bw-8;wx+=10)if(r()<.45)s+="<rect x='"+f1(wx)+"' y='"+f1(wy)+"' width='5' height='7' fill='#ffd76b' opacity='"+f1(.6+r()*.4)+"'/>"});return s})(),
+  deco:(()=>{const G='#d9b25f',G2='#f1d891';let s="<rect x='14' y='14' width='272' height='372' fill='none' stroke='"+G+"' stroke-width='3'/><rect x='22' y='22' width='256' height='356' fill='none' stroke='"+G2+"' stroke-width='1'/>";
+    const fan=(cy,d)=>{let f='';for(let i=0;i<=8;i++){const a=i*Math.PI/8;f+="<path d='M150 "+cy+"L"+f1(150+84*Math.cos(a))+" "+f1(cy-d*84*Math.sin(a))+"' stroke='"+G+"' stroke-width='1.4'/>"}
+      return f+"<path d='M66 "+cy+"A84 84 0 0 "+(d>0?1:0)+" 234 "+cy+"' fill='none' stroke='"+G+"' stroke-width='2.4'/><path d='M100 "+cy+"A50 50 0 0 "+(d>0?1:0)+" 200 "+cy+"' fill='none' stroke='"+G2+"' stroke-width='1.4'/><path d='M50 "+cy+"H250' stroke='"+G+"' stroke-width='2'/>"};
+    s+=fan(118,1)+fan(282,-1);
+    [[22,22],[278,22],[22,378],[278,378]].forEach(([x,y])=>s+="<path d='M"+x+" "+(y-8)+"L"+(x+8)+" "+y+"L"+x+" "+(y+8)+"L"+(x-8)+" "+y+"Z' fill='"+G+"'/>");return s})()
+});
+// the store's covers: the classic designs + new ones. c = the color the card shows it on
+const COVERS=[
+  ...[['frame','Frame'],['classic','Classic'],['band','Elastic band'],['waves','Waves'],['mountains','Mountains'],['botanical','Botanical'],['stars','Starry night'],['confetti','Confetti'],['geo','Geometric'],['retro','Retro'],['plaid','Plaid'],['hearts','Hearts']]
+    .map(([k,n],i)=>({id:'cov-'+k,des:k,n,p:0,c:['#23407a','#2c6e63','#7a3f66','#2a6f8f','#4f7a52','#3f7f5f','#1d2b4a','#c23b3b','#5a3e85','#2c2c2e','#a8433a','#d0577f'][i]})),
+  {id:'cov-sunrise',des:'sunrise',n:'Sunrise',p:0,c:'#e07a3c'},
+  {id:'cov-citrus',des:'citrus',n:'Citrus',p:0,c:'#2f6b4f'},
+  {id:'cov-leaves',des:'leaves',n:'Falling leaves',p:0,c:'#b5622d'},
+  {id:'cov-polka',des:'polka',n:'Polka dots',p:0,c:'#e86a8f'},
+  {id:'cov-galaxy',des:'galaxy',n:'Galaxy',p:99,c:'#241a5c',d:'A purple galaxy with a ringed planet, a moon and stars.'},
+  {id:'cov-marble',des:'marble',n:'Marble & gold',p:99,c:'#f3f1ee',d:'White marble with gold veins.'},
+  {id:'cov-floral',des:'floral',n:'Flower garden',p:99,c:'#7fb7a4',d:'Flowers and leaves all around the cover.'},
+  {id:'cov-ocean',des:'ocean',n:'Ocean sunset',p:99,c:'#3d84b8',d:'A sailboat on the waves at sunset.'},
+  {id:'cov-skyline',des:'skyline',n:'City at night',p:99,c:'#141c45',d:'A night skyline with lit windows and the moon.'},
+  {id:'cov-deco',des:'deco',n:'Art deco',p:99,c:'#14213d',d:'Gold art deco lines. Best on a dark color.'}
+];
+
+/* ----- Labels: the name tag on a cover, as an object you can move, resize, turn and retype.
+   A label is an image object {k:'img', src, lb:{id, t}}; src is drawn from the style + text (labelURL). ----- */
+const LABELS=[ // a = height / width, w = width on the page (share of the page width)
+  {id:'lbl-classic',n:'Classic',p:0,a:.42,w:.68},
+  {id:'lbl-small',n:'Small',p:0,a:.46,w:.42},
+  {id:'lbl-big',n:'Big',p:0,a:.5,w:.84},
+  {id:'lbl-strip',n:'Long strip',p:0,a:.17,w:.86},
+  {id:'lbl-spine',n:'Tall',p:0,a:3.4,w:.15},
+  {id:'lbl-oval',n:'Oval',p:0,a:.55,w:.6},
+  {id:'lbl-kraft',n:'Kraft tag',p:99,a:.5,w:.66,d:'A brown paper tag with a string.'},
+  {id:'lbl-washi',n:'Washi tape',p:99,a:.22,w:.8,d:'A strip of pink striped tape.'},
+  {id:'lbl-chalk',n:'Chalkboard',p:99,a:.55,w:.7,d:'Chalk on a little board with a wooden frame.'},
+  {id:'lbl-gold',n:'Gold foil',p:99,a:.45,w:.72,d:'Gold letters and a gold frame on navy.'},
+  {id:'lbl-ribbon',n:'Ribbon',p:99,a:.3,w:.88,d:'A red ribbon banner.'},
+  {id:'lbl-vintage',n:'Vintage',p:99,a:.55,w:.7,d:'An old-style frame with curly corners.'}
+];
+const lblById=id=>LABELS.find(l=>l.id===id)||LABELS[0];
+async function lblFonts(){try{await Promise.all(['700 40px Caveat','700 40px "Playfair Display"','700 40px "Baloo 2"','400 40px "Permanent Marker"'].map(f=>document.fonts.load(f)))}catch(e){}}
+function lblDraw(L,text){ // → canvas
+  const tall=L.a>1,cw=tall?Math.round(900/L.a):900,ch=tall?900:Math.round(900*L.a),c=document.createElement('canvas');c.width=cw;c.height=ch;const x=c.getContext('2d');
+  const t=(text||'').trim()||'Untitled',p=18,W2=cw-2*p,H2=ch-2*p;
+  const rr2=(a,b,w,h,r)=>{x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()};
+  const shadow=(on)=>{x.shadowColor=on?'rgba(0,0,0,.32)':'transparent';x.shadowBlur=on?16:0;x.shadowOffsetY=on?6:0};
+  const fit=(font,maxW,maxH)=>{let s=maxH;x.font=font(s);while(s>8&&x.measureText(t).width>maxW){s-=2;x.font=font(s)}return s};
+  const say=(font,col,maxW,maxH,cx,cy,rule)=>{let s=fit(font,maxW,maxH);x.fillStyle=col;x.textAlign='center';x.textBaseline='middle';
+    const sp=t.lastIndexOf(' ',Math.ceil(t.length/2)+3);
+    if(s<maxH*.55&&sp>0){const l1=t.slice(0,sp),l2=t.slice(sp+1);s=maxH*.5;x.font=font(s);while(s>8&&Math.max(x.measureText(l1).width,x.measureText(l2).width)>maxW){s-=2;x.font=font(s)}
+      x.fillText(l1,cx,cy-s*.5);x.fillText(l2,cx,cy+s*.5);return}
+    x.fillText(t,cx,cy);
+    if(rule){x.strokeStyle=rule;x.lineWidth=Math.max(3,s*.06);const w=Math.min(maxW,x.measureText(t).width)*.75;x.beginPath();x.moveTo(cx-w/2,cy+s*.55);x.lineTo(cx+w/2,cy+s*.55);x.stroke()}};
+  const cream=(shape)=>{shadow(1);x.fillStyle='#fbf8ef';if(shape==='oval'){x.beginPath();x.ellipse(cw/2,ch/2,W2/2,H2/2,0,0,7)}else rr2(p,p,W2,H2,Math.min(W2,H2)*.08);x.fill();shadow(0);
+    x.strokeStyle='rgba(35,48,74,.3)';x.lineWidth=4;const q=Math.min(W2,H2)*.07+p;if(shape==='oval'){x.beginPath();x.ellipse(cw/2,ch/2,W2/2-q+p,H2/2-q+p,0,0,7)}else rr2(q,q,cw-2*q,ch-2*q,Math.min(W2,H2)*.05);x.stroke()};
+  const hand=s=>'700 '+s+'px Caveat, cursive';
+  switch(L.id){
+    case 'lbl-spine':cream();x.save();x.translate(cw/2,ch/2);x.rotate(-Math.PI/2);say(hand,'#23304a',H2*.78,W2*.62,0,0,null);x.restore();break;
+    case 'lbl-oval':cream('oval');say(hand,'#23304a',W2*.62,H2*.42,cw/2,ch/2-H2*.04,'rgba(35,48,74,.32)');break;
+    case 'lbl-strip':cream();say(hand,'#23304a',W2*.84,H2*.66,cw/2,ch/2,null);break;
+    case 'lbl-kraft':{shadow(1);const n=H2*.42;x.beginPath();x.moveTo(p+n,p);x.lineTo(cw-p,p);x.lineTo(cw-p,ch-p);x.lineTo(p+n,ch-p);x.lineTo(p,ch/2);x.closePath();
+      const g=x.createLinearGradient(0,0,0,ch);g.addColorStop(0,'#d6ac74');g.addColorStop(1,'#c2935a');x.fillStyle=g;x.fill();shadow(0);
+      x.globalAlpha=.12;x.strokeStyle='#5a3b1a';x.lineWidth=2;for(let i=0;i<40;i++){const yy=p+((i*37)%H2);x.beginPath();x.moveTo(p+n,yy);x.lineTo(cw-p,yy+((i%3)-1)*4);x.stroke()}x.globalAlpha=1;
+      x.fillStyle='#f4eadb';x.beginPath();x.arc(p+n*.75,ch/2,H2*.09,0,7);x.fill();x.strokeStyle='#8a6338';x.lineWidth=5;x.stroke();
+      x.strokeStyle='#efe6d6';x.lineWidth=6;x.beginPath();x.moveTo(p+n*.75,ch/2);x.bezierCurveTo(p+n*.2,ch*.2,0,ch*.35,0,ch*.12);x.stroke();
+      say(s=>'400 '+s+'px "Permanent Marker", cursive','#3b2a1a',(W2-n)*.82,H2*.5,p+n+(W2-n)/2,ch/2,null);break}
+    case 'lbl-washi':{x.save();x.beginPath();const z=H2*.12;x.moveTo(p,p);for(let yy=p;yy<=ch-p;yy+=z)x.lineTo(p+(((yy-p)/z)%2?z*.6:0),yy);x.lineTo(cw-p,ch-p);for(let yy=ch-p;yy>=p;yy-=z)x.lineTo(cw-p-(((ch-p-yy)/z)%2?z*.6:0),yy);x.closePath();x.clip();
+      x.fillStyle='rgba(247,182,201,.94)';x.fillRect(0,0,cw,ch);x.strokeStyle='rgba(255,255,255,.55)';x.lineWidth=H2*.12;for(let k=-ch;k<cw;k+=H2*.42){x.beginPath();x.moveTo(k,ch);x.lineTo(k+ch,0);x.stroke()}x.restore();
+      say(hand,'#5a2a3a',W2*.78,H2*.66,cw/2,ch/2,null);break}
+    case 'lbl-chalk':{shadow(1);x.fillStyle='#8b5a2b';rr2(p,p,W2,H2,14);x.fill();shadow(0);const q=p+H2*.08;x.fillStyle='#2f3b33';x.fillRect(q,q,cw-2*q,ch-2*q);
+      x.globalAlpha=.07;x.fillStyle='#fff';for(let i=0;i<24;i++)x.fillRect(q+((i*97)%(cw-2*q-60)),q+((i*53)%(ch-2*q-20)),60,8);x.globalAlpha=1;
+      x.globalAlpha=.92;say(hand,'#f4f4ee',(cw-2*q)*.8,(ch-2*q)*.5,cw/2,ch/2-H2*.03,'rgba(244,244,238,.55)');x.globalAlpha=1;break}
+    case 'lbl-gold':{shadow(1);x.fillStyle='#1d2a4d';rr2(p,p,W2,H2,10);x.fill();shadow(0);const g=x.createLinearGradient(0,0,cw,ch);g.addColorStop(0,'#f6dd8f');g.addColorStop(.5,'#c99a2e');g.addColorStop(1,'#f3d27a');
+      x.strokeStyle=g;x.lineWidth=6;rr2(p+14,p+14,W2-28,H2-28,6);x.stroke();x.lineWidth=2;rr2(p+26,p+26,W2-52,H2-52,4);x.stroke();
+      const s=fit(v=>'700 '+v+'px "Playfair Display", Georgia, serif',W2*.66,H2*.42);x.fillStyle=g;x.textAlign='center';x.textBaseline='middle';x.fillText(t,cw/2,ch/2+s*.04);
+      const tw=Math.min(W2*.66,x.measureText(t).width);[-1,1].forEach(d=>{const cx=cw/2+d*(tw/2+s*.5);x.beginPath();x.moveTo(cx,ch/2-s*.18);x.lineTo(cx+s*.14,ch/2);x.lineTo(cx,ch/2+s*.18);x.lineTo(cx-s*.14,ch/2);x.closePath();x.fill()});break}
+    case 'lbl-ribbon':{const e=W2*.12,b2=H2*.16;shadow(1);x.fillStyle='#a83232';[[p,p+b2*2,1],[cw-p,p+b2*2,-1]].forEach(([ex,ey,d])=>{x.beginPath();x.moveTo(ex+d*e*1.6,ey);x.lineTo(ex,ey);x.lineTo(ex+d*e*.55,ey+(ch-p-ey)/2);x.lineTo(ex,ch-p);x.lineTo(ex+d*e*1.6,ch-p);x.closePath();x.fill()});
+      x.fillStyle='#d64545';x.fillRect(p+e,p,W2-2*e,ch-p-b2*2);shadow(0);x.fillStyle='#7a2020';[[p+e,1],[cw-p-e,-1]].forEach(([ex,d])=>{x.beginPath();x.moveTo(ex,ch-p-b2*2);x.lineTo(ex+d*e*.6,ch-p);x.lineTo(ex+d*e*.6,ch-p-b2*2);x.closePath();x.fill()});
+      say(s=>'700 '+s+'px "Baloo 2", system-ui, sans-serif','#fff',(W2-2*e)*.82,(ch-p-b2*2-p)*.62,cw/2,p+(ch-p-b2*2-p)/2+4,null);break}
+    case 'lbl-vintage':{shadow(1);const cut=Math.min(W2,H2)*.14;x.beginPath();x.moveTo(p+cut,p);x.lineTo(cw-p-cut,p);x.arc(cw-p,p,cut,Math.PI,Math.PI/2,true);x.lineTo(cw-p,ch-p-cut);x.arc(cw-p,ch-p,cut,-Math.PI/2,Math.PI,true);
+      x.lineTo(p+cut,ch-p);x.arc(p,ch-p,cut,0,-Math.PI/2,true);x.lineTo(p,p+cut);x.arc(p,p,cut,Math.PI/2,0,true);x.closePath();x.fillStyle='#f3e9d2';x.fill();shadow(0);
+      x.strokeStyle='#7a5a3a';x.lineWidth=4;x.stroke();x.save();x.translate(cw/2,ch/2);x.scale(.9,.84);x.translate(-cw/2,-ch/2);x.lineWidth=2;x.stroke();x.restore();
+      say(s=>'italic 700 '+s+'px "Playfair Display", Georgia, serif','#4a3626',W2*.66,H2*.36,cw/2,ch/2-H2*.03,null);
+      x.strokeStyle='#7a5a3a';x.lineWidth=3;[-1,1].forEach(d=>{x.beginPath();x.moveTo(cw/2,ch/2+H2*.24);x.bezierCurveTo(cw/2+d*W2*.08,ch/2+H2*.16,cw/2+d*W2*.16,ch/2+H2*.32,cw/2+d*W2*.24,ch/2+H2*.22);x.stroke()});break}
+    case 'lbl-small':cream();say(hand,'#23304a',W2*.74,H2*.5,cw/2,ch/2-H2*.05,'rgba(35,48,74,.32)');break;
+    default:cream();say(hand,'#23304a',W2*.72,H2*.48,cw/2,ch/2-H2*.05,'rgba(35,48,74,.32)'); // classic, big
+  }
+  return c;
+}
+const labelURL=(id,text)=>lblDraw(lblById(id),text).toDataURL('image/png');
+
+/* ----- Sticker packs, 7 stickers each: six free packs (the first 28 stickers + Doodles + Study desk); the others are €0.99 a pack ----- */
+const SU=b=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(SVG(b));
+const OL="stroke='#3b2f2f' stroke-width='3.5' stroke-linejoin='round' stroke-linecap='round'";
+const EYES=(x1,x2,y)=>"<ellipse cx='"+x1+"' cy='"+y+"' rx='3.6' ry='4.6' fill='#3b2f2f'/><ellipse cx='"+x2+"' cy='"+y+"' rx='3.6' ry='4.6' fill='#3b2f2f'/><circle cx='"+(x1+1.3)+"' cy='"+(y-1.8)+"' r='1.3' fill='#fff'/><circle cx='"+(x2+1.3)+"' cy='"+(y-1.8)+"' r='1.3' fill='#fff'/>";
+const BLUSH=(x1,x2,y)=>"<ellipse cx='"+x1+"' cy='"+y+"' rx='6' ry='3.4' fill='#ff8fa8' opacity='.6'/><ellipse cx='"+x2+"' cy='"+y+"' rx='6' ry='3.4' fill='#ff8fa8' opacity='.6'/>";
+const SMILE=(y)=>"<path d='M44 "+y+"Q47 "+(y+4)+" 50 "+y+"Q53 "+(y+4)+" 56 "+y+"' fill='none' stroke='#3b2f2f' stroke-width='2.4' stroke-linecap='round'/>";
+const STPK=[
+  ...[['stk-basics','Basics',[0,1,19,16,5,10,21]],['stk-marks','Notes & marks',[2,3,4,17,22,20,25]],['stk-tags','Tags & tape',[8,18,23,24,9,26,27]],['stk-days','Days out',[6,11,12,13,14,7,15]]]
+    .map(([id,n,ix])=>({id,n,p:0,items:ix.map(i=>STK[i])})),
+  ...(D=>[{id:'stk-doodles',n:'Doodles',p:0,items:[0,1,2,3,4,5,8].map(i=>D[i])},{id:'stk-desk',n:'Study desk',p:0,items:[D[6],D[7],D[9],...D.slice(10)]}])([
+    "<rect x='10' y='24' width='80' height='56' rx='6' fill='#fff' stroke='#3b2f2f' stroke-width='3.5'/><path d='M12 28L50 56L88 28' fill='none' stroke='#3b2f2f' stroke-width='3.5' stroke-linejoin='round'/><path d='M50 72C38 63 33 56 37 50C41 45 47 46 50 51C53 46 59 45 63 50C67 56 62 63 50 72Z' fill='#ff5d7a' stroke='#d63a58' stroke-width='2.5' stroke-linejoin='round'/>",
+    "<path d='M26 40h44v24a20 20 0 0 1-20 20h-4a20 20 0 0 1-20-20z' fill='#fff' "+OL+"/><path d='M70 46h6a9 9 0 0 1 0 18h-6' fill='none' "+OL+"/><rect x='26' y='40' width='44' height='9' fill='#8b5a3c'/><path d='M38 30c-4-6 4-8 0-15M50 30c-4-6 4-8 0-15M62 30c-4-6 4-8 0-15' fill='none' stroke='#b9a89c' stroke-width='3' stroke-linecap='round'/>",
+    "<g fill='#fff' stroke='#d4cbe0' stroke-width='2'>"+[0,45,90,135,180,225,270,315].map(a=>"<ellipse cx='50' cy='26' rx='9' ry='18' transform='rotate("+a+" 50 50)'/>").join('')+"</g><circle cx='50' cy='50' r='12' fill='#ffc93c' stroke='#e0a800' stroke-width='3'/>",
+    "<path d='M50 14L56 44L86 50L56 56L50 86L44 56L14 50L44 44Z' fill='#ffd23f' stroke='#e0a800' stroke-width='3' stroke-linejoin='round'/><path d='M80 14L82 22L90 24L82 26L80 34L78 26L70 24L78 22Z' fill='#ffe58a'/><path d='M22 70L24 76L30 78L24 80L22 86L20 80L14 78L20 76Z' fill='#ffe58a'/>",
+    "<path d='M10 16h80a8 8 0 0 1 8 8v36a8 8 0 0 1-8 8H44L24 86V68H10a8 8 0 0 1-8-8V24a8 8 0 0 1 8-8z' fill='#9ee6ff' stroke='#2b7fa8' stroke-width='3.5' stroke-linejoin='round'/><text x='50' y='51' font-size='26' text-anchor='middle' fill='#1b4f6b' font-family='Arial' font-weight='700'>Hi!</text>",
+    "<g transform='rotate(-40 50 50)'><rect x='20' y='40' width='56' height='20' fill='#ffd23f' stroke='#3b2f2f' stroke-width='3'/><rect x='10' y='40' width='12' height='20' rx='3' fill='#ff8fb8' stroke='#3b2f2f' stroke-width='3'/><rect x='20' y='40' width='6' height='20' fill='#b9b9b9' stroke='#3b2f2f' stroke-width='2'/><path d='M76 40L94 50L76 60Z' fill='#f3d9b1' stroke='#3b2f2f' stroke-width='3' stroke-linejoin='round'/><path d='M88 47L94 50L88 53Z' fill='#3b2f2f'/></g>",
+    "<path d='M36 80V26a14 14 0 0 1 28 0v48a9 9 0 0 1-18 0V32' fill='none' stroke='#8d99ae' stroke-width='6' stroke-linecap='round'/>",
+    "<path d='M50 58L50 92' stroke='#8d99ae' stroke-width='4' stroke-linecap='round'/><path d='M34 52h32l-6-12V22h4a4 4 0 0 0 0-8H36a4 4 0 0 0 0 8h4v18z' fill='#ff5d5d' stroke='#b02a2f' stroke-width='3' stroke-linejoin='round'/>",
+    "<path d='M24 74a16 16 0 0 1-2-32a22 22 0 0 1 42-6a18 18 0 0 1 12 38z' fill='#fff' stroke='#9aa8b8' stroke-width='3.5' stroke-linejoin='round'/>"+EYES(40,58,54)+BLUSH(33,65,62)+SMILE(60),
+    "<path d='M14 76C20 40 60 24 84 30' fill='none' stroke='#3b2f2f' stroke-width='5' stroke-linecap='round'/><path d='M70 20L86 30L72 42' fill='none' stroke='#3b2f2f' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/>",
+    "<path d='M50 28Q32 18 10 22V78Q32 74 50 84Q68 74 90 78V22Q68 18 50 28Z' fill='#fff' stroke='#3b2f2f' stroke-width='3.5' stroke-linejoin='round'/><path d='M50 28V84' stroke='#3b2f2f' stroke-width='3'/><path d='M18 36Q32 33 44 38M18 46Q32 43 44 48M18 56Q32 53 44 58M56 38Q68 33 82 36M56 48Q68 43 82 46M56 58Q68 53 82 56' fill='none' stroke='#9aa8b8' stroke-width='2.5' stroke-linecap='round'/><path d='M10 78Q32 74 50 84Q68 74 90 78V86Q68 82 50 92Q32 82 10 86Z' fill='#4dabf7' stroke='#3b2f2f' stroke-width='3' stroke-linejoin='round'/>",
+    "<g transform='rotate(-30 50 50)'><rect x='6' y='38' width='88' height='24' rx='3' fill='#ffd23f' stroke='#3b2f2f' stroke-width='3.5'/><path d='"+[...Array(12).keys()].map(i=>'M'+(14+i*7)+' 38v'+(i%2?6:11)).join('')+"' stroke='#3b2f2f' stroke-width='2'/></g>",
+    "<path d='M30 18L70 66' stroke='#9aa8b8' stroke-width='7' stroke-linecap='round'/><path d='M70 18L30 66' stroke='#c3ccd8' stroke-width='7' stroke-linecap='round'/><circle cx='25' cy='77' r='11' fill='none' stroke='#ff5d6c' stroke-width='6'/><circle cx='75' cy='77' r='11' fill='none' stroke='#ff5d6c' stroke-width='6'/><circle cx='50' cy='42' r='4' fill='#3b2f2f'/>",
+    "<path d='M10 34h8M82 34h8M20 12l6 6M80 12l-6 6' stroke='#e0a800' stroke-width='3.5' stroke-linecap='round'/><path d='M50 10a26 26 0 0 0-16 46c4 4 6 8 6 12h20c0-4 2-8 6-12a26 26 0 0 0-16-46z' fill='#ffe066' stroke='#3b2f2f' stroke-width='3.5' stroke-linejoin='round'/><path d='M44 58V46l6 6 6-6v12' fill='none' stroke='#e0a800' stroke-width='2.5' stroke-linejoin='round'/><rect x='38' y='68' width='24' height='8' rx='2' fill='#c3ccd8' stroke='#3b2f2f' stroke-width='3'/><rect x='41' y='76' width='18' height='8' rx='3' fill='#9aa8b8' stroke='#3b2f2f' stroke-width='3'/>"
+  ].map(SU)),
+  {id:'stk-animals',n:'Cute animals',p:99,d:'A cat, a dog, a bunny, a bear, a fox, a penguin and a frog.',items:[
+    "<path d='M22 40L18 12L40 28Q50 25 60 28L82 12L78 40Q88 54 80 68Q70 88 50 88Q30 88 20 68Q12 54 22 40Z' fill='#ffcf99' "+OL+"/><path d='M24 22L26 34L35 29Z' fill='#ff9fb2'/><path d='M76 22L74 34L65 29Z' fill='#ff9fb2'/>"+EYES(37,63,56)+BLUSH(27,73,66)+"<path d='M47 63H53L50 66Z' fill='#ff7a8a'/>"+SMILE(67)+"<path d='M6 58L22 61M6 66L22 65M94 58L78 61M94 66L78 65' stroke='#3b2f2f' stroke-width='2' stroke-linecap='round'/>",
+    "<ellipse cx='20' cy='46' rx='11' ry='22' transform='rotate(18 20 46)' fill='#8b5a3c' "+OL+"/><ellipse cx='80' cy='46' rx='11' ry='22' transform='rotate(-18 80 46)' fill='#8b5a3c' "+OL+"/><circle cx='50' cy='56' r='32' fill='#e8b98a' "+OL+"/><ellipse cx='50' cy='70' rx='16' ry='12' fill='#fff3e3'/>"+EYES(38,62,52)+BLUSH(27,73,64)+"<ellipse cx='50' cy='64' rx='6' ry='4' fill='#3b2f2f'/><path d='M46 74Q50 80 54 74' fill='#ff7a8a' stroke='#3b2f2f' stroke-width='2'/>",
+    "<path d='M36 46C26 20 28 4 37 4S46 24 44 46Z' fill='#fff' "+OL+"/><path d='M64 46C74 20 72 4 63 4S54 24 56 46Z' fill='#fff' "+OL+"/><path d='M37 40C33 22 34 12 37 12S41 24 40 40Z' fill='#ffb3c7'/><path d='M63 40C67 22 66 12 63 12S59 24 60 40Z' fill='#ffb3c7'/><ellipse cx='50' cy='64' rx='32' ry='26' fill='#fff' "+OL+"/>"+EYES(38,62,62)+BLUSH(28,72,72)+"<path d='M47 69H53L50 72Z' fill='#ff7a8a'/>"+SMILE(73),
+    "<circle cx='24' cy='28' r='13' fill='#c98b5a' "+OL+"/><circle cx='76' cy='28' r='13' fill='#c98b5a' "+OL+"/><circle cx='24' cy='28' r='6' fill='#f0c9a0'/><circle cx='76' cy='28' r='6' fill='#f0c9a0'/><circle cx='50' cy='56' r='33' fill='#c98b5a' "+OL+"/><ellipse cx='50' cy='68' rx='14' ry='11' fill='#f0d6b8'/>"+EYES(37,63,52)+BLUSH(26,74,64)+"<ellipse cx='50' cy='63' rx='5.5' ry='4' fill='#3b2f2f'/>"+SMILE(70),
+    "<path d='M12 16L38 34H62L88 16L82 52Q74 80 50 90Q26 80 18 52Z' fill='#ff9a4d' "+OL+"/><path d='M20 24L32 34L22 42Z' fill='#3b2f2f'/><path d='M80 24L68 34L78 42Z' fill='#3b2f2f'/><path d='M20 56Q36 58 50 88Q28 80 20 56Z' fill='#fff'/><path d='M80 56Q64 58 50 88Q72 80 80 56Z' fill='#fff'/>"+EYES(38,62,54)+"<ellipse cx='50' cy='76' rx='5' ry='3.6' fill='#3b2f2f'/>",
+    "<ellipse cx='50' cy='58' rx='32' ry='34' fill='#2e3440' stroke='#1d2129' stroke-width='3'/><ellipse cx='50' cy='64' rx='21' ry='26' fill='#fff'/><path d='M28 44Q50 20 72 44Q74 58 50 60Q26 58 28 44Z' fill='#fff'/>"+EYES(42,58,44)+BLUSH(33,67,52)+"<path d='M45 50H55L50 57Z' fill='#ffa94d' stroke='#d9822b' stroke-width='1.5' stroke-linejoin='round'/><ellipse cx='38' cy='92' rx='9' ry='4' fill='#ffa94d'/><ellipse cx='62' cy='92' rx='9' ry='4' fill='#ffa94d'/>",
+    "<circle cx='31' cy='30' r='14' fill='#8fd18a' "+OL+"/><circle cx='69' cy='30' r='14' fill='#8fd18a' "+OL+"/><ellipse cx='50' cy='60' rx='38' ry='28' fill='#8fd18a' "+OL+"/><ellipse cx='50' cy='76' rx='18' ry='8' fill='#c9eebf'/><circle cx='31' cy='30' r='7' fill='#fff'/><circle cx='69' cy='30' r='7' fill='#fff'/><circle cx='32' cy='31' r='4' fill='#3b2f2f'/><circle cx='70' cy='31' r='4' fill='#3b2f2f'/>"+BLUSH(26,74,60)+"<path d='M36 60Q50 74 64 60' fill='none' stroke='#3b2f2f' stroke-width='3' stroke-linecap='round'/>"
+  ].map(SU)},
+  {id:'stk-space',n:'Space',p:99,d:'A rocket, a planet, a sleepy moon, a comet, a UFO, an alien and an astronaut.',items:[
+    "<path d='M38 62Q50 98 62 62Z' fill='#ffb020'/><path d='M44 62Q50 84 56 62Z' fill='#ffe066'/><path d='M33 50L18 66L20 78L35 66Z' fill='#ff5d5d' stroke='#2b3a55' stroke-width='3' stroke-linejoin='round'/><path d='M67 50L82 66L80 78L65 66Z' fill='#ff5d5d' stroke='#2b3a55' stroke-width='3' stroke-linejoin='round'/><path d='M50 6C66 18 72 38 68 64H32C28 38 34 18 50 6Z' fill='#f5f7fb' stroke='#2b3a55' stroke-width='3.5' stroke-linejoin='round'/><path d='M50 6C58 12 63 18 65 24H35C37 18 42 12 50 6Z' fill='#ff5d5d' stroke='#2b3a55' stroke-width='3' stroke-linejoin='round'/><circle cx='50' cy='38' r='9' fill='#7ec8ff' stroke='#2b3a55' stroke-width='3'/><circle cx='47' cy='35' r='2.5' fill='#fff'/>",
+    "<g transform='rotate(-18 50 50)'><ellipse cx='50' cy='50' rx='46' ry='12' fill='none' stroke='#e0a800' stroke-width='5'/></g><circle cx='50' cy='50' r='26' fill='#9b7bff' stroke='#4b3a99' stroke-width='3'/><path d='M28 42Q50 36 72 42M26 54Q50 48 74 54' fill='none' stroke='#c4b2ff' stroke-width='4'/><g transform='rotate(-18 50 50)'><path d='M4 50A46 12 0 0 0 96 50' fill='none' stroke='#ffd166' stroke-width='5'/></g><circle cx='14' cy='18' r='2' fill='#ffd166'/><circle cx='86' cy='84' r='2.5' fill='#ffd166'/>",
+    "<path d='M62 8A42 42 0 1 0 92 68A34 34 0 0 1 62 8Z' fill='#ffe58a' stroke='#d4a900' stroke-width='3.5' stroke-linejoin='round'/><circle cx='34' cy='36' r='5' fill='#f2cf5b'/><circle cx='48' cy='78' r='4' fill='#f2cf5b'/><path d='M30 56Q35 60 40 56M50 60Q55 64 60 60' fill='none' stroke='#6b5313' stroke-width='2.6' stroke-linecap='round'/>"+BLUSH(30,62,66).replace(/#ff8fa8/g,'#ff9f7a')+"<path d='M42 70Q46 73 50 70' fill='none' stroke='#6b5313' stroke-width='2.4' stroke-linecap='round'/><text x='74' y='26' font-size='13' fill='#9aa8d8' font-family='Arial' font-weight='700'>z</text><text x='82' y='14' font-size='10' fill='#9aa8d8' font-family='Arial' font-weight='700'>z</text>",
+    "<path d='M92 8Q52 26 30 58L42 72Q64 44 92 8Z' fill='#7ec8ff' opacity='.55'/><path d='M84 10Q52 34 36 62L42 66Q60 40 84 10Z' fill='#bfe6ff' opacity='.8'/><path d='M34 52L40 64L54 66L43 75L46 89L34 81L22 89L25 75L14 66L28 64Z' fill='#ffd23f' stroke='#e0a800' stroke-width='3' stroke-linejoin='round'/>",
+    "<path d='M36 62L20 96H80L64 62Z' fill='#fff59d' opacity='.6'/><path d='M30 52A20 20 0 0 1 70 52Z' fill='#bdf2d8' stroke='#2b3a55' stroke-width='3.5'/><circle cx='50' cy='44' r='7' fill='#7bd389'/><circle cx='47' cy='43' r='1.8' fill='#2b3a55'/><circle cx='53' cy='43' r='1.8' fill='#2b3a55'/><ellipse cx='50' cy='56' rx='42' ry='12' fill='#a3b1c6' stroke='#2b3a55' stroke-width='3.5'/><circle cx='26' cy='58' r='3.5' fill='#ffd166'/><circle cx='50' cy='62' r='3.5' fill='#ff8fb8'/><circle cx='74' cy='58' r='3.5' fill='#7ec8ff'/>",
+    "<path d='M34 26Q30 10 22 8M66 26Q70 10 78 8' fill='none' stroke='#2f6b3a' stroke-width='3' stroke-linecap='round'/><circle cx='22' cy='8' r='5' fill='#ff8fb8'/><circle cx='78' cy='8' r='5' fill='#ff8fb8'/><path d='M50 20C74 20 84 38 82 56C80 76 64 90 50 90C36 90 20 76 18 56C16 38 26 20 50 20Z' fill='#7bd389' stroke='#2f6b3a' stroke-width='3.5'/><ellipse cx='37' cy='52' rx='9' ry='12' fill='#1d2b2a'/><ellipse cx='63' cy='52' rx='9' ry='12' fill='#1d2b2a'/><circle cx='40' cy='47' r='3' fill='#fff'/><circle cx='66' cy='47' r='3' fill='#fff'/><path d='M42 74Q50 80 58 74' fill='none' stroke='#1d2b2a' stroke-width='3' stroke-linecap='round'/>",
+    "<path d='M50 16V8' stroke='#2b3a55' stroke-width='3'/><circle cx='50' cy='7' r='4.5' fill='#ff5d5d'/><rect x='9' y='44' width='8' height='16' rx='3' fill='#ff5d5d' stroke='#2b3a55' stroke-width='2.5'/><rect x='83' y='44' width='8' height='16' rx='3' fill='#ff5d5d' stroke='#2b3a55' stroke-width='2.5'/><circle cx='50' cy='52' r='36' fill='#f5f7fb' stroke='#2b3a55' stroke-width='3.5'/><rect x='22' y='34' width='56' height='38' rx='19' fill='#2b3a55'/><path d='M30 46Q34 40 42 39' stroke='#7ec8ff' stroke-width='4' fill='none' stroke-linecap='round'/><ellipse cx='41' cy='54' rx='3.4' ry='4.4' fill='#fff'/><ellipse cx='59' cy='54' rx='3.4' ry='4.4' fill='#fff'/><path d='M45 62Q50 66 55 62' fill='none' stroke='#fff' stroke-width='2.4' stroke-linecap='round'/><ellipse cx='33' cy='62' rx='4.5' ry='2.6' fill='#ff8fa8' opacity='.7'/><ellipse cx='67' cy='62' rx='4.5' ry='2.6' fill='#ff8fa8' opacity='.7'/>"
+  ].map(SU)},
+  {id:'stk-treats',n:'Sweet treats',p:99,d:'A cupcake, a donut, ice cream, a strawberry, a cookie, bubble tea and a macaron.',items:[
+    "<path d='M24 54H76L68 92H32Z' fill='#7ec8ff' "+OL+"/><path d='M36 54L40 92M50 54V92M64 54L60 92' stroke='#4a9ccc' stroke-width='3'/><path d='M20 56C14 40 30 30 38 34C40 20 60 18 64 30C76 26 88 40 80 56Z' fill='#ffb3c7' "+OL+"/><circle cx='54' cy='18' r='7' fill='#e5484d' stroke='#3b2f2f' stroke-width='3'/><path d='M54 11Q58 4 64 4' fill='none' stroke='#3b2f2f' stroke-width='2.5'/>"+EYES(40,60,44)+SMILE(48),
+    "<circle cx='50' cy='50' r='40' fill='#e8b07a' "+OL+"/><path d='M14 46C16 26 34 12 50 12S84 26 86 46C80 56 76 48 70 56S58 52 50 60S38 52 30 58S20 50 14 46Z' fill='#ff8fb8'/><circle cx='50' cy='50' r='12' fill='#fff' "+OL+"/>"+['#ffd23f','#7ec8ff','#7bd389','#fff','#9b7bff'].map((c,i)=>"<rect x='"+(26+i*11)+"' y='"+(24+(i%2)*14)+"' width='8' height='3' rx='1.5' fill='"+c+"' transform='rotate("+(i*37)+" "+(30+i*11)+" "+(26+(i%2)*14)+")'/>").join(''),
+    "<path d='M30 50L50 94L70 50Z' fill='#e8b07a' "+OL+"/><path d='M36 58L62 58M40 68L58 68M44 78L56 78M38 52L56 88M62 52L44 88' stroke='#c08850' stroke-width='2'/><circle cx='50' cy='42' r='18' fill='#ffb3c7' "+OL+"/><circle cx='50' cy='22' r='15' fill='#a8e6cf' "+OL+"/>"+EYES(44,56,42).replace(/rx='3.6' ry='4.6'/g,"rx='2.6' ry='3.4'")+"<circle cx='50' cy='8' r='4' fill='#e5484d'/>",
+    "<path d='M50 90C26 74 14 52 22 36C30 22 44 26 50 32C56 26 70 22 78 36C86 52 74 74 50 90Z' fill='#ff5d6c' "+OL+"/><path d='M36 26Q42 14 50 22Q58 14 64 26Q56 30 50 26Q44 30 36 26Z' fill='#5cb85c' stroke='#2f6b3a' stroke-width='3' stroke-linejoin='round'/>"+[[34,44],[64,44],[42,66],[58,66],[50,78],[30,58],[70,58]].map(([x,y])=>"<ellipse cx='"+x+"' cy='"+y+"' rx='1.6' ry='2.4' fill='#ffe066'/>").join('')+EYES(42,58,52).replace(/rx='3.6' ry='4.6'/g,"rx='3' ry='3.8'")+SMILE(58),
+    "<path d='M50 10A40 40 0 1 0 88 64A12 12 0 0 1 76 50A12 12 0 0 1 62 36A12 12 0 0 1 50 10Z' fill='#e8b07a' "+OL+"/>"+[[30,36],[46,56],[30,66],[58,74],[40,82],[22,52],[66,56]].map(([x,y])=>"<circle cx='"+x+"' cy='"+y+"' r='4.5' fill='#5a3d2b'/>").join(''),
+    "<path d='M26 34H74L68 92H32Z' fill='#f5e1c8' "+OL+"/><path d='M28 52H72L68 92H32Z' fill='#d6a77a'/><path d='M26 34H74L68 92H32Z' fill='none' "+OL+"/><rect x='22' y='26' width='56' height='10' rx='4' fill='#ffb3c7' "+OL+"/><path d='M56 26L64 4' stroke='#ff5d6c' stroke-width='6' stroke-linecap='round'/>"+[[38,82],[48,86],[58,82],[42,74],[54,76],[62,72],[36,66]].map(([x,y])=>"<circle cx='"+x+"' cy='"+y+"' r='4' fill='#3b2f2f'/>").join('')+EYES(42,58,44).replace(/rx='3.6' ry='4.6'/g,"rx='2.6' ry='3.4'")+SMILE(46),
+    "<ellipse cx='50' cy='64' rx='34' ry='16' fill='#ffb3c7' "+OL+"/><rect x='19' y='46' width='62' height='12' rx='6' fill='#fff6e8' stroke='#3b2f2f' stroke-width='3'/><ellipse cx='50' cy='38' rx='34' ry='17' fill='#ffb3c7' "+OL+"/>"+EYES(41,59,36)+BLUSH(31,69,42)+SMILE(41)
+  ].map(SU)}
+];
+const DESN=[['','None'],['frame','Frame'],['classic','Classic'],['band','Elastic band'],['waves','Waves'],['mountains','Mountains'],['botanical','Botanical'],['stars','Starry night'],['confetti','Confetti'],['geo','Geometric'],['retro','Retro'],['plaid','Plaid'],['hearts','Hearts']];
+function desData(k){return 'data:image/svg+xml,'+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 400' preserveAspectRatio='none'>"+DES[k]+'</svg>')}
+/* everything that paints a cover uses these: design on top, texture below (two layers, always) */
+const NOIMG='linear-gradient(transparent,transparent)';
+function covImg(b){return (b&&b.design&&DES[b.design]?'url("'+desData(b.design)+'")':NOIMG)+','+(b&&b.tex&&TEX[b.tex]?'url("'+texData(b)+'")':NOIMG)}
+function paintCover(el,b){el.style.backgroundColor=b.color;el.style.backgroundImage=covImg(b);el.style.backgroundSize='100% 100%,auto';el.style.backgroundRepeat='no-repeat,repeat'}
+
 function initCover(){
   const g=$('#ccols'),tx=$('#ctex');
   COV.forEach((c,i)=>{const b=document.createElement('button');b.className='sw';b.style.background=c;b.setAttribute('aria-label','Cover color '+(i+1));b.dataset.c=c;
@@ -2256,13 +2650,23 @@ function initCover(){
   [['','Plain'],['leather','Leather'],['linen','Linen'],['kraft','Kraft'],['dots','Dots'],['stripes','Stripes']].forEach(([k,n])=>{
     const b=document.createElement('button');b.dataset.k=k;b.innerHTML='<i></i>'+n;
     b.onclick=()=>{if(k)cur.tex=k;else delete cur.tex;applyPS();syncCov();persist()};tx.append(b)});
-  $('#cst').onclick=()=>{const t=$('#csheet');if(!t.classList.contains('hidden')){t.classList.add('hidden');return}closeSheet();syncCov();t.classList.remove('hidden')};
+  $('#cst').onclick=()=>{const t=$('#csheet');if(!t.classList.contains('hidden')){t.classList.add('hidden');return}closeSheet();buildDes();syncCov();t.classList.remove('hidden')};
   $('#csx').onclick=()=>$('#csheet').classList.add('hidden');
+  $('#cph').onclick=()=>{if(!coverPhotoPro())return;photoCover=true;$('#file').click()};
+  $('#cphx').onclick=()=>setCoverPhoto(null);
+}
+function buildDes(){ // None + the free covers + the ones you bought
+  const box=$('#cdes');box.innerHTML='';
+  [{des:'',n:'None'},...COVERS.filter(c=>ownsItem(c)||c.des===cur.design)].forEach(({des:k,n})=>{const b=document.createElement('button');b.dataset.k=k;b.innerHTML='<i></i>';b.append(n);
+    b.onclick=()=>{if(k)cur.design=k;else delete cur.design;applyPS();syncCov();persist()};box.append(b)});
+  if(COVERS.some(c=>!ownsItem(c))){const m=el('small','hint2 desmore','More covers in the Store');box.append(m)}
 }
 function syncCov(){
+  syncCovPhoto();
   document.querySelectorAll('#ccols .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===cur.color));
   document.querySelectorAll('#ctex button').forEach(b=>{const k=b.dataset.k;b.setAttribute('aria-pressed',(cur.tex||'')===k);
     const i=b.firstChild;i.style.setProperty('--c',cur.color);i.style.backgroundImage=k?'url("'+texData({tex:k})+'")':'none'});
+  document.querySelectorAll('#cdes button').forEach(b=>{const k=b.dataset.k;b.setAttribute('aria-pressed',(cur.design||'')===k);paintCover(b.firstChild,{color:cur.color,tex:cur.tex,design:k})});
 }
 
 /* Settings: theme, desk, sound, tour */
@@ -2312,7 +2716,7 @@ const DESKS=[['sage','#e4e9e6'],['warm','#efe7da'],['blue','#e1e8f3'],['rose','#
    For every record the sync compares three hashes: this device, the cloud, and the last sync. */
 const FB_CFG={apiKey:"AIzaSyDIlAlVdivTKEJ7nv4BfjdZS3PeERxIcms",authDomain:"sketchbook-b1de1.firebaseapp.com",projectId:"sketchbook-b1de1",storageBucket:"sketchbook-b1de1.firebasestorage.app",messagingSenderId:"924673664913",appId:"1:924673664913:web:f25d4423a121208ea1dc30"};
 const CH=300000;
-const ACC={F:null,auth:null,db:null,user:null,pro:false,claimPro:false,docPro:false,man:null,unPro:null,unMan:null,state:null,busy:false,again:false,timer:0,last:0,err:'',mode:'in',msg:''};
+const ACC={F:null,auth:null,db:null,user:null,owned:new Set(),unOwn:null,pro:false,claimPro:false,docPro:false,man:null,unPro:null,unMan:null,state:null,busy:false,again:false,timer:0,last:0,err:'',mode:'in',msg:''};
 let fbLoading=null;
 function fbLoad(){
   if(fbLoading)return fbLoading;
@@ -2367,8 +2771,9 @@ async function startApp(){
 window.addEventListener('online',()=>{if(!ACC.F){ACC.offline=false;fbLoad().then(renderAcc).catch(()=>{ACC.offline=true;renderAcc()})}});
 async function accUser(u){
   if(ACC.unPro){ACC.unPro();ACC.unPro=null}
+  if(ACC.unOwn){ACC.unOwn();ACC.unOwn=null}
   syncStop();
-  const had=ACC.user;ACC.user=u||null;ACC.claimPro=false;ACC.docPro=false;ACC.proDoc=null;ACC.admin=false;ACC.err='';ACC.offline=false;clearTimeout(ACC.proT);
+  const had=ACC.user;ACC.user=u||null;ACC.owned=new Set();ACC.claimPro=false;ACC.docPro=false;ACC.proDoc=null;ACC.admin=false;ACC.err='';ACC.offline=false;clearTimeout(ACC.proT);
   if(u){await openLibrary(u.uid);hideGate()}
   else{lsSet('sb-last-uid','');if(had)ACC.mode='in';await closeLibrary();showGate()} // after signing out, show "Sign in" again
   if(u){
@@ -2378,6 +2783,8 @@ async function accUser(u){
       ACC.proDoc=s.exists()?s.data():null;ACC.docPro=proActiveDoc(ACC.proDoc);
       clearTimeout(ACC.proT);const end=proUntil(ACC.proDoc);if(ACC.docPro&&end)ACC.proT=setTimeout(()=>{ACC.docPro=false;setPro()},Math.min(end-Date.now()+1000,2e9)); // Pro from a code ends by itself
       setPro()},()=>{ACC.docPro=false;setPro()});
+    let oc=[];try{oc=JSON.parse(lsGet('sb-own:'+u.uid)||'[]')}catch(e){}setOwned(oc); // bought templates, also offline
+    ACC.unOwn=F.onSnapshot(F.doc(ACC.db,'owned',u.uid),s=>setOwned(s.exists()?s.data().t:[]),()=>{});
     touchProfile(u);checkAdmin(u);checkSurvey(u);
   }
   setPro();
@@ -2403,7 +2810,7 @@ function localRecs(){
   for(const b of data){m.set('b:'+b.id,metaOf(b));for(let i=0;i<b.pages.length;i++)m.set('p:'+b.id+':'+i,pageOf(b,i))}
   return m;
 }
-const isStarter=b=>(b.welcome&&b.u===b.wu)||b.pages.length===1&&!b.pages[0]&&!b.cover&&!b.cpv&&!(b.objs[0]||[]).length&&!(b.cobjs||[]).length&&!b.bg[0]&&!b.lay[0];
+const isStarter=b=>(b.welcome&&b.u===b.wu)||b.pages.length===1&&!b.pages[0]&&!b.cover&&!b.cpv&&!b.cbg&&!(b.objs[0]||[]).length&&!(b.cobjs||[]).length&&!b.bg[0]&&!b.lay[0];
 const openBookId=()=>cur&&$('#shelf').classList.contains('hidden')?String(cur.id):null;
 
 /* ----- cloud reads and writes ----- */
@@ -2543,6 +2950,8 @@ function renderAcc(){
     const sw=document.createElement('button');sw.type='button';sw.className='btn2';sw.textContent=up?'Sign in instead':'Create a free account';
     sw.onclick=()=>{ACC.mode=up?'in':'up';ACC.msg='';renderAcc()};box.append(sw);
     p('Your notebooks are saved on this device. We only keep your email and, with Pro, a copy of your notebooks in the cloud.','muted');
+    const lg=el('p','muted acc-legal');const pv=el('a','','Privacy Policy');pv.href='../privacy.html';pv.target='_blank';pv.rel='noopener';const tm=el('a','','Terms of Use');tm.href='../terms.html';tm.target='_blank';tm.rel='noopener';
+    lg.append('By continuing, you agree to our ',tm,' and ',pv,'.');box.append(lg);
     return;
   }
   p('Signed in as '+(u.email||u.displayName||'you'));
@@ -2557,6 +2966,10 @@ function renderAcc(){
   const o=document.createElement('button');o.className='ib';o.textContent='Sign out';o.onclick=accOut;acts.append(o);
   box.append(acts);
   p('After you sign out, your notebooks stay saved on this device for when you sign in again.','muted');
+  const lg=el('p','muted acc-legal');const dl=el('a','','Download my data');dl.href='#';dl.onclick=e=>{e.preventDefault();downloadMyData()};
+  const da=el('a','acc-del','Delete my account');da.href='#';da.onclick=e=>{e.preventDefault();deleteAccount()};
+  const pv=el('a','','Privacy');pv.href='../privacy.html';pv.target='_blank';pv.rel='noopener';const tm=el('a','','Terms');tm.href='../terms.html';tm.target='_blank';tm.rel='noopener';
+  lg.append(dl,' · ',da,' · ',pv,' · ',tm);box.append(lg);
 }
 async function accGoogle(){
   ACC.msg='';const F=ACC.F,pr=new F.GoogleAuthProvider();pr.setCustomParameters({prompt:'select_account'});
@@ -2586,8 +2999,9 @@ function initAcc(){
 /* ---------- Promo codes, profiles and the admin panel ----------
    Codes give Pro for a number of days (0 = forever), up to `max` people. Redeeming writes, in one transaction:
    pro/{uid} {code, by:'code', since, days} + codes/{CODE}.used+1 + redeem/{uid_CODE}; the rules check all of it.
+   Template codes ({kind:'tpl', tpl: id | 'all'}) do the same with owned/{uid} {t:[…, tpl], last: CODE}.
    Discount codes (e.g. first month / first year cheaper) are made in Stripe when payments go live.
-   profiles/{uid} keeps email, sign-up date and last visit for the statistics (written at most twice a day).
+   profiles/{uid} keeps email, sign-up date and last visit for the statistics (written about once a day).
    The admin panel opens for accounts listed in admins/{uid} (made by hand in the Firebase console). */
 const DAY=864e5;
 function proActiveDoc(p){if(!p)return false;if(!p.days)return true;const s=p.since&&p.since.toMillis?p.since.toMillis():Date.now();return s+p.days*DAY>Date.now()}
@@ -2599,7 +3013,7 @@ const asApp=()=>!!((window.matchMedia&&matchMedia('(display-mode: standalone)').
 async function touchProfile(u){
   const F=ACC.F,ym=ymOf(new Date()),ak='sb-act:'+u.uid;
   if(lsGet(ak)!==ym){try{await F.setDoc(F.doc(ACC.db,'act',ym+'_'+u.uid),{ym,uid:u.uid,at:F.serverTimestamp()})}catch(e){}lsSet(ak,ym)} // "active this month", once a month
-  const k='sb-seen:'+u.uid;if(Date.now()-(+lsGet(k)||0)<12*36e5)return;
+  const k='sb-seen:'+u.uid;if(Date.now()-(+lsGet(k)||0)<20*36e5)return; // about once a day: keeps the free plan's cloud use tiny
   const ref=F.doc(ACC.db,'profiles',u.uid),via=(u.providerData[0]&&u.providerData[0].providerId)||'password';
   const base={email:u.email||'',name:u.displayName||'',via,os:devOS(),lang:(navigator.language||'').slice(0,12),app:asApp(),seen:F.serverTimestamp()};
   try{await F.updateDoc(ref,base)}
@@ -2611,11 +3025,20 @@ const normCode=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9-]/g,'');
 async function redeemCode(raw){
   const F=ACC.F,db=ACC.db,u=ACC.user;if(!F||!u)return {msg:'Sign in first.'};
   const code=normCode(raw);if(code.length<4)return {msg:'Type the code.'};
-  const cref=F.doc(db,'codes',code),pref=F.doc(db,'pro',u.uid),rref=F.doc(db,'redeem',u.uid+'_'+code);
+  const cref=F.doc(db,'codes',code),pref=F.doc(db,'pro',u.uid),oref=F.doc(db,'owned',u.uid),rref=F.doc(db,'redeem',u.uid+'_'+code);
   try{
     return await F.runTransaction(db,async tx=>{
       const cs=await tx.get(cref);if(!cs.exists())return {msg:'This code doesn’t exist. Check the spelling.'};
       const c=cs.data();
+      if(c.kind==='tpl'){
+        if(!c.active||c.used>=c.max)return {msg:'This code has expired or has been used up.'};
+        const os=await tx.get(oref),have=os.exists()?(os.data().t||[]):[];
+        if(have.includes(c.tpl)||have.includes('all'))return {msg:'You already have '+(c.tpl==='all'?'all the paid templates':tplName(c.tpl))+'.'};
+        tx.update(cref,{used:c.used+1});
+        tx.set(rref,{uid:u.uid,code,at:F.serverTimestamp()});
+        tx.set(oref,{t:[...have,c.tpl],last:code});
+        return {ok:true,tpl:c.tpl};
+      }
       if(c.kind!=='pro')return {msg:'This code gives a discount. You can use it at checkout once Pro is on sale.'};
       if(!c.active||c.used>=c.max)return {msg:'This code has expired or has been used up.'};
       const ps=await tx.get(pref);if(ps.exists()&&proActiveDoc(ps.data()))return {msg:'You already have Pro.'};
@@ -2635,7 +3058,7 @@ function codeBox(box){
   const b=el('button','btn','Redeem');b.type='submit';f.append(i,b);
   const m=el('p','cmsg');m.setAttribute('role','status');
   f.onsubmit=async e=>{e.preventDefault();b.disabled=true;m.textContent='Checking…';const r=await redeemCode(i.value);b.disabled=false;
-    if(r.ok){m.textContent='';i.value='';toast(r.days?'Pro is on for '+r.days+' days. Enjoy!':'Pro is on. Enjoy!')}else m.textContent=r.msg};
+    if(r.ok){m.textContent='';i.value='';toast(r.tpl?tplName(r.tpl)+' is yours. Find '+(r.tpl==='all'?'it all':'it')+' in the Store.':r.days?'Pro is on for '+r.days+' days. Enjoy!':'Pro is on. Enjoy!')}else m.textContent=r.msg};
   w.append(el('p','sep','Have a promo code?'),f,m);box.append(w);
 }
 function openCode(){$('#up').classList.add('hidden');openAcc();setTimeout(()=>{const i=$('#a-code');if(i)i.focus()},300)}
@@ -2643,6 +3066,8 @@ function openCode(){$('#up').classList.add('hidden');openAcc();setTimeout(()=>{c
 function genCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const r=crypto.getRandomValues(new Uint8Array(8));for(const x of r)s+=A[x%A.length];return 'FOLIET-'+s}
 const DUR=[[7,'7 days'],[30,'1 month'],[90,'3 months'],[365,'1 year'],[0,'Forever']];
 const durTxt=d=>!d?'forever':d%365===0?(d/365)+(d===365?' year':' years'):d%30===0?(d/30)+(d===30?' month':' months'):d+' days';
+function tplSelect(){const s=el('select','lk-in');s.append(new Option('Everything in the store','all'));
+  [['Templates',TPL],['Covers',COVERS],['Labels',LABELS],['Sticker packs',STPK]].forEach(([n,L])=>{const g=document.createElement('optgroup');g.label=n;L.filter(t=>t.p).forEach(t=>g.append(new Option(t.n,t.id)));s.append(g)});return s}
 function durSelect(def){const s=el('select','lk-in');DUR.forEach(([v,t])=>{const o=el('option','',t);o.value=v;if(v===def)o.selected=true;s.append(o)});return s}
 /* ----- "How did you find Foliet?" -----
    Asked once per account, right after signing up (and once to older accounts). It can't be closed or skipped;
@@ -2691,6 +3116,107 @@ function askSurvey(u){
   ov.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation()}},true);
 }
 
+/* ----- Feedback (menu → Send feedback) -----
+   feedback/{id} = {uid, email, type: idea|problem|other, text, reply, os, ver, w, at, done?}
+   Read and marked done only in the admin panel. One message a minute per device, so nobody floods it. */
+const FBT=[['idea','Idea'],['problem','Problem'],['other','Other']];
+function openFeedback(){
+  menuOpen(false);
+  const ov=el('div','');ov.id='fbk';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-labelledby','fbkt');
+  const c=el('div','card');ov.append(c);
+  const top=el('div','sh-top');const h=el('h2','','Send feedback');h.id='fbkt';const x=el('button','ib i','✕');x.setAttribute('aria-label','Close');top.append(h,x);c.append(top);
+  c.append(el('p','fb-sub','Tell us what you’d like, or what went wrong. We read every message.'));
+  let type='idea';const seg=el('div','seg2');
+  FBT.forEach(([k,t])=>{const b=el('button','',t);b.type='button';b.onclick=()=>{type=k;sync()};b.dataset.k=k;seg.append(b)});
+  const ta=el('textarea','fb-ta');ta.rows=6;ta.maxLength=2000;ta.placeholder='Write here…';ta.setAttribute('aria-label','Your message');
+  const cnt=el('small','fb-cnt','');
+  const rl=el('label','chk');const rc=el('input');rc.type='checkbox';rc.checked=true;rl.append(rc,' You can reply to me by email');
+  const err=el('p','lk-err');err.setAttribute('role','alert');
+  const acts=el('div','acts2');const no=el('button','ib','Cancel');const go=el('button','btn','Send');acts.append(no,go);
+  c.append(seg,ta,cnt,rl,el('p','fb-note','We also add your device type and the app version, so we can fix problems faster.'),err,acts);
+  const sync=()=>{seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===type));ta.placeholder=type==='problem'?'What happened? What did you expect?':type==='idea'?'What would make Foliet better for you?':'Write here…';
+    cnt.textContent=ta.value.length+' / 2000';go.disabled=ta.value.trim().length<3};
+  ta.oninput=sync;sync();
+  const close=()=>ov.remove();x.onclick=close;no.onclick=close;ov.onclick=e=>{if(e.target===ov)close()};
+  ov.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  go.onclick=async()=>{
+    const wait=(+lsGet('sb-fbt')||0)+60000-Date.now();
+    if(wait>0){err.textContent='Thanks! Please wait '+Math.ceil(wait/1000)+' seconds before sending another message.';return}
+    const F=ACC.F,u=ACC.user;if(!F||!u){err.textContent='Sign in to send feedback.';return}
+    go.disabled=true;err.textContent='';
+    try{
+      await F.setDoc(F.doc(F.collection(ACC.db,'feedback')),{uid:u.uid,email:u.email||'',type,text:ta.value.trim().slice(0,2000),reply:rc.checked,os:devOS(),ver:APP_VER,w:Math.round(innerWidth),at:F.serverTimestamp()});
+      lsSet('sb-fbt',String(Date.now()));close();toast('Thank you! Your message was sent.');
+    }catch(e){go.disabled=false;err.textContent=navigator.onLine?'Couldn’t send it. Please try again.':'No internet connection. Your message is still here – send it when you’re back online.'}
+  };
+  document.body.append(ov);setTimeout(()=>ta.focus(),50);
+}
+
+/* ----- Your data (GDPR): download everything, or delete the account -----
+   Download: account facts + everything in Firestore about you + your notebooks, as one .json file.
+   Delete: confirm the account (password or Google), then remove the cloud copy, profile, monthly activity,
+   survey answer, feedback, Pro and templates records, optionally the notebooks on this device, then the account. */
+const tsJSON=(k,v)=>v&&typeof v==='object'&&typeof v.toDate==='function'?v.toDate().toISOString():(k&&k[0]==='_'?undefined:v);
+async function myRecords(){
+  const F=ACC.F,db=ACC.db,uid=ACC.user.uid,one=async(c)=>{try{const s=await F.getDoc(F.doc(db,c,uid));return s.exists()?s.data():null}catch(e){return null}};
+  const mine=async(c)=>{try{const s=await F.getDocs(F.query(F.collection(db,c),F.where('uid','==',uid)));return s.docs.map(d=>({id:d.id,...d.data()}))}catch(e){return []}};
+  return {profile:await one('profiles'),survey:await one('survey'),pro:await one('pro'),templates:await one('owned'),feedback:await mine('feedback'),activeMonths:(await mine('act')).map(a=>a.ym).sort()};
+}
+async function downloadMyData(){
+  const u=ACC.user;if(!u||!ACC.F)return;
+  if(!$('#ed').classList.contains('hidden'))await savePage();await savesDone();
+  toast('Preparing your data…');
+  const out={app:'foliet',kind:'my-data',exported:new Date().toISOString(),
+    account:{id:u.uid,email:u.email||'',name:u.displayName||'',signInWith:u.providerData.map(p=>p.providerId),created:u.metadata&&u.metadata.creationTime,lastSignIn:u.metadata&&u.metadata.lastSignInTime},
+    ...(await myRecords()),notebooks:data};
+  await saveFile('foliet-my-data-'+new Date().toISOString().slice(0,10)+'.json',new Blob([JSON.stringify(out,tsJSON,1)],{type:'application/json'}));
+}
+async function wipeLocal(uid){
+  const db=await idb(),pre=P2;
+  await new Promise((res,rej)=>{const t=db.transaction('kv','readwrite'),s=t.objectStore('kv');
+    s.delete(IDBKeyRange.bound(pre,pre+'￿'));s.delete('sync:'+uid);t.oncomplete=res;t.onerror=()=>rej(t.error)});
+  try{localStorage.removeItem(lsKey())}catch(e){}
+  ['sb-seen:','sb-act:','sb-src:','sb-bio:','sb-bioon:'].forEach(k=>{try{localStorage.removeItem(k+uid);localStorage.removeItem(k+uid+':p')}catch(e){}});
+  if(lsGet('sb-owner')===uid)lsSet('sb-owner','');
+}
+function deleteAccount(){
+  const u=ACC.user,F=ACC.F;if(!u||!F)return;
+  $('#acct').classList.add('hidden');
+  lockDlg((c,close)=>{
+    c.append(el('div','lk-ic del'));c.lastChild.innerHTML='<svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+    c.append(el('h2','','Delete your account?'),el('p','lk-sub','This deletes your Foliet account and everything we keep about it: your email, the cloud copy of your notebooks, your statistics, survey answer and feedback. It can’t be undone.'));
+    const bk=el('button','ib','Download a backup first');bk.onclick=()=>backupAll();c.append(bk);
+    const l=el('label','chk');const cb=el('input');cb.type='checkbox';cb.checked=true;l.append(cb,' Also remove my notebooks from this device');c.append(l);
+    const google=u.providerData.some(p=>p.providerId==='google.com');
+    let pw=null;if(!google){pw=secretInput(false,'Your Foliet account password','del-pw');pw.autocomplete='current-password';c.append(pw)}
+    const err=el('p','lk-err');err.setAttribute('role','alert');c.append(err);
+    const acts=el('div','acts2');const no=el('button','ib','Keep my account');no.onclick=()=>close(false);
+    const go=el('button','btn danger',google?'Confirm with Google and delete':'Delete my account');acts.append(no,go);c.append(acts);
+    go.onclick=async()=>{
+      go.disabled=true;err.textContent='';
+      try{
+        if(google)await F.reauthenticateWithPopup(u,new F.GoogleAuthProvider());
+        else await F.reauthenticateWithCredential(u,F.EmailAuthProvider.credential(u.email,pw.value));
+      }catch(e){go.disabled=false;err.textContent=AUTH_MSG[e.code]||'That didn’t work. Try again.';return}
+      try{
+        err.textContent='Deleting…';syncStop();
+        const dbi=ACC.db,uid=u.uid;
+        const rs=await F.getDocs(F.collection(dbi,'users',uid,'r'));
+        for(let i=0;i<rs.docs.length;i+=400){const b=F.writeBatch(dbi);rs.docs.slice(i,i+400).forEach(d=>b.delete(d.ref));await b.commit()}
+        const b2=F.writeBatch(dbi);
+        b2.delete(F.doc(dbi,'users',uid));
+        for(const c2 of ['act','feedback']){const q=await F.getDocs(F.query(F.collection(dbi,c2),F.where('uid','==',uid)));q.docs.forEach(d=>b2.delete(d.ref))}
+        for(const c2 of ['profiles','survey','pro','owned'])b2.delete(F.doc(dbi,c2,uid));
+        await b2.commit();
+        if(cb.checked)await wipeLocal(uid);
+        data=[];snaps=new Map();ACC.libUid=null;lsSet('sb-last-uid','');
+        await F.deleteUser(u);
+        close(true);toast('Your account was deleted.');
+      }catch(e){console.warn(e);go.disabled=false;err.textContent='Something went wrong ('+(e.code||e.message)+'). Part of your data may already be deleted – please try again to finish.'}
+    };
+  });
+}
+
 /* ----- admin panel -----
    Loads everything once (profiles, monthly activity, Pro, codes, redemptions and, once Stripe is connected,
    payments + subscriptions written by the "Run Payments with Stripe" extension), then shows it for the chosen
@@ -2715,12 +3241,12 @@ function osName(o){return {android:'Android',ios:'iPhone / iPad',windows:'Window
 async function adminFetch(){
   const F=ACC.F,db=ACC.db,all=c=>F.getDocs(F.collection(db,c)).then(s=>s.docs.map(d=>({id:d.id,...d.data()})));
   const safe=p=>p.catch(e=>{console.warn('admin',e);return []});
-  const [profiles,act,pro,codes,redeem,payments,subs,survey]=await Promise.all([
+  const [profiles,act,pro,codes,redeem,payments,subs,survey,feedback,owned]=await Promise.all([
     all('profiles'),safe(all('act')),all('pro'),all('codes'),safe(all('redeem')),
     safe(F.getDocs(F.collectionGroup(db,'payments')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()})))),
     safe(F.getDocs(F.collectionGroup(db,'subscriptions')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()})))),
-    safe(all('survey'))]);
-  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,at:Date.now()};
+    safe(all('survey')),safe(all('feedback')),safe(all('owned'))]);
+  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,feedback,owned,at:Date.now()};
 }
 function openAdmin(){$('#acct').classList.add('hidden');$('#admin').classList.remove('hidden');adminLoad()}
 async function adminLoad(){
@@ -2804,25 +3330,44 @@ function adminRender(){
   if(!others.length)ob.append(el('small','muted','None in this period.'));
   others.slice(0,200).forEach(a=>{const r=el('div','sva');r.append(el('span','',a.other),el('small','',fmtDay(a.t)+(email[a.id]?' · '+email[a.id]:'')));ob.append(r)});
   sg.append(sb,ob);B.append(sg);
+  sec('Feedback');
+  const FB=D.feedback.map(f=>({...f,t:tsMs(f.at)})).filter(f=>R.b===Infinity||inR(f.t,R)).sort((a,b)=>(b.t||0)-(a.t||0));
+  const fbBar=el('div','aper');const fseg=el('div','seg3');
+  [['all','All'],...FBT].forEach(([k,t])=>{const n=k==='all'?FB.length:FB.filter(f=>f.type===k).length;const b=el('button','',t+' ('+n+')');b.setAttribute('aria-pressed',(ADM.fbt||'all')===k);b.onclick=()=>{ADM.fbt=k;adminRender()};fseg.append(b)});
+  const open=FB.filter(f=>!f.done).length;fbBar.append(fseg,el('small','muted',open+' not done yet'));B.append(fbBar);
+  const fl=el('div','alist');fl.id='adm-fbl';const shown=FB.filter(f=>(ADM.fbt||'all')==='all'||f.type===ADM.fbt);
+  if(!shown.length)fl.append(el('p','muted','No feedback in this period.'));
+  shown.slice(0,200).forEach(f=>{const r=el('div','arow fbr'+(f.done?' off':''));const t=el('div','');
+    t.append(el('span','fbt fbt-'+f.type,(FBT.find(x=>x[0]===f.type)||['','Other'])[1]),el('p','fbx',f.text),el('small','',fmtDay(f.t)+' · '+(f.email||'?')+' · '+osName(f.os)+(f.w?' · '+f.w+'px':'')+' · '+(f.ver||'')));
+    r.append(t);
+    if(f.reply&&f.email){const m=el('a','ib','Reply');m.href='mailto:'+encodeURIComponent(f.email)+'?subject='+encodeURIComponent('Your Foliet feedback');r.append(m)}
+    const d=el('button','ib',f.done?'Reopen':'Mark done');d.onclick=async()=>{await ACC.F.updateDoc(ACC.F.doc(ACC.db,'feedback',f.id),{done:!f.done});f.done=!f.done;const x=D.feedback.find(y=>y.id===f.id);if(x)x.done=f.done;adminRender()};
+    r.append(d);fl.append(r)});
+  B.append(fl);
   sec('Promo codes');
-  const f=el('form','aform');
+  const f=el('form','aform');f.id='adm-cf';
   const ci=el('input','lk-in');ci.placeholder='CODE';ci.value=genCode();ci.autocapitalize='characters';
   const gb=el('button','ib','New code');gb.type='button';gb.onclick=()=>ci.value=genCode();
-  const ds=durSelect(30),mx=el('input','lk-in');mx.type='number';mx.min=1;mx.value=10;mx.title='How many people can use it';
+  const ds=durSelect(30);ds.id='adm-days';const mx=el('input','lk-in');mx.type='number';mx.min=1;mx.value=10;mx.title='How many people can use it';
   const nt=el('input','lk-in');nt.placeholder='Note (who it’s for)';
+  const kd=el('select','lk-in');kd.id='adm-kind';[['pro','Pro'],['tpl','Something from the store']].forEach(([v,t])=>kd.append(new Option(t,v)));
+  const ts=tplSelect();ts.id='adm-ctpl';
   const cb=el('button','btn','Create code');cb.type='submit';const fm=el('p','cmsg');
   const l=(t,x)=>{const w=el('label','alab');w.append(el('span','',t),x);return w};
-  f.append(l('Code',ci),gb,l('Gives Pro for',ds),l('How many people',mx),l('Note',nt),cb,fm);
+  const lds=l('Gives Pro for',ds),lts=l('Item',ts);
+  kd.onchange=()=>{lds.classList.toggle('hidden',kd.value!=='pro');lts.classList.toggle('hidden',kd.value!=='tpl')};kd.onchange();
+  f.append(l('Code',ci),gb,l('Gives',kd),lds,lts,l('How many people',mx),l('Note',nt),cb,fm);
   f.onsubmit=async e=>{e.preventDefault();const code=normCode(ci.value);if(code.length<4){fm.textContent='The code needs at least 4 letters or digits.';return}
     try{const r=F.doc(db,'codes',code);if((await F.getDoc(r)).exists()){fm.textContent='That code already exists.';return}
-      await F.setDoc(r,{kind:'pro',days:+ds.value,max:Math.max(1,+mx.value||1),used:0,active:true,note:nt.value.trim().slice(0,120),created:F.serverTimestamp()});
+      const base={max:Math.max(1,+mx.value||1),used:0,active:true,note:nt.value.trim().slice(0,120),created:F.serverTimestamp()};
+      await F.setDoc(r,kd.value==='tpl'?{kind:'tpl',tpl:ts.value,...base}:{kind:'pro',days:+ds.value,...base});
       toast('Code '+code+' created');adminLoad()}catch(e2){fm.textContent='Couldn’t create it: '+(e2.code||e2.message)}};
   B.append(f,el('p','muted','Discount codes (for example 50% off the first month or the first year) are made in Stripe once payments go live; people type them at checkout.'));
-  const cl=el('div','alist');
+  const cl=el('div','alist');cl.id='adm-codes';
   if(!D.codes.length)cl.append(el('p','muted','No codes yet.'));
   D.codes.sort((a,b)=>(tsMs(b.created)||0)-(tsMs(a.created)||0)).forEach(c=>{const ref=F.doc(db,'codes',c.id),r=el('div','arow'+(c.active&&c.used<c.max?'':' off'));
     const usedIn=D.redeem.filter(x=>x.code===c.id&&inR(tsMs(x.at),R)).length;
-    const t=el('div','');t.append(el('b','',c.id),el('small','',' Pro '+durTxt(c.days)+' · '+c.used+' / '+c.max+' used'+(R.b!==Infinity?' ('+usedIn+' in '+R.label+')':'')+(c.note?' · '+c.note:'')));
+    const t=el('div','');t.append(el('b','',c.id),el('small','',' '+(c.kind==='tpl'?'Unlocks: '+tplName(c.tpl):c.kind==='pro'?'Pro '+durTxt(c.days):'Discount')+' · '+c.used+' / '+c.max+' used'+(R.b!==Infinity?' ('+usedIn+' in '+R.label+')':'')+(c.note?' · '+c.note:'')));
     const cp=el('button','ib','Copy');cp.onclick=async()=>{try{await navigator.clipboard.writeText(c.id);toast('Copied '+c.id)}catch(e){toast(c.id)}};
     const tg=el('button','ib',c.active?'Turn off':'Turn on');tg.onclick=async()=>{await F.updateDoc(ref,{active:!c.active});adminLoad()};
     const dl=el('button','ib','Delete');dl.onclick=async()=>{if(dl.dataset.s){await F.deleteDoc(ref);adminLoad()}else{dl.dataset.s=1;dl.textContent='Sure?'}};
@@ -2830,14 +3375,14 @@ function adminRender(){
   B.append(cl);
   // pro members
   sec('Pro members');
-  const g=el('form','aform');const ge=el('input','lk-in');ge.type='email';ge.placeholder='their@email.com';const gd=durSelect(365);const gbn=el('button','btn','Give Pro');gbn.type='submit';const gm=el('p','cmsg');
+  const g=el('form','aform');g.id='adm-pf';const ge=el('input','lk-in');ge.type='email';ge.placeholder='their@email.com';const gd=durSelect(365);const gbn=el('button','btn','Give Pro');gbn.type='submit';const gm=el('p','cmsg');
   g.append(l('Email (they must have signed in once)',ge),l('For',gd),gbn,gm);
   const giveTo=async(uid,days)=>{await F.setDoc(F.doc(db,'pro',uid),{by:'admin',since:F.serverTimestamp(),days:+days})};
   g.onsubmit=async e=>{e.preventDefault();const em=ge.value.trim().toLowerCase();if(!em)return;const p=P.find(x=>(x.email||'').toLowerCase()===em);
     if(!p){gm.textContent='No account with this email yet. Ask them to sign in to Foliet once.';return}
     try{await giveTo(p.id,gd.value);toast('Pro given to '+em);adminLoad()}catch(e2){gm.textContent='Couldn’t do it: '+(e2.code||e2.message)}};
   B.append(g);
-  const pl=el('div','alist');
+  const pl=el('div','alist');pl.id='adm-pro';
   if(!D.pro.length)pl.append(el('p','muted','Nobody has Pro yet.'));
   const srcTxt=p=>p.by==='code'?'code '+p.code:p.by==='admin'?'given by you':'set in the console';
   D.pro.slice().sort((a,b)=>(tsMs(b.since)||0)-(tsMs(a.since)||0)).forEach(p=>{const on=proActiveDoc(p),r=el('div','arow'+(on?'':' off')),u=proUntil(p);
@@ -2845,11 +3390,28 @@ function adminRender(){
     const rm=el('button','ib','Remove');rm.onclick=async()=>{if(rm.dataset.s){await F.deleteDoc(F.doc(db,'pro',p.id));adminLoad()}else{rm.dataset.s=1;rm.textContent='Sure?'}};
     r.append(t,rm);pl.append(r)});
   B.append(pl);
+  // store: who owns what (templates, covers, labels, sticker packs), and give something by email
+  sec('Store');
+  const OW=D.owned||[],paidT=[...TPL,...COVERS,...LABELS,...STPK].filter(t=>t.p);
+  const tg2=el('div','astats');
+  card(tg2,OW.length,'People with paid items');card(tg2,OW.reduce((n,o)=>n+(o.t||[]).filter(x=>x!=='all').length,0),'Items unlocked','one by one');
+  card(tg2,OW.filter(o=>(o.t||[]).includes('all')).length,'Have everything');
+  B.append(tg2);
+  const tb=el('div','abrk');tb.append(el('b','','Unlocked, per item'));
+  paidT.map(t=>[t,OW.filter(o=>(o.t||[]).includes(t.id)).length]).sort((a,b)=>b[1]-a[1]).forEach(([t,v])=>{const r=el('div','abr');const bar=el('i');bar.style.width=(OW.length?Math.round(v/OW.length*100):0)+'%';r.append(el('span','',t.n),el('em','',String(v)),bar);tb.append(r)});
+  const tbw=el('div','abrks');tbw.append(tb);B.append(tbw);
+  const tgf=el('form','aform');tgf.id='adm-tf';const tge=el('input','lk-in');tge.type='email';tge.placeholder='their@email.com';const tgs=tplSelect();const tgb=el('button','btn','Give');tgb.type='submit';const tgm=el('p','cmsg');
+  tgf.append(l('Email (they must have signed in once)',tge),l('Item',tgs),tgb,tgm);
+  tgf.onsubmit=async e=>{e.preventDefault();const em=tge.value.trim().toLowerCase();if(!em)return;const p=P.find(x=>(x.email||'').toLowerCase()===em);
+    if(!p){tgm.textContent='No account with this email yet. Ask them to sign in to Foliet once.';return}
+    const have=((OW.find(o=>o.id===p.id)||{}).t)||[];if(have.includes(tgs.value)||have.includes('all')){tgm.textContent='They already have it.';return}
+    try{await F.setDoc(F.doc(db,'owned',p.id),{t:[...have,tgs.value],last:'admin'});toast(tplName(tgs.value)+' given to '+em);adminLoad()}catch(e2){tgm.textContent='Couldn’t do it: '+(e2.code||e2.message)}};
+  B.append(tgf);
   // accounts: search, list, CSV
   sec('Accounts');
   const sr=el('div','aform');const si=el('input','lk-in');si.type='search';si.placeholder='Search by email';si.setAttribute('aria-label','Search accounts by email');
   const csv=el('button','ib','Download all (CSV)');csv.type='button';sr.append(l('Find an account',si),csv);B.append(sr);
-  const al=el('div','alist');B.append(al);
+  const al=el('div','alist');al.id='adm-acc';B.append(al);
   const proOf=id=>D.pro.find(x=>x.id===id);
   const showAcc=()=>{al.innerHTML='';const q=si.value.trim().toLowerCase();
     const list=P.filter(p=>!q||(p.email||'').toLowerCase().includes(q)).sort((a,b)=>(b.c||0)-(a.c||0)).slice(0,q?50:25);
@@ -2863,8 +3425,9 @@ function adminRender(){
   si.oninput=showAcc;showAcc();
   csv.onclick=()=>{const esc2=v=>'"'+String(v??'').replace(/"/g,'""')+'"',iso=t=>t?new Date(t).toISOString().slice(0,10):'';
     const svOf={};D.survey.forEach(a=>svOf[a.id]=a.src==='other'?'other: '+a.other:srcName(a.src));
-    const rows=[['email','name','joined','last_seen','sign_in','device','language','installed_app','found_via','plan','pro_source','pro_until']];
-    P.forEach(p=>{const pr=proOf(p.id),paying=subUids.has(p.id),on=paying||proActiveDoc(pr),u=proUntil(pr);rows.push([p.email,p.name,iso(p.c),iso(p.s),p.via==='google.com'?'google':'email',osName(p.os),p.lang||'',p.app?'yes':'no',svOf[p.id]||'',on?'pro':'free',paying?'stripe subscription':pr?srcTxt(pr):'',paying?'':u?iso(+u):(on?'forever':'')])});
+    const owOf={};(D.owned||[]).forEach(o=>owOf[o.id]=(o.t||[]).map(tplName).join('; '));
+    const rows=[['email','name','joined','last_seen','sign_in','device','language','installed_app','found_via','plan','pro_source','pro_until','store_items']];
+    P.forEach(p=>{const pr=proOf(p.id),paying=subUids.has(p.id),on=paying||proActiveDoc(pr),u=proUntil(pr);rows.push([p.email,p.name,iso(p.c),iso(p.s),p.via==='google.com'?'google':'email',osName(p.os),p.lang||'',p.app?'yes':'no',svOf[p.id]||'',on?'pro':'free',paying?'stripe subscription':pr?srcTxt(pr):'',paying?'':u?iso(+u):(on?'forever':''),owOf[p.id]||''])});
     saveFile('foliet-accounts-'+new Date().toISOString().slice(0,10)+'.csv',new Blob(['﻿'+rows.map(r=>r.map(esc2).join(',')).join('\r\n')],{type:'text/csv'}))};
 }
 
@@ -3088,8 +3651,8 @@ async function makeWelcome(){
     arrow(x,[[760,700],[820,760],[800,840],[730,880]],'#2c5f8a',5);ink.push(c);ps.push({p:'dots',c:'#e3edf7'});
     objs.push([T('Pages your way',80,60,760,80,{fm:'round',b:1,c:'#1d2b4a'}),
       T('Blank',80,545,150,30,{al:'center'}),T('Lined',270,545,150,30,{al:'center'}),T('Grid',460,545,150,30,{al:'center'}),T('Dots',650,545,150,30,{al:'center'}),
-      T('Pick a look for each page and five paper colours, like this blue one. When you add pages, choose how the new ones look.',80,640,620,34),
-      T('Portrait or landscape notebooks, a cover you can draw on, and every page at a glance.',80,850,620,34),
+      T('Pick a look for each page and a paper colour, from bright white or warm white to black, like this blue one.',80,640,620,34),
+      T('Portrait or landscape, cover designs, name labels you can move, and more in the Store.',80,850,620,34),
       N('Pro: import a PDF and write on it, export to PDF or images.',500,1000,340,170,NC[4],-3,28),S(6,700,150,150,0)])}
   // 6 – private and yours
   {const [c,x]=page();x.strokeStyle='#e0a526';x.lineWidth=8;wave(x,90,1000,500,9,30);ink.push(c);ps.push({p:'lines',c:PAPER});
@@ -3146,11 +3709,11 @@ function menuHead(){
 }
 function initMenu(){
   $('#menub').onclick=e=>{e.stopPropagation();menuOpen($('#menu').classList.contains('hidden'))};
-  $('#menu').addEventListener('click',e=>{if(e.target.closest('button.mi'))menuOpen(false)});
+  $('#menu').addEventListener('click',e=>{if(e.target.closest('.mi[role=menuitem]'))menuOpen(false)});
   document.addEventListener('click',e=>{if(!e.target.closest('.mwrap'))menuOpen(false)});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')menuOpen(false)});
   document.querySelectorAll('#mtheme button').forEach(b=>b.onclick=e=>{e.stopPropagation();setTheme(b.dataset.v)});
-  $('#mupd').onclick=openUpd;$('#madm').onclick=openAdmin;$('#mout').onclick=()=>{if(ACC.F&&ACC.user)accOut()};
+  $('#mupd').onclick=openUpd;$('#mfb').onclick=openFeedback;$('#madm').onclick=openAdmin;$('#mout').onclick=()=>{if(ACC.F&&ACC.user)accOut()};
   $('#themeb').onclick=toggleTheme;$('#acc-theme').onclick=toggleTheme;
   syncThemeBtns();
 }
@@ -3234,18 +3797,30 @@ function tourShow(i){
 }
 
 /* Templates */
-const TPL=[
-  {id:'planner',n:'Weekly planner',d:'Seven day boxes and a notes box for every week.',o:'p',c:'#2c6e63',tex:'linen',pages:6},
-  {id:'agenda',n:'Daily agenda',d:'An hourly schedule, three priorities and notes.',o:'p',c:'#a8433a',tex:'',pages:6},
-  {id:'math',n:'Math notebook',d:'A square grid with a margin, like a school notebook.',o:'p',c:'#23407a',tex:'',pages:8},
-  {id:'journal',n:'Journal',d:'A date, a mood row and gentle prompts.',o:'p',c:'#7a3f66',tex:'leather',pages:6},
-  {id:'story',n:'Storyboard',d:'Six frames with captions, in landscape.',o:'l',c:'#2c2c2e',tex:'',pages:6}
+const TPL=[ // p: price in cents (0 = free) · g: shelf group · des: cover design
+  {id:'planner',g:'plan',n:'Weekly planner',d:'Seven day boxes and a notes box for every week.',o:'p',c:'#2c6e63',tex:'linen',pages:6,p:0},
+  {id:'agenda',g:'plan',n:'Daily agenda',d:'An hourly schedule, three priorities and notes.',o:'p',c:'#a8433a',tex:'',pages:6,p:0},
+  {id:'todo',g:'plan',n:'To-do lists',d:'Checkboxes with a “done” circle on every line.',o:'p',c:'#d0893a',tex:'',pages:6,p:0},
+  {id:'math',g:'study',n:'Math notebook',d:'A square grid with a margin, like a school notebook.',o:'p',c:'#23407a',tex:'',pages:8,p:0},
+  {id:'cornell',g:'study',n:'Cornell notes',d:'Cues, notes and a summary – the classic way to study.',o:'p',c:'#3b5b92',tex:'',des:'frame',pages:8,p:0},
+  {id:'journal',g:'life',n:'Journal',d:'A date, a mood row and gentle prompts.',o:'p',c:'#7a3f66',tex:'leather',pages:6,p:0},
+  {id:'story',g:'create',n:'Storyboard',d:'Six frames with captions, in landscape.',o:'l',c:'#2c2c2e',tex:'',pages:6,p:0},
+  {id:'music',g:'create',n:'Sheet music',d:'Empty staves for songs and melodies.',o:'p',c:'#5a3e85',tex:'',des:'stars',pages:8,p:0},
+  {id:'habit',g:'plan',n:'Habit tracker',d:'Fourteen habits, every day of the month, in landscape.',o:'l',c:'#3f7f5f',tex:'linen',des:'geo',pages:12,p:99},
+  {id:'budget',g:'life',n:'Monthly budget',d:'Income, a savings goal and a planned-vs-actual expenses table.',o:'p',c:'#2f6b4f',tex:'',des:'classic',pages:12,p:99},
+  {id:'meal',g:'life',n:'Meal planner',d:'Breakfast, lunch and dinner for the week, plus a shopping list.',o:'p',c:'#6b8e3a',tex:'',des:'plaid',pages:8,p:99},
+  {id:'recipe',g:'life',n:'Recipe book',d:'A photo box, ingredients and numbered steps.',o:'p',c:'#b5523b',tex:'linen',des:'botanical',pages:10,p:99},
+  {id:'workout',g:'life',n:'Workout log',d:'Exercises, sets, reps and weight, and how it felt.',o:'p',c:'#33363d',tex:'',des:'band',pages:10,p:99},
+  {id:'reading',g:'study',n:'Reading log',d:'Title, author, a five-star rating and a “done” box.',o:'p',c:'#7b4a2e',tex:'leather',des:'classic',pages:6,p:99},
+  {id:'travel',g:'create',n:'Travel journal',d:'Two taped photo frames and room for the highlights.',o:'p',c:'#2a6f8f',tex:'leather',des:'mountains',pages:10,p:99},
+  {id:'comic',g:'create',n:'Comic book',d:'Five panels of different sizes on every page.',o:'p',c:'#c23b3b',tex:'',des:'confetti',pages:8,p:99},
+  {id:'lettering',g:'create',n:'Hand lettering',d:'Guide lines and slant lines for practising letters.',o:'p',c:'#8a5a9e',tex:'',des:'retro',pages:8,p:99}
 ];
 const TF='"Bricolage Grotesque",system-ui,sans-serif',HF='Caveat,"Bricolage Grotesque",cursive';
 function rr(x,a,b,w,h,r){x.beginPath();x.roundRect?x.roundRect(a,b,w,h,r):x.rect(a,b,w,h)}
-function tplPage(t,i){
+function tplPage(t,i,clear){ // clear: no paper, only the lines (used on notebook pages so the paper color shows)
   const w=t.o==='l'?1200:900,h=t.o==='l'?900:1200,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
-  x.fillStyle='#fdfdfa';x.fillRect(0,0,w,h);
+  if(!clear){x.fillStyle='#fdfdfa';x.fillRect(0,0,w,h)}
   const INK='rgba(40,60,90,.75)',LN='rgba(60,90,140,.30)',m=60;
   x.lineWidth=2;x.strokeStyle=LN;x.fillStyle=INK;x.textBaseline='alphabetic';
   const title=(txt,sub)=>{x.fillStyle='#1d2b4a';x.font='700 76px '+HF;x.fillText(txt,m,m+62);if(sub){x.fillStyle='rgba(40,60,90,.55)';x.font='600 26px '+TF;x.fillText(sub,m+4,m+104)}};
@@ -3287,6 +3862,95 @@ function tplPage(t,i){
     x.fillStyle='#1d2b4a';x.font='700 38px '+HF;x.fillText(P[i%P.length],m,m+262);
     x.strokeStyle='rgba(60,90,140,.26)';x.lineWidth=1.5;
     for(let y=m+312;y<h-m;y+=46){x.beginPath();x.moveTo(m,y);x.lineTo(w-m,y);x.stroke()}
+  }else if(t.id==='cornell'){
+    title('Notes','Topic  ____________________   Date  __________');
+    const top=m+140,bot=h-m-230,cue=m+(w-2*m)*.28;
+    x.strokeStyle=LN;x.lineWidth=2.5;rr(x,m,top,w-2*m,h-top-m,14);x.stroke();
+    x.beginPath();x.moveTo(cue,top);x.lineTo(cue,bot);x.moveTo(m,bot);x.lineTo(w-m,bot);x.stroke();
+    x.fillStyle='#1d2b4a';x.font='700 30px '+HF;x.fillText('Cues',m+16,top+38);x.fillText('Notes',cue+16,top+38);x.fillText('Summary',m+16,bot+40);
+    x.strokeStyle='rgba(60,90,140,.18)';x.lineWidth=1.5;for(let y=top+80;y<bot-10;y+=40){x.beginPath();x.moveTo(cue+14,y);x.lineTo(w-m-14,y);x.stroke()}
+    for(let y=bot+80;y<h-m-12;y+=40){x.beginPath();x.moveTo(m+14,y);x.lineTo(w-m-14,y);x.stroke()}
+  }else if(t.id==='todo'){
+    title('To do','Date  ______________________');
+    const top=m+150,rh=54;
+    for(let y=top,k=0;y<h-m-20;y+=rh,k++){x.strokeStyle='rgba(40,60,90,.55)';x.lineWidth=2.5;rr(x,m,y,30,30,7);x.stroke();
+      x.strokeStyle='rgba(60,90,140,.2)';x.lineWidth=1.5;x.beginPath();x.moveTo(m+50,y+30);x.lineTo(w-m-90,y+30);x.stroke();
+      x.strokeStyle='rgba(60,90,140,.2)';x.beginPath();x.arc(w-m-40,y+15,14,0,7);x.stroke()}
+    x.fillStyle='rgba(40,60,90,.5)';x.font='600 20px '+TF;x.textAlign='right';x.fillText('done',w-m-26,top-16);x.textAlign='left';
+  }else if(t.id==='music'){
+    x.fillStyle='rgba(40,60,90,.45)';x.font='600 22px '+TF;x.fillText('Title ______________________',m,m+10);
+    const sp=14,gap=58;let y=m+60;
+    while(y+4*sp<h-m){x.strokeStyle='rgba(40,60,90,.5)';x.lineWidth=1.6;for(let l=0;l<5;l++){x.beginPath();x.moveTo(m,y+l*sp);x.lineTo(w-m,y+l*sp);x.stroke()}
+      x.beginPath();x.moveTo(m,y);x.lineTo(m,y+4*sp);x.moveTo(w-m,y);x.lineTo(w-m,y+4*sp);x.stroke();y+=4*sp+gap}
+  }else if(t.id==='habit'){
+    title('Habit tracker','Month  ______________________');
+    const top=m+150,nw=230,days=31,cw=(w-2*m-nw)/days,rows=14,rh=Math.min(58,(h-top-m-40)/rows);
+    x.font='600 15px '+TF;x.fillStyle='rgba(40,60,90,.6)';x.textAlign='center';
+    for(let d=0;d<days;d++)x.fillText(String(d+1),m+nw+cw*d+cw/2,top+18);x.textAlign='left';
+    for(let r=0;r<rows;r++){const y=top+32+r*rh;x.strokeStyle='rgba(60,90,140,.22)';x.lineWidth=1.5;x.beginPath();x.moveTo(m,y+rh);x.lineTo(m+nw-12,y+rh);x.stroke();
+      for(let d=0;d<days;d++){x.strokeStyle='rgba(60,90,140,.35)';x.lineWidth=1.2;x.strokeRect(m+nw+cw*d+2,y+rh*.2,cw-4,Math.min(cw-4,rh*.6))}}
+  }else if(t.id==='budget'){
+    title('Monthly budget','Month  ______________________');
+    const top=m+150;x.strokeStyle=LN;x.lineWidth=2.5;
+    const box=(bx,by,bw,bh,lab)=>{rr(x,bx,by,bw,bh,14);x.stroke();x.fillStyle='#1d2b4a';x.font='700 30px '+HF;x.fillText(lab,bx+16,by+38)};
+    const hw=(w-2*m-24)/2;box(m,top,hw,130,'Income');box(m+hw+24,top,hw,130,'Savings goal');
+    const ty=top+160;box(m,ty,w-2*m,h-ty-m,'Expenses');
+    const cols=[m+16,m+(w-2*m)*.55,m+(w-2*m)*.78];x.fillStyle='rgba(40,60,90,.6)';x.font='600 20px '+TF;
+    ['Category','Planned','Actual'].forEach((c,k)=>x.fillText(c,cols[k],ty+80));
+    x.strokeStyle='rgba(60,90,140,.2)';x.lineWidth=1.5;for(let y=ty+120;y<h-m-14;y+=44){x.beginPath();x.moveTo(m+14,y);x.lineTo(w-m-14,y);x.stroke()}
+    x.beginPath();x.moveTo(cols[1]-12,ty+60);x.lineTo(cols[1]-12,h-m-14);x.moveTo(cols[2]-12,ty+60);x.lineTo(cols[2]-12,h-m-14);x.stroke();
+  }else if(t.id==='recipe'){
+    title('Recipe','Serves ______   Time ______');
+    const top=m+150;x.strokeStyle=LN;x.lineWidth=2.5;
+    rr(x,w-m-300,m+10,300,190,14);x.stroke();x.fillStyle='rgba(40,60,90,.35)';x.font='600 22px '+TF;x.fillText('photo',w-m-180,m+112);
+    const lw=(w-2*m)*.38;rr(x,m,top+70,lw,h-top-m-70,14);x.stroke();rr(x,m+lw+24,top+70,w-2*m-lw-24,h-top-m-70,14);x.stroke();
+    x.fillStyle='#1d2b4a';x.font='700 30px '+HF;x.fillText('Ingredients',m+16,top+110);x.fillText('Steps',m+lw+40,top+110);
+    x.strokeStyle='rgba(60,90,140,.2)';x.lineWidth=1.5;for(let y=top+160,k=1;y<h-m-14;y+=44,k++){x.beginPath();x.moveTo(m+14,y);x.lineTo(m+lw-14,y);x.moveTo(m+lw+70,y);x.lineTo(w-m-14,y);x.stroke();
+      if(k<=12){x.fillStyle='rgba(40,60,90,.5)';x.font='600 20px '+TF;x.fillText(k+'.',m+lw+40,y-8)}}
+  }else if(t.id==='travel'){
+    title('Travel journal','Place  ______________   Date  __________');
+    const top=m+150,pw2=(w-2*m-30)/2,ph2=pw2*.75;
+    for(let k=0;k<2;k++){const px=m+k*(pw2+30),py=top+(k?40:0);x.save();x.translate(px+pw2/2,py+ph2/2);x.rotate((k?2.5:-2)*Math.PI/180);
+      x.fillStyle='#fff';x.shadowColor='rgba(0,0,0,.18)';x.shadowBlur=14;x.fillRect(-pw2/2,-ph2/2,pw2,ph2+40);x.shadowBlur=0;
+      x.strokeStyle='rgba(60,90,140,.3)';x.lineWidth=2;x.strokeRect(-pw2/2+14,-ph2/2+14,pw2-28,ph2-28);
+      x.fillStyle='rgba(255,184,208,.7)';x.fillRect(-50,-ph2/2-14,100,28);x.restore()}
+    const ly=top+ph2+110;x.fillStyle='#1d2b4a';x.font='700 30px '+HF;x.fillText('Highlights',m,ly);
+    x.strokeStyle='rgba(60,90,140,.22)';x.lineWidth=1.5;for(let y=ly+44;y<h-m;y+=44){x.beginPath();x.moveTo(m,y);x.lineTo(w-m,y);x.stroke()}
+  }else if(t.id==='reading'){
+    title('Reading log','');
+    const top=m+120,cols=[m,m+(w-2*m)*.4,m+(w-2*m)*.64,m+(w-2*m)*.87];x.fillStyle='rgba(40,60,90,.6)';x.font='600 20px '+TF;
+    ['Title','Author','Rating','Done'].forEach((c,k)=>x.fillText(c,cols[k]+6,top));
+    for(let y=top+24,r=0;y<h-m-40;y+=68,r++){x.strokeStyle='rgba(60,90,140,.22)';x.lineWidth=1.5;x.beginPath();x.moveTo(m,y+60);x.lineTo(w-m,y+60);x.stroke();
+      for(let s2=0;s2<5;s2++){const cx=cols[2]+18+s2*30,cy=y+34;x.beginPath();for(let a=0;a<10;a++){const R=a%2?5:12,ang=-Math.PI/2+a*Math.PI/5;x.lineTo(cx+R*Math.cos(ang),cy+R*Math.sin(ang))}x.closePath();x.strokeStyle='rgba(224,165,38,.8)';x.stroke()}
+      x.strokeStyle='rgba(40,60,90,.45)';rr(x,cols[3]+20,y+20,28,28,6);x.stroke()}
+  }else if(t.id==='meal'){
+    title('Meal plan','Week of  ______________');
+    const top=m+140,lw=w-2*m,dw=150,cw=(lw-dw)/3,rh=(h-top-m-260)/7;
+    x.fillStyle='rgba(40,60,90,.6)';x.font='600 20px '+TF;['Breakfast','Lunch','Dinner'].forEach((c,k)=>x.fillText(c,m+dw+cw*k+10,top+22));
+    ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach((d,k)=>{const y=top+36+k*rh;x.fillStyle='#1d2b4a';x.font='700 28px '+HF;x.fillText(d,m+8,y+rh*.62);
+      for(let c=0;c<3;c++){x.strokeStyle='rgba(60,90,140,.3)';x.lineWidth=1.5;rr(x,m+dw+cw*c+4,y+4,cw-8,rh-8,10);x.stroke()}});
+    const sy=h-m-210;x.strokeStyle=LN;x.lineWidth=2.5;rr(x,m,sy,lw,210,14);x.stroke();x.fillStyle='#1d2b4a';x.font='700 30px '+HF;x.fillText('Shopping list',m+16,sy+40);
+    x.strokeStyle='rgba(60,90,140,.2)';x.lineWidth=1.5;for(let c=0;c<3;c++)for(let y=sy+84;y<sy+200;y+=38){x.beginPath();x.moveTo(m+16+c*lw/3,y);x.lineTo(m+(c+1)*lw/3-16,y);x.stroke()}
+  }else if(t.id==='workout'){
+    title('Workout log','Date  ______________   Focus  ______________');
+    const top=m+150,cols=[m,m+(w-2*m)*.5,m+(w-2*m)*.65,m+(w-2*m)*.8];x.fillStyle='rgba(40,60,90,.6)';x.font='600 20px '+TF;
+    ['Exercise','Sets','Reps','Weight'].forEach((c,k)=>x.fillText(c,cols[k]+6,top));
+    x.strokeStyle='rgba(60,90,140,.22)';x.lineWidth=1.5;const end=h-m-230;
+    let yl=top+56;for(let y=top+56;y<end-30;y+=52){x.beginPath();x.moveTo(m,y);x.lineTo(w-m,y);x.stroke();yl=y}
+    for(let k=1;k<4;k++){x.beginPath();x.moveTo(cols[k],top+16);x.lineTo(cols[k],yl);x.stroke()}
+    x.strokeStyle=LN;x.lineWidth=2.5;rr(x,m,end,w-2*m,h-m-end,14);x.stroke();x.fillStyle='#1d2b4a';x.font='700 30px '+HF;x.fillText('How it felt',m+16,end+40);
+  }else if(t.id==='comic'){
+    const g=24,L=[[0,0,1,.3],[0,.3,.55,.36],[.55,.3,.45,.36],[0,.66,.4,.34],[.4,.66,.6,.34]];
+    const iw=w-2*m,ih=h-2*m;x.strokeStyle='#1d2b4a';x.lineWidth=5;
+    L.forEach(([a,b,c,d])=>x.strokeRect(m+a*iw+(a?g/2:0),m+b*ih+(b?g/2:0),c*iw-(a?g/2:0)-(a+c<1?g/2:0),d*ih-(b?g/2:0)-(b+d<1?g/2:0)));
+  }else if(t.id==='lettering'){
+    title('Hand lettering','');
+    let y=m+150;const xh=34,asc=26;x.save();x.beginPath();x.rect(m,0,w-2*m,h);x.clip();
+    while(y+xh+asc*2<h-m){x.strokeStyle='rgba(60,90,140,.45)';x.lineWidth=1.6;x.beginPath();x.moveTo(m,y+asc+xh);x.lineTo(w-m,y+asc+xh);x.stroke();
+      x.strokeStyle='rgba(60,90,140,.25)';x.lineWidth=1.2;[y,y+asc,y+asc*2+xh].forEach(l=>{x.beginPath();x.moveTo(m,l);x.lineTo(w-m,l);x.stroke()});
+      x.strokeStyle='rgba(205,70,70,.18)';for(let sx=m;sx<w-m;sx+=44){x.beginPath();x.moveTo(sx,y+asc*2+xh);x.lineTo(sx+(asc*2+xh)/Math.tan(55*Math.PI/180),y);x.stroke()}
+      y+=asc*2+xh+40}
+    x.restore();
   }else{
     title('Scene '+(i+1),'');x.fillStyle='rgba(40,60,90,.5)';x.font='600 26px '+TF;x.fillText('Title  ____________________',m+300,m+58);
     const top=m+96,gx=28,gy=22,cols=3,rows=2,cw=(w-2*m-gx*(cols-1))/cols,fh=cw*.5625,rh=(h-top-m+gy)/rows;
@@ -3300,29 +3964,179 @@ function tplPage(t,i){
   return c;
 }
 async function tplFonts(){try{await Promise.all(['700 40px Caveat','600 24px "Bricolage Grotesque"'].map(f=>document.fonts.load(f)))}catch(e){}}
-let tplReady=false;
-async function renderTpl(){
-  const box=$('#tpl');if(tplReady)return;tplReady=true;await tplFonts();box.innerHTML='';
-  TPL.forEach(t=>{
-    const b=document.createElement('button');b.className='tcardx'+(t.o==='l'?' l':'');
-    const pv=document.createElement('div');pv.className='pv';
-    try{const c=tplPage(t,0),k=240/c.width,q=document.createElement('canvas');q.width=240;q.height=Math.round(c.height*k);q.getContext('2d').drawImage(c,0,0,q.width,q.height);pv.style.backgroundImage='url('+q.toDataURL('image/jpeg',.82)+')'}catch(e){}
-    b.append(pv);const n=document.createElement('div');n.innerHTML='<b></b><span></span><span class="go">Use this template ›</span>';
-    n.querySelector('b').textContent=t.n;n.querySelectorAll('span')[0].textContent=t.d+' '+t.pages+' pages.';b.append(n);
-    b.onclick=()=>useTpl(t,b);box.append(b);
+/* ----- Template store -----
+   Free templates (p:0) work for everyone. Paid ones cost €0.99 each, for every plan (Pro too), and once bought
+   they are yours for as many notebooks as you like, on all your devices.
+   What you own: owned/{uid} = {t:[template ids | 'all'], last} – written by redeeming a template code, by the admin
+   panel, and later by Stripe when template purchases go on sale (TPL_SALE). Cached on the device for offline use. */
+const TPL_SALE=false; // buying from the store (Stripe) isn't on yet: codes and the admin panel give items meanwhile
+const TCAT=[['all','All'],['free','Free'],['plan','Planning'],['study','School'],['create','Creative'],['life','Everyday']];
+const tplById=id=>TPL.find(t=>t.id===id);
+/* The store sells templates (TPL), covers (COVERS), labels (LABELS) and sticker packs (STPK). Every paid item is €0.99,
+   on every plan. What you have is owned/{uid}.t (item ids, or 'all' = everything), the same for every kind. */
+const SKINDS=[['tpl','Templates'],['cov','Covers'],['lbl','Labels'],['stk','Stickers']];
+const KLIST={tpl:()=>TPL,cov:()=>COVERS,lbl:()=>LABELS,stk:()=>STPK};
+const itemById=id=>TPL.find(t=>t.id===id)||COVERS.find(c=>c.id===id)||LABELS.find(l=>l.id===id)||STPK.find(x=>x.id===id);
+const itemKind=it=>TPL.includes(it)?'tpl':COVERS.includes(it)?'cov':LABELS.includes(it)?'lbl':'stk';
+const itemName=id=>id==='all'?'Everything in the store':(itemById(id)||{n:id}).n;
+const tplName=itemName;
+const ownsItem=it=>!!it&&(!it.p||ACC.owned.has(it.id)||ACC.owned.has('all'));
+const ownsTpl=ownsItem;
+const myBooks=()=>data.filter(b=>!b.welcome).sort((a,b)=>(b.u||0)-(a.u||0));
+function bookSelect(books){const sel=el('select','lk-in');sel.id='t-book';sel.setAttribute('aria-label','Notebook');
+  books.forEach(b=>sel.append(new Option((b.lock?'🔒 ':'')+(b.title||'Untitled')+' · '+b.pages.length+(b.pages.length===1?' page':' pages'),String(b.id))));return sel}
+function setOwned(list){ACC.owned=new Set(list||[]);if(ACC.user)lsSet('sb-own:'+ACC.user.uid,JSON.stringify([...ACC.owned]));if(tplReady)renderTpl(true)}
+let tplReady=false,TFILT='all',SKIND='tpl';const TPV={};
+function tplThumb(t){
+  if(TPV[t.id])return TPV[t.id];
+  try{const c=tplPage(t,0),k=240/c.width,q=document.createElement('canvas');q.width=240;q.height=Math.round(c.height*k);q.getContext('2d').drawImage(c,0,0,q.width,q.height);TPV[t.id]=q.toDataURL('image/jpeg',.82)}catch(e){TPV[t.id]=''}
+  return TPV[t.id];
+}
+async function renderTpl(force){
+  const box=$('#tpl');if(tplReady&&!force)return;tplReady=true;await tplFonts();await lblFonts();box.innerHTML='';
+  const head=el('div','tstore');
+  head.append(el('h2','','Store'),el('p','','Templates, covers, labels and stickers. Lots are free; the others cost '+euro(99)+' each, on every plan – buy once and they’re yours on all your devices.'));
+  const kinds=el('div','skinds');kinds.setAttribute('role','tablist');
+  SKINDS.forEach(([k,n])=>{const b=el('button','',n);b.dataset.k=k;b.setAttribute('role','tab');b.setAttribute('aria-selected',SKIND===k);b.onclick=()=>{SKIND=k;TFILT='all';renderTpl(true)};kinds.append(b)});
+  const chips=el('div','tchips');chips.setAttribute('role','group');chips.setAttribute('aria-label','Filter');
+  (SKIND==='tpl'?TCAT:[['all','All'],['free','Free'],['paid','Paid']]).forEach(([k,n])=>{const b=el('button','',n);b.setAttribute('aria-pressed',TFILT===k);b.onclick=()=>{TFILT=k;renderTpl(true)};chips.append(b)});
+  head.append(kinds,chips);box.append(head);
+  KLIST[SKIND]().filter(it=>TFILT==='all'||(TFILT==='free'?!it.p:TFILT==='paid'?!!it.p:it.g===TFILT)).forEach(it=>box.append(storeCard(it,SKIND)));
+}
+function itemDesc(it,k){return k==='tpl'?it.d+' '+it.pages+' pages.':k==='stk'?(it.d?it.d+' ':'')+it.items.length+' stickers.':it.d||(k==='cov'?'A cover design.':'A name label for your covers, in this shape.')}
+function itemPreview(pv,it,k){
+  if(k==='tpl'){const s=tplThumb(it);if(s)pv.style.backgroundImage='url('+s+')'}
+  else if(k==='cov'){paintCover(pv,{color:it.c,design:it.des});pv.classList.add('cov')}
+  else if(k==='lbl'){pv.classList.add('lblp');const m=new Image();m.alt='';m.src=lblThumb(it,'My notebook');pv.append(m)}
+  else{pv.classList.add('stkp');it.items.slice(0,pv.classList.contains('tbuy-pv')?8:6).forEach(u=>{const m=new Image();m.alt='';m.src=u;pv.append(m)})}
+}
+function storeCard(it,k){
+  const own=ownsItem(it),b=el('button','tcardx k-'+k+(k==='tpl'&&it.o==='l'?' l':'')+(own?'':' lock'));b.dataset.t=it.id;
+  const pv=el('div','pv');itemPreview(pv,it,k);
+  pv.append(el('span','tprice'+(!it.p?' free':own?' own':''),!it.p?'Free':own?'✓ Yours':euro(it.p)));
+  b.append(pv);const n=el('div','');
+  n.append(el('b','',it.n),el('span','',itemDesc(it,k)),el('span','go',own?'Use it ›':'Unlock for '+euro(it.p)+' ›'));
+  b.append(n);b.onclick=()=>own?ownedItem(it,k):buyTpl(it);return b;
+}
+function bigPreview(it,k){const pv=el('div','tbuy-pv'+(k==='tpl'&&it.o==='l'?' l':'')+' k-'+k);if(k==='tpl')pv.style.backgroundImage='url('+tplThumb(it)+')';else itemPreview(pv,it,k);return pv}
+function buyTpl(it){ // works for every kind of item
+  const k=itemKind(it),what={tpl:'Use it for as many notebooks as you like',cov:'Use it on as many notebooks as you like',lbl:'Put it on as many covers as you like',stk:'Use them as often as you like'}[k];
+  return lockDlg((c,close)=>{
+    c.append(bigPreview(it,k),el('h2','',it.n),el('p','lk-sub',itemDesc(it,k)+' Pay '+euro(it.p)+' once. '+what+', on all your devices.'));
+    const msg=el('p','cmsg');msg.setAttribute('role','status');
+    const buy=el('button','btn tbuy','Buy for '+euro(it.p));
+    const f=el('form','crow');const i=el('input','lk-in');i.placeholder='Code';i.autocapitalize='characters';i.autocomplete='off';i.spellcheck=false;i.id='t-code';i.setAttribute('aria-label','Store code');
+    const rb=el('button','ib','Redeem');rb.type='submit';f.append(i,rb);
+    buy.onclick=()=>{if(!TPL_SALE){msg.textContent='Buying from the store opens soon, together with Pro. You can already unlock it with a code.';i.focus();return}};
+    f.onsubmit=async e=>{e.preventDefault();rb.disabled=true;msg.textContent='Checking…';const r=await redeemCode(i.value);rb.disabled=false;
+      if(!r.ok){msg.textContent=r.msg;return}
+      close(true);
+      if(r.tpl){toast(tplName(r.tpl)+' '+(r.tpl==='all'?'is':'is')+' yours. Enjoy!');}
+      else toast(r.days?'Pro is on for '+r.days+' days. Enjoy!':'Pro is on. Enjoy!')};
+    const no=el('button','ib','Not now');no.type='button';no.onclick=()=>close(false);
+    const w=el('div','codebox');w.append(el('p','sep','Have a code?'),f,msg);
+    const acts=el('div','acts2');acts.append(no);
+    c.append(buy,w,acts);
   });
 }
-async function useTpl(t,btn){
+function ownedItem(it,k){
+  if(k==='tpl')return ownedTpl(it);
+  return lockDlg((c,close)=>{
+    const noun={cov:'cover',lbl:'label',stk:'sticker pack'}[k];
+    c.append(bigPreview(it,k),el('h2','',it.n),el('p','tl-own',it.p?'✓ You own this '+noun:'✓ Free '+(k==='stk'?'stickers':noun)),
+      el('p','lk-sub',k==='cov'?'It’s in Cover style → Design whenever you edit a cover.':k==='lbl'?'It’s in the + button → Labels, on any cover or page.':'They’re in the + button → Stickers, on any cover or page.'));
+    const books=myBooks();
+    if(k!=='stk'&&books.length){
+      const w=el('div','codebox tadd');w.append(el('p','sep',k==='cov'?'Put it on a notebook now':'Put it on a notebook cover now'));
+      const sel=bookSelect(books),r=el('div','crow'),go=el('button','ib',k==='cov'?'Use':'Add');go.id='t-use';r.append(sel,go);w.append(r);c.append(w);
+      go.onclick=()=>{const b=books.find(x=>String(x.id)===sel.value);if(!b)return;close(true);k==='cov'?useCover(it,b):addLabelTo(it,b)};
+    }
+    const acts=el('div','acts2');const no=el('button','ib','Close');no.type='button';no.onclick=()=>close(false);acts.append(no);c.append(acts);
+  });
+}
+async function useCover(it,b){
+  if(!ownsItem(it)||!(await unlockBook(b)))return;
+  b.design=it.des;b.u=Date.now();persist();$('#tb1').click();showBrowse(b);toast(it.n+' is now the cover of '+(b.title||'Untitled')+'.');
+}
+async function addLabelTo(L,b){
+  if(!ownsItem(L)||!(await unlockBook(b)))return;
+  await lblFonts();cur=b;setDims(b);const t=b.title||'Untitled',{w,h}=lblBox(L);
+  b.cobjs=b.cobjs||[];b.lbl0=1;b.cobjs.push({k:'img',src:labelURL(L.id,t),lb:{id:L.id,t},x:(W-w)/2,y:Math.max(0,H*.4-h/2),w,h,r:0});
+  b.cpv=await compose(b.cover,b.cobjs,b.cbg,null);b.cs=-1;b.u=Date.now();persist();
+  $('#tb1').click();showBrowse(b);toast('The '+L.n+' label is on '+(b.title||'Untitled')+'. Open the cover to move it.');
+}
+/* Templates as a page style: ps[i] = {p:'tpl', t:id, k:variant (Week 1, 2…), c:paper}, bg[i] = the template's lines on a
+   transparent background, drawn for the notebook's orientation (so the paper color shows through; on dark paper the
+   lines are drawn light). Page style switches a page to another template or back to blank / lined / grid / dots.
+   Pages imported from a PDF keep their PDF. */
+const isTplPg=st=>!!st&&st.p==='tpl'&&!!st.t;
+const myTpls=()=>TPL.filter(ownsTpl);
+function tplBgURL(t,k,o,c){
+  const cv=tplPage({...t,o},k,true);
+  if(lumOf(c||PAPER)<.35){const x=cv.getContext('2d');x.globalCompositeOperation='source-in';x.fillStyle='#e9eef6';x.fillRect(0,0,cv.width,cv.height)}
+  return cv.toDataURL('image/webp',.9);
+}
+function tplPages(b,t,from,n,c){ // pages from … from+n-1 of b become template pages, numbered after the ones before them
+  let k=0;for(let i=0;i<from;i++)if(isTplPg(b.ps[i])&&b.ps[i].t===t.id)k++;
+  for(let i=from;i<from+n;i++){const cc=c||(b.ps[i]&&b.ps[i].c)||PAPER;b.ps[i]={p:'tpl',t:t.id,k,c:cc};b.bg[i]=tplBgURL(t,k++,b.o,cc)}
+}
+const TPVO={};
+function tplThumbO(t,o){
+  const key=t.id+o;if(TPVO[key])return TPVO[key];
+  try{const c=tplPage({...t,o},0),q=document.createElement('canvas');q.width=120;q.height=Math.round(c.height*120/c.width);q.getContext('2d').drawImage(c,0,0,q.width,q.height);TPVO[key]=q.toDataURL('image/jpeg',.8)}catch(e){TPVO[key]=''}
+  return TPVO[key];
+}
+async function tplRow(box,o,isOn,pick){ // the templates you can use (free + bought), as small pages to pick from
+  await tplFonts();box.innerHTML='';
+  myTpls().forEach(t=>{const b=el('button','');b.type='button';b.dataset.p='tpl:'+t.id;
+    const i=el('i','mini tm'+(o==='l'?' l':''));i.style.backgroundImage='url('+tplThumbO(t,o)+')';
+    b.append(i,el('span','',t.n));b.setAttribute('aria-pressed',!!isOn(t));b.onclick=()=>pick(t,b);box.append(b)});
+}
+async function useTpl(t,btn){ // a whole new notebook made of this template
+  if(!ownsTpl(t))return buyTpl(t);
   if(ownBooks()>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}
-  btn.disabled=true;btn.style.opacity=.6;
+  if(btn){btn.disabled=true;btn.style.opacity=.6}
   try{
     await tplFonts();
-    const b=mk(t.n,data.length,t.o);b.color=t.c;if(t.tex)b.tex=t.tex;b.pages=Array(t.pages).fill(null);
-    for(let i=0;i<t.pages;i++)b.bg[i]=tplPage(t,i).toDataURL('image/webp',.9);
+    const b=mk(t.n,data.length,t.o);b.color=t.c;if(t.tex)b.tex=t.tex;if(t.des)b.design=t.des;b.tpl=t.id;b.pages=Array(t.pages).fill(null);
+    tplPages(b,t,0,t.pages,PAPER);
     data.push(b);persist();
     $('#tb1').click();showBrowse(b);
   }catch(e){console.error(e);note('Could not create the notebook.',1)}
-  btn.disabled=false;btn.style.opacity='';
+  if(btn){btn.disabled=false;btn.style.opacity=''}
+}
+async function addTplToBook(t,b,n){ // add pages of this template at the end of a notebook you already have
+  if(!ownsTpl(t))return buyTpl(t);
+  if(!(await unlockBook(b)))return;
+  const room=LIM().pg-b.pages.length;
+  if(room<=0){upsell('The free plan includes '+LIM().pg+' pages per notebook. Upgrade to Pro for unlimited pages.');return}
+  n=Math.min(n,room);await tplFonts();
+  const n0=b.pages.length,c=(b.ps[n0-1]&&b.ps[n0-1].c)||PAPER;
+  for(let k=0;k<n;k++)b.pages.push(null);
+  tplPages(b,t,n0,n,c);
+  if(c!==PAPER){cur=b;setDims(b);for(let i=n0;i<b.pages.length;i++)await rebuildPv(i)}
+  b.cs=(b.pages.length-1)>>1;b.u=Date.now();persist();
+  $('#tb1').click();showBrowse(b);
+  toast('Added '+n+' page'+(n>1?'s':'')+' of '+t.n+' to '+(b.title||'Untitled')+'.');
+}
+function ownedTpl(t){ // you have this template: a new notebook, or add its pages to one you have
+  return lockDlg((c,close)=>{
+    const pv=el('div','tbuy-pv'+(t.o==='l'?' l':''));pv.style.backgroundImage='url('+tplThumb(t)+')';c.append(pv);
+    c.append(el('h2','',t.n),el('p','tl-own',t.p?'✓ You own this template':'✓ Free template'),el('p','lk-sub',t.d+' Use it as often as you like.'));
+    const go=el('button','btn tbuy','New notebook with these pages ('+t.pages+')');go.id='t-new';go.onclick=()=>{close(true);useTpl(t)};c.append(go);
+    const books=myBooks();
+    const w=el('div','codebox tadd');w.append(el('p','sep','Or add its pages to a notebook you have'));
+    if(books.length){
+      const sel=bookSelect(books);
+      const cnt=el('select','lk-in');cnt.id='t-n';cnt.setAttribute('aria-label','How many pages');
+      [1,2,4,6,10].forEach(n=>cnt.append(new Option(n+(n===1?' page':' pages'),String(n))));cnt.value='2';
+      const add=el('button','ib','Add');add.id='t-add';
+      add.onclick=()=>{const b=books.find(x=>String(x.id)===sel.value);if(!b)return;close(true);addTplToBook(t,b,+cnt.value)};
+      const r=el('div','crow');r.append(cnt,add);w.append(sel,r);
+    }else w.append(el('p','lk-note','You don’t have a notebook of your own yet. Make one with the button above.'));
+    c.append(w,el('p','lk-note','You can change any page later with Page style (the page button in the editor).'));
+    const acts=el('div','acts2');const no=el('button','ib','Close');no.type='button';no.onclick=()=>close(false);acts.append(no);c.append(acts);
+  });
 }
 
 /* Library: search, sort, list view */
@@ -3502,8 +4316,9 @@ async function renderExport(i){
   if(i==='c'){
     x.fillStyle=cur.color;x.fillRect(0,0,W,H);
     if(cur.tex&&TEX[cur.tex]){const ti=await imgOf(texData(cur));if(ti){x.fillStyle=x.createPattern(ti,'repeat');x.fillRect(0,0,W,H)}}
-    const has=cur.cover||(cur.cobjs&&cur.cobjs.length);
-    if(has){const m=await imgOf(await compose(cur.cover,cur.cobjs||[],null,null));if(m)x.drawImage(m,0,0)}
+    if(cur.design&&DES[cur.design]){const di=await imgOf(desData(cur.design));if(di)x.drawImage(di,0,0,W,H)}
+    const has=cur.cover||cur.cbg||(cur.cobjs&&cur.cobjs.length);
+    if(has){const m=await imgOf(await compose(cur.cover,cur.cobjs||[],cur.cbg,null));if(m)x.drawImage(m,0,0)}
     else{x.fillStyle='#fbfbf6';const bw=W*.62,bh=H*.09;x.fillRect((W-bw)/2,(H-bh)/2,bw,bh);x.fillStyle='#222';x.font='600 '+Math.round(W*.04)+'px Bricolage Grotesque,system-ui,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(cur.title||'Untitled',W/2,H/2)}
     return c;
   }
