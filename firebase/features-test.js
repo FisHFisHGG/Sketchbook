@@ -52,7 +52,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await A.click('#madm');await A.waitForSelector('.astats',{timeout:15000});
   const card=(p,label)=>p.evaluate(l=>{const c=[...document.querySelectorAll('#adm-body .acard')].find(x=>x.querySelector('span').textContent===l);return c?c.querySelector('b').textContent:null},label);
   ok(await card(A,'Accounts in total')==='1','admin overview counts accounts (1)');
-  await A.fill('.aform input[placeholder="CODE"]','TEST-30');await A.selectOption('.aform select','30');await A.fill('.aform input[type=number]','2');
+  await A.fill('.aform input[placeholder="CODE"]','TEST-30');await A.selectOption('#adm-days','30');await A.fill('.aform input[type=number]','2');
   await A.click('text=Create code');await A.waitForSelector('text=TEST-30',{timeout:10000});
   ok(await (await admin('codes/TEST-30',null,'GET')).json().then(j=>j.fields.days.integerValue==='30'&&j.fields.max.integerValue==='2'),'admin creates a code: Pro for 30 days, 2 people');
   await A.click('#adm-x');
@@ -85,11 +85,11 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await D.click('#acc-x').catch(()=>{});
   // ---- admin gives Pro by email; expired Pro
   await A.click('#menub');await A.click('#madm');await A.waitForSelector('.astats',{timeout:15000});
-  await A.fill('.aform input[type=email]','dan@example.com');await A.selectOption('.aform >> nth=1 >> select','365');await A.click('text=Give Pro');
+  await A.fill('#adm-pf input[type=email]','dan@example.com');await A.selectOption('#adm-pf select','365');await A.click('text=Give Pro');
   await D.waitForFunction(()=>ACC.pro,null,{timeout:15000}).catch(()=>{});
   ok(await D.evaluate(()=>ACC.pro),'admin gives Pro to dan@example.com by email → it turns on for Dan right away');
-  await A.waitForFunction(()=>{const l=document.querySelectorAll('#adm-body .alist');return l.length>=2&&/dan@example\.com/.test(l[1].textContent)},null,{timeout:15000});
-  const proRows=await A.evaluate(()=>[...document.querySelectorAll('.alist')][1].querySelectorAll('.arow').length);
+  await A.waitForFunction(()=>{const l=document.querySelector('#adm-pro');return l&&/dan@example\.com/.test(l.textContent)},null,{timeout:15000});
+  const proRows=await A.evaluate(()=>document.querySelectorAll('#adm-pro .arow').length);
   ok(proRows===3,'admin sees the 3 Pro members ('+proRows+')');
   const old=new Date(Date.now()-3*864e5).toISOString();
   await admin('pro/'+D.uid,{fields:{by:{stringValue:'admin'},since:{timestampValue:old},days:{integerValue:'1'}}});
@@ -114,7 +114,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(await A.evaluate(()=>[...document.querySelectorAll('.achart')].length===2&&document.querySelectorAll('.achart .cbar').length>=56),'charts: new accounts and revenue, day by day for the month');
   ok(await A.evaluate(()=>/Email and password/.test(document.querySelector('.abrks').textContent)&&/Device/.test(document.querySelector('.abrks').textContent)),'breakdowns: sign-in method, device, installed app, language');
   await A.fill('#adm-body input[type=search]','carol');await A.waitForTimeout(200);
-  ok(await A.evaluate(()=>{const r=[...document.querySelectorAll('#adm-body .alist')].pop().querySelectorAll('.arow');return r.length===1&&/carol@example\.com/.test(r[0].textContent)}),'search finds an account by email');
+  ok(await A.evaluate(()=>{const r=document.querySelectorAll('#adm-acc .arow');return r.length===1&&/carol@example\.com/.test(r[0].textContent)}),'search finds an account by email');
   const [dl]=await Promise.all([A.waitForEvent('download'),A.click('text=Download all (CSV)')]);
   const csv=fs.readFileSync(await dl.path(),'utf8').trim().split(/\r?\n/);
   ok(dl.suggestedFilename().endsWith('.csv')&&csv.length===5&&/found_via/.test(csv[0])&&csv.slice(1).every(r=>/YouTube/.test(r))&&/"email","name","joined"/.test(csv[0])&&csv.slice(1).every(r=>/@example\.com/.test(r)),'CSV download: header + 4 accounts ('+dl.suggestedFilename()+', '+csv.length+' lines)');
