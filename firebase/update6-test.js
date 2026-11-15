@@ -149,7 +149,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await C.click('#pcols [data-c="#000000"]');await C.waitForTimeout(900);
   ok(await C.evaluate(b0=>cur.ps[1].c==='#000000'&&cur.ps[1].t==='recipe'&&cur.bg[1]!==b0,bg0),'on black paper the template is drawn again with light lines');
   await C.click('#psx');await C.click('#plus');await C.click('#stabs [data-p="stick"]');await C.waitForTimeout(300);
-  ok(await C.evaluate(()=>document.querySelectorAll('#spane .eg.st').length===5&&!!document.querySelector('#spane [data-pk="stk-space"]')),'with everything unlocked, + → Stickers shows all 5 packs');
+  ok(await C.evaluate(()=>document.querySelectorAll('#spane .eg.st').length===9&&!!document.querySelector('#spane [data-pk="stk-space"]')),'with everything unlocked, + → Stickers shows all 9 packs');
   await C.click('#stabs [data-p="label"]');await C.waitForSelector('#spane [data-l="lbl-gold"]');
   ok(await C.evaluate(()=>document.querySelectorAll('#spane [data-l]').length===12),'… and + → Labels all 12 labels');
   await C.click('#shx');await C.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await C.click('#bclose');await C.waitForTimeout(300);
@@ -193,9 +193,9 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   // ---- the store: covers, labels and sticker packs
   await B.click('#tb2');await B.waitForSelector('.skinds');
   const kinds={};for(const k of ['cov','lbl','stk']){await B.click('.skinds [data-k="'+k+'"]');await B.waitForTimeout(300);kinds[k]=await B.evaluate(()=>[document.querySelectorAll('#tpl .tcardx').length,document.querySelectorAll('#tpl .tcardx.lock').length])}
-  ok(kinds.cov+''==='22,6'&&kinds.lbl+''==='12,6'&&kinds.stk+''==='5,3','store: 22 covers (6 paid), 12 labels (6 paid), 5 sticker packs (3 paid) ('+JSON.stringify(kinds)+')');
+  ok(kinds.cov+''==='22,6'&&kinds.lbl+''==='12,6'&&kinds.stk+''==='9,3','store: 22 covers (6 paid), 12 labels (6 paid), 9 sticker packs of 7 (3 paid) ('+JSON.stringify(kinds)+')');
   await B.click('.skinds [data-k="stk"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="stk-treats"]');await B.waitForSelector('#lockc .tbuy-pv');await B.waitForTimeout(300);
-  ok(await B.evaluate(()=>{const p=$('#lockc .tbuy-pv').getBoundingClientRect(),c=$('#lockc').getBoundingClientRect(),im=[...document.querySelectorAll('#lockc .tbuy-pv img')];return im.length===6&&im.every(i=>{const r=i.getBoundingClientRect();return r.width>10&&r.right<=p.right+1&&r.bottom<=p.bottom+1})&&p.height<c.height/3}),'the sticker pack window shows its 6 stickers small, inside the preview');
+  ok(await B.evaluate(()=>{const p=$('#lockc .tbuy-pv').getBoundingClientRect(),c=$('#lockc').getBoundingClientRect(),im=[...document.querySelectorAll('#lockc .tbuy-pv img')];return im.length===7&&im.every(i=>{const r=i.getBoundingClientRect();return r.width>10&&r.right<=p.right+1&&r.bottom<=p.bottom+1})&&p.height<c.height/3}),'the sticker pack window shows its 7 stickers small, inside the preview');
   await B.click('#lockc >> text=Not now');
   await admin('codes/GALAXY-1',{fields:{kind:{stringValue:'tpl'},tpl:{stringValue:'cov-galaxy'},max:{integerValue:'5'},used:{integerValue:'0'},active:{booleanValue:true},note:{stringValue:''}}});
   await B.click('.skinds [data-k="cov"]');await B.waitForTimeout(300);
@@ -211,7 +211,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.evaluate(()=>showEditor(-1));await B.waitForTimeout(800);await B.click('#cst');await B.waitForSelector('#csheet:not(.hidden)');
   ok(await B.evaluate(()=>!!$('#cdes [data-k="galaxy"]')&&!$('#cdes [data-k="skyline"]')),'Cover style now lists Galaxy too (not the covers he doesn\'t own)');
   await B.click('#csx');await B.click('#plus');await B.click('#stabs [data-p="stick"]');await B.waitForTimeout(300);
-  ok(await B.evaluate(()=>[...document.querySelectorAll('#spane .eg.st')].map(g=>g.dataset.pk).join()==='stk-basics,stk-doodles'&&document.querySelectorAll('#spane .eg.st button').length===38),'+ → Stickers: the free packs, Basics and Doodles (38 stickers)');
+  ok(await B.evaluate(()=>[...document.querySelectorAll('#spane .eg.st')].map(g=>g.dataset.pk).join()==='stk-basics,stk-marks,stk-tags,stk-days,stk-doodles,stk-desk'&&document.querySelectorAll('#spane .eg.st button').length===42&&[...document.querySelectorAll('#spane .eg.st')].every(g=>g.children.length===7)),'+ → Stickers: the 6 free packs, 7 stickers each (42)');
   await B.click('#shx');await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.click('#bclose');await B.waitForTimeout(300);
   await B.click('#tb2');await B.click('.skinds [data-k="lbl"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="lbl-oval"]');await B.waitForSelector('#t-use');
   await B.selectOption('#t-book',hid);await B.click('#t-use');await B.waitForSelector('#bv:not(.hidden)');await B.waitForTimeout(400);
