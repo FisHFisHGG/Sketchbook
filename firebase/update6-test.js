@@ -60,8 +60,10 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.click('.tchips >> text=Free');await B.waitForTimeout(200);
   ok(await B.evaluate(()=>document.querySelectorAll('#tpl .tcardx').length===8&&!document.querySelector('#tpl .tcardx.lock')),'filter "Free" shows only the 8 free ones');
   await B.click('.tchips >> text=All');await B.waitForTimeout(200);
-  await B.click('#tpl .tcardx[data-t="cornell"]');await B.waitForSelector('#bv:not(.hidden)',{timeout:10000});
-  ok(await B.evaluate(()=>cur.title==='Cornell notes'&&cur.pages.length===8&&cur.design==='frame'&&cur.bg.filter(Boolean).length===8),'a free template makes a notebook right away (Cornell notes, 8 pages, cover design)');
+  await B.click('#tpl .tcardx[data-t="cornell"]');await B.waitForSelector('#t-new');
+  ok(await B.evaluate(()=>/Free template/.test($('#lockc').textContent)&&/New notebook with these pages/.test($('#t-new').textContent)),'tapping a free template: "✓ Free template" + "New notebook with these pages"');
+  await B.click('#t-new');await B.waitForSelector('#bv:not(.hidden)',{timeout:10000});
+  ok(await B.evaluate(()=>cur.title==='Cornell notes'&&cur.pages.length===8&&cur.design==='frame'&&cur.bg.filter(Boolean).length===8&&cur.ps.every((s,i)=>s.p==='tpl'&&s.t==='cornell'&&s.k===i)),'a notebook made of the template (Cornell notes, 8 template pages, cover design)');
   await B.click('#bclose');await B.waitForTimeout(400);await B.click('#tb2');await B.waitForTimeout(300);
   const nb0=await B.evaluate(()=>data.length);
   await B.click('#tpl .tcardx[data-t="habit"]');await B.waitForSelector('#lockd:not(.hidden) .tbuy');
@@ -86,11 +88,20 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   ok(await B.evaluate(()=>{const c=document.querySelector('#tpl .tcardx[data-t="habit"]');return c&&!c.classList.contains('lock')&&/Yours/.test(c.querySelector('.tprice').textContent)}),'the store shows it as "✓ Yours"');
   const ow=await getDoc('owned/'+B.uid);
   ok(ow&&ow.fields.t.arrayValue.values.map(v=>v.stringValue).join()==='habit'&&ow.fields.last.stringValue==='HABIT-1'&&(await getDoc('codes/HABIT-1')).fields.used.integerValue==='1','saved: owned = [habit], the code is used 1 / 1');
-  await B.click('#tpl .tcardx[data-t="habit"]');await B.waitForSelector('#bv:not(.hidden)',{timeout:10000});
+  await B.click('#tpl .tcardx[data-t="habit"]');await B.waitForSelector('#t-new');
+  ok(await B.evaluate(()=>/You own this template/.test($('#lockc').textContent)),'tapping it now says "✓ You own this template"');
+  await B.click('#t-new');await B.waitForSelector('#bv:not(.hidden)',{timeout:10000});
   ok(await B.evaluate(()=>cur.title==='Habit tracker'&&cur.pages.length===12&&cur.o==='l'),'he can use it: Habit tracker notebook, 12 landscape pages');
   await B.click('#bclose');await B.waitForTimeout(300);
   await B.reload();await B.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});await B.waitForTimeout(800);
   ok(await B.evaluate(()=>ACC.owned.has('habit')&&JSON.parse(localStorage.getItem('sb-own:'+ACC.user.uid)).includes('habit')),'after reopening the app it\'s still his (also kept on the device for offline)');
+  // add a template's pages to a notebook you already have
+  await B.click('#tb2');await B.waitForSelector('.tstore');await B.click('#tpl .tcardx[data-t="cornell"]');await B.waitForSelector('#t-book');
+  const hid=await B.evaluate(()=>String(data.find(x=>x.title==='Habit tracker').id));
+  await B.selectOption('#t-book',hid);await B.selectOption('#t-n','2');await B.click('#t-add');await B.waitForSelector('#bv:not(.hidden)',{timeout:10000});await B.waitForTimeout(500);
+  ok(await B.evaluate(()=>cur.title==='Habit tracker'&&cur.pages.length===14&&cur.ps[12].t==='cornell'&&cur.ps[12].k===0&&cur.ps[13].k===1&&!!cur.bg[13]&&cur.cs===6),'"Add" puts 2 Cornell notes pages at the end of the Habit tracker notebook and opens it there');
+  ok(/Added 2 pages of Cornell notes to Habit tracker/.test(await toastTxt(B)),'it says what it added');
+  await B.click('#bclose');await B.waitForTimeout(300);
   // Carol: used-up code, a trick with the wrong template, then a real code in the account window
   const C=await user('carol@example.com');
   await C.click('#tb2');await C.waitForSelector('.tstore');
@@ -113,6 +124,31 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await C.waitForFunction(()=>ACC.owned.has('all'),null,{timeout:10000}).catch(()=>{});
   await C.waitForTimeout(400);
   ok(await C.evaluate(()=>ACC.owned.has('all')&&ACC.owned.has('comic')&&!document.querySelector('#tpl .tcardx.lock')),'admin gives Carol all paid templates by email → nothing is locked for her');
+  // ---- templates in your notebooks: a new notebook starting with a template, new pages, page style; the cover label while turning
+  await C.click('#tb1');await C.waitForTimeout(300);
+  await C.click('.cell.add');await C.waitForSelector('#dlg:not(.hidden) #dpg:not(.hidden)');await C.waitForSelector('#dtpl [data-p="tpl:comic"]');
+  ok(await C.evaluate(()=>document.querySelectorAll('#dpats button').length===4&&document.querySelectorAll('#dtpl button').length===17&&/change any page later with Page style/.test($('#dpg').textContent)),'"New notebook" asks how the pages look: blank, lined, grid, dots or one of her 17 templates (and says it can be changed later)');
+  await C.click('#dlg .opts [data-o="l"]');await C.click('#dtpl [data-p="tpl:comic"]');await C.click('#dyes');await C.waitForSelector('#bv:not(.hidden)');
+  ok(await C.evaluate(()=>cur.o==='l'&&cur.ps[0]&&cur.ps[0].p==='tpl'&&cur.ps[0].t==='comic'&&!!cur.bg[0]),'the new landscape notebook starts with a Comic book page');
+  const lb=await C.evaluate(()=>{prep(0);setAng(60);const l=document.querySelector('#fl .lbl'),r=l.getBoundingClientRect(),w=document.querySelector('#fl .sl').offsetWidth,f=parseFloat(getComputedStyle(l).fontSize);endFlip(false);return {f,w,h:Math.round(r.height)}});
+  ok(lb.f<lb.w*.2&&lb.h<lb.w,'the name on the cover keeps its size while the cover turns ('+JSON.stringify(lb)+')');
+  await C.click('#badd');await C.waitForSelector('#npd:not(.hidden)');await C.waitForSelector('#nptpl button');
+  ok(await C.evaluate(()=>document.querySelectorAll('#nptpl button').length===17),'"New pages" also offers her templates');
+  await C.click('#npyes');await C.waitForTimeout(1200);
+  ok(await C.evaluate(()=>cur.pages.length===4&&cur.ps.slice(1).every((s,i)=>s.p==='tpl'&&s.t==='comic'&&s.k===i+1)&&!!cur.bg[3]),'"Like the last page" adds more Comic book pages');
+  await C.click('#badd');await C.waitForSelector('#nptpl [data-p="tpl:music"]');await C.click('#nptpl [data-p="tpl:music"]');await C.click('#npyes');await C.waitForTimeout(1200);
+  ok(await C.evaluate(()=>cur.pages.length===6&&cur.ps[4].t==='music'&&cur.ps[5].t==='music'&&cur.ps[5].k===1),'… or pages of another template (Sheet music)');
+  await C.evaluate(()=>showEditor(1));await C.waitForTimeout(700);
+  await C.click('#pstyle');await C.waitForSelector('#ptpl button');
+  ok(await C.evaluate(()=>document.querySelector('#ptpl [data-p="tpl:comic"]').getAttribute('aria-pressed')==='true'),'Page style shows which template the page uses');
+  await C.click('#pats [data-p="lines"]');await C.waitForTimeout(700);
+  ok(await C.evaluate(()=>cur.ps[1].p==='lines'&&!cur.ps[1].t&&!cur.bg[1]&&!$('#bgimg').classList.contains('on')),'Page style → Lined turns a template page into a lined page');
+  await C.click('#ptpl [data-p="tpl:recipe"]');await C.waitForTimeout(900);
+  ok(await C.evaluate(()=>cur.ps[1].p==='tpl'&&cur.ps[1].t==='recipe'&&!!cur.bg[1]&&$('#bgimg').classList.contains('on')),'… and into another template (Recipe book)');
+  const bg0=await C.evaluate(()=>cur.bg[1]);
+  await C.click('#pcols [data-c="#000000"]');await C.waitForTimeout(900);
+  ok(await C.evaluate(b0=>cur.ps[1].c==='#000000'&&cur.ps[1].t==='recipe'&&cur.bg[1]!==b0,bg0),'on black paper the template is drawn again with light lines');
+  await C.click('#psx');await C.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await C.click('#bclose');await C.waitForTimeout(300);
   await A.waitForSelector('#adm-tf',{timeout:15000});await A.waitForTimeout(300);
   const card=(p,label)=>p.evaluate(l=>{const c=[...document.querySelectorAll('#adm-body .acard')].find(x=>x.querySelector('span').textContent===l);return c?c.querySelector('b').textContent:null},label);
   ok(await card(A,'People with paid templates')==='2'&&await card(A,'Have all paid templates')==='1'&&await card(A,'Templates unlocked')==='2','admin: 2 people with paid templates, 1 has all, 2 unlocked one by one');

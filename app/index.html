@@ -129,7 +129,7 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .lbl{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:1;width:68%;padding:6cqw 6cqw 5cqw;background:#fbf8ef;color:#23304a;border-radius:2.5cqw;text-align:center;font:700 11cqw/1.05 "Caveat",cursive;overflow-wrap:anywhere;
   box-shadow:0 1.5cqw 4cqw rgba(0,0,0,.32),inset 0 0 0 1.4cqw #fbf8ef,inset 0 0 0 1.8cqw rgba(35,48,74,.3)}
 .lbl::after{content:"";display:block;width:55%;margin:3cqw auto 0;border-top:.7cqw solid rgba(35,48,74,.32)}
-.pg.cv{container-type:inline-size}
+.pg.cv,.sl.cv{container-type:inline-size} /* the label is sized from the cover's width, also while it turns */
 .add .pages,.add .front{background:transparent;box-shadow:none;border:2px dashed var(--line)}
 .plus{position:absolute;inset:0;display:grid;place-items:center;font-size:44px;opacity:.45}
 
@@ -293,7 +293,15 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #block.on{color:var(--accent);border-color:var(--accent)}
 .lkb{position:absolute;right:8%;top:6%;z-index:2;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.92);color:#23304a;box-shadow:0 2px 6px rgba(0,0,0,.25)}.lkb .ic{width:17px;height:17px}
 #npd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(460px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}#npd h2{margin:0 0 4px;font-size:1.3em}#npd p{margin:0 0 14px;opacity:.7}
-#npd .opts2{grid-template-columns:repeat(auto-fill,minmax(78px,1fr));margin-bottom:16px}
+#npd .opts2{grid-template-columns:repeat(auto-fill,minmax(78px,1fr));margin-bottom:6px}
+.tplrow{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;margin-bottom:8px;scroll-snap-type:x proximity}
+.tplrow button{flex:none;width:80px;display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 4px;border:2px solid var(--line);border-radius:12px;background:none;color:inherit;font:inherit;font-size:.74em;line-height:1.15;text-align:center;scroll-snap-align:start}
+.tplrow button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.mini.tm{background-size:cover;background-position:center}.mini.tm.l{aspect-ratio:4/3;margin:auto 0}
+#dpg .opts2{margin-bottom:4px}#dpg .sec{display:flex;align-items:center;justify-content:space-between;opacity:1;color:color-mix(in srgb,var(--ink) 62%,transparent)}#dpg .alink{background:none;border:0;padding:2px 0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer}
+#dlg .card{max-height:calc(100vh - 40px);overflow-y:auto}#dlg p.dnote{font-size:.85em;margin:0 0 14px}
+.tl-own{color:#2e7d5b;font-weight:700;margin:0 0 4px!important;opacity:1!important}
+#lockd .tadd .lk-in{text-align:left;margin-bottom:8px;text-transform:none}#lockd .tadd .crow{display:flex;gap:8px}#lockd .tadd .crow .lk-in{margin:0}#lockd .tadd .crow .ib{flex:none;min-height:46px}
 #npd,#dlg,#up{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
 #dlg .card,#up .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #dlg h2,#up h2{margin:0 0 4px;font-size:1.3em}
@@ -304,6 +312,8 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .shape{display:block;background:var(--paper);border:2px solid var(--line);border-radius:4px;box-shadow:0 3px 8px var(--sh)}
 .shape.p{width:42px;height:56px}
 .shape.l{width:64px;height:48px}
+#dlg.pg .opts{margin-bottom:10px}#dlg.pg .opts button{flex-direction:row;justify-content:center;padding:10px 8px}#dlg.pg .shape.p{width:21px;height:28px}#dlg.pg .shape.l{width:32px;height:24px}
+#dlg.pg .opts2 button{padding:6px 4px}#dlg.pg #dpats .mini{width:70%}
 .acts2{display:flex;justify-content:flex-end;gap:10px}
 #tools{flex:1 1 0;min-width:0;overflow-x:auto;scrollbar-width:none;justify-content:flex-start}
 #tools::-webkit-scrollbar{display:none}
@@ -319,7 +329,7 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #pbg.pt-grid{background-image:linear-gradient(var(--lc) 1px,transparent 1px),linear-gradient(90deg,var(--lc) 1px,transparent 1px);background-size:calc(var(--sp)*1cqw) calc(var(--sp)*1cqw)}
 #pbg.pt-dots{background-image:radial-gradient(circle,var(--lc) 1.3px,transparent 1.8px);background-size:calc(var(--sp)*1cqw) calc(var(--sp)*1cqw)}
 .opts2{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
-#psheet{overflow-y:auto}#psheet .opts2{grid-template-columns:repeat(4,minmax(0,92px))}
+#psheet{overflow-y:auto}#psheet>*{flex-shrink:0}#psheet .opts2{grid-template-columns:repeat(4,minmax(0,64px))}#psheet .opts2 button{padding:6px 4px}
 .opts2 button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border:2px solid var(--line);border-radius:12px;background:none;font-size:.85em}
 .opts2 button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .mini{display:block;width:100%;aspect-ratio:3/4;border:1px solid var(--line);border-radius:4px;background-color:#fdfdfa}
@@ -565,6 +575,8 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
         <button data-p="grid"><i class="mini pt-grid"></i>Grid</button>
         <button data-p="dots"><i class="mini pt-dots"></i>Dots</button>
       </div>
+      <div class="sec">Templates</div>
+      <div class="tplrow" id="ptpl"></div>
       <div class="sec">Paper color <small id="pcn"></small></div>
       <div class="grp" id="pcols"></div>
       <label class="chk"><input type="checkbox" id="pall"> Apply to all pages</label>
@@ -675,11 +687,19 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
     <button data-p="grid"><i class="mini pt-grid"></i>Grid</button>
     <button data-p="dots"><i class="mini pt-dots"></i>Dots</button>
   </div>
+  <div class="sec">Your templates</div><div class="tplrow" id="nptpl"></div>
   <div class="acts2"><button class="ib" id="npno">Cancel</button><button class="btn" id="npyes">Add pages</button></div>
 </div></div>
 <div id="dlg" class="hidden" role="dialog" aria-modal="true" aria-labelledby="dt"><div class="card">
   <h2 id="dt"></h2><p id="dsub"></p>
   <div class="opts"><button data-o="p" aria-pressed="true"><i class="shape p"></i>Portrait</button><button data-o="l" aria-pressed="false"><i class="shape l"></i>Landscape</button></div>
+  <div id="dpg" class="hidden">
+    <div class="sec">Pages</div>
+    <div class="opts2" id="dpats"><button data-p="blank"><i class="mini pt-blank"></i>Blank</button><button data-p="lines"><i class="mini pt-lines"></i>Lined</button><button data-p="grid"><i class="mini pt-grid"></i>Grid</button><button data-p="dots"><i class="mini pt-dots"></i>Dots</button></div>
+    <div class="sec">Your templates <button class="alink" id="dmore" type="button">More in the store ›</button></div>
+    <div class="tplrow" id="dtpl"></div>
+    <p class="dnote">Every page starts like this, and new pages you add look the same. You can change any page later with Page style.</p>
+  </div>
   <div class="acts2"><button class="ib" id="dno">Cancel</button><button class="btn" id="dyes">Create</button></div>
 </div></div>
 
@@ -856,7 +876,14 @@ function renderShelf(){
   g.append(a);
 }
 const ownBooks=()=>data.filter(b=>!b.welcome).length; // the welcome notebook doesn't count toward the free limit
-async function newNotebook(){if(ownBooks()>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}const o=await askOrient('New notebook','p','Choose the page orientation.');if(!o)return;const b=mk('Notebook '+(data.length+1),data.length,o);data.push(b);persist();showBrowse(b)}
+async function newNotebook(){
+  if(ownBooks()>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}
+  const r=await askOrient('New notebook','p','Choose the orientation and how the pages look.','Create',true);if(!r)return;
+  const b=mk('Notebook '+(data.length+1),data.length,r.o),T=r.pg.startsWith('tpl:')&&tplById(r.pg.slice(4));
+  if(T&&ownsTpl(T)){await tplFonts();tplPages(b,T,0,1,PAPER)}
+  else if(r.pg!=='blank'){b.ps[0]={...DEF,p:r.pg};cur=b;setDims(b);await rebuildPv(0)}
+  data.push(b);persist();showBrowse(b);
+}
 function closeBook(){if(cur)UNL.delete(String(cur.id));$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;docTitle();syncSoon(300)}
 /* browser tab: "Foliet Sketchbook", or "<notebook> – Foliet Sketchbook" while a notebook is open */
 function docTitle(){document.title=cur&&$('#shelf').classList.contains('hidden')?(cur.title||'Untitled')+' – Foliet Sketchbook':'Foliet Sketchbook'}
@@ -1028,27 +1055,36 @@ $('#bprev').onclick=()=>flip(cs-1);
 $('#bnext').onclick=()=>flip(cs+1);
 /* New pages: choose how they look (like the last page, blank, lined, grid or dots). The paper color stays. */
 function askPageStyle(last,add){
-  return new Promise(res=>{
-    const d=$('#npd'),bs=[...d.querySelectorAll('#npats button')];let v='same';
+  return new Promise(async res=>{
+    const d=$('#npd');let v='same';
     $('#npsub').textContent='Adding '+add+' page'+(add>1?'s':'')+'. How should '+(add>1?'they':'it')+' look?';
-    $('#npsame').className='mini pt-'+((last&&last.p)||'blank');
-    const mark=()=>bs.forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===v));mark();
-    bs.forEach(b=>b.onclick=()=>{v=b.dataset.p;mark()});
+    const sm=$('#npsame'),LT=isTplPg(last)&&tplById(last.t);
+    sm.className='mini '+(LT?'tm'+(cur.o==='l'?' l':''):'pt-'+((last&&last.p)||'blank'));sm.style.backgroundImage=LT?'url('+tplThumbO(LT,cur.o)+')':'';
+    const all=()=>[...d.querySelectorAll('#npats button,#nptpl button')];
+    const mark=()=>all().forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===v));
+    d.querySelectorAll('#npats button').forEach(b=>b.onclick=()=>{v=b.dataset.p;mark()});
     const done=x=>{d.classList.add('hidden');res(x)};
     $('#npyes').onclick=()=>done(v);$('#npno').onclick=()=>done(null);
     d.onclick=e=>{if(e.target===d)done(null)};
-    d.classList.remove('hidden');
+    d.classList.remove('hidden');mark();
+    await tplRow($('#nptpl'),cur.o,()=>false,(t,b)=>{v=b.dataset.p;mark()});mark();
   });
 }
 $('#badd').onclick=async()=>{
   const n0=cur.pages.length,last0=cur.ps[n0-1],room=LIM().pg-n0;
   if(room<=0){upsell('The free plan includes '+LIM().pg+' pages per notebook. Upgrade to Pro for unlimited pages.');return}
   const add=Math.min(n0%2===0?2:3,room),pick=await askPageStyle(last0,add);if(!pick)return;
-  const last=pick==='same'?last0:(pick==='blank'&&(!last0||last0.c===PAPER)?null:{...DEF,...(last0||{}),p:pick});
+  const tid=pick.startsWith('tpl:')?pick.slice(4):(pick==='same'&&isTplPg(last0)?last0.t:null),T=tid&&tplById(tid);
+  const c0=(last0&&last0.c)||PAPER;
   for(let k=0;k<add;k++)cur.pages.push(null);
-  if(last)for(let k=n0;k<cur.pages.length;k++)cur.ps[k]={...last};
+  if(T){await tplFonts();tplPages(cur,T,n0,add,c0)} // template pages, numbered after the ones before
+  else{
+    const base=isTplPg(last0)?{...DEF,c:c0}:last0;
+    const last=pick==='same'?base:(pick==='blank'&&c0===PAPER?null:{...DEF,c:c0,p:pick});
+    if(last&&styled(last))for(let k=n0;k<cur.pages.length;k++)cur.ps[k]={...last};
+  }
   persist();
-  if(last)await Promise.all([...Array(cur.pages.length-n0).keys()].map(k=>rebuildPv(n0+k)));
+  if(T?c0!==PAPER:cur.ps[n0])await Promise.all([...Array(cur.pages.length-n0).keys()].map(k=>rebuildPv(n0+k)));
   flip(SM());
 };
 document.addEventListener('keydown',e=>{if($('#bv').classList.contains('hidden')||e.target.id==='btitle')return;if(e.key==='ArrowRight')flip(cs+1);if(e.key==='ArrowLeft')flip(cs-1)});
@@ -2127,15 +2163,20 @@ function wrapText(t,maxW){
 }
 
 /* Orientation dialog + PDF import */
-function askOrient(title,pre,sub,yes){
+function askOrient(title,pre,sub,yes,pages){ // pages: also ask how the pages look → {o, pg}
   return new Promise(res=>{
-    const dlg=$('#dlg'),btns=[...dlg.querySelectorAll('.opts button')];let o=pre;
+    const dlg=$('#dlg'),btns=[...dlg.querySelectorAll('.opts button')];let o=pre,pg='blank';
     $('#dt').textContent=title;$('#dsub').textContent=sub;$('#dyes').textContent=yes||'Create';
+    $('#dpg').classList.toggle('hidden',!pages);dlg.classList.toggle('pg',!!pages);
+    const markP=()=>dlg.querySelectorAll('#dpats button,#dtpl button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===pg));
+    const row=()=>pages?tplRow($('#dtpl'),o,()=>false,(t,b)=>{pg=b.dataset.p;markP()}).then(markP):null;
     const mark=()=>btns.forEach(b=>b.setAttribute('aria-pressed',b.dataset.o===o));mark();
-    btns.forEach(b=>b.onclick=()=>{o=b.dataset.o;mark()});
+    btns.forEach(b=>b.onclick=()=>{if(o===b.dataset.o)return;o=b.dataset.o;mark();row()});
+    dlg.querySelectorAll('#dpats button').forEach(b=>b.onclick=()=>{pg=b.dataset.p;markP()});markP();
     const done=v=>{dlg.classList.add('hidden');res(v)};
-    $('#dyes').onclick=()=>done(o);$('#dno').onclick=()=>done(null);
-    dlg.classList.remove('hidden');
+    $('#dyes').onclick=()=>done(pages?{o,pg}:o);$('#dno').onclick=()=>done(null);
+    $('#dmore').onclick=()=>{done(null);$('#tb2').click()};
+    dlg.classList.remove('hidden');row();
   });
 }
 const PDFJS='vendor/pdfjs/'; // pdf.js 3.11.174 (Mozilla, Apache-2.0), kept in the project so it works offline
@@ -2214,6 +2255,7 @@ function applyPS(){
 function syncPS(){
   const st=(pi<0?null:cur&&cur.ps[pi])||DEF;
   document.querySelectorAll('#pats button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===st.p));
+  document.querySelectorAll('#ptpl button').forEach(b=>b.setAttribute('aria-pressed',isTplPg(st)&&b.dataset.p==='tpl:'+st.t));
   document.querySelectorAll('#pcols .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===st.c));
   const pk=$('#pcpk'),own=!PAPERS.includes(st.c);if(pk){pk.setAttribute('aria-pressed',own);if(own)pk.value=st.c}
   $('#pcn').textContent=paperName(st.c);
@@ -2225,7 +2267,24 @@ async function rebuildPv(i){
 async function setPS(patch){
   if(pi<0)return;
   const all=$('#pall').checked,b=cur,idx=pi,t=all?[...Array(b.pages.length).keys()]:[idx];
-  t.forEach(i=>{b.ps[i]=Object.assign({},DEF,b.ps[i]||{},patch)});
+  const T=patch.p==='tpl'?tplById(patch.t):null;if(patch.p==='tpl'&&!T)return;
+  if(T||patch.c)await tplFonts();
+  let kept=0;
+  for(const i of t){
+    const old=b.ps[i]||{},wasT=isTplPg(old);
+    if(T){ // this template on the page (a page from a PDF keeps its PDF)
+      if(b.bg[i]&&!wasT){kept++;continue}
+      const c=old.c||PAPER;let k=0;for(let j=0;j<i;j++)if(isTplPg(b.ps[j])&&b.ps[j].t===T.id)k++;
+      b.ps[i]={p:'tpl',t:T.id,k,c};b.bg[i]=tplBgURL(T,k,b.o,c);
+    }else{
+      const n=Object.assign({},DEF,old,patch);
+      if(patch.p&&wasT){delete n.t;delete n.k;delete b.bg[i]} // back to a plain page
+      else if(patch.c&&wasT&&(lumOf(patch.c)<.35)!==(lumOf(old.c||PAPER)<.35)){const O=tplById(old.t);if(O)b.bg[i]=tplBgURL(O,old.k||0,b.o,patch.c)} // light lines on dark paper
+      b.ps[i]=n;
+    }
+  }
+  if(kept)toast(all?'Pages from a PDF keep their PDF.':'This page comes from a PDF, so it keeps the PDF.');
+  const bgS=b.bg[idx];$('#bgimg').classList.toggle('on',!!bgS);if(bgS)$('#bgimg').src=bgS;
   applyPS();
   if(patch.c&&lumOf(patch.c)<.35&&color==='#1d1d1b'){color='#ffffff';cmem.i=color;buildCols()} // dark paper: white ink
   else if(patch.c&&lumOf(patch.c)>=.35&&color==='#ffffff'){color='#1d1d1b';cmem.i=color;buildCols()} // and back to black ink on light paper
@@ -2233,7 +2292,8 @@ async function setPS(patch){
   if(all){for(const i of t){if(i!==idx)await rebuildPv(i)}persist()}
 }
 function initPS(){
-  $('#pstyle').onclick=()=>{const open=!$('#psheet').classList.contains('hidden');closeSheet();if(!open){$('#psheet').classList.remove('hidden');syncPS()}};
+  $('#pstyle').onclick=async()=>{const open=!$('#psheet').classList.contains('hidden');closeSheet();if(!open){$('#psheet').classList.remove('hidden');syncPS();
+    await tplRow($('#ptpl'),cur.o,()=>false,t=>setPS({p:'tpl',t:t.id}));syncPS()}};
   $('#psx').onclick=()=>$('#psheet').classList.add('hidden');
   document.querySelectorAll('#pats button').forEach(b=>b.onclick=()=>setPS({p:b.dataset.p}));
   PAPERN.forEach(([c,n])=>{const b=document.createElement('button');b.className='sw';b.style.background=c;b.dataset.c=c;b.setAttribute('aria-label',n);b.title=n;b.onclick=()=>setPS({c});$('#pcols').append(b)});
@@ -3503,9 +3563,9 @@ const TPL=[ // p: price in cents (0 = free) · g: shelf group · des: cover desi
 ];
 const TF='"Bricolage Grotesque",system-ui,sans-serif',HF='Caveat,"Bricolage Grotesque",cursive';
 function rr(x,a,b,w,h,r){x.beginPath();x.roundRect?x.roundRect(a,b,w,h,r):x.rect(a,b,w,h)}
-function tplPage(t,i){
+function tplPage(t,i,clear){ // clear: no paper, only the lines (used on notebook pages so the paper color shows)
   const w=t.o==='l'?1200:900,h=t.o==='l'?900:1200,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
-  x.fillStyle='#fdfdfa';x.fillRect(0,0,w,h);
+  if(!clear){x.fillStyle='#fdfdfa';x.fillRect(0,0,w,h)}
   const INK='rgba(40,60,90,.75)',LN='rgba(60,90,140,.30)',m=60;
   x.lineWidth=2;x.strokeStyle=LN;x.fillStyle=INK;x.textBaseline='alphabetic';
   const title=(txt,sub)=>{x.fillStyle='#1d2b4a';x.font='700 76px '+HF;x.fillText(txt,m,m+62);if(sub){x.fillStyle='rgba(40,60,90,.55)';x.font='600 26px '+TF;x.fillText(sub,m+4,m+104)}};
@@ -3679,8 +3739,8 @@ async function renderTpl(force){
     const pv=el('div','pv');const src=tplThumb(t);if(src)pv.style.backgroundImage='url('+src+')';
     pv.append(el('span','tprice'+(!t.p?' free':own?' own':''),!t.p?'Free':own?'✓ Yours':euro(t.p)));
     b.append(pv);const n=el('div','');
-    n.append(el('b','',t.n),el('span','',t.d+' '+t.pages+' pages.'),el('span','go',own?'Use this template ›':'Unlock for '+euro(t.p)+' ›'));
-    b.append(n);b.onclick=()=>own?useTpl(t,b):buyTpl(t);box.append(b);
+    n.append(el('b','',t.n),el('span','',t.d+' '+t.pages+' pages.'),el('span','go',own?'Use it ›':'Unlock for '+euro(t.p)+' ›'));
+    b.append(n);b.onclick=()=>own?ownedTpl(t):buyTpl(t);box.append(b);
   });
 }
 function buyTpl(t){
@@ -3703,18 +3763,79 @@ function buyTpl(t){
     c.append(buy,w,acts);
   });
 }
-async function useTpl(t,btn){
+/* Templates as a page style: ps[i] = {p:'tpl', t:id, k:variant (Week 1, 2…), c:paper}, bg[i] = the template's lines on a
+   transparent background, drawn for the notebook's orientation (so the paper color shows through; on dark paper the
+   lines are drawn light). Page style switches a page to another template or back to blank / lined / grid / dots.
+   Pages imported from a PDF keep their PDF. */
+const isTplPg=st=>!!st&&st.p==='tpl'&&!!st.t;
+const myTpls=()=>TPL.filter(ownsTpl);
+function tplBgURL(t,k,o,c){
+  const cv=tplPage({...t,o},k,true);
+  if(lumOf(c||PAPER)<.35){const x=cv.getContext('2d');x.globalCompositeOperation='source-in';x.fillStyle='#e9eef6';x.fillRect(0,0,cv.width,cv.height)}
+  return cv.toDataURL('image/webp',.9);
+}
+function tplPages(b,t,from,n,c){ // pages from … from+n-1 of b become template pages, numbered after the ones before them
+  let k=0;for(let i=0;i<from;i++)if(isTplPg(b.ps[i])&&b.ps[i].t===t.id)k++;
+  for(let i=from;i<from+n;i++){const cc=c||(b.ps[i]&&b.ps[i].c)||PAPER;b.ps[i]={p:'tpl',t:t.id,k,c:cc};b.bg[i]=tplBgURL(t,k++,b.o,cc)}
+}
+const TPVO={};
+function tplThumbO(t,o){
+  const key=t.id+o;if(TPVO[key])return TPVO[key];
+  try{const c=tplPage({...t,o},0),q=document.createElement('canvas');q.width=120;q.height=Math.round(c.height*120/c.width);q.getContext('2d').drawImage(c,0,0,q.width,q.height);TPVO[key]=q.toDataURL('image/jpeg',.8)}catch(e){TPVO[key]=''}
+  return TPVO[key];
+}
+async function tplRow(box,o,isOn,pick){ // the templates you can use (free + bought), as small pages to pick from
+  await tplFonts();box.innerHTML='';
+  myTpls().forEach(t=>{const b=el('button','');b.type='button';b.dataset.p='tpl:'+t.id;
+    const i=el('i','mini tm'+(o==='l'?' l':''));i.style.backgroundImage='url('+tplThumbO(t,o)+')';
+    b.append(i,el('span','',t.n));b.setAttribute('aria-pressed',!!isOn(t));b.onclick=()=>pick(t,b);box.append(b)});
+}
+async function useTpl(t,btn){ // a whole new notebook made of this template
   if(!ownsTpl(t))return buyTpl(t);
   if(ownBooks()>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}
-  btn.disabled=true;btn.style.opacity=.6;
+  if(btn){btn.disabled=true;btn.style.opacity=.6}
   try{
     await tplFonts();
     const b=mk(t.n,data.length,t.o);b.color=t.c;if(t.tex)b.tex=t.tex;if(t.des)b.design=t.des;b.tpl=t.id;b.pages=Array(t.pages).fill(null);
-    for(let i=0;i<t.pages;i++)b.bg[i]=tplPage(t,i).toDataURL('image/webp',.9);
+    tplPages(b,t,0,t.pages,PAPER);
     data.push(b);persist();
     $('#tb1').click();showBrowse(b);
   }catch(e){console.error(e);note('Could not create the notebook.',1)}
-  btn.disabled=false;btn.style.opacity='';
+  if(btn){btn.disabled=false;btn.style.opacity=''}
+}
+async function addTplToBook(t,b,n){ // add pages of this template at the end of a notebook you already have
+  if(!ownsTpl(t))return buyTpl(t);
+  if(!(await unlockBook(b)))return;
+  const room=LIM().pg-b.pages.length;
+  if(room<=0){upsell('The free plan includes '+LIM().pg+' pages per notebook. Upgrade to Pro for unlimited pages.');return}
+  n=Math.min(n,room);await tplFonts();
+  const n0=b.pages.length,c=(b.ps[n0-1]&&b.ps[n0-1].c)||PAPER;
+  for(let k=0;k<n;k++)b.pages.push(null);
+  tplPages(b,t,n0,n,c);
+  if(c!==PAPER){cur=b;setDims(b);for(let i=n0;i<b.pages.length;i++)await rebuildPv(i)}
+  b.cs=(b.pages.length-1)>>1;b.u=Date.now();persist();
+  $('#tb1').click();showBrowse(b);
+  toast('Added '+n+' page'+(n>1?'s':'')+' of '+t.n+' to '+(b.title||'Untitled')+'.');
+}
+function ownedTpl(t){ // you have this template: a new notebook, or add its pages to one you have
+  return lockDlg((c,close)=>{
+    const pv=el('div','tbuy-pv'+(t.o==='l'?' l':''));pv.style.backgroundImage='url('+tplThumb(t)+')';c.append(pv);
+    c.append(el('h2','',t.n),el('p','tl-own',t.p?'✓ You own this template':'✓ Free template'),el('p','lk-sub',t.d+' Use it as often as you like.'));
+    const go=el('button','btn tbuy','New notebook with these pages ('+t.pages+')');go.id='t-new';go.onclick=()=>{close(true);useTpl(t)};c.append(go);
+    const books=data.filter(b=>!b.welcome).sort((a,b)=>(b.u||0)-(a.u||0));
+    const w=el('div','codebox tadd');w.append(el('p','sep','Or add its pages to a notebook you have'));
+    if(books.length){
+      const sel=el('select','lk-in');sel.id='t-book';sel.setAttribute('aria-label','Notebook');
+      books.forEach(b=>sel.append(new Option((b.lock?'🔒 ':'')+(b.title||'Untitled')+' · '+b.pages.length+(b.pages.length===1?' page':' pages'),String(b.id))));
+      const cnt=el('select','lk-in');cnt.id='t-n';cnt.setAttribute('aria-label','How many pages');
+      [1,2,4,6,10].forEach(n=>cnt.append(new Option(n+(n===1?' page':' pages'),String(n))));cnt.value='2';
+      const add=el('button','ib','Add');add.id='t-add';
+      add.onclick=()=>{const b=books.find(x=>String(x.id)===sel.value);if(!b)return;close(true);addTplToBook(t,b,+cnt.value)};
+      const r=el('div','crow');r.append(cnt,add);w.append(sel,r);
+    }else w.append(el('p','lk-note','You don’t have a notebook of your own yet. Make one with the button above.'));
+    c.append(w,el('p','lk-note','You can change any page later with Page style (the page button in the editor).'));
+    const acts=el('div','acts2');const no=el('button','ib','Close');no.type='button';no.onclick=()=>close(false);acts.append(no);c.append(acts);
+  });
 }
 
 /* Library: search, sort, list view */
