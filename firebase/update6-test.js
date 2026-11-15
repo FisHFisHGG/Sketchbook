@@ -133,6 +133,18 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.click('#bclose');await B.waitForTimeout(500);
   ok(await B.evaluate(()=>{const c=[...document.querySelectorAll('.cell:not(.add)')].find(x=>/Cornell notes/.test(x.textContent));return c&&/svg/.test(c.querySelector('.front').style.getPropertyValue('--ct'))}),'the shelf shows the cover with its design');
 
+  // ---- paper colors: black, bright white, warm white, any color
+  await B.evaluate(()=>{showBrowse(data.find(x=>x.welcome));showEditor(0)});await B.waitForTimeout(700);
+  await B.click('#pstyle');await B.waitForSelector('#psheet:not(.hidden)');
+  ok(await B.evaluate(()=>document.querySelectorAll('#pcols .sw').length===10&&!!$('#pcpk')&&!!$('#pcols [data-c="#ffffff"]')),'paper colors: 10 colors (with bright white, warm white and black) + any color');
+  await B.click('#pcols [data-c="#000000"]');await B.waitForTimeout(500);
+  ok(await B.evaluate(()=>cur.ps[0].c==='#000000'&&$('#pcn').textContent==='Black'&&color==='#ffffff'&&getComputedStyle($('#paper')).backgroundColor==='rgb(0, 0, 0)'),'black page: the page turns black and the pen turns white');
+  await B.click('#pcols [data-c="#faf1d7"]');await B.waitForTimeout(500);
+  ok(await B.evaluate(()=>cur.ps[0].c==='#faf1d7'&&/Warm white/.test($('#pcn').textContent)&&color==='#1d1d1b'),'warm white page ("easier on the eyes"); the pen goes back to black');
+  await B.evaluate(()=>{const k=$('#pcpk');k.value='#ffe0b2';k.dispatchEvent(new Event('change'))});await B.waitForTimeout(500);
+  ok(await B.evaluate(()=>cur.ps[0].c==='#ffe0b2'&&$('#pcn').textContent==='Your color'&&$('#pcpk').getAttribute('aria-pressed')==='true'),'any color from the color picker');
+  await B.click('#psx');await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.click('#bclose');await B.waitForTimeout(400);
+
   // ---- PDF import: the first page is the cover, the rest are pages
   const P=await user('pdf@example.com',{demo:'pro'});
   const mk=await b.newPage();

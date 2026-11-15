@@ -169,6 +169,7 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #etl{font-weight:600}
 .sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--bar);box-shadow:0 0 0 1px var(--line);padding:0}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent)}
+#pcols{flex-wrap:wrap;gap:8px}#pcn{font-size:1em;margin-left:6px}.cpk[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent)}
 .paper{position:relative;width:min(100cqw - 20px,(100cqh - 20px)*var(--pr,.75));aspect-ratio:var(--ar,3/4);background-color:var(--paper);background-image:var(--tex);border-radius:2px 6px 6px 2px;box-shadow:0 12px 32px var(--sh)}
 #cv{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
 #ph{position:absolute;touch-action:none;outline:2px dashed var(--accent);cursor:move}
@@ -318,6 +319,7 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #pbg.pt-grid{background-image:linear-gradient(var(--lc) 1px,transparent 1px),linear-gradient(90deg,var(--lc) 1px,transparent 1px);background-size:calc(var(--sp)*1cqw) calc(var(--sp)*1cqw)}
 #pbg.pt-dots{background-image:radial-gradient(circle,var(--lc) 1.3px,transparent 1.8px);background-size:calc(var(--sp)*1cqw) calc(var(--sp)*1cqw)}
 .opts2{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
+#psheet{overflow-y:auto}#psheet .opts2{grid-template-columns:repeat(4,minmax(0,92px))}
 .opts2 button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border:2px solid var(--line);border-radius:12px;background:none;font-size:.85em}
 .opts2 button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .mini{display:block;width:100%;aspect-ratio:3/4;border:1px solid var(--line);border-radius:4px;background-color:#fdfdfa}
@@ -563,7 +565,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
         <button data-p="grid"><i class="mini pt-grid"></i>Grid</button>
         <button data-p="dots"><i class="mini pt-dots"></i>Dots</button>
       </div>
-      <div class="sec">Paper color</div>
+      <div class="sec">Paper color <small id="pcn"></small></div>
       <div class="grp" id="pcols"></div>
       <label class="chk"><input type="checkbox" id="pall"> Apply to all pages</label>
     </div>
@@ -2188,7 +2190,9 @@ $('#pdff').onchange=async e=>{
 };
 
 /* Page style (background) */
-const PAPER='#fdfdfa',DEF={p:'blank',c:PAPER},PAPERS=['#fdfdfa','#f6efe0','#e9e9e9','#e3edf7','#26292e'];
+const PAPER='#fdfdfa',DEF={p:'blank',c:PAPER};
+const PAPERN=[['#fdfdfa','Paper white'],['#ffffff','Bright white'],['#faf1d7','Warm white – easier on the eyes'],['#f6efe0','Cream'],['#e9e9e9','Light gray'],['#e3edf7','Light blue'],['#e7f1e3','Mint'],['#f8e6ec','Blush'],['#26292e','Dark gray'],['#000000','Black']];
+const PAPERS=PAPERN.map(x=>x[0]),paperName=c=>(PAPERN.find(x=>x[0]===c)||[0,'Your color'])[1];
 const styled=st=>!!st&&(st.p!=='blank'||st.c!==PAPER);
 const lumOf=h=>{const v=parseInt(h.slice(1),16);return(.2126*(v>>16)+.7152*(v>>8&255)+.0722*(v&255))/255};
 function drawBg(x,st){
@@ -2211,6 +2215,8 @@ function syncPS(){
   const st=(pi<0?null:cur&&cur.ps[pi])||DEF;
   document.querySelectorAll('#pats button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===st.p));
   document.querySelectorAll('#pcols .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===st.c));
+  const pk=$('#pcpk'),own=!PAPERS.includes(st.c);if(pk){pk.setAttribute('aria-pressed',own);if(own)pk.value=st.c}
+  $('#pcn').textContent=paperName(st.c);
 }
 async function rebuildPv(i){
   const st=cur.ps[i],o=cur.objs[i]||[],bg=cur.bg[i];
@@ -2221,7 +2227,8 @@ async function setPS(patch){
   const all=$('#pall').checked,b=cur,idx=pi,t=all?[...Array(b.pages.length).keys()]:[idx];
   t.forEach(i=>{b.ps[i]=Object.assign({},DEF,b.ps[i]||{},patch)});
   applyPS();
-  if(patch.c&&lumOf(patch.c)<.35&&color==='#1d1d1b'){color='#ffffff';cmem.i=color;buildCols()}
+  if(patch.c&&lumOf(patch.c)<.35&&color==='#1d1d1b'){color='#ffffff';cmem.i=color;buildCols()} // dark paper: white ink
+  else if(patch.c&&lumOf(patch.c)>=.35&&color==='#ffffff'){color='#1d1d1b';cmem.i=color;buildCols()} // and back to black ink on light paper
   await savePage();
   if(all){for(const i of t){if(i!==idx)await rebuildPv(i)}persist()}
 }
@@ -2229,7 +2236,9 @@ function initPS(){
   $('#pstyle').onclick=()=>{const open=!$('#psheet').classList.contains('hidden');closeSheet();if(!open){$('#psheet').classList.remove('hidden');syncPS()}};
   $('#psx').onclick=()=>$('#psheet').classList.add('hidden');
   document.querySelectorAll('#pats button').forEach(b=>b.onclick=()=>setPS({p:b.dataset.p}));
-  PAPERS.forEach(c=>{const b=document.createElement('button');b.className='sw';b.style.background=c;b.dataset.c=c;b.setAttribute('aria-label','Paper color');b.onclick=()=>setPS({c});$('#pcols').append(b)});
+  PAPERN.forEach(([c,n])=>{const b=document.createElement('button');b.className='sw';b.style.background=c;b.dataset.c=c;b.setAttribute('aria-label',n);b.title=n;b.onclick=()=>setPS({c});$('#pcols').append(b)});
+  const pk=document.createElement('input');pk.type='color';pk.className='cpk';pk.id='pcpk';pk.value='#fff8e1';pk.title='Any color';pk.setAttribute('aria-label','Any paper color');
+  pk.onchange=e=>setPS({c:e.target.value.toLowerCase()});$('#pcols').append(pk);
 }
 
 /* All pages overview */
@@ -3327,7 +3336,7 @@ async function makeWelcome(){
     arrow(x,[[760,700],[820,760],[800,840],[730,880]],'#2c5f8a',5);ink.push(c);ps.push({p:'dots',c:'#e3edf7'});
     objs.push([T('Pages your way',80,60,760,80,{fm:'round',b:1,c:'#1d2b4a'}),
       T('Blank',80,545,150,30,{al:'center'}),T('Lined',270,545,150,30,{al:'center'}),T('Grid',460,545,150,30,{al:'center'}),T('Dots',650,545,150,30,{al:'center'}),
-      T('Pick a look for each page and five paper colours, like this blue one. When you add pages, choose how the new ones look.',80,640,620,34),
+      T('Pick a look for each page and a paper colour, from bright white or warm white to black, like this blue one.',80,640,620,34),
       T('Portrait or landscape, 12 cover designs, a cover you can draw on, and ready-made notebooks under Templates.',80,850,620,34),
       N('Pro: import a PDF and write on it, export to PDF or images.',500,1000,340,170,NC[4],-3,28),S(6,700,150,150,0)])}
   // 6 – private and yours

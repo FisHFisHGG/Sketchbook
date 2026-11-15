@@ -104,15 +104,18 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .hb{position:relative;width:calc(var(--pw)*2);height:calc(var(--pw)*1.333);transform-style:preserve-3d;transform:rotateX(7deg);transition:transform 1.3s cubic-bezier(.6,0,.3,1)}
 .hb.closed{transform:rotateX(7deg) translateX(calc(var(--pw)*-.5))}
 .hb-l,.hb-r,.hb-leaf{position:absolute;top:0;width:var(--pw);height:100%}
-.hb-l{left:0;border-radius:10px 3px 3px 10px;box-shadow:-1px 1px 0 #fff,-2px 2px 0 #d3d0c4,-3px 3px 0 #fff,-4px 4px 0 #d3d0c4,-5px 5px 0 #fff,-6px 6px 0 #d3d0c4,0 30px 40px -16px var(--sh);transition:opacity .4s}
-.hb.closed .hb-l{opacity:0}
+.hb-l{left:0;border-radius:10px 3px 3px 10px;box-shadow:-1px 1px 0 #fff,-2px 2px 0 #d3d0c4,-3px 3px 0 #fff,-4px 4px 0 #d3d0c4,-5px 5px 0 #fff,-6px 6px 0 #d3d0c4,0 30px 40px -16px var(--sh)}
+.hb.closed .hb-l,.hb.noleft .hb-l{opacity:0}
 .hb-r{left:var(--pw);border-radius:3px 10px 10px 3px;box-shadow:1px 1px 0 #fff,2px 2px 0 #d3d0c4,3px 3px 0 #fff,4px 4px 0 #d3d0c4,5px 5px 0 #fff,6px 6px 0 #d3d0c4,7px 7px 0 #fff,8px 8px 0 #d3d0c4,0 30px 40px -16px var(--sh)}
 .hb-leaf{left:var(--pw);transform-origin:left center;transform-style:preserve-3d;z-index:3;visibility:hidden}
 .hb-leaf.turn{visibility:visible;animation:hbturn 1.25s cubic-bezier(.55,.05,.35,1) forwards}
+.hb-leaf.shut{visibility:visible;animation:hbshut 1.25s cubic-bezier(.55,.05,.35,1) forwards}
 .hb-leaf>div{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .hb-back{transform:rotateY(180deg)}
-.hb-leaf>div::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 30%);opacity:0;animation:hbshade 1.25s ease forwards}
+.hb-leaf>div::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 30%);opacity:0}
+.hb-leaf.turn>div::after,.hb-leaf.shut>div::after{animation:hbshade 1.25s ease forwards}
 @keyframes hbturn{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}
+@keyframes hbshut{from{transform:rotateY(-180deg)}to{transform:rotateY(0)}}
 @keyframes hbshade{50%{opacity:1}100%{opacity:0}}
 /* page kinds */
 .pp{position:absolute;inset:0;overflow:hidden;font-family:Caveat,cursive;font-weight:700;color:#1d2b4a;background:#fbfaf4}
@@ -120,7 +123,12 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .hb-r .pp,.hb-front .pp{border-radius:3px 10px 10px 3px;box-shadow:inset 12px 0 16px -12px rgba(0,0,0,.28)}
 .pp.dots{background:#fbfaf4 radial-gradient(circle,rgba(60,90,140,.3) 1.1px,transparent 1.6px) 0 0/calc(var(--pw)/9) calc(var(--pw)/9)}
 .pp.lines{background:#fbfaf4 linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.26) 0) 0 calc(var(--pw)*.06)/100% calc(var(--pw)/10.5)}
-.pp.album{background:#202124 radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.5px) 0 0/6px 6px;color:#f4f1e8}
+.pp.album{background:#e8dbc2 radial-gradient(rgba(120,85,40,.09) 1px,transparent 1.5px) 0 0/6px 6px;color:#3b2f22}
+.pp.album .ph{box-shadow:0 4px 10px rgba(70,45,20,.32)}
+.pp.inside{background:var(--cover);box-shadow:inset -9px 0 0 rgba(0,0,0,.24)!important}
+.pp.inside .ep{position:absolute;inset:4% 4% 4% 5%;border-radius:6px 2px 2px 6px;background:#f4ecda radial-gradient(circle at 50% 50%,rgba(35,64,122,.13) 1.4px,transparent 1.9px) 0 0/calc(var(--pw)/12) calc(var(--pw)/12)}
+.pp.inside .tag{position:absolute;left:12%;right:12%;top:30%;padding:9% 8%;background:#fffdf7;border-radius:6px;box-shadow:0 3px 8px rgba(0,0,0,.15);text-align:center}
+.pp.inside .tag p{margin:0;font-size:calc(var(--pw)*.075);opacity:.7}.pp.inside .tag b{display:block;font-size:calc(var(--pw)*.16);margin-top:.15em;border-bottom:2px solid rgba(35,64,122,.35);line-height:1.1}
 .pp.cover{background:var(--cover);box-shadow:inset 9px 0 0 rgba(0,0,0,.24)!important;display:grid;place-items:center}
 .pp.cover span{background:#fbf8ef;color:#23304a;padding:.35em .8em .3em;font-size:calc(var(--pw)*.15);border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.3),inset 0 0 0 3px #fbf8ef,inset 0 0 0 4px rgba(35,48,74,.3)}
 .pp .ab{position:absolute;margin:0;line-height:1.05}
@@ -160,7 +168,7 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 @keyframes psel{0%,24%{border-color:#23407a;background:rgba(35,64,122,.1)}25%,100%{border-color:#d5d8d0;background:none}}
 .pc{display:flex;gap:.6em;margin-top:1em;align-items:center}
 .pc u{width:1.5em;height:1.5em;border-radius:50%;box-shadow:0 0 0 1px #c9cfcb}
-.pc u:nth-child(1){background:#fdfdfa}.pc u:nth-child(2){background:#f6efe0}.pc u:nth-child(3){background:#e6eef7}.pc u:nth-child(4){background:#eaf3e7}.pc u:nth-child(5){background:#2b2f36}
+.pc u:nth-child(1){background:#fff}.pc u:nth-child(2){background:#faf1d7}.pc u:nth-child(3){background:#e6eef7}.pc u:nth-child(4){background:#eaf3e7}.pc u:nth-child(5){background:#000}
 .pc em{margin-left:auto;font-style:normal;opacity:.65;font-size:.85em}
 
 .mi{display:inline-block;width:12px;height:15px;margin-right:6px;vertical-align:-2px;border-radius:2px;background:#fbfbf6;background-size:4px 4px}
@@ -349,7 +357,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
           <article class="st" data-s="2"><h3>Pages you turn by hand</h3><p>Drag a page and it follows your finger. You see its edge as it turns, then it settles flat.</p></article>
           <article class="st" data-s="3"><h3>Drawing tools that behave</h3><p>Pen, pencil, a brush that thins as you move faster, marker, highlighter, shapes and fill. Each tool remembers its size, and opacity is one slider away.</p></article>
           <article class="st" data-s="4"><h3>Words, stickers and notes</h3><p>Eight fonts, 28 stickers and sticky notes. Every one stays movable. Resize, rotate or edit it any time.</p></article>
-          <article class="st" data-s="5"><h3>Pages set up your way</h3><p>Choose how each page looks: blank, lined, grid or dots, on several paper colors, in portrait or landscape. Apply it to one page or to all of them.</p></article>
+          <article class="st" data-s="5"><h3>Pages set up your way</h3><p>Choose how each page looks: blank, lined, grid or dots, on paper from bright white and warm white (easier on the eyes) to black, or any color you like. Portrait or landscape. Apply it to one page or to all of them.</p></article>
           <article class="st" data-s="6"><h3>Your PDFs, ready to mark up<span class="soon">Pro</span></h3><p>Choose portrait or landscape and each PDF page fits a notebook page. Write, circle and annotate on top.</p></article>
           <article class="st" data-s="7"><h3>Every page at a glance</h3><p>See the whole notebook at once. Reorder pages, duplicate them, delete them, or jump straight to one.</p></article>
           <article class="st" data-s="8"><h3>Private notebooks<span class="soon">Free</span></h3><p>Lock any notebook with a 4-digit PIN or a password. On Android you can also open it with your fingerprint.</p></article>
@@ -483,7 +491,7 @@ function setBill(k){
   $('#pp').textContent=bill[k][0];$('#pu').textContent=bill[k][1];$('#pe').textContent=bill[k][2];$('#pbtn').textContent=bill[k][3];
 }
 $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
-/* hero notebook: cover → album → sketches → planner → album … (pauses when not on screen) */
+/* hero notebook: closed → opens (inside cover + hello) → album → sketches → planner → closes → again (pauses when not on screen) */
 (function(){
   const hb=document.getElementById('hb');if(!hb)return;
   const L=hb.querySelector('.hb-l'),Rp=hb.querySelector('.hb-r'),leaf=hb.querySelector('.hb-leaf'),F=leaf.firstElementChild,B=leaf.lastElementChild;
@@ -498,8 +506,13 @@ $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
   const P=(cls,html)=>'<div class="pp '+cls+'">'+html+'</div>';
   const ph=(sc,cap,css)=>'<div class="ph" style="'+css+'">'+scene[sc]+'<b>'+cap+'</b></div>';
   const cal='<div class="cal" style="left:12%;top:24%;width:76%">'+['M','T','W','T','F','S','S'].map(d=>'<b>'+d+'</b>').join('')+'<span></span><span></span>'+[...Array(30).keys()].map(i=>'<span'+(i===13?' class="on"':'')+'>'+(i+1)+'</span>').join('')+'</div>';
-  const S=[ // [left page, right page]
-    ['',P('cover','<span>Sketches</span>')],
+  const COVER=P('cover','<span>Sketches</span>');
+  const INSIDE=P('inside','<div class="ep"><div class="tag"><p>this sketchbook belongs to</p><b>Ana</b></div></div>'); // inside of the cover
+  const HELLO=P('dots','<h4 class="ab" style="left:12%;top:8%">Hello!</h4><p class="ab t" style="left:12%;top:27%">ideas, trips,<br><span class="hl">doodles</span> &amp; plans</p>'
+        +'<svg class="dw" viewBox="0 0 100 100" style="left:46%;top:50%;width:40%"><circle cx="50" cy="50" r="16"/><path d="M50 18v-12M50 94v-12M18 50h-12M94 50h-12M27 27l-8-8M81 81l-8-8M27 73l-8 8M81 19l-8 8"/></svg>'
+        +'<p class="ab s" style="left:12%;top:84%">June 2026</p>'+star.replace('WIDTH','left:14%;top:56%;width:22%'));
+  const S=[ // [left page, right page]; the first spread is the inside of the cover + the first page
+    [INSIDE,HELLO],
     [P('album','<h4 class="ab" style="left:10%;top:6%">Summer ’26</h4>'+ph('sunset','sea at sunset','left:7%;top:20%;width:58%;transform:rotate(-4deg)')+'<p class="ab s" style="left:68%;top:30%">12 July</p>'
         +ph('peaks','the hike','left:38%;top:61%;width:50%;transform:rotate(5deg)')+'<i class="tape" style="left:54%;top:58%"></i><p class="ab s" style="left:8%;top:74%">15 July</p>'),
      P('album',ph('lake','quiet lake','left:30%;top:7%;width:58%;transform:rotate(3deg)')+'<p class="ab s" style="left:8%;top:14%">16<br>July</p>'
@@ -514,21 +527,27 @@ $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
         +'<div class="ck on"><i></i><span>finish the poster</span></div><div class="ck"><i></i><span>call grandma</span></div><div class="ck on"><i></i><span>gym × 3</span></div><div class="ck"><i></i><span class="hl">read 20 pages</span></div><div class="ck"><i></i><span>plan the trip</span></div></div>'),
      P('lines','<h4 class="ab" style="left:12%;top:5%">July</h4>'+cal+'<p class="ab t" style="left:46%;top:70%;color:#c0392b">Mia’s<br>birthday!</p>'+heart.replace('WIDTH','left:16%;top:70%;width:22%'))]
   ];
-  let i=0,busy=false,timer=0;
-  const show=k=>{L.innerHTML=S[k][0];Rp.innerHTML=S[k][1];hb.classList.toggle('closed',k===0)};
-  const nextOf=k=>k+1<S.length?k+1:1;
-  function turn(){
-    if(busy)return;busy=true;const j=nextOf(i);
-    F.innerHTML=S[i][1];B.innerHTML=S[j][0];Rp.innerHTML=S[j][1];
-    if(i===0)hb.classList.remove('closed');
-    leaf.classList.remove('turn');void leaf.offsetWidth;leaf.classList.add('turn');
-    setTimeout(()=>{L.innerHTML=S[j][0];leaf.classList.remove('turn');i=j;busy=false},1260);
+  // -1 = closed. open → turn, turn, turn → close → open … (like a real notebook)
+  let i=-1,busy=false,timer=0;
+  const flip=(cls,front,back,end)=>{F.innerHTML=front;B.innerHTML=back;leaf.className='hb-leaf';void leaf.offsetWidth;leaf.className='hb-leaf '+cls;setTimeout(()=>{end();leaf.className='hb-leaf';busy=false},1260)};
+  function step(){
+    if(busy)return;busy=true;
+    if(i<0){ // open the cover: the left side stays empty until the cover lands there
+      Rp.innerHTML=S[0][1];hb.classList.add('noleft');hb.classList.remove('closed');
+      flip('turn',COVER,S[0][0],()=>{L.innerHTML=S[0][0];hb.classList.remove('noleft');i=0});
+    }else if(i<S.length-1){ // turn a page
+      const j=i+1;Rp.innerHTML=S[j][1];
+      flip('turn',S[i][1],S[j][0],()=>{L.innerHTML=S[j][0];i=j});
+    }else{ // last spread: close the notebook (the left side folds back over), then start again
+      hb.classList.add('noleft','closed');
+      flip('shut',COVER,S[i][0],()=>{Rp.innerHTML=COVER;L.innerHTML='';hb.classList.remove('noleft');i=-1});
+    }
   }
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce){show(1);return}
-  show(0);
-  let visible=true;
-  const loop=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(visible&&!document.hidden)turn();loop()},i===0?1600:3600)};
+  if(reduce){L.innerHTML=S[1][0];Rp.innerHTML=S[1][1];hb.classList.remove('closed');return}
+  Rp.innerHTML=COVER;hb.classList.add('closed');
+  let visible=true,first=true;
+  const loop=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(visible&&!document.hidden){step();first=false}loop()},i<0?(first?1600:2600):3600)};
   if('IntersectionObserver' in window)new IntersectionObserver(es=>{visible=es[0].isIntersecting}).observe(hb);
   loop();
 })();
