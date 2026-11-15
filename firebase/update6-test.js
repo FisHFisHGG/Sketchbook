@@ -79,7 +79,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await A.click('#adm-cf >> text=Create code');await A.waitForSelector('#adm-codes >> text=HABIT-1',{timeout:10000});
   const hc=await getDoc('codes/HABIT-1');
   ok(hc&&hc.fields.kind.stringValue==='tpl'&&hc.fields.tpl.stringValue==='habit'&&hc.fields.max.integerValue==='1'&&!hc.fields.days,'admin makes a template code (Habit tracker, 1 person)');
-  ok(await A.evaluate(()=>/Template: Habit tracker/.test($('#adm-codes').textContent)),'the code list says which template it gives');
+  ok(await A.evaluate(()=>/Unlocks: Habit tracker/.test($('#adm-codes').textContent)),'the code list says what it unlocks');
   // Bob redeems it from the buy window
   await B.click('#tpl .tcardx[data-t="habit"]');await B.waitForSelector('#t-code');await B.fill('#t-code','habit-1');await B.click('#lockc .codebox button');
   await B.waitForFunction(()=>ACC.owned.has('habit'),null,{timeout:10000}).catch(()=>{});
@@ -120,7 +120,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await C.click('#acc-x').catch(()=>{});
   // admin gives all paid templates by email
   await A.click('#adm-r');await A.waitForSelector('#adm-tf',{timeout:15000});
-  await A.fill('#adm-tf input[type=email]','carol@example.com');await A.selectOption('#adm-tf select','all');await A.click('#adm-tf >> text=Give template');
+  await A.fill('#adm-tf input[type=email]','carol@example.com');await A.selectOption('#adm-tf select','all');await A.click('#adm-tf button[type=submit]');
   await C.waitForFunction(()=>ACC.owned.has('all'),null,{timeout:10000}).catch(()=>{});
   await C.waitForTimeout(400);
   ok(await C.evaluate(()=>ACC.owned.has('all')&&ACC.owned.has('comic')&&!document.querySelector('#tpl .tcardx.lock')),'admin gives Carol all paid templates by email → nothing is locked for her');
@@ -148,19 +148,23 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   const bg0=await C.evaluate(()=>cur.bg[1]);
   await C.click('#pcols [data-c="#000000"]');await C.waitForTimeout(900);
   ok(await C.evaluate(b0=>cur.ps[1].c==='#000000'&&cur.ps[1].t==='recipe'&&cur.bg[1]!==b0,bg0),'on black paper the template is drawn again with light lines');
-  await C.click('#psx');await C.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await C.click('#bclose');await C.waitForTimeout(300);
+  await C.click('#psx');await C.click('#plus');await C.click('#stabs [data-p="stick"]');await C.waitForTimeout(300);
+  ok(await C.evaluate(()=>document.querySelectorAll('#spane .eg.st').length===5&&!!document.querySelector('#spane [data-pk="stk-space"]')),'with everything unlocked, + → Stickers shows all 5 packs');
+  await C.click('#stabs [data-p="label"]');await C.waitForSelector('#spane [data-l="lbl-gold"]');
+  ok(await C.evaluate(()=>document.querySelectorAll('#spane [data-l]').length===12),'… and + → Labels all 12 labels');
+  await C.click('#shx');await C.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await C.click('#bclose');await C.waitForTimeout(300);
   await A.waitForSelector('#adm-tf',{timeout:15000});await A.waitForTimeout(300);
   const card=(p,label)=>p.evaluate(l=>{const c=[...document.querySelectorAll('#adm-body .acard')].find(x=>x.querySelector('span').textContent===l);return c?c.querySelector('b').textContent:null},label);
-  ok(await card(A,'People with paid templates')==='2'&&await card(A,'Have all paid templates')==='1'&&await card(A,'Templates unlocked')==='2','admin: 2 people with paid templates, 1 has all, 2 unlocked one by one');
+  ok(await card(A,'People with paid items')==='2'&&await card(A,'Have everything')==='1'&&await card(A,'Items unlocked')==='2','admin → Store: 2 people with paid items, 1 has everything, 2 unlocked one by one');
   const [dl]=await Promise.all([A.waitForEvent('download'),A.click('text=Download all (CSV)')]);
   const csv=fs.readFileSync(await dl.path(),'utf8');
-  ok(/"templates"/.test(csv)&&/Habit tracker/.test(csv)&&/All paid templates/.test(csv),'the CSV has a templates column');
+  ok(/"store_items"/.test(csv)&&/Habit tracker/.test(csv)&&/Everything in the store/.test(csv),'the CSV has a store_items column');
   await A.click('#adm-x');
 
   // ---- cover designs
   await B.evaluate(()=>{showBrowse(data.find(x=>x.title==='Cornell notes'));showEditor(-1)});await B.waitForTimeout(600);
   await B.click('#cst');await B.waitForSelector('#csheet:not(.hidden)');
-  ok(await B.evaluate(()=>document.querySelectorAll('#cdes button').length===13),'cover style has 13 designs (None + 12)');
+  ok(await B.evaluate(()=>document.querySelectorAll('#cdes button').length===17&&!$('#cdes [data-k="galaxy"]')&&/More covers in the Store/.test($('#cdes').textContent)),'Cover style: None + the 16 free designs (paid ones are in the Store)');
   await B.click('#cdes [data-k="waves"]');await B.waitForTimeout(200);
   ok(await B.evaluate(()=>cur.design==='waves'&&/svg/.test($('#paper').style.backgroundImage)),'choosing "Waves" paints it on the cover');
   await B.click('#cdes [data-k=""]');await B.waitForTimeout(100);
@@ -168,6 +172,48 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.click('#cdes [data-k="stars"]');await B.click('#csx');
   await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.click('#bclose');await B.waitForTimeout(500);
   ok(await B.evaluate(()=>{const c=[...document.querySelectorAll('.cell:not(.add)')].find(x=>/Cornell notes/.test(x.textContent));return c&&/svg/.test(c.querySelector('.front').style.getPropertyValue('--ct'))}),'the shelf shows the cover with its design');
+
+  // ---- labels: the name tag becomes a label you can move; more shapes in + → Labels; retype; a rename follows
+  await B.evaluate(()=>{showBrowse(data.find(x=>x.title==='Cornell notes'));showEditor(-1)});await B.waitForTimeout(900);
+  ok(await B.evaluate(()=>cur.cobjs.length===1&&cur.cobjs[0].lb&&cur.cobjs[0].lb.id==='lbl-classic'&&cur.cobjs[0].lb.t==='Cornell notes'&&!!cur.cpv),'editing a plain cover turns its name tag into a label object (Classic, "Cornell notes")');
+  await B.click('#plus');await B.click('#stabs [data-p="label"]');await B.waitForSelector('#spane [data-l]');
+  ok(await B.evaluate(()=>document.querySelectorAll('#spane [data-l]').length===6&&!document.querySelector('#spane [data-l="lbl-gold"]')&&/More labels are in the Store/.test($('#spane').textContent)),'+ → Labels: the 6 free shapes (the paid ones are in the Store)');
+  await B.click('#spane [data-l="lbl-strip"]');await B.waitForTimeout(900);
+  ok(await B.evaluate(()=>cur.cobjs.length===2&&cur.cobjs[1].lb.id==='lbl-strip'&&cur.cobjs[1].y>cur.cobjs[0].y&&!!selO&&selO._o===cur.cobjs[1]),'a Long strip label is added (below the first one) and selected');
+  await B.click('#o-edit');await B.waitForSelector('#lb-t');await B.fill('#lb-t','Summer 2026');await B.press('#lb-t','Enter');await B.waitForTimeout(800);
+  ok(await B.evaluate(()=>cur.cobjs[1].lb.t==='Summer 2026'&&/^data:image\/png/.test(cur.cobjs[1].src)),'✎ changes the words on the label');
+  await B.click('#photo');await B.waitForSelector('#up:not(.hidden)');
+  ok(await B.evaluate(()=>/photo on the cover is part of Pro/.test($('#upm').textContent)),'free plan: a photo on the cover asks for Pro');
+  await B.click('#upno');
+  await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.waitForTimeout(300);
+  await B.fill('#btitle','School notes');await B.waitForTimeout(1500);
+  ok(await B.evaluate(()=>cur.cobjs[0].lb.t==='School notes'&&cur.cobjs[1].lb.t==='Summer 2026'),'renaming the notebook updates the label that showed its name (not the retyped one)');
+  await B.click('#bclose');await B.waitForTimeout(300);
+
+  // ---- the store: covers, labels and sticker packs
+  await B.click('#tb2');await B.waitForSelector('.skinds');
+  const kinds={};for(const k of ['cov','lbl','stk']){await B.click('.skinds [data-k="'+k+'"]');await B.waitForTimeout(300);kinds[k]=await B.evaluate(()=>[document.querySelectorAll('#tpl .tcardx').length,document.querySelectorAll('#tpl .tcardx.lock').length])}
+  ok(kinds.cov+''==='22,6'&&kinds.lbl+''==='12,6'&&kinds.stk+''==='5,3','store: 22 covers (6 paid), 12 labels (6 paid), 5 sticker packs (3 paid) ('+JSON.stringify(kinds)+')');
+  await admin('codes/GALAXY-1',{fields:{kind:{stringValue:'tpl'},tpl:{stringValue:'cov-galaxy'},max:{integerValue:'5'},used:{integerValue:'0'},active:{booleanValue:true},note:{stringValue:''}}});
+  await B.click('.skinds [data-k="cov"]');await B.waitForTimeout(300);
+  await B.click('#tpl .tcardx[data-t="cov-galaxy"]');await B.waitForSelector('#t-code');
+  ok(await B.evaluate(()=>/€0\.99/.test($('#lockc .tbuy').textContent)&&/Galaxy/.test($('#lockc').textContent)),'a paid cover opens "Buy for €0.99"');
+  await B.fill('#t-code','galaxy-1');await B.click('#lockc .codebox button');
+  await B.waitForFunction(()=>ACC.owned.has('cov-galaxy'),null,{timeout:10000}).catch(()=>{});
+  ok(await B.evaluate(()=>ACC.owned.has('cov-galaxy')),'a store code unlocks the Galaxy cover');
+  await B.waitForTimeout(400);await B.click('#tpl .tcardx[data-t="cov-galaxy"]');await B.waitForSelector('#t-use');
+  ok(await B.evaluate(()=>/You own this cover/.test($('#lockc').textContent)),'tapping it now says "✓ You own this cover"');
+  await B.selectOption('#t-book',hid);await B.click('#t-use');await B.waitForSelector('#bv:not(.hidden)');
+  ok(await B.evaluate(()=>cur.title==='Habit tracker'&&cur.design==='galaxy'),'"Use" puts the Galaxy cover on the Habit tracker notebook');
+  await B.evaluate(()=>showEditor(-1));await B.waitForTimeout(800);await B.click('#cst');await B.waitForSelector('#csheet:not(.hidden)');
+  ok(await B.evaluate(()=>!!$('#cdes [data-k="galaxy"]')&&!$('#cdes [data-k="skyline"]')),'Cover style now lists Galaxy too (not the covers he doesn\'t own)');
+  await B.click('#csx');await B.click('#plus');await B.click('#stabs [data-p="stick"]');await B.waitForTimeout(300);
+  ok(await B.evaluate(()=>[...document.querySelectorAll('#spane .eg.st')].map(g=>g.dataset.pk).join()==='stk-basics,stk-doodles'&&document.querySelectorAll('#spane .eg.st button').length===38),'+ → Stickers: the free packs, Basics and Doodles (38 stickers)');
+  await B.click('#shx');await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.click('#bclose');await B.waitForTimeout(300);
+  await B.click('#tb2');await B.click('.skinds [data-k="lbl"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="lbl-oval"]');await B.waitForSelector('#t-use');
+  await B.selectOption('#t-book',hid);await B.click('#t-use');await B.waitForSelector('#bv:not(.hidden)');await B.waitForTimeout(400);
+  ok(await B.evaluate(()=>cur.title==='Habit tracker'&&cur.cobjs.some(o=>o.lb&&o.lb.id==='lbl-oval'&&o.lb.t==='Habit tracker')&&!!cur.cpv),'store → Oval label → "Add" puts it on the Habit tracker cover');
+  await B.click('#bclose');await B.waitForTimeout(300);
 
   // ---- paper colors: black, bright white, warm white, any color
   await B.evaluate(()=>{showBrowse(data.find(x=>x.welcome));showEditor(0)});await B.waitForTimeout(700);
@@ -190,10 +236,22 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   ok(/4 pages/.test(await P.evaluate(()=>$('#dsub').textContent))&&/first page becomes the cover/.test(await P.evaluate(()=>$('#dsub').textContent)),'PDF import says: 4 pages, the first becomes the cover');
   await P.click('#dyes');await P.waitForSelector('#bv:not(.hidden)',{timeout:30000});
   const pd=await P.evaluate(async()=>{const px=async u=>{const im=new Image();im.src=u;await im.decode();const c=document.createElement('canvas');c.width=c.height=1;const x=c.getContext('2d');x.drawImage(im,im.width/2,im.height/2,1,1,0,0,1,1);return [...x.getImageData(0,0,1,1).data].slice(0,3)};
-    return {n:cur.pages.length,cov:await px(cur.cobjs[0].src),p1:await px(cur.bg[0]),p3:await px(cur.bg[2])}});
+    return {n:cur.pages.length,cov:await px(cur.cbg),obj:cur.cobjs.length,p1:await px(cur.bg[0]),p3:await px(cur.bg[2])}});
   const red=c=>c[0]>180&&c[1]<90&&c[2]<90,green=c=>c[1]>130&&c[0]<110&&c[2]<110,yellow=c=>c[0]>180&&c[1]>180&&c[2]<110;
-  ok(pd.n===3&&red(pd.cov)&&green(pd.p1)&&yellow(pd.p3),'cover = PDF page 1 (red), then 3 pages: green … yellow ('+JSON.stringify(pd)+')');
+  ok(pd.n===3&&red(pd.cov)&&pd.obj===0&&green(pd.p1)&&yellow(pd.p3),'cover photo = PDF page 1 (red, under the drawing), then 3 pages: green … yellow ('+JSON.stringify(pd)+')');
   ok(await P.evaluate(()=>PDF_MAX===500),'PDF limit is 500 pages');
+  // Pro: a photo on the cover, under the drawing
+  await P.evaluate(()=>showEditor(-1));await P.waitForTimeout(800);
+  ok(await P.evaluate(()=>$('#bgimg').classList.contains('on')),'the PDF\'s first page shows as the cover photo in the editor');
+  const sh=await b.newPage({viewport:{width:300,height:400}});await sh.setContent('<body style="margin:0;background:#2050d0"></body>');const phPath=path.join(require('os').tmpdir(),'u6-photo.png');await sh.screenshot({path:phPath});await sh.close();
+  const [fc]=await Promise.all([P.waitForEvent('filechooser'),P.click('#photo')]);await fc.setFiles(phPath);await P.waitForTimeout(1200);
+  const cp=await P.evaluate(async()=>{const im=new Image();im.src=cur.cbg;await im.decode();const c=document.createElement('canvas');c.width=c.height=1;c.getContext('2d').drawImage(im,im.width/2,im.height/2,1,1,0,0,1,1);return [...c.getContext('2d').getImageData(0,0,1,1).data].slice(0,3)});
+  ok(cp[2]>180&&cp[0]<80&&!(await P.evaluate(()=>cur.cobjs.length)),'Pro: the photo button on the cover sets the cover photo (blue) – not a loose object ('+cp+')');
+  const bx=await P.locator('#cv').boundingBox();await P.mouse.move(bx.x+bx.width*.3,bx.y+bx.height*.5);await P.mouse.down();await P.mouse.move(bx.x+bx.width*.7,bx.y+bx.height*.55,{steps:8});await P.mouse.up();await P.waitForTimeout(1200);
+  ok(await P.evaluate(()=>!!cur.cover&&!!cur.cbg&&!!cur.cpv),'you can draw over the cover photo');
+  await P.click('#cst');await P.waitForSelector('#cphx:not(.hidden)');await P.click('#cphx');await P.waitForTimeout(800);
+  ok(await P.evaluate(()=>!cur.cbg&&!$('#bgimg').classList.contains('on')&&!!cur.cover),'Cover style → Remove photo takes the photo off (the drawing stays)');
+  await P.click('#csx');await P.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});
   await P.click('#bclose');
 
   // ---- download my data
