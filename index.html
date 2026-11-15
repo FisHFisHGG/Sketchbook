@@ -125,10 +125,10 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .pp.lines{background:#fbfaf4 linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.26) 0) 0 calc(var(--pw)*.06)/100% calc(var(--pw)/10.5)}
 .pp.album{background:#e8dbc2 radial-gradient(rgba(120,85,40,.09) 1px,transparent 1.5px) 0 0/6px 6px;color:#3b2f22}
 .pp.album .ph{box-shadow:0 4px 10px rgba(70,45,20,.32)}
-.pp.inside{background:var(--cover);box-shadow:inset -9px 0 0 rgba(0,0,0,.24)!important}
-.pp.inside .ep{position:absolute;inset:4% 4% 4% 5%;border-radius:6px 2px 2px 6px;background:#f4ecda radial-gradient(circle at 50% 50%,rgba(35,64,122,.13) 1.4px,transparent 1.9px) 0 0/calc(var(--pw)/12) calc(var(--pw)/12)}
-.pp.inside .tag{position:absolute;left:12%;right:12%;top:30%;padding:9% 8%;background:#fffdf7;border-radius:6px;box-shadow:0 3px 8px rgba(0,0,0,.15);text-align:center}
+.pp.inside{background:var(--cover) repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 6px);box-shadow:inset -10px 0 12px -6px rgba(0,0,0,.35)!important}
+.pp.inside .tag{position:absolute;left:14%;right:14%;top:32%;padding:9% 8%;background:#fbf8ef;border-radius:5px;box-shadow:0 4px 10px rgba(0,0,0,.3),inset 0 0 0 3px #fbf8ef,inset 0 0 0 4px rgba(35,48,74,.3);text-align:center}
 .pp.inside .tag p{margin:0;font-size:calc(var(--pw)*.075);opacity:.7}.pp.inside .tag b{display:block;font-size:calc(var(--pw)*.16);margin-top:.15em;border-bottom:2px solid rgba(35,64,122,.35);line-height:1.1}
+.hb.atcover .hb-l{box-shadow:-2px 2px 0 #1b3466,-3px 3px 0 #162b56,0 30px 40px -16px var(--sh)} /* just the cover board on the left: no pages yet */
 .pp.cover{background:var(--cover);box-shadow:inset 9px 0 0 rgba(0,0,0,.24)!important;display:grid;place-items:center}
 .pp.cover span{background:#fbf8ef;color:#23304a;padding:.35em .8em .3em;font-size:calc(var(--pw)*.15);border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.3),inset 0 0 0 3px #fbf8ef,inset 0 0 0 4px rgba(35,48,74,.3)}
 .pp .ab{position:absolute;margin:0;line-height:1.05}
@@ -507,7 +507,7 @@ $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
   const ph=(sc,cap,css)=>'<div class="ph" style="'+css+'">'+scene[sc]+'<b>'+cap+'</b></div>';
   const cal='<div class="cal" style="left:12%;top:24%;width:76%">'+['M','T','W','T','F','S','S'].map(d=>'<b>'+d+'</b>').join('')+'<span></span><span></span>'+[...Array(30).keys()].map(i=>'<span'+(i===13?' class="on"':'')+'>'+(i+1)+'</span>').join('')+'</div>';
   const COVER=P('cover','<span>Sketches</span>');
-  const INSIDE=P('inside','<div class="ep"><div class="tag"><p>this sketchbook belongs to</p><b>Ana</b></div></div>'); // inside of the cover
+  const INSIDE=P('inside','<div class="tag"><p>this sketchbook belongs to</p><b>Ana</b></div>'); // inside of the cover (the board, no paper)
   const HELLO=P('dots','<h4 class="ab" style="left:12%;top:8%">Hello!</h4><p class="ab t" style="left:12%;top:27%">ideas, trips,<br><span class="hl">doodles</span> &amp; plans</p>'
         +'<svg class="dw" viewBox="0 0 100 100" style="left:46%;top:50%;width:40%"><circle cx="50" cy="50" r="16"/><path d="M50 18v-12M50 94v-12M18 50h-12M94 50h-12M27 27l-8-8M81 81l-8-8M27 73l-8 8M81 19l-8 8"/></svg>'
         +'<p class="ab s" style="left:12%;top:84%">June 2026</p>'+star.replace('WIDTH','left:14%;top:56%;width:22%'));
@@ -534,12 +534,12 @@ $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
     if(busy)return;busy=true;
     if(i<0){ // open the cover: the left side stays empty until the cover lands there
       Rp.innerHTML=S[0][1];hb.classList.add('noleft');hb.classList.remove('closed');
-      flip('turn',COVER,S[0][0],()=>{L.innerHTML=S[0][0];hb.classList.remove('noleft');i=0});
+      flip('turn',COVER,S[0][0],()=>{L.innerHTML=S[0][0];hb.classList.add('atcover');hb.classList.remove('noleft');i=0});
     }else if(i<S.length-1){ // turn a page
       const j=i+1;Rp.innerHTML=S[j][1];
-      flip('turn',S[i][1],S[j][0],()=>{L.innerHTML=S[j][0];i=j});
+      flip('turn',S[i][1],S[j][0],()=>{L.innerHTML=S[j][0];hb.classList.remove('atcover');i=j});
     }else{ // last spread: close the notebook (the left side folds back over), then start again
-      hb.classList.add('noleft','closed');
+      hb.classList.add('noleft','closed');hb.classList.remove('atcover');
       flip('shut',COVER,S[i][0],()=>{Rp.innerHTML=COVER;L.innerHTML='';hb.classList.remove('noleft');i=-1});
     }
   }
