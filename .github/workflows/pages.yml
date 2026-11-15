@@ -28,7 +28,7 @@ jobs:
       - name: Collect the site files
         run: |
           mkdir _site
-          cp -r index.html og.png .nojekyll app _site/
+          cp -r index.html og.png robots.txt sitemap.xml .nojekyll app _site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

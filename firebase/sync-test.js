@@ -6,6 +6,8 @@ const {chromium}=require('playwright');const fs=require('fs'),path=require('path
 const ROOT=path.join(__dirname,'..','app'),PID='sketchbook-b1de1';
 const mime={'.html':'text/html','.js':'text/javascript','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2'};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+// the one-time "How did you find Foliet?" question appears after a new account; answer it so the test can go on
+const answerSurvey=async(p,v='youtube')=>{try{await p.waitForSelector('#srv',{timeout:4000})}catch(e){return false}await p.click('#srv .srv-opt[data-v="'+v+'"]');await p.click('#srv .btn');await p.waitForSelector('#srv',{state:'detached'});return true};
 let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 async function device(b,name){
   const ctx=await b.newContext({viewport:{width:1000,height:800}});
@@ -17,11 +19,12 @@ async function device(b,name){
   return p;
 }
 const signIn=async(p,em,pw,create)=>{
-  await p.click('#accb');await p.waitForSelector('#a-em',{timeout:15000});
-  if(create){await p.click('text=New here? Create an account');await p.waitForSelector('text=Create account')}
+  await p.waitForSelector('#a-em',{timeout:15000}); // the app opens on the sign-in screen
+  if(create){await p.click('.btn2');await p.waitForSelector('text=Sign in instead')}
   await p.fill('#a-em',em);await p.fill('#a-pw',pw);await p.click('#acc-body button[type=submit]');
   try{await p.waitForFunction(()=>ACC.user,null,{timeout:15000})}catch(e){console.log('SIGNIN DEBUG:',await p.evaluate(()=>document.querySelector('#acc-body').innerText.slice(0,400)),p.errs);throw e}
-  await p.click('#acc-x');
+  await p.waitForFunction(()=>ACC.libUid&&document.querySelector('#acct').classList.contains('hidden'),null,{timeout:15000});
+  await answerSurvey(p);
 };
 const books=p=>p.evaluate(()=>data.map(b=>b.title+'['+b.pages.map(x=>x?'img':'-').join('')+']'+(b.objs.flat().filter(Boolean).map(o=>o.t).join('/')||'')).sort().join(' | '));
 const settle=async p=>{await p.waitForTimeout(600);await p.waitForFunction(()=>!ACC.busy&&!ACC.timer||!ACC.busy,null,{timeout:20000});await p.evaluate(()=>syncRun());await p.waitForFunction(()=>!ACC.busy,null,{timeout:20000});await p.waitForTimeout(300)};
@@ -35,10 +38,10 @@ async function grantPro(uid){
     if(f.startsWith(ROOT)&&fs.existsSync(f)){res.writeHead(200,{'Content-Type':mime[path.extname(f)]||'application/octet-stream'});res.end(fs.readFileSync(f))}else{res.writeHead(404);res.end('nf')}}).listen(5173,'127.0.0.1');
   const b=await chromium.launch({args:['--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessRespectPreflightResults']});
   const A=await device(b,'A');
-  // A has some local work before signing in
-  await A.evaluate(()=>{data[0].title='Trip';data[0].pages=[null,null,null];data[0].objs=[[{k:'note',c:'#ffe14d',t:'pack',x:1,y:1,w:9,h:9,f:40,r:0}]];persist()});
-  await A.waitForTimeout(500);
   await signIn(A,'ana@example.com','secret123',true);
+  // A works on the free plan first
+  await A.evaluate(()=>{const t=mk('Trip',0);t.pages=[null,null,null];t.objs=[[{k:'note',c:'#ffe14d',t:'pack',x:1,y:1,w:9,h:9,f:40,r:0}]];data=[ens(t)];persist();renderShelf()}); // replaces the welcome notebook
+  await A.waitForTimeout(500);
   ok(await A.evaluate(()=>ACC.user.email)==='ana@example.com','A: account created and signed in');
   ok(await A.evaluate(()=>!ACC.pro&&document.querySelector('#plan').textContent==='Free plan'),'A: free plan, no sync');
   const denied=await A.evaluate(async()=>{try{const F=ACC.F,bt=F.writeBatch(ACC.db);bt.set(F.doc(ACC.db,'users',ACC.user.uid),{m:{x:{h:'1',n:1}},v:1},{merge:true});await bt.commit();return false}catch(e){return e.code}});
@@ -60,7 +63,6 @@ async function grantPro(uid){
   const aBooks=await books(A);
   // device B: fresh, signs in
   const B=await device(b,'B');
-  ok((await books(B)).startsWith('Sketches'),'B: starts with the empty starter notebook');
   await signIn(B,'ana@example.com','secret123',false);
   await B.waitForFunction(()=>ACC.pro,null,{timeout:15000});
   await settle(B);
@@ -104,9 +106,11 @@ async function grantPro(uid){
   await B.click('#bclose');await B.waitForTimeout(500);await settle(B);
   ok(whileOpen==='Trip to Rome'&&(await books(B)).startsWith('Rome['),'B: open notebook not changed under your hands; updated after closing ('+whileOpen+' → '+await books(B)+')');
   // sign out keeps notebooks
-  await settle(A);const before=await books(A);await A.click('#accb');await A.waitForSelector('text=Sign out');await A.click('text=Sign out');
-  await A.waitForFunction(()=>!ACC.user,null,{timeout:10000});
-  ok(await books(A)===before&&await A.evaluate(()=>document.querySelector('#plan').textContent)==='Free plan','A: signed out, notebooks still here, back to Free');
+  await settle(A);const before=await books(A);await A.click('#menub');await A.click('#mout');
+  await A.waitForFunction(()=>!ACC.user&&ACC.gate,null,{timeout:10000});
+  ok(await A.evaluate(()=>data.length)===0,'A: signed out → sign-in screen, notebooks hidden');
+  await signIn(A,'ana@example.com','secret123',false);await A.waitForFunction(()=>ACC.pro,null,{timeout:15000});
+  ok(await books(A)===before,'A: signs in again → same notebooks');
   
   for(const p of [A,B,C])p.errs.forEach(e=>console.log('  ',e));
   console.log(fails?fails+' FAILED':'ALL PASSED');

@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Foliet</title>
+<title>Foliet Sketchbook</title>
+<meta name="description" content="Foliet Sketchbook: your notebooks, sketches and plans.">
+<meta name="robots" content="noindex">
 <meta name="theme-color" content="#e4e9e6">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -83,6 +85,19 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 html{background:var(--desk)}
 #shelf header{display:flex;align-items:center;flex-wrap:wrap;gap:10px 12px;max-width:980px;margin:0 auto 24px}
 #shelf header h1{margin-right:auto}
+.mwrap{position:relative}
+#menub{position:relative}#menub .ndot{position:absolute;right:3px;top:3px;margin:0}
+#menu{position:absolute;right:0;top:calc(100% + 8px);z-index:45;width:min(300px,calc(100vw - 32px));background:var(--bar);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 40px var(--sh);padding:6px}
+@media (max-width:560px){#menu{position:fixed;left:16px;right:16px;width:auto;top:calc(env(safe-area-inset-top,0px) + 78px)}}
+.mhead{display:flex;align-items:center;gap:10px;padding:10px 10px 12px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.mhead .av{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--bar);font-weight:700}
+.mhead b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}.mhead small{opacity:.7}
+.mi{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:8px 10px;border:0;border-radius:10px;background:none;color:inherit;font:inherit;text-align:left}
+button.mi:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}.mi .ic{flex:none;opacity:.8}.mi span{flex:1}
+.mi .ndot{margin:0}
+.seg3{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.seg3 button{border:0;background:none;color:inherit;font:inherit;font-size:.85em;padding:6px 9px;min-width:36px;min-height:34px}
+.seg3 button[aria-pressed="true"]{background:var(--ink);color:var(--bar)}
+#mout{color:#c2473a}#mout .ic{opacity:1}
 #shelf header .btn,#shelf header .ib{flex:none;white-space:nowrap}
 #note{order:9;flex:1 0 100%}
 #note:empty{display:none}
@@ -212,7 +227,57 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .hd.ro{left:50%;top:-40px;margin-left:-13px;cursor:grab}
 #bgimg{position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;border-radius:inherit}
 #bgimg.on{display:block}
-#dlg,#up{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
+#admin{position:fixed;inset:0;z-index:70;background:var(--desk);overflow:auto;padding-top:env(safe-area-inset-top,0px)}
+#admin .bar{position:sticky;top:0;z-index:1}
+#adm-body{max-width:860px;margin:0 auto;padding:8px 16px 60px}#adm-body h3{margin:26px 0 10px;font-size:1.1em}
+.astats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.aper{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-top:8px}.aper .lk-in{width:auto;min-width:200px;margin:0;text-align:left;min-height:38px}.aper .seg3 button{padding:8px 12px}
+.aplabel{margin:8px 0 0;font-weight:700;opacity:.8}.anote{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,transparent);font-size:.9em}
+.acard.big b{color:#2e9d5b}.acard small{opacity:.6;font-size:.8em}
+.acharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:10px}
+.achart{background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px}.achart>b{display:block;margin-bottom:8px}
+.cbars{display:flex;align-items:flex-end;gap:3px;height:150px}.cbar{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px}
+.cbar i{display:block;width:100%;background:var(--accent);border-radius:4px 4px 0 0}.cbar small{font-size:.65em;opacity:.65;height:1.2em}.cbar .bv{font-size:.6em;opacity:.8;white-space:nowrap}
+.abrks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.abrk{background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px}.abrk>b{display:block;margin-bottom:8px}
+.abr{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:6px 0;font-size:.9em}.abr em{font-style:normal;opacity:.7}.abr i{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:var(--accent);opacity:.8}
+.acard{background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}.acard b{font-size:1.6em}.acard span{opacity:.7;font-size:.9em}
+.acard.wide{grid-column:1/-1}.acard.wide b{font-size:1.05em}
+.aform{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:flex-end;background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px}
+.aform .lk-in{margin:0;text-align:left;min-height:42px}.alab{display:flex;flex-direction:column;gap:4px;font-size:.85em;flex:1 1 150px}.alab span{opacity:.75}
+.aform .cmsg{flex-basis:100%;margin:0}
+.alist{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.arow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bar);border:1px solid var(--line);border-radius:12px;padding:8px 10px}.arow>div{flex:1 1 200px;min-width:0;overflow-wrap:anywhere}.arow small{opacity:.7}.arow.off{opacity:.55}
+#adm-body .muted{opacity:.7;font-size:.9em}#adm-body .amsg{color:#c2473a;font-weight:600}
+.codebox .crow{display:flex;gap:8px}.codebox .lk-in{margin:0;text-align:left;text-transform:uppercase}.codebox .btn{flex:none;min-height:46px}.cmsg{min-height:1.2em;font-size:.9em;margin:6px 0 0}
+#up .alink{display:block;margin:12px auto 0;background:none;border:0;color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+#srv{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:20px}
+#srv .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#srv h2{margin:0 0 4px;font-size:1.3em}.srv-sub{opacity:.75;margin:0 0 14px}
+.srv-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.srv-opt{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:none;color:inherit;font:inherit;text-align:left}
+.srv-opt i{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--line)}
+.srv-opt[aria-checked="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}.srv-opt[aria-checked="true"] i{border:6px solid var(--accent)}
+.srv-o label{display:block;font-size:.85em;opacity:.8;margin:2px 0 4px}.srv-o .lk-in{text-align:left}
+#srv .btn{width:100%;min-height:46px}#srv .btn:disabled{opacity:.45}
+.sva{display:flex;flex-direction:column;padding:6px 0;border-top:1px solid var(--line)}.sva small{opacity:.6}
+#lockd{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:20px}
+#lockd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(380px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
+#lockd h2{margin:6px 0 4px;font-size:1.25em}.lk-sub{opacity:.75;margin:0 0 14px}.lk-note{opacity:.65;font-size:.85em;margin:8px 0 12px}
+.lk-ic{display:grid;place-items:center;width:52px;height:52px;margin:0 auto;border-radius:50%;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}.lk-ic .ic{width:26px;height:26px}
+.lk-in{display:block;width:100%;margin:0 0 10px;font:inherit;color:var(--ink);background:var(--desk);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-height:46px;text-align:center}
+.lk-in.pin{font-size:28px;letter-spacing:.6em;padding-left:.6em;width:min(220px,100%);margin-left:auto;margin-right:auto}
+.lk-lab{display:block}.lk-lab span{display:block;font-size:.85em;opacity:.75;margin:0 0 4px}
+.lk-err{color:#c2473a;font-weight:600;min-height:1.2em;margin:4px 0 8px}
+#lockd .seg2{margin:0 0 12px}#lockd .chk{justify-content:center;margin:4px 0 6px}#lockd .acts2{justify-content:center;flex-wrap:wrap}#lockd .alink{margin-top:12px}
+#lockd .alink{display:block;margin:12px auto 0;padding:6px 10px;background:none;border:0;color:var(--accent);font-size:.95em;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+#lockd .gbtn{margin:0 0 8px}
+.shake{animation:shake .35s}@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
+#block.on{color:var(--accent);border-color:var(--accent)}
+.lkb{position:absolute;right:8%;top:6%;z-index:2;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.92);color:#23304a;box-shadow:0 2px 6px rgba(0,0,0,.25)}.lkb .ic{width:17px;height:17px}
+#npd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(460px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}#npd h2{margin:0 0 4px;font-size:1.3em}#npd p{margin:0 0 14px;opacity:.7}
+#npd .opts2{grid-template-columns:repeat(auto-fill,minmax(78px,1fr));margin-bottom:16px}
+#npd,#dlg,#up{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
 #dlg .card,#up .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #dlg h2,#up h2{margin:0 0 4px;font-size:1.3em}
 #dlg p,#up p{margin:0 0 16px;opacity:.7}
@@ -325,16 +390,26 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 .empty{grid-column:1/-1;text-align:center;opacity:.7;padding:40px 0}
 #set,#tour,#acct{position:fixed;inset:0}
 #acct{z-index:57;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
+#acct.gate{background:var(--desk);z-index:90}#acct.gate #acc-x{display:none}#acct:not(.gate) #acc-theme{display:none}#acc-theme{margin-left:auto}
 #acct .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(400px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #acct h2{margin:0;font-size:1.3em}#acct p{margin:0 0 12px}#acct .muted{opacity:.7;font-size:.88em}#acct .or{text-align:center;opacity:.6;margin:12px 0}
-#acct .amsg{color:#b3402f;font-weight:600}#acct .srow>span{width:96px}
+#acct .amsg{color:#b3402f;font-weight:600}
+#acct .alink{display:block;margin:-4px auto 10px;padding:6px 10px;background:none;border:0;color:var(--accent);font-size:.95em;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+#acct .sep{text-align:center;opacity:.75;margin:14px 0 8px;font-size:.92em}
+.btn2{display:block;width:100%;min-height:44px;margin:0 0 14px;background:transparent;color:var(--ink);border:2px solid var(--ink);border-radius:999px;font-weight:600;padding:10px 18px}
+.btn2:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}#acct .srow>span{width:96px}
 .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:44px;background:#fff!important;color:#1f1f1f!important;border:1px solid #dadce0!important;font-weight:600}
 .af label{display:block;margin:0 0 10px;font-size:.9em}
 .af input{display:block;width:100%;margin-top:4px;font:inherit;color:var(--ink);background:var(--desk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
 .af .btn{width:100%;margin:4px 0 12px;min-height:44px}
-#accb{position:relative}#accb.on::after{content:"";position:absolute;right:3px;top:3px;width:9px;height:9px;border-radius:50%;background:#2e9d5b;border:2px solid var(--bar)}
 #set{z-index:56;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
 #set .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#upd{position:fixed;inset:0;z-index:58;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
+#upd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(440px,100%);max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#upd h2{margin:0;font-size:1.3em}#updv{opacity:.7;margin:4px 0 14px}
+.uv{border-top:1px solid var(--line);padding:12px 0}.uv h3{margin:0;font-size:1.05em}.uv small{opacity:.65}.uv ul{margin:8px 0 0;padding-left:20px;line-height:1.55}
+.uempty{opacity:.75;padding:18px 0 6px;text-align:center}
+.ndot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0453a;margin-left:6px;vertical-align:middle}
 #set h2{margin:0 0 2px;font-size:1.3em}#set p{margin:0 0 14px;opacity:.7}
 a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .upl{margin:4px 0 10px;padding-left:20px;line-height:1.6}.upp{margin:0 0 6px}.upn{opacity:.7;font-size:.9em;margin:0 0 14px}
@@ -376,7 +451,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 
 <div id="sv" role="status" aria-live="polite"></div>
 <section id="shelf">
-  <header><h1>My notebooks</h1><span id="note" role="status"></span><button class="ib i" id="accb" aria-label="Account" title="Sign in"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></button><button class="ib i" id="hlpb" aria-label="Help and shortcuts" title="Help and shortcuts (?)"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg></button><button class="ib i" id="setb" aria-label="Settings" title="Settings"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
+  <header><h1>My notebooks</h1><span id="note" role="status"></span><button class="ib i" id="themeb" aria-label="Switch theme"></button><div class="mwrap"><button class="ib i" id="menub" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i class="ndot hidden" id="menud"></i></button><div id="menu" class="hidden" role="menu"><div class="mhead" id="mhead"></div><button role="menuitem" class="mi" id="accb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Account &amp; promo code</span></button><div class="mi mtheme"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>Theme</span><div class="seg3" id="mtheme"><button data-v="auto">Auto</button><button data-v="light" aria-label="Light">☀</button><button data-v="dark" aria-label="Dark">☾</button></div></div><button role="menuitem" class="mi" id="mupd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span>What’s new</span><i class="ndot hidden" id="mupdd"></i></button><button role="menuitem" class="mi" id="setb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Settings</span></button><button role="menuitem" class="mi" id="hlpb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg><span>Help &amp; shortcuts</span></button><button role="menuitem" class="mi hidden" id="madm"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Admin panel</span></button><button role="menuitem" class="mi" id="mout"><svg class="ic" viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/></svg><span>Sign out</span></button></div></div><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
   <nav class="tabs" role="tablist"><button role="tab" id="tb1" aria-selected="true">Notebooks</button><button role="tab" id="tb2" aria-selected="false">Templates</button></nav>
   <div id="lib"><label class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="q" type="search" placeholder="Search notebooks" aria-label="Search notebooks and notes" autocomplete="off"></label>
     <select id="sortb" aria-label="Sort notebooks"><option value="rec">Recently edited</option><option value="name">Name A–Z</option><option value="pages">Most pages</option><option value="new">Newest first</option></select>
@@ -386,7 +461,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </section>
 
 <section id="bv" class="hidden">
-  <div class="bar"><button class="ib" id="bclose">‹ Notebooks</button><input id="btitle" aria-label="Notebook name" maxlength="40"><span class="hint" id="hint"></span><button class="ib" id="bshare">Share</button></div>
+  <div class="bar"><button class="ib" id="bclose">‹ Notebooks</button><input id="btitle" aria-label="Notebook name" maxlength="40"><span class="hint" id="hint"></span><button class="ib i" id="block" aria-label="Lock this notebook"></button><button class="ib" id="bshare">Share</button></div>
   <div id="bmain"><div id="tilt"><div id="sp">
     <div class="pg" id="pl"></div><div class="pg" id="pr"></div>
     <div class="fl" id="fl"></div>
@@ -502,6 +577,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <p class="upp"><b>€3.99</b> a month or <b>€29.99</b> a year</p>
   <p class="upn">Pro isn’t on sale yet. Payments open together with accounts and cloud sync. Everything you make on the free plan stays yours.</p>
   <div class="acts2"><button class="ib" id="upno">OK</button><a class="btn" id="upgo" href="../#pricing" target="_blank" rel="noopener">Compare plans</a></div>
+  <button class="alink" id="upcode" type="button">Have a promo code?</button>
 </div></div>
 
 <div id="ov" class="hidden" role="dialog" aria-label="All pages">
@@ -517,8 +593,13 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </div>
 
 <div id="acct" class="hidden" role="dialog" aria-modal="true" aria-labelledby="acctt"><div class="card">
-  <div class="sh-top"><h2 id="acctt">Your account</h2><button class="ib i" id="acc-x" aria-label="Close">✕</button></div>
+  <div class="sh-top"><h2 id="acctt">Your account</h2><button class="ib i" id="acc-theme" aria-label="Switch theme"></button><button class="ib i" id="acc-x" aria-label="Close">✕</button></div>
   <div id="acc-body"></div>
+</div></div>
+<div id="upd" class="hidden" role="dialog" aria-modal="true" aria-labelledby="updt"><div class="card">
+  <div class="sh-top"><h2 id="updt">Updates</h2><button class="ib i" id="upd-x" aria-label="Close">✕</button></div>
+  <p id="updv"></p>
+  <div id="updl"></div>
 </div></div>
 <div id="set" class="hidden" role="dialog" aria-modal="true" aria-labelledby="sett"><div class="card">
   <h2 id="sett">Settings</h2><p>Make the app feel like yours.</p>
@@ -527,6 +608,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <label class="chk" style="margin:14px 0"><input type="checkbox" id="s-snd"> Page-turn sound</label>
   <div class="srow"><span>Tour</span><button class="ib" id="s-tour">Show the tour again</button></div>
   <div class="srow"><span>Help</span><button class="ib" id="s-help">Shortcuts &amp; gestures</button></div>
+  <div class="srow"><span>Updates</span><button class="ib" id="s-upd">What’s new<i class="ndot hidden" id="s-updd"></i></button></div>
   <div class="srow"><span>Backup</span><div class="grp" style="flex-wrap:wrap;gap:6px"><button class="ib" id="s-bak">Back up all notebooks</button><button class="ib" id="s-res">Restore from a backup</button></div></div>
   <small id="s-store" style="display:block;opacity:.7;margin:-4px 0 6px 96px"></small>
   <input type="file" id="resf" accept=".json,application/json" hidden>
@@ -549,6 +631,22 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <button class="xo" id="x-pdf"><svg class="ic" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><div><b>Whole notebook · PDF</b><span id="x-pdfs">Cover and every page</span></div></button>
   <button class="xo" id="x-img"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg><div><b>This spread · images</b><span id="x-imgs">PNG of the visible page(s)</span></div></button>
   <div class="acts2"><button class="ib" id="xno">Close</button></div>
+</div></div>
+<section id="admin" class="hidden" aria-label="Admin">
+  <div class="bar"><button class="ib" id="adm-x">‹ Back</button><strong>Admin</strong><button class="ib" id="adm-r" style="margin-left:auto">Refresh</button></div>
+  <div id="adm-body"></div>
+</section>
+<div id="lockd" class="hidden" role="dialog" aria-modal="true"><div class="card" id="lockc"></div></div>
+<div id="npd" class="hidden" role="dialog" aria-modal="true" aria-labelledby="npt"><div class="card">
+  <h2 id="npt">New pages</h2><p id="npsub">How should the new pages look?</p>
+  <div class="opts2" id="npats">
+    <button data-p="same"><i class="mini" id="npsame"></i>Like the last page</button>
+    <button data-p="blank"><i class="mini pt-blank"></i>Blank</button>
+    <button data-p="lines"><i class="mini pt-lines"></i>Lined</button>
+    <button data-p="grid"><i class="mini pt-grid"></i>Grid</button>
+    <button data-p="dots"><i class="mini pt-dots"></i>Dots</button>
+  </div>
+  <div class="acts2"><button class="ib" id="npno">Cancel</button><button class="btn" id="npyes">Add pages</button></div>
 </div></div>
 <div id="dlg" class="hidden" role="dialog" aria-modal="true" aria-labelledby="dt"><div class="card">
   <h2 id="dt"></h2><p id="dsub"></p>
@@ -588,7 +686,8 @@ function idb(){return dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('
 async function idbGet(k){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>res(t.result);t.onerror=()=>rej(t.error)})}
 async function idbSet(k,v){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
 async function idbDel(k){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').delete(k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-const P2='v2:',PK=['pages','objs','pv','bg','ps','lay'];
+let P2='v2:'; // this account's records on the device (see openLibrary)
+const PK=['pages','objs','pv','bg','ps','lay'];
 let snaps=new Map(),usingLS=false;
 /* cheap fingerprint: small values as JSON, long strings (images) compared by identity */
 function sig(v){const big=[];const j=JSON.stringify(v,(k,x)=>typeof x==='string'&&x.length>256?(big.push(x),'\u0001'+(big.length-1)):x);return {j,big}}
@@ -623,7 +722,7 @@ async function saveNow(){
   }catch(e){
     if(!usingLS&&!(e&&/quota/i.test(e.name+' '+e.message))){try{dbp=null;await flushSave();note('');svMsg('saved');return}catch(e3){e=e3}}
     if(!usingLS&&e&&/quota/i.test(e.name+' '+e.message)){note('Browser storage is full. Back up your notebooks in Settings, then delete some pages.',1);svMsg('err');return}
-    try{localStorage.setItem(KEY,JSON.stringify(data));usingLS=true;note('');svMsg('saved')}catch(e2){note('Browser storage is full.',1);svMsg('err')}
+    try{localStorage.setItem(lsKey(),JSON.stringify(data));usingLS=true;note('');svMsg('saved')}catch(e2){note('Browser storage is full.',1);svMsg('err')}
   }
 }
 function persist(){
@@ -656,15 +755,18 @@ async function loadV2(){
   snaps=new Map();m.forEach((v,k)=>snaps.set(k,used.has(k)?sig(v):{j:'\u0000old',big:[]}));
   return out;
 }
-async function initData(){
-  let d=null,old=false;
+const lsKey=()=>P2==='v2:'?KEY:KEY+'@'+P2;
+async function initData(legacy){
+  let d=null,old=false;usingLS=false;
   try{d=await loadV2()}catch(e){usingLS=true}
-  if(!d){
+  if(!d&&usingLS){try{d=JSON.parse(localStorage.getItem(lsKey()))}catch(e){}}
+  if(!d&&legacy){ // notebooks saved by an older version of the app (only for the first account on this device)
     old=true;
     if(!usingLS){try{d=await idbGet(KEY)}catch(e){}}
     if(!d){try{d=JSON.parse(localStorage.getItem(KEY))}catch(e){}}
   }
-  data=(Array.isArray(d)&&d.length?d:[mk('Sketches',0)]).map(ens);
+  data=(Array.isArray(d)&&d.length?d:[]).map(ens);
+  if(!data.length){try{data=[await makeWelcome()]}catch(e){console.warn('welcome',e);data=[mk('Sketches',0)]}persist()} // a new library starts with the welcome notebook
   renderShelf();
   if(old&&!usingLS&&Array.isArray(d)&&d.length){
     // move the old single-record library to the new format, then drop the old copy
@@ -691,7 +793,8 @@ function makeBook(b){
   const el=document.createElement('div');el.className='book';el.style.aspectRatio=b.o==='l'?'4/3':'3/4';
   el.innerHTML='<div class="pages"></div><div class="cover"><div class="front"><div class="lbl"></div></div><div class="inside"></div></div>';
   const f=el.querySelector('.front');f.style.setProperty('--c',b.color);f.style.setProperty('--ct',texUrl(b));
-  const cv0=b.cpv||b.cover;
+  if(b.lock){const k=document.createElement('i');k.className='lkb';k.innerHTML=LOCK_IC;f.append(k)}
+  const cv0=b.lock?null:(b.cpv||b.cover);
   if(cv0){const m=new Image();m.alt='';m.src=cv0;f.prepend(m);f.querySelector('.lbl').remove()}
   else f.querySelector('.lbl').textContent=b.title||'Untitled';
   return el;
@@ -708,9 +811,10 @@ function renderShelf(){
     const sm=document.createElement('small');sm.textContent=b.pages.length+(b.pages.length===1?' page':' pages')+(LIB.view==='list'?' · '+ago(b.u||created(b)):'');cap.append(sm);
     if(m.snip){const sn=document.createElement('span');sn.className='snip';sn.append('Page '+(m.page+1)+': ');hl(sn,m.snip,q,true);cap.append(sn)}
     c.append(cap);
-    c.onclick=()=>{if(typeof m.page==='number')b.cs=m.page>>1;showBrowse(b)};
+    c.onclick=async()=>{if(!await unlockBook(b))return;if(typeof m.page==='number')b.cs=m.page>>1;showBrowse(b)};
     const x=document.createElement('button');x.className='del';x.textContent='×';x.setAttribute('aria-label','Delete notebook');
-    x.onclick=()=>{
+    x.onclick=async()=>{
+      if(!x.dataset.s&&b.lock&&!await unlockBook(b))return;
       if(x.dataset.s){data=data.filter(k=>k!==b);if(!data.length)data=[mk('Sketches',0)];persist();renderShelf()}
       else{x.dataset.s=1;x.textContent='Sure?';x.classList.add('on');setTimeout(()=>{delete x.dataset.s;x.textContent='×';x.classList.remove('on')},2500)}
     };
@@ -722,8 +826,11 @@ function renderShelf(){
   a.onclick=newNotebook;
   g.append(a);
 }
-async function newNotebook(){if(data.length>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}const o=await askOrient('New notebook','p','Choose the page orientation.');if(!o)return;const b=mk('Notebook '+(data.length+1),data.length,o);data.push(b);persist();showBrowse(b)}
-function closeBook(){$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;syncSoon(300)}
+const ownBooks=()=>data.filter(b=>!b.welcome).length; // the welcome notebook doesn't count toward the free limit
+async function newNotebook(){if(ownBooks()>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}const o=await askOrient('New notebook','p','Choose the page orientation.');if(!o)return;const b=mk('Notebook '+(data.length+1),data.length,o);data.push(b);persist();showBrowse(b)}
+function closeBook(){if(cur)UNL.delete(String(cur.id));$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;docTitle();syncSoon(300)}
+/* browser tab: "Foliet Sketchbook", or "<notebook> – Foliet Sketchbook" while a notebook is open */
+function docTitle(){document.title=cur&&$('#shelf').classList.contains('hidden')?(cur.title||'Untitled')+' – Foliet Sketchbook':'Foliet Sketchbook'}
 
 /* Book: cover + pages. State cs: -1 = closed cover; s>=0: left=2s-1 (s=0: inside of cover), right=2s */
 const L=s=>s<0?'x':2*s,R=s=>s<0?'c':2*s+1,SM=()=>Math.max(0,(cur.pages.length-1)>>1);
@@ -747,7 +854,7 @@ function showBrowse(b){
   let tg=-1;if(b){cur=b;setDims(b);zs=0;cs=-1;tg=typeof b.cs==='number'?Math.max(-1,Math.min(b.cs,Math.max(0,(b.pages.length-1)>>1))):-1}
   endFloat();$('#btitle').value=cur.title;
   $('#shelf').classList.add('hidden');$('#ed').classList.add('hidden');$('#bv').classList.remove('hidden');
-  renderBrowse();
+  docTitle();syncLockBtn();renderBrowse();
   if(b){const sp=$('#sp');sp.classList.remove('in');sp.offsetWidth;sp.classList.add('in');if(tg>=0)resume(b,tg);if(tIdx===0)setTimeout(()=>{if(!$('#bv').classList.contains('hidden')&&!flipping)tourShow(0)},tg>0?2600:1100)}
 }
 function fitSp(){const s=$('#sp');s.style.perspective=Math.round(s.offsetWidth*1.7)+'px'}
@@ -876,7 +983,7 @@ function resume(b,target){
   setTimeout(step,700);
 }
 $('#bclose').onclick=()=>{if(!flipping)closeBook()};
-$('#btitle').oninput=e=>{cur.title=e.target.value;persist()};
+$('#btitle').oninput=e=>{cur.title=e.target.value;docTitle();persist()};
 let zs=0;
 function resetZoom(){if(!zs)return;zs=0;$('#bzoom').setAttribute('aria-pressed',false);const t=$('#tilt');t.style.transition='none';applyZoom();t.offsetWidth;t.style.transition=''}
 function applyZoom(){
@@ -890,10 +997,26 @@ $('#bzoom').onclick=()=>{zs=cs<0?(zs?0:2):(zs+1)%3;$('#bzoom').setAttribute('ari
 addEventListener('resize',()=>{if(zs)applyZoom()});
 $('#bprev').onclick=()=>flip(cs-1);
 $('#bnext').onclick=()=>flip(cs+1);
+/* New pages: choose how they look (like the last page, blank, lined, grid or dots). The paper color stays. */
+function askPageStyle(last,add){
+  return new Promise(res=>{
+    const d=$('#npd'),bs=[...d.querySelectorAll('#npats button')];let v='same';
+    $('#npsub').textContent='Adding '+add+' page'+(add>1?'s':'')+'. How should '+(add>1?'they':'it')+' look?';
+    $('#npsame').className='mini pt-'+((last&&last.p)||'blank');
+    const mark=()=>bs.forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===v));mark();
+    bs.forEach(b=>b.onclick=()=>{v=b.dataset.p;mark()});
+    const done=x=>{d.classList.add('hidden');res(x)};
+    $('#npyes').onclick=()=>done(v);$('#npno').onclick=()=>done(null);
+    d.onclick=e=>{if(e.target===d)done(null)};
+    d.classList.remove('hidden');
+  });
+}
 $('#badd').onclick=async()=>{
-  const n0=cur.pages.length,last=cur.ps[n0-1],room=LIM().pg-n0;
+  const n0=cur.pages.length,last0=cur.ps[n0-1],room=LIM().pg-n0;
   if(room<=0){upsell('The free plan includes '+LIM().pg+' pages per notebook. Upgrade to Pro for unlimited pages.');return}
-  for(let k=0,add=Math.min(n0%2===0?2:3,room);k<add;k++)cur.pages.push(null);
+  const add=Math.min(n0%2===0?2:3,room),pick=await askPageStyle(last0,add);if(!pick)return;
+  const last=pick==='same'?last0:(pick==='blank'&&(!last0||last0.c===PAPER)?null:{...DEF,...(last0||{}),p:pick});
+  for(let k=0;k<add;k++)cur.pages.push(null);
   if(last)for(let k=n0;k<cur.pages.length;k++)cur.ps[k]={...last};
   persist();
   if(last)await Promise.all([...Array(cur.pages.length-n0).keys()].map(k=>rebuildPv(n0+k)));
@@ -1334,6 +1457,7 @@ async function drawRuns(x,o){
     pieces.forEach(q=>{x.font=fontOf(q.s);x.fillStyle=q.s.c;x.fillText(q.t,px,y+up);px+=x.measureText(q.t).width});
     y+=up+dn;
   });
+  return y+o.h/2+p; // height the text needs, padding included
 }
 /* keyboard: keep the editor (and its text bar) above the on-screen keyboard */
 function initKb(){
@@ -2108,7 +2232,7 @@ function setPlanBtn(){const b=$('#plan');if(!b)return;b.textContent=ACC.pro?'Pro
 function initPlan(){
   setPlanBtn();
   $('#plan').onclick=()=>{if(ACC.pro){openAcc();return}if(plan==='pro')toast('Pro demo is on. Open the app with ?demo=free to turn it off.');else upsell('')};
-  $('#upno').onclick=()=>$('#up').classList.add('hidden');
+  $('#upno').onclick=()=>$('#up').classList.add('hidden');$('#upcode').onclick=openCode;
 }
 
 /* Cover textures */
@@ -2145,11 +2269,22 @@ function syncCov(){
 let SET={theme:'auto',desk:'sage',snd:false};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('sb-set')||'{}'))}catch(e){}
 function saveSet(){try{localStorage.setItem('sb-set',JSON.stringify(SET))}catch(e){}}
+/* light / dark: the sun–moon buttons switch to the other look; matching the device again means "auto" */
+const sysDark=()=>!!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+const isDark=()=>SET.theme==='dark'||(SET.theme==='auto'&&sysDark());
+const SUN_IC='<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>';
+const MOON_IC='<svg class="ic" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg>';
+function syncThemeBtns(){const d=isDark();['#themeb','#acc-theme'].forEach(q=>{const b=document.querySelector(q);if(!b)return;b.innerHTML=d?SUN_IC:MOON_IC;b.title=d?'Switch to light theme':'Switch to dark theme';b.setAttribute('aria-label',b.title)});
+  document.querySelectorAll('#mtheme button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===SET.theme))}
+function setTheme(t){SET.theme=t;saveSet();applySet();if(typeof syncSet==='function')syncSet()}
+function toggleTheme(){const want=isDark()?'light':'dark';setTheme((want==='dark')===sysDark()?'auto':want)}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applySet())}catch(e){}
 function applySet(){
   const r=document.documentElement;
   if(SET.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',SET.theme);
   if(SET.desk==='sage')r.removeAttribute('data-desk');else r.setAttribute('data-desk',SET.desk);
   try{const m=document.querySelector('meta[name=theme-color]');if(m)m.content=getComputedStyle(r).getPropertyValue('--desk').trim()||'#e4e9e6'}catch(e){}
+  syncThemeBtns();
 }
 applySet();
 let AC=null;
@@ -2190,22 +2325,60 @@ function fbLoad(){
     const emu=new URLSearchParams(location.search).get('emu');
     if(emu&&/^(localhost|127\.0\.0\.1)$/.test(emu)&&(location.protocol==='file:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))){F.connectAuthEmulator(auth,'http://'+emu+':9099',{disableWarnings:true});F.connectFirestoreEmulator(db,emu,8080)}
     Object.assign(ACC,{F,auth,db});
-    F.onAuthStateChanged(auth,u=>accUser(u));
+    let q=Promise.resolve();F.onAuthStateChanged(auth,u=>{q=q.then(()=>accUser(u)).catch(e=>console.warn(e))}); // one at a time
     F.getRedirectResult(auth).catch(accErr);
     return F;
   })();
   fbLoading.catch(()=>{fbLoading=null});
   return fbLoading;
 }
+/* An account is required. Each account has its own notebooks on the device:
+   the first account that signs in here keeps the notebooks that were already on the device (prefix v2:),
+   any other account gets its own (prefix v2u:<uid>:). Signing out hides them until that account signs in again. */
+const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+async function openLibrary(uid){
+  if(ACC.libUid===uid)return;
+  await closeLibrary();
+  let owner=lsGet('sb-owner');if(!owner){lsSet('sb-owner',uid);owner=uid}
+  P2=owner===uid?'v2:':'v2u:'+uid+':';
+  snaps=new Map();hcache.clear();ACC.libUid=uid;lsSet('sb-last-uid',uid);
+  await initData(P2==='v2:');
+}
+async function closeLibrary(){
+  if(!ACC.libUid)return;
+  try{if(!$('#ed').classList.contains('hidden')){endFloat();await savesDone()}}catch(e){}
+  await saveNow();
+  closeSheet();
+  ['#ed','#bv','#ov'].forEach(q=>{const e=$(q);if(e)e.classList.add('hidden')});$('#shelf').classList.remove('hidden');
+  cur=null;data=[];snaps=new Map();hcache.clear();ACC.libUid=null;renderShelf();docTitle();
+}
+function showGate(){ACC.gate=true;const a=$('#acct');a.classList.add('gate');a.classList.remove('hidden');renderAcc()}
+function hideGate(){ACC.gate=false;const a=$('#acct');a.classList.remove('gate');a.classList.add('hidden')}
+async function startApp(){
+  showGate();
+  try{await fbLoad()}
+  catch(e){
+    // offline: whoever used the app here last can keep working; sign-in is checked when back online
+    const last=lsGet('sb-last-uid');
+    if(last){await openLibrary(last);hideGate();toast('You’re offline. Your notebooks are here; sign-in is checked when you’re back online.')}
+    else{ACC.offline=true;renderAcc()}
+  }
+}
+window.addEventListener('online',()=>{if(!ACC.F){ACC.offline=false;fbLoad().then(renderAcc).catch(()=>{ACC.offline=true;renderAcc()})}});
 async function accUser(u){
   if(ACC.unPro){ACC.unPro();ACC.unPro=null}
   syncStop();
-  ACC.user=u||null;ACC.claimPro=false;ACC.docPro=false;ACC.err='';
-  try{localStorage.setItem('sb-acct',u?'1':'')}catch(e){}
+  const had=ACC.user;ACC.user=u||null;ACC.claimPro=false;ACC.docPro=false;ACC.proDoc=null;ACC.admin=false;ACC.err='';ACC.offline=false;clearTimeout(ACC.proT);
+  if(u){await openLibrary(u.uid);hideGate()}
+  else{lsSet('sb-last-uid','');if(had)ACC.mode='in';await closeLibrary();showGate()} // after signing out, show "Sign in" again
   if(u){
     try{const t=await u.getIdTokenResult();ACC.claimPro=t.claims.stripeRole==='pro'}catch(e){}
     const F=ACC.F;
-    ACC.unPro=F.onSnapshot(F.doc(ACC.db,'pro',u.uid),s=>{ACC.docPro=s.exists();setPro()},()=>{ACC.docPro=false;setPro()});
+    ACC.unPro=F.onSnapshot(F.doc(ACC.db,'pro',u.uid),s=>{
+      ACC.proDoc=s.exists()?s.data():null;ACC.docPro=proActiveDoc(ACC.proDoc);
+      clearTimeout(ACC.proT);const end=proUntil(ACC.proDoc);if(ACC.docPro&&end)ACC.proT=setTimeout(()=>{ACC.docPro=false;setPro()},Math.min(end-Date.now()+1000,2e9)); // Pro from a code ends by itself
+      setPro()},()=>{ACC.docPro=false;setPro()});
+    touchProfile(u);checkAdmin(u);checkSurvey(u);
   }
   setPro();
 }
@@ -2230,7 +2403,7 @@ function localRecs(){
   for(const b of data){m.set('b:'+b.id,metaOf(b));for(let i=0;i<b.pages.length;i++)m.set('p:'+b.id+':'+i,pageOf(b,i))}
   return m;
 }
-const isStarter=b=>b.pages.length===1&&!b.pages[0]&&!b.cover&&!b.cpv&&!(b.objs[0]||[]).length&&!(b.cobjs||[]).length&&!b.bg[0]&&!b.lay[0];
+const isStarter=b=>(b.welcome&&b.u===b.wu)||b.pages.length===1&&!b.pages[0]&&!b.cover&&!b.cpv&&!(b.objs[0]||[]).length&&!(b.cobjs||[]).length&&!b.bg[0]&&!b.lay[0];
 const openBookId=()=>cur&&$('#shelf').classList.contains('hidden')?String(cur.id):null;
 
 /* ----- cloud reads and writes ----- */
@@ -2339,7 +2512,7 @@ async function syncStart(){
   ACC.unMan=F.onSnapshot(F.doc(ACC.db,'users',u.uid),s=>{ACC.man={...((s.exists()&&s.data().m)||{})};syncSoon(400)},e=>{ACC.err='error';renderAcc();console.warn(e)});
 }
 function syncStop(){if(ACC.unMan){ACC.unMan();ACC.unMan=null}clearTimeout(ACC.timer);ACC.man=null;ACC.state=null}
-window.addEventListener('online',()=>syncSoon(500));
+window.addEventListener('online',()=>{syncSoon(500);if(ACC.user&&ACC.F)checkSurvey(ACC.user)});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncSoon(800);else if(ACC.pro)syncRun()});
 
 /* ----- account window ----- */
@@ -2347,14 +2520,16 @@ const GICON='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
 function ago2(t){if(!t)return 'not yet';const s=(Date.now()-t)/1000;return s<60?'just now':s<3600?Math.round(s/60)+' min ago':new Date(t).toLocaleString()}
 function renderAcc(){
   const box=$('#acc-body');if(!box)return;
-  const b=$('#accb');if(b){b.classList.toggle('on',!!ACC.user);b.title=ACC.user?'Account: '+(ACC.user.email||''):'Sign in'}
+  if(!$('#menu').classList.contains('hidden'))menuHead();
   if($('#acct').classList.contains('hidden'))return;
+  $('#acctt').textContent=ACC.gate?'Welcome to Foliet':'Your account';
   const keep={em:$('#a-em')&&$('#a-em').value,pw:$('#a-pw')&&$('#a-pw').value,f:document.activeElement&&document.activeElement.id};
   const u=ACC.user;box.innerHTML='';
   const p=(t,c)=>{const e=document.createElement('p');if(c)e.className=c;e.textContent=t;box.append(e);return e};
+  if(ACC.offline){p('You’re offline. Connect to the internet to sign in.');const r=document.createElement('button');r.className='btn';r.textContent='Try again';r.onclick=()=>{ACC.offline=false;renderAcc();startApp()};box.append(r);return}
   if(!ACC.F){p('Connecting…','muted');return}
   if(!u){
-    p('Sign in to keep your notebooks in the cloud and open them on any device. Cloud sync is part of Pro.');
+    p(ACC.gate?'Sign in or create a free account to start. With Pro, your notebooks also sync across your devices.':'Sign in to keep your notebooks in the cloud and open them on any device. Cloud sync is part of Pro.');
     const g=document.createElement('button');g.className='ib gbtn';g.innerHTML=GICON+'<span>Continue with Google</span>';g.onclick=accGoogle;box.append(g);
     p('or','or');
     const up=ACC.mode==='up';
@@ -2362,25 +2537,26 @@ function renderAcc(){
     f.innerHTML='<label>Email<input type="email" id="a-em" autocomplete="email" required></label><label>Password<input type="password" id="a-pw" minlength="6" required autocomplete="'+(up?'new-password':'current-password')+'"></label><button class="btn" type="submit">'+(up?'Create account':'Sign in')+'</button>';
     f.onsubmit=e=>{e.preventDefault();accEmail(up)};box.append(f);
     if(keep.em)$('#a-em').value=keep.em;if(keep.pw)$('#a-pw').value=keep.pw;if(keep.f==='a-em'||keep.f==='a-pw')$('#'+keep.f).focus(); // typing survives a refresh
+    if(!up){const fp=document.createElement('button');fp.type='button';fp.className='alink';fp.textContent='Forgot password?';fp.onclick=accReset;box.append(fp)}
     if(ACC.msg){const m=p(ACC.msg,'amsg');m.setAttribute('role','alert')}
-    const l=document.createElement('p');l.className='muted';
-    const a1=document.createElement('a');a1.href='#';a1.textContent=up?'I already have an account':'New here? Create an account';a1.onclick=e=>{e.preventDefault();ACC.mode=up?'in':'up';ACC.msg='';renderAcc()};
-    l.append(a1);
-    if(!up){const a2=document.createElement('a');a2.href='#';a2.textContent='Forgot password?';a2.onclick=e=>{e.preventDefault();accReset()};l.append(' · ',a2)}
-    box.append(l);
-    p('Your notebooks always stay on this device too. We only keep your email and, with Pro, a copy of your notebooks.','muted');
+    p(up?'Already have an account?':'New to Foliet?','sep');
+    const sw=document.createElement('button');sw.type='button';sw.className='btn2';sw.textContent=up?'Sign in instead':'Create a free account';
+    sw.onclick=()=>{ACC.mode=up?'in':'up';ACC.msg='';renderAcc()};box.append(sw);
+    p('Your notebooks are saved on this device. We only keep your email and, with Pro, a copy of your notebooks in the cloud.','muted');
     return;
   }
   p('Signed in as '+(u.email||u.displayName||'you'));
   const row=(k,v)=>{const d=document.createElement('div');d.className='srow';const a=document.createElement('span');a.textContent=k;const b2=document.createElement('b');b2.style.fontWeight='600';b2.textContent=v;d.append(a,b2);box.append(d)};
-  row('Plan',ACC.pro?'Pro':'Free');
+  const pu=ACC.claimPro?null:proUntil(ACC.proDoc);
+  row('Plan',ACC.pro?'Pro'+(pu?' until '+fmtDay(pu):''):'Free');
   row('Cloud sync',!ACC.pro?'Off (part of Pro)':ACC.busy?'Syncing…':ACC.err==='offline'?'Waiting for internet':ACC.err?'Couldn’t sync, will retry':'On · '+ago2(ACC.last));
-  if(!ACC.pro)p('Pro isn’t on sale yet. Your notebooks are saved on this device.','muted');
+  if(!ACC.pro){p('Pro isn’t on sale yet. Your notebooks are saved on this device.','muted');codeBox(box)}
   const acts=document.createElement('div');acts.className='acts2';
   if(ACC.pro){const s=document.createElement('button');s.className='ib';s.textContent='Sync now';s.onclick=()=>syncRun();acts.append(s)}
+  if(ACC.admin){const a=document.createElement('button');a.className='ib';a.textContent='Admin panel';a.onclick=openAdmin;acts.append(a)}
   const o=document.createElement('button');o.className='ib';o.textContent='Sign out';o.onclick=accOut;acts.append(o);
   box.append(acts);
-  p('Signing out keeps the notebooks on this device.','muted');
+  p('After you sign out, your notebooks stay saved on this device for when you sign in again.','muted');
 }
 async function accGoogle(){
   ACC.msg='';const F=ACC.F,pr=new F.GoogleAuthProvider();pr.setCustomParameters({prompt:'select_account'});
@@ -2399,16 +2575,590 @@ async function accReset(){
   try{await ACC.F.sendPasswordResetEmail(ACC.auth,em);ACC.msg='If there is an account for '+em+', we sent it a link to set a new password.'}catch(e){accErr(e)}
   renderAcc();
 }
-async function accOut(){if(ACC.pro)await syncRun();await ACC.F.signOut(ACC.auth);ACC.msg='';toast('Signed out. Your notebooks are still on this device.')}
+async function accOut(){if(ACC.pro)await syncRun();$('#acct').classList.add('hidden');await ACC.F.signOut(ACC.auth);ACC.msg=''}
 function openAcc(){$('#acct').classList.remove('hidden');renderAcc();fbLoad().then(renderAcc).catch(()=>{$('#acc-body').textContent='Can’t reach the sign-in service. Check your internet connection.'})}
 function initAcc(){
   $('#accb').onclick=openAcc;
-  $('#acc-x').onclick=()=>$('#acct').classList.add('hidden');
-  $('#acct').addEventListener('click',e=>{if(e.target===$('#acct'))$('#acct').classList.add('hidden')});
-  let was='';try{was=localStorage.getItem('sb-acct')||''}catch(e){}
-  if(was)setTimeout(()=>fbLoad().catch(()=>{}),600);
+  $('#acc-x').onclick=()=>{if(!ACC.gate)$('#acct').classList.add('hidden')};
+  $('#acct').addEventListener('click',e=>{if(e.target===$('#acct')&&!ACC.gate)$('#acct').classList.add('hidden')});
 }
 
+/* ---------- Promo codes, profiles and the admin panel ----------
+   Codes give Pro for a number of days (0 = forever), up to `max` people. Redeeming writes, in one transaction:
+   pro/{uid} {code, by:'code', since, days} + codes/{CODE}.used+1 + redeem/{uid_CODE}; the rules check all of it.
+   Discount codes (e.g. first month / first year cheaper) are made in Stripe when payments go live.
+   profiles/{uid} keeps email, sign-up date and last visit for the statistics (written at most twice a day).
+   The admin panel opens for accounts listed in admins/{uid} (made by hand in the Firebase console). */
+const DAY=864e5;
+function proActiveDoc(p){if(!p)return false;if(!p.days)return true;const s=p.since&&p.since.toMillis?p.since.toMillis():Date.now();return s+p.days*DAY>Date.now()}
+function proUntil(p){if(!p||!p.days)return null;const s=p.since&&p.since.toMillis?p.since.toMillis():Date.now();return new Date(s+p.days*DAY)}
+const fmtDay=d=>d?new Date(d).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'–';
+const tsMs=t=>t&&t.toMillis?t.toMillis():null;
+function devOS(){const u=navigator.userAgent||'';return /Android/i.test(u)?'android':/iPhone|iPad|iPod/i.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1)?'ios':/CrOS/.test(u)?'chromeos':/Windows/i.test(u)?'windows':/Macintosh|Mac OS/i.test(u)?'mac':/Linux/i.test(u)?'linux':'other'}
+const asApp=()=>!!((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone);
+async function touchProfile(u){
+  const F=ACC.F,ym=ymOf(new Date()),ak='sb-act:'+u.uid;
+  if(lsGet(ak)!==ym){try{await F.setDoc(F.doc(ACC.db,'act',ym+'_'+u.uid),{ym,uid:u.uid,at:F.serverTimestamp()})}catch(e){}lsSet(ak,ym)} // "active this month", once a month
+  const k='sb-seen:'+u.uid;if(Date.now()-(+lsGet(k)||0)<12*36e5)return;
+  const ref=F.doc(ACC.db,'profiles',u.uid),via=(u.providerData[0]&&u.providerData[0].providerId)||'password';
+  const base={email:u.email||'',name:u.displayName||'',via,os:devOS(),lang:(navigator.language||'').slice(0,12),app:asApp(),seen:F.serverTimestamp()};
+  try{await F.updateDoc(ref,base)}
+  catch(e){try{await F.setDoc(ref,{...base,created:F.serverTimestamp()})}catch(e2){return}}
+  lsSet(k,String(Date.now()));
+}
+async function checkAdmin(u){try{const s=await ACC.F.getDoc(ACC.F.doc(ACC.db,'admins',u.uid));ACC.admin=s.exists()}catch(e){ACC.admin=false}renderAcc()}
+const normCode=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9-]/g,'');
+async function redeemCode(raw){
+  const F=ACC.F,db=ACC.db,u=ACC.user;if(!F||!u)return {msg:'Sign in first.'};
+  const code=normCode(raw);if(code.length<4)return {msg:'Type the code.'};
+  const cref=F.doc(db,'codes',code),pref=F.doc(db,'pro',u.uid),rref=F.doc(db,'redeem',u.uid+'_'+code);
+  try{
+    return await F.runTransaction(db,async tx=>{
+      const cs=await tx.get(cref);if(!cs.exists())return {msg:'This code doesn’t exist. Check the spelling.'};
+      const c=cs.data();
+      if(c.kind!=='pro')return {msg:'This code gives a discount. You can use it at checkout once Pro is on sale.'};
+      if(!c.active||c.used>=c.max)return {msg:'This code has expired or has been used up.'};
+      const ps=await tx.get(pref);if(ps.exists()&&proActiveDoc(ps.data()))return {msg:'You already have Pro.'};
+      tx.update(cref,{used:c.used+1});
+      tx.set(rref,{uid:u.uid,code,at:F.serverTimestamp()});
+      tx.set(pref,{code,by:'code',since:F.serverTimestamp(),days:c.days||0});
+      return {ok:true,days:c.days||0};
+    });
+  }catch(e){
+    if(e&&e.code==='permission-denied')return {msg:'This code can’t be used on your account. You may have used it already.'};
+    return {msg:'No connection. Try again when you’re online.'};
+  }
+}
+function codeBox(box){
+  const w=el('div','codebox');const f=el('form','crow');
+  const i=el('input','lk-in');i.placeholder='Promo code';i.autocapitalize='characters';i.autocomplete='off';i.spellcheck=false;i.id='a-code';
+  const b=el('button','btn','Redeem');b.type='submit';f.append(i,b);
+  const m=el('p','cmsg');m.setAttribute('role','status');
+  f.onsubmit=async e=>{e.preventDefault();b.disabled=true;m.textContent='Checking…';const r=await redeemCode(i.value);b.disabled=false;
+    if(r.ok){m.textContent='';i.value='';toast(r.days?'Pro is on for '+r.days+' days. Enjoy!':'Pro is on. Enjoy!')}else m.textContent=r.msg};
+  w.append(el('p','sep','Have a promo code?'),f,m);box.append(w);
+}
+function openCode(){$('#up').classList.add('hidden');openAcc();setTimeout(()=>{const i=$('#a-code');if(i)i.focus()},300)}
+
+function genCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const r=crypto.getRandomValues(new Uint8Array(8));for(const x of r)s+=A[x%A.length];return 'FOLIET-'+s}
+const DUR=[[7,'7 days'],[30,'1 month'],[90,'3 months'],[365,'1 year'],[0,'Forever']];
+const durTxt=d=>!d?'forever':d%365===0?(d/365)+(d===365?' year':' years'):d%30===0?(d/30)+(d===30?' month':' months'):d+' days';
+function durSelect(def){const s=el('select','lk-in');DUR.forEach(([v,t])=>{const o=el('option','',t);o.value=v;if(v===def)o.selected=true;s.append(o)});return s}
+/* ----- "How did you find Foliet?" -----
+   Asked once per account, right after signing up (and once to older accounts). It can't be closed or skipped;
+   "Somewhere else" needs a few words. Saved in survey/{uid} = {src, other, at}. If there's no internet the answer
+   waits on the device (sb-src:<uid>:p) and is sent later, so nobody gets stuck. */
+const SRC=[['youtube','YouTube'],['instagram','Instagram'],['facebook','Facebook'],['ai','An AI assistant (ChatGPT, Gemini…)'],['other','Somewhere else']];
+const srcName=k=>(SRC.find(x=>x[0]===k)||['','Not answered yet'])[1];
+async function saveSurvey(u,a){
+  const F=ACC.F;
+  try{await F.setDoc(F.doc(ACC.db,'survey',u.uid),{src:a.src,other:a.other||'',at:F.serverTimestamp()})}
+  catch(e){if(!(e&&e.code==='permission-denied'))throw e} // permission-denied = already answered
+  lsSet('sb-src:'+u.uid,'1');lsSet('sb-src:'+u.uid+':p','');
+}
+async function checkSurvey(u){
+  const k='sb-src:'+u.uid;if(lsGet(k)==='1')return;
+  const pend=lsGet(k+':p');
+  if(pend){try{await saveSurvey(u,JSON.parse(pend))}catch(e){}return}
+  try{const s=await ACC.F.getDoc(ACC.F.doc(ACC.db,'survey',u.uid));if(s.exists()){lsSet(k,'1');return}}catch(e){return} // offline: ask next time
+  if(ACC.user!==u||document.querySelector('#srv'))return;
+  askSurvey(u);
+}
+function askSurvey(u){
+  const ov=el('div','');ov.id='srv';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-labelledby','srvt');
+  const c=el('div','card');ov.append(c);
+  c.append(el('h2','','One quick question'));c.lastChild.id='srvt';
+  c.append(el('p','srv-sub','How did you find Foliet? It helps us know where to share it.'));
+  const list=el('div','srv-list');list.setAttribute('role','radiogroup');list.setAttribute('aria-label','How did you find Foliet?');
+  let pick='';
+  const other=el('input','lk-in');other.id='srv-other';other.placeholder='Where? For example a friend, a blog or a search';other.maxLength=200;other.autocomplete='off';
+  const wrap=el('div','srv-o hidden');wrap.append(el('label','',''),other);wrap.firstChild.htmlFor='srv-other';wrap.firstChild.textContent='Tell us where (required)';
+  const go=el('button','btn','Continue');go.disabled=true;
+  const err=el('p','lk-err');err.setAttribute('role','alert');
+  const valid=()=>pick&&(pick!=='other'||other.value.trim().length>=2);
+  const sync=()=>{list.querySelectorAll('button').forEach(b=>b.setAttribute('aria-checked',b.dataset.v===pick));wrap.classList.toggle('hidden',pick!=='other');go.disabled=!valid()};
+  SRC.forEach(([v,t])=>{const b=el('button','srv-opt');b.type='button';b.setAttribute('role','radio');b.dataset.v=v;b.append(el('i',''),el('span','',t));
+    b.onclick=()=>{pick=v;sync();if(v==='other')setTimeout(()=>other.focus(),30)};list.append(b)});
+  other.oninput=sync;
+  go.onclick=async()=>{
+    if(!valid()){err.textContent=pick==='other'?'Please write where you found Foliet.':'Please choose one.';return}
+    const a={src:pick,other:pick==='other'?other.value.trim().slice(0,200):''};go.disabled=true;
+    try{await saveSurvey(u,a)}catch(e){lsSet('sb-src:'+u.uid+':p',JSON.stringify(a))} // no internet: send it later
+    ov.remove();toast('Thank you!');
+  };
+  c.append(list,wrap,err,go);
+  document.body.append(ov);
+  ov.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation()}},true);
+}
+
+/* ----- admin panel -----
+   Loads everything once (profiles, monthly activity, Pro, codes, redemptions and, once Stripe is connected,
+   payments + subscriptions written by the "Run Payments with Stripe" extension), then shows it for the chosen
+   period without loading again. Fine for thousands of accounts; for much more, switch to count/sum queries. */
+const ADM={data:null,per:'all'};
+const euro=c=>'€'+(c/100).toFixed(2);
+const ymOf=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function perRange(p){ // → [start, end) in ms, plus a label
+  const now=new Date();
+  if(p==='all')return {a:0,b:Infinity,label:'All time'};
+  if(p==='year'){const y=now.getFullYear();return {a:+new Date(y,0,1),b:+new Date(y+1,0,1),label:String(y),y}}
+  if(p==='month'){const y=now.getFullYear(),m=now.getMonth();return {a:+new Date(y,m,1),b:+new Date(y,m+1,1),label:MON[m]+' '+y,y,m}}
+  let r;if((r=/^y(\d{4})$/.exec(p))){const y=+r[1];return {a:+new Date(y,0,1),b:+new Date(y+1,0,1),label:String(y),y}}
+  if((r=/^m(\d{4})-(\d\d)$/.exec(p))){const y=+r[1],m=+r[2]-1;return {a:+new Date(y,m,1),b:+new Date(y,m+1,1),label:MON[m]+' '+y,y,m}}
+  return {a:0,b:Infinity,label:'All time'};
+}
+const inR=(t,R)=>t!=null&&t>=R.a&&t<R.b;
+const payMs=p=>typeof p.created==='number'?p.created*1000:tsMs(p.created);
+const subOf=s=>{const it=(s.items&&s.items[0])||{},pr=it.price||{},pl=it.plan||{};return {iv:(pr.recurring&&pr.recurring.interval)||pl.interval||s.interval||'month',amt:pr.unit_amount??pl.amount??0,on:['active','trialing','past_due'].includes(s.status),start:tsMs(s.created)||(typeof s.created==='number'?s.created*1000:null)}};
+function osName(o){return {android:'Android',ios:'iPhone / iPad',windows:'Windows',mac:'Mac',linux:'Linux',chromeos:'Chromebook'}[o]||'Other / unknown'}
+async function adminFetch(){
+  const F=ACC.F,db=ACC.db,all=c=>F.getDocs(F.collection(db,c)).then(s=>s.docs.map(d=>({id:d.id,...d.data()})));
+  const safe=p=>p.catch(e=>{console.warn('admin',e);return []});
+  const [profiles,act,pro,codes,redeem,payments,subs,survey]=await Promise.all([
+    all('profiles'),safe(all('act')),all('pro'),all('codes'),safe(all('redeem')),
+    safe(F.getDocs(F.collectionGroup(db,'payments')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()})))),
+    safe(F.getDocs(F.collectionGroup(db,'subscriptions')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()})))),
+    safe(all('survey'))]);
+  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,at:Date.now()};
+}
+function openAdmin(){$('#acct').classList.add('hidden');$('#admin').classList.remove('hidden');adminLoad()}
+async function adminLoad(){
+  const B=$('#adm-body');B.innerHTML='';B.append(el('p','muted','Loading…'));
+  try{await adminFetch();adminRender()}
+  catch(e){B.innerHTML='';B.append(el('p','amsg','Couldn’t load the admin data ('+(e.code||e.message)+'). Check that the latest Firestore rules are published.'))}
+}
+function adminRender(){
+  const F=ACC.F,db=ACC.db,B=$('#adm-body'),D=ADM.data,R=perRange(ADM.per),now=Date.now();B.innerHTML='';
+  const P=D.profiles.map(p=>({...p,c:tsMs(p.created),s:tsMs(p.seen)}));
+  const email={};P.forEach(p=>email[p.id]=p.email);
+  const paid=D.payments.filter(p=>p.status==='succeeded'),subs=D.subs.map(s=>({...s,...subOf(s)}));
+  const subUids=new Set(subs.filter(s=>s.on).map(s=>s.uid)); // paying subscribers (Stripe) are Pro too
+  const proUids=new Set([...D.pro.filter(proActiveDoc).map(p=>p.id),...subUids]),proOn=[...proUids];
+  const card=(box,v,k,sub,cls)=>{const c=el('div','acard'+(cls?' '+cls:''));c.append(el('b','',String(v)),el('span','',k));if(sub)c.append(el('small','',sub));box.append(c);return c};
+  const sec=t=>B.append(el('h3','',t));
+  // period picker
+  const bar=el('div','aper');const seg=el('div','seg3');
+  [['all','All time'],['year','This year'],['month','This month']].forEach(([v,t])=>{const b=el('button','',t);b.setAttribute('aria-pressed',ADM.per===v);b.onclick=()=>{ADM.per=v;adminRender()};seg.append(b)});
+  const sel=el('select','lk-in');sel.setAttribute('aria-label','Choose a year or month');sel.append(new Option('Choose year or month…',''));
+  const first=Math.min(now,...P.map(p=>p.c||now),...paid.map(payMs).filter(Boolean)),fy=new Date(first).getFullYear(),ny=new Date().getFullYear();
+  for(let y=ny;y>=fy;y--){const g=document.createElement('optgroup');g.label=String(y);g.append(new Option('All of '+y,'y'+y));
+    for(let m=(y===ny?new Date().getMonth():11);m>=0;m--){if(+new Date(y,m+1,1)<=first)break;g.append(new Option(MON[m]+' '+y,'m'+y+'-'+String(m+1).padStart(2,'0')))}sel.append(g)}
+  if(/^[ym]\d/.test(ADM.per))sel.value=ADM.per;
+  sel.onchange=()=>{if(sel.value){ADM.per=sel.value;adminRender()}};
+  const rf=el('small','muted','Updated '+new Date(D.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
+  bar.append(seg,sel,rf);B.append(bar,el('p','aplabel','Showing: '+R.label));
+  // money
+  sec('Money');
+  const pIn=paid.filter(p=>inR(payMs(p),R)),rev=pIn.reduce((s,p)=>s+(p.amount_received??p.amount??0),0);
+  const subOn=subs.filter(s=>s.on),mo=subOn.filter(s=>s.iv==='month'),yr=subOn.filter(s=>s.iv==='year');
+  const mrr=mo.reduce((s,x)=>s+(x.amt||399),0)+yr.reduce((s,x)=>s+(x.amt||2999)/12,0);
+  const payers=new Set(pIn.map(p=>p.uid)).size;
+  const mg=el('div','astats');
+  card(mg,euro(rev),'Revenue',R.label,'big');card(mg,pIn.length,'Payments',R.label);card(mg,payers,'Paying customers',R.label);
+  card(mg,subOn.length,'Active subscriptions',mo.length+' monthly · '+yr.length+' yearly');card(mg,euro(Math.round(mrr)),'Monthly recurring (est.)','≈ '+euro(Math.round(mrr*12))+' a year');
+  card(mg,payers?euro(Math.round(rev/payers)):'–','Average per paying customer',R.label);
+  B.append(mg);
+  if(!D.payments.length&&!D.subs.length)B.append(el('p','anote','Payments aren’t connected yet. When Stripe is set up, revenue, payments and subscriptions fill in here by themselves for any period.'));
+  // users
+  sec('Accounts');
+  const newIn=P.filter(p=>inR(p.c,R)).length;
+  const actIn=R.b===Infinity?P.length:new Set(D.act.filter(a=>{const t=+new Date(+a.ym.slice(0,4),+a.ym.slice(5)-1,1);return t>=R.a&&t<R.b}).map(a=>a.uid)).size;
+  const proNew=D.pro.filter(p=>inR(tsMs(p.since),R)).length+subs.filter(s=>inR(s.start,R)).length;
+  const ug=el('div','astats');
+  card(ug,P.length,'Accounts in total');card(ug,newIn,'New accounts',R.label);card(ug,actIn,'Active accounts',R.b===Infinity?'used Foliet at least once':R.label);
+  card(ug,proOn.length,'Pro right now',P.length?Math.round(proOn.length/P.length*100)+'% of accounts':'');card(ug,proNew,'Pro started',R.label);
+  card(ug,D.redeem.filter(r=>inR(tsMs(r.at),R)).length,'Codes used',R.label);
+  B.append(ug);
+  // charts: by month (year / all time) or by day (one month)
+  const chart=(title,buckets,fmt)=>{const w=el('div','achart');w.append(el('b','',title));const max=Math.max(1,...buckets.map(b=>b.v));const row=el('div','cbars');
+    buckets.forEach(b=>{const c=el('div','cbar');const f=el('i');f.style.height=Math.max(b.v?3:0,b.v/max*100)+'%';c.title=b.l+': '+fmt(b.v);c.setAttribute('aria-label',c.title);
+      const v=el('span','bv',b.v?fmt(b.v):'');c.append(v,f,el('small','',b.s));row.append(c)});w.append(row);return w};
+  let buckets=[];
+  if(R.m!=null){const days=new Date(R.y,R.m+1,0).getDate();for(let d=1;d<=days;d++)buckets.push({a:+new Date(R.y,R.m,d),b:+new Date(R.y,R.m,d+1),l:d+' '+MON[R.m],s:d%5===1?String(d):''})}
+  else{let y0,m0,y1,m1;if(R.y!=null){y0=y1=R.y;m0=0;m1=11}else{const f=new Date(first),t=new Date();y0=f.getFullYear();m0=f.getMonth();y1=t.getFullYear();m1=t.getMonth();const n=(y1-y0)*12+m1-m0;if(n>23){const s=new Date(y1,m1-23,1);y0=s.getFullYear();m0=s.getMonth()}}
+    for(let y=y0,m=m0;y<y1||(y===y1&&m<=m1);m++,(m>11&&(m=0,y++)))buckets.push({a:+new Date(y,m,1),b:+new Date(y,m+1,1),l:MON[m]+' '+y,s:MON[m].charAt(0)})}
+  const cg=el('div','acharts');
+  cg.append(chart('New accounts',buckets.map(k=>({...k,v:P.filter(p=>p.c>=k.a&&p.c<k.b).length})),v=>String(v)));
+  cg.append(chart('Revenue',buckets.map(k=>({...k,v:paid.filter(p=>{const t=payMs(p);return t>=k.a&&t<k.b}).reduce((s,p)=>s+(p.amount_received??p.amount??0),0)})),v=>euro(v)));
+  B.append(cg);
+  // where people come from (accounts that joined in the period)
+  sec('Who uses Foliet');
+  const PJ=P.filter(p=>R.b===Infinity||inR(p.c,R));
+  const brk=(title,f)=>{const m={};PJ.forEach(p=>{const k=f(p);m[k]=(m[k]||0)+1});const w=el('div','abrk');w.append(el('b','',title));
+    Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,6).forEach(([k,v])=>{const r=el('div','abr');const t=el('span','',k);const bar=el('i');bar.style.width=Math.round(v/PJ.length*100)+'%';r.append(t,el('em','',v+' · '+Math.round(v/PJ.length*100)+'%'),bar);w.append(r)});
+    if(!PJ.length)w.append(el('small','muted','No accounts in this period.'));return w};
+  const bg=el('div','abrks');
+  bg.append(brk('Signs in with',p=>p.via==='google.com'?'Google':'Email and password'),brk('Device',p=>osName(p.os)),brk('Installed as an app',p=>p.app?'Yes':p.app===false?'No, in the browser':'Unknown'),brk('Language',p=>(p.lang||'unknown').slice(0,2).toUpperCase()));
+  B.append(bg);
+  // promo codes
+  sec('How people found Foliet');
+  const SV=D.survey.map(a=>({...a,t:tsMs(a.at)})),SVin=SV.filter(a=>R.b===Infinity||inR(a.t,R));
+  const sg=el('div','abrks');const sb=el('div','abrk');sb.append(el('b','',SVin.length+' answer'+(SVin.length===1?'':'s')+' · '+R.label));
+  SRC.map(([k])=>[k,SVin.filter(a=>a.src===k).length]).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{const r=el('div','abr');const bar=el('i');bar.style.width=(SVin.length?Math.round(v/SVin.length*100):0)+'%';
+    r.append(el('span','',srcName(k)),el('em','',v+' · '+(SVin.length?Math.round(v/SVin.length*100):0)+'%'),bar);sb.append(r)});
+  const answered=new Set(D.survey.map(a=>a.id)),notYet=PJ.filter(p=>!answered.has(p.id)).length;
+  if(notYet)sb.append(el('small','muted',notYet+' account'+(notYet===1?' hasn’t':'s haven’t')+' answered yet (they’re asked the next time they open Foliet).'));
+  const ob=el('div','abrk');const others=SVin.filter(a=>a.src==='other'&&a.other).sort((a,b)=>(b.t||0)-(a.t||0));
+  ob.append(el('b','','“Somewhere else” answers ('+others.length+')'));
+  if(!others.length)ob.append(el('small','muted','None in this period.'));
+  others.slice(0,200).forEach(a=>{const r=el('div','sva');r.append(el('span','',a.other),el('small','',fmtDay(a.t)+(email[a.id]?' · '+email[a.id]:'')));ob.append(r)});
+  sg.append(sb,ob);B.append(sg);
+  sec('Promo codes');
+  const f=el('form','aform');
+  const ci=el('input','lk-in');ci.placeholder='CODE';ci.value=genCode();ci.autocapitalize='characters';
+  const gb=el('button','ib','New code');gb.type='button';gb.onclick=()=>ci.value=genCode();
+  const ds=durSelect(30),mx=el('input','lk-in');mx.type='number';mx.min=1;mx.value=10;mx.title='How many people can use it';
+  const nt=el('input','lk-in');nt.placeholder='Note (who it’s for)';
+  const cb=el('button','btn','Create code');cb.type='submit';const fm=el('p','cmsg');
+  const l=(t,x)=>{const w=el('label','alab');w.append(el('span','',t),x);return w};
+  f.append(l('Code',ci),gb,l('Gives Pro for',ds),l('How many people',mx),l('Note',nt),cb,fm);
+  f.onsubmit=async e=>{e.preventDefault();const code=normCode(ci.value);if(code.length<4){fm.textContent='The code needs at least 4 letters or digits.';return}
+    try{const r=F.doc(db,'codes',code);if((await F.getDoc(r)).exists()){fm.textContent='That code already exists.';return}
+      await F.setDoc(r,{kind:'pro',days:+ds.value,max:Math.max(1,+mx.value||1),used:0,active:true,note:nt.value.trim().slice(0,120),created:F.serverTimestamp()});
+      toast('Code '+code+' created');adminLoad()}catch(e2){fm.textContent='Couldn’t create it: '+(e2.code||e2.message)}};
+  B.append(f,el('p','muted','Discount codes (for example 50% off the first month or the first year) are made in Stripe once payments go live; people type them at checkout.'));
+  const cl=el('div','alist');
+  if(!D.codes.length)cl.append(el('p','muted','No codes yet.'));
+  D.codes.sort((a,b)=>(tsMs(b.created)||0)-(tsMs(a.created)||0)).forEach(c=>{const ref=F.doc(db,'codes',c.id),r=el('div','arow'+(c.active&&c.used<c.max?'':' off'));
+    const usedIn=D.redeem.filter(x=>x.code===c.id&&inR(tsMs(x.at),R)).length;
+    const t=el('div','');t.append(el('b','',c.id),el('small','',' Pro '+durTxt(c.days)+' · '+c.used+' / '+c.max+' used'+(R.b!==Infinity?' ('+usedIn+' in '+R.label+')':'')+(c.note?' · '+c.note:'')));
+    const cp=el('button','ib','Copy');cp.onclick=async()=>{try{await navigator.clipboard.writeText(c.id);toast('Copied '+c.id)}catch(e){toast(c.id)}};
+    const tg=el('button','ib',c.active?'Turn off':'Turn on');tg.onclick=async()=>{await F.updateDoc(ref,{active:!c.active});adminLoad()};
+    const dl=el('button','ib','Delete');dl.onclick=async()=>{if(dl.dataset.s){await F.deleteDoc(ref);adminLoad()}else{dl.dataset.s=1;dl.textContent='Sure?'}};
+    r.append(t,cp,tg,dl);cl.append(r)});
+  B.append(cl);
+  // pro members
+  sec('Pro members');
+  const g=el('form','aform');const ge=el('input','lk-in');ge.type='email';ge.placeholder='their@email.com';const gd=durSelect(365);const gbn=el('button','btn','Give Pro');gbn.type='submit';const gm=el('p','cmsg');
+  g.append(l('Email (they must have signed in once)',ge),l('For',gd),gbn,gm);
+  const giveTo=async(uid,days)=>{await F.setDoc(F.doc(db,'pro',uid),{by:'admin',since:F.serverTimestamp(),days:+days})};
+  g.onsubmit=async e=>{e.preventDefault();const em=ge.value.trim().toLowerCase();if(!em)return;const p=P.find(x=>(x.email||'').toLowerCase()===em);
+    if(!p){gm.textContent='No account with this email yet. Ask them to sign in to Foliet once.';return}
+    try{await giveTo(p.id,gd.value);toast('Pro given to '+em);adminLoad()}catch(e2){gm.textContent='Couldn’t do it: '+(e2.code||e2.message)}};
+  B.append(g);
+  const pl=el('div','alist');
+  if(!D.pro.length)pl.append(el('p','muted','Nobody has Pro yet.'));
+  const srcTxt=p=>p.by==='code'?'code '+p.code:p.by==='admin'?'given by you':'set in the console';
+  D.pro.slice().sort((a,b)=>(tsMs(b.since)||0)-(tsMs(a.since)||0)).forEach(p=>{const on=proActiveDoc(p),r=el('div','arow'+(on?'':' off')),u=proUntil(p);
+    const t=el('div','');t.append(el('b','',email[p.id]||p.id),el('small','',' '+srcTxt(p)+' · '+(u?(on?'until ':'ended ')+fmtDay(u):'forever')));
+    const rm=el('button','ib','Remove');rm.onclick=async()=>{if(rm.dataset.s){await F.deleteDoc(F.doc(db,'pro',p.id));adminLoad()}else{rm.dataset.s=1;rm.textContent='Sure?'}};
+    r.append(t,rm);pl.append(r)});
+  B.append(pl);
+  // accounts: search, list, CSV
+  sec('Accounts');
+  const sr=el('div','aform');const si=el('input','lk-in');si.type='search';si.placeholder='Search by email';si.setAttribute('aria-label','Search accounts by email');
+  const csv=el('button','ib','Download all (CSV)');csv.type='button';sr.append(l('Find an account',si),csv);B.append(sr);
+  const al=el('div','alist');B.append(al);
+  const proOf=id=>D.pro.find(x=>x.id===id);
+  const showAcc=()=>{al.innerHTML='';const q=si.value.trim().toLowerCase();
+    const list=P.filter(p=>!q||(p.email||'').toLowerCase().includes(q)).sort((a,b)=>(b.c||0)-(a.c||0)).slice(0,q?50:25);
+    if(!list.length)al.append(el('p','muted',q?'No account matches.':'No accounts yet.'));
+    list.forEach(p=>{const pr=proOf(p.id),paying=subUids.has(p.id),on=paying||proActiveDoc(pr),r=el('div','arow'),t=el('div','');
+      t.append(el('b','',p.email||'(no email)'),el('small','',' joined '+fmtDay(p.c)+' · last seen '+fmtDay(p.s)+' · '+(p.via==='google.com'?'Google':'email')+' · '+osName(p.os)+(p.app?' · app':'')+(paying?' · Pro (paying)':on?' · Pro'+(proUntil(pr)?' until '+fmtDay(proUntil(pr)):''):'')));
+      r.append(t);
+      if(q){const sel2=durSelect(365);sel2.style.maxWidth='130px';const gv=el('button','ib',on?'Change Pro':'Give Pro');gv.onclick=async()=>{await giveTo(p.id,sel2.value);toast('Pro given to '+p.email);adminLoad()};r.append(sel2,gv)}
+      al.append(r)});
+    if(!q&&P.length>25)al.append(el('p','muted','Showing the 25 newest. Search to find anyone else.'))};
+  si.oninput=showAcc;showAcc();
+  csv.onclick=()=>{const esc2=v=>'"'+String(v??'').replace(/"/g,'""')+'"',iso=t=>t?new Date(t).toISOString().slice(0,10):'';
+    const svOf={};D.survey.forEach(a=>svOf[a.id]=a.src==='other'?'other: '+a.other:srcName(a.src));
+    const rows=[['email','name','joined','last_seen','sign_in','device','language','installed_app','found_via','plan','pro_source','pro_until']];
+    P.forEach(p=>{const pr=proOf(p.id),paying=subUids.has(p.id),on=paying||proActiveDoc(pr),u=proUntil(pr);rows.push([p.email,p.name,iso(p.c),iso(p.s),p.via==='google.com'?'google':'email',osName(p.os),p.lang||'',p.app?'yes':'no',svOf[p.id]||'',on?'pro':'free',paying?'stripe subscription':pr?srcTxt(pr):'',paying?'':u?iso(+u):(on?'forever':'')])});
+    saveFile('foliet-accounts-'+new Date().toISOString().slice(0,10)+'.csv',new Blob(['﻿'+rows.map(r=>r.map(esc2).join(',')).join('\r\n')],{type:'text/csv'}))};
+}
+
+/* ---------- Locked notebooks ----------
+   b.lock = {t:'pin'|'pw', s:salt, i:iterations, h:hash}: saved and synced with the notebook.
+   It stops other people from opening the notebook in the app; the files on the device are not encrypted.
+   Android only: unlock with fingerprint through the phone's own prompt (WebAuthn, platform authenticator).
+   That credential lives on this phone only (localStorage sb-bio:<uid>, books in sb-bioon:<uid>).
+   Forgot the PIN: confirm the account (password or Google) and the lock is removed. */
+const UNL=new Set(); // notebooks unlocked until they are closed (or the app goes to the background)
+const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u))),unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function lockHash(secret,salt,it){
+  if(window.crypto&&crypto.subtle){
+    const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),'PBKDF2',false,['deriveBits']);
+    return b64(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:unb64(salt),iterations:it},k,256));
+  }
+  let h=secret+'|'+salt;for(let i=0;i<5000;i++)h=cyrb(h+i);return 'j'+h;
+}
+async function makeLock(t,secret){const s=b64(crypto.getRandomValues(new Uint8Array(16))),i=150000;return {t,s,i,h:await lockHash(secret,s,i)}}
+async function lockOk(l,secret){try{return(await lockHash(secret,l.s,l.i||150000))===l.h}catch(e){return false}}
+const isAndroid=/Android/i.test(navigator.userAgent);
+let bioOK=null;
+async function bioAvailable(){if(bioOK!==null)return bioOK;try{bioOK=isAndroid&&!!window.PublicKeyCredential&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()}catch(e){bioOK=false}return bioOK}
+const bioKey=()=>'sb-bio:'+(ACC.libUid||'-'),bioListKey=()=>'sb-bioon:'+(ACC.libUid||'-');
+function bioList(){try{return JSON.parse(lsGet(bioListKey())||'[]')}catch(e){return[]}}
+const bioOn=id=>!!lsGet(bioKey())&&bioList().includes(String(id));
+function setBioOn(id,on){const a=bioList().filter(x=>x!==String(id));if(on)a.push(String(id));lsSet(bioListKey(),JSON.stringify(a))}
+async function bioEnroll(){
+  if(lsGet(bioKey()))return true;
+  const c=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'Foliet Sketchbook'},
+    user:{id:crypto.getRandomValues(new Uint8Array(16)),name:(ACC.user&&ACC.user.email)||'Foliet',displayName:'Foliet notebook lock'},
+    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+    authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000,attestation:'none'}});
+  lsSet(bioKey(),b64(c.rawId));return true;
+}
+async function bioCheck(){
+  const id=lsGet(bioKey());if(!id)return false;
+  const r=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:unb64(id)}],userVerification:'required',timeout:60000}});
+  return !!r;
+}
+const LOCK_IC='<svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>';
+const UNLOCK_IC='<svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 017.6-1.7"/></svg>';
+function lockDlg(build){
+  const d=$('#lockd'),c=$('#lockc');c.innerHTML='';d.classList.remove('hidden');
+  return new Promise(res=>{let done=false;const close=v=>{if(done)return;done=true;d.classList.add('hidden');c.innerHTML='';res(v)};d.onclick=e=>{if(e.target===d)close(false)};build(c,close)});
+}
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+function secretInput(pin,ph,id){
+  const i=el('input','lk-in'+(pin?' pin':''));i.type='password';i.id=id||'';i.autocomplete=pin?'off':'new-password';i.placeholder=ph||'';
+  if(pin){i.inputMode='numeric';i.maxLength=4;i.pattern='[0-9]*';i.oninput=()=>{i.value=i.value.replace(/\D/g,'').slice(0,4)}}
+  return i;
+}
+let lockFails=0,lockWait=0;
+function unlockBook(b){
+  if(!b.lock||UNL.has(String(b.id)))return Promise.resolve(true);
+  const pin=b.lock.t==='pin',id=String(b.id);
+  return lockDlg((c,close)=>{
+    c.append(el('div','lk-ic'));c.lastChild.innerHTML=LOCK_IC;
+    c.append(el('h2','',(b.title||'Untitled')+' is locked'),el('p','lk-sub',pin?'Enter the 4-digit PIN to open it.':'Enter the password to open it.'));
+    const f=el('form');const inp=secretInput(pin,pin?'••••':'Password','lk-open');f.append(inp);c.append(f);
+    const err=el('p','lk-err');err.setAttribute('role','alert');c.append(err);
+    const acts=el('div','acts2');const no=el('button','ib','Cancel');no.type='button';no.onclick=()=>close(false);
+    const ok=el('button','btn','Open');ok.type='button';
+    acts.append(no);
+    const fp=bioOn(id);
+    if(fp){const fb=el('button','ib','Use fingerprint');fb.type='button';fb.onclick=()=>tryBio();acts.append(fb)}
+    acts.append(ok);c.append(acts);
+    const fg=el('button','alink',pin?'Forgot the PIN?':'Forgot the password?');fg.type='button';fg.onclick=()=>forgotLock(b,c,close);c.append(fg);
+    const fail=m=>{err.textContent=m;c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');inp.value='';inp.focus()};
+    const go=async()=>{
+      if(Date.now()<lockWait){fail('Too many tries. Wait '+Math.ceil((lockWait-Date.now())/1000)+' seconds.');return}
+      const v=inp.value;if(!v)return;
+      if(await lockOk(b.lock,v)){lockFails=0;UNL.add(id);close(true)}
+      else{lockFails++;if(lockFails>=5){lockFails=0;lockWait=Date.now()+30000}fail(pin?'Wrong PIN. Try again.':'Wrong password. Try again.')}
+    };
+    f.onsubmit=e=>{e.preventDefault();go()};ok.onclick=e=>{e.preventDefault();go()};
+    if(pin)inp.addEventListener('input',()=>{if(inp.value.length===4)go()});
+    async function tryBio(){try{if(await bioCheck()){UNL.add(id);close(true)}}catch(e){err.textContent='Fingerprint didn’t work. Use the '+(pin?'PIN':'password')+'.'}}
+    if(fp)tryBio();else setTimeout(()=>inp.focus(),50);
+  });
+}
+/* forgot the PIN: prove it's the account owner, then remove the lock */
+function forgotLock(b,c,close){
+  c.innerHTML='';c.append(el('div','lk-ic'));c.lastChild.innerHTML=LOCK_IC;
+  c.append(el('h2','','Remove the lock'));
+  const u=ACC.user,F=ACC.F;
+  if(!u||!F){c.append(el('p','lk-sub','Connect to the internet and sign in, then try again.'));const b2=el('button','btn','OK');b2.onclick=()=>close(false);c.append(b2);return}
+  const google=u.providerData.some(p=>p.providerId==='google.com');
+  c.append(el('p','lk-sub','To open “'+(b.title||'Untitled')+'” without the '+(b.lock.t==='pin'?'PIN':'password')+', confirm it’s you. The lock will be removed and you can set a new one.'));
+  const err=el('p','lk-err');err.setAttribute('role','alert');
+  const done=()=>{delete b.lock;setBioOn(b.id,false);UNL.add(String(b.id));persist();toast('Lock removed');close(true)};
+  const acts=el('div','acts2');const no=el('button','ib','Cancel');no.type='button';no.onclick=()=>close(false);acts.append(no);
+  if(google){
+    const g=el('button','ib gbtn');g.type='button';g.innerHTML=GICON+'<span>Confirm with Google</span>';
+    g.onclick=async()=>{try{await F.reauthenticateWithPopup(u,new F.GoogleAuthProvider());done()}catch(e){err.textContent=AUTH_MSG[e.code]||'That didn’t work. Try again.'}};
+    c.append(g,err,acts);
+  }else{
+    const f=el('form');const pw=secretInput(false,'Your Foliet account password','lk-acct');pw.autocomplete='current-password';f.append(pw);
+    const ok=el('button','btn','Confirm');ok.type='button';
+    const go=async()=>{try{await F.reauthenticateWithCredential(u,F.EmailAuthProvider.credential(u.email,pw.value));done()}catch(e){err.textContent=AUTH_MSG[e.code]||'That didn’t work. Try again.'}};
+    f.onsubmit=e=>{e.preventDefault();go()};ok.onclick=go;acts.append(ok);c.append(f,err,acts);setTimeout(()=>pw.focus(),50);
+  }
+}
+/* the lock button in the notebook's top bar */
+function syncLockBtn(){const b=$('#block');if(!b||!cur)return;const on=!!cur.lock;b.innerHTML=on?LOCK_IC:UNLOCK_IC;b.classList.toggle('on',on);b.setAttribute('aria-label',on?'Notebook lock settings':'Lock this notebook');b.title=on?'Locked – lock settings':'Lock this notebook'}
+async function lockSettings(){
+  const b=cur;if(!b)return;const android=await bioAvailable(),id=String(b.id);
+  await lockDlg((c,close)=>{
+    c.append(el('div','lk-ic'));c.lastChild.innerHTML=LOCK_IC;
+    const err=el('p','lk-err');err.setAttribute('role','alert');
+    if(b.lock){
+      const pin=b.lock.t==='pin';
+      c.append(el('h2','','Notebook lock'),el('p','lk-sub','“'+(b.title||'Untitled')+'” is locked with a '+(pin?'PIN':'password')+'. It asks for it every time it’s opened.'));
+      if(android){
+        const l=el('label','chk');const cb=el('input');cb.type='checkbox';cb.checked=bioOn(id);
+        cb.onchange=async()=>{try{if(cb.checked)await bioEnroll();setBioOn(id,cb.checked)}catch(e){cb.checked=false;err.textContent='Fingerprint isn’t available right now.'}};
+        l.append(cb,' Unlock with fingerprint on this phone');c.append(l);
+      }
+      c.append(err);
+      const acts=el('div','acts2 wrap');
+      const rm=el('button','ib','Remove lock');rm.onclick=()=>{delete b.lock;setBioOn(id,false);persist();syncLockBtn();toast('Lock removed');close(true)};
+      const ch=el('button','ib','Change '+(pin?'PIN':'password'));ch.onclick=()=>{const keep=b.lock;delete b.lock;close(true);lockSettings().then(()=>{if(!b.lock){b.lock=keep;syncLockBtn()}})};
+      const ok=el('button','btn','Done');ok.onclick=()=>close(true);
+      acts.append(rm,ch,ok);c.append(acts);return;
+    }
+    let t='pin';
+    c.append(el('h2','','Lock this notebook'),el('p','lk-sub','Anyone using Foliet on this device will need it to open “'+(b.title||'Untitled')+'”.'));
+    const seg=el('div','seg2');const bp=el('button','','4-digit PIN'),bw=el('button','','Password');seg.append(bp,bw);c.append(seg);
+    const box=el('div','lk-box');c.append(box);
+    let a1,a2;
+    const build=()=>{bp.setAttribute('aria-pressed',t==='pin');bw.setAttribute('aria-pressed',t==='pw');box.innerHTML='';
+      const pin=t==='pin',lab=(txt,i)=>{const w=el('label','lk-lab');w.append(el('span','',txt),i);return w};
+      a1=secretInput(pin,pin?'••••':'At least 6 characters');a2=secretInput(pin,pin?'••••':'Same password again');
+      box.append(lab(pin?'New PIN':'New password',a1),lab(pin?'Repeat the PIN':'Repeat the password',a2));err.textContent='';setTimeout(()=>a1.focus(),50)};
+    bp.onclick=()=>{t='pin';build()};bw.onclick=()=>{t='pw';build()};build();
+    let cb=null;
+    if(android){const l=el('label','chk');cb=el('input');cb.type='checkbox';cb.checked=true;l.append(cb,' Also unlock with fingerprint on this phone');c.append(l)}
+    c.append(err,el('p','lk-note','If you forget it, you can remove the lock by confirming your Foliet account.'));
+    const acts=el('div','acts2');const no=el('button','ib','Cancel');no.onclick=()=>close(false);const ok=el('button','btn','Lock notebook');acts.append(no,ok);c.append(acts);
+    ok.onclick=async()=>{
+      const v=a1.value;
+      if(t==='pin'&&!/^\d{4}$/.test(v)){err.textContent='The PIN needs 4 digits.';return}
+      if(t==='pw'&&v.length<6){err.textContent='Use at least 6 characters.';return}
+      if(v!==a2.value){err.textContent=t==='pin'?'The PINs don’t match.':'The passwords don’t match.';return}
+      ok.disabled=true;
+      b.lock=await makeLock(t,v);UNL.add(id);
+      if(cb&&cb.checked){try{await bioEnroll();setBioOn(id,true)}catch(e){setBioOn(id,false)}}
+      persist();syncLockBtn();toast('Notebook locked');close(true);
+    };
+  });
+  syncLockBtn();
+}
+/* going to the background locks an open locked notebook again */
+let relockId=null;
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState==='hidden'){if(cur&&cur.lock&&$('#shelf').classList.contains('hidden')){relockId=String(cur.id);UNL.delete(relockId)}return}
+  if(!relockId)return;const id=relockId;relockId=null;
+  if(!cur||String(cur.id)!==id||!cur.lock)return;
+  if(await unlockBook(cur))return;
+  if(!$('#ed').classList.contains('hidden'))await $('#back').onclick();
+  closeBook();
+});
+
+/* ---------- The welcome notebook ----------
+   Made once for every new library: a short, decorated tour of the features (cover + 6 pages).
+   It is a normal notebook (draw on it, change it, delete it); it doesn't count toward the free limit (b.welcome).
+   Until it's edited (b.u === b.wu) a new device drops it in favour of the one already in the cloud. */
+async function makeWelcome(){
+  const b=mk('Welcome to Foliet',0,'p');b.welcome=1;b.color='#2c5f8a';b.tex='linen';
+  const ink=[],objs=[],ps=[],D2R=Math.PI/180;
+  const page=()=>{const c=document.createElement('canvas');c.width=900;c.height=1200;const x=c.getContext('2d');x.lineCap='round';x.lineJoin='round';return [c,x]};
+  const T=(t,x,y,w,f,o={})=>({k:'note',c:'transparent',tc:o.c||'#1d2b4a',fm:o.fm||'sans',b:o.b?1:0,i:o.i?1:0,al:o.al||'left',t,x,y,w,h:o.h||Math.ceil((t.split('\n').length+(o.extra||0))*f*1.3+w*.12),f,r:o.r||0,...(o.rs?{rs:o.rs}:{})});
+  const N=(t,x,y,w,h,c,r,f)=>({k:'note',c,t,x,y,w,h,f:f||36,r:r||0});
+  const S=(i,x,y,w,r)=>({k:'img',src:STK[i],x,y,w,h:w,r:r||0});
+  const wave=(x,x0,y,len,amp,per)=>{x.beginPath();for(let k=0;k<=len;k+=4){const yy=y+Math.sin(k/per)*amp;k?x.lineTo(x0+k,yy):x.moveTo(x0+k,yy)}x.stroke()};
+  const arrow=(x,pts,col,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.beginPath();x.moveTo(...pts[0]);x.bezierCurveTo(...pts[1],...pts[2],...pts[3]);x.stroke();
+    const [ex,ey]=pts[3],[cx,cy]=pts[2],a=Math.atan2(ey-cy,ex-cx);x.beginPath();x.moveTo(ex-28*Math.cos(a-25*D2R),ey-28*Math.sin(a-25*D2R));x.lineTo(ex,ey);x.lineTo(ex-28*Math.cos(a+25*D2R),ey-28*Math.sin(a+25*D2R));x.stroke()};
+  // 1 – hello
+  {const [c,x]=page();arrow(x,[[560,980],[680,1060],[760,1040],[820,1120]],'#2c5f8a',6);
+    x.strokeStyle='#e0a526';x.lineWidth=7;wave(x,90,330,520,7,28);ink.push(c);ps.push({p:'dots',c:PAPER});
+    objs.push([T('Welcome to your\nFoliet Sketchbook',80,120,760,74,{fm:'hand',c:'#2c5f8a',b:1}),
+      T('This notebook shows you around. Turn the pages to see what you can do. You can draw on it, change it, or delete it any time.',80,380,600,34,{extra:1}),
+      N('Turn a page:\ndrag its corner, or tap the arrows at the bottom.',470,640,360,300,NC[0],4,34),
+      S(0,700,90,130,12),S(16,240,980,110,-8),S(19,90,700,150,-6)])}
+  // 2 – draw
+  {const [c,x]=page();let y=270;
+    x.strokeStyle='#1d1d1b';x.lineWidth=5;wave(x,320,y,500,22,40);                                  // pen
+    y+=150;for(let j=0;j<3;j++){x.globalAlpha=.35;x.strokeStyle='#555';x.lineWidth=3;x.setLineDash([2,3]);x.lineDashOffset=j*2;wave(x,320,y+j*1.5,500,22,40)}x.setLineDash([]);x.globalAlpha=1; // pencil
+    y+=150;x.strokeStyle='#7a3f66';for(let k=0;k<500;k+=6){const t=k/500,w=2+16*Math.sin(t*Math.PI);x.lineWidth=w;x.beginPath();x.moveTo(320+k,y+Math.sin(k/40)*22);x.lineTo(326+k,y+Math.sin((k+6)/40)*22);x.stroke()} // brush
+    y+=150;x.globalAlpha=.85;x.strokeStyle='#4da3ff';x.lineWidth=26;wave(x,320,y,500,14,55);x.globalAlpha=1;     // marker
+    y+=150;x.globalAlpha=.5;x.fillStyle='#ffe14d';x.fillRect(330,y-36,420,62);x.globalAlpha=1;                 // highlighter
+    x.strokeStyle='#2e7d5b';x.lineWidth=5;x.strokeRect(90,1010,150,110);x.beginPath();x.ellipse(380,1065,80,55,0,0,Math.PI*2);x.stroke();
+    x.fillStyle='#ffc9de';x.beginPath();x.moveTo(580,1120);x.lineTo(650,1005);x.lineTo(720,1120);x.closePath();x.fill();x.stroke();
+    ink.push(c);ps.push({p:'lines',c:PAPER});
+    objs.push([T('Draw',80,60,500,96,{fm:'marker',c:'#1d2b4a'}),
+      T('Pen',80,240,200,38,{b:1}),T('Pencil',80,390,200,38,{b:1}),T('Brush',80,540,200,38,{b:1}),T('Marker',80,690,200,38,{b:1}),
+      T('Highlight what matters',340,808,420,38,{fm:'hand',c:'#1d2b4a'}),T('Highlighter',80,822,250,38,{b:1}),
+      T('Shapes and fill',780,1030,120,30,{al:'left',extra:1}),
+      T('Each tool remembers its size. Pens feel pressure when your stylus has it.',80,900,760,30,{c:'#56627a'}),S(10,760,60,100,10)])}
+  // 3 – write
+  {const [c,x]=page();x.strokeStyle='#e5484d';x.lineWidth=5;wave(x,90,1010,330,6,22);ink.push(c);ps.push({p:'grid',c:PAPER});
+    const fonts=[['sans','Sans'],['serif','Serif'],['mono','Mono'],['hand','Handwriting'],['marker','Marker'],['display','Elegant'],['script','Script'],['round','Rounded']];
+    const o=[T('Write',80,60,500,96,{fm:'display',b:1,c:'#1d2b4a'}),T('Eight fonts',80,210,400,34,{b:1,c:'#56627a'})];
+    fonts.forEach(([k,n],j)=>o.push(T(n,80+(j%2)*330,270+(j>>1)*95,320,50,{fm:k,c:['#1d2b4a','#7a3f66','#2e7d5b','#c0392b'][j%4]})));
+    o.push(T('Color just one word, or make it bold. Select the words, then pick a color or a size.',80,690,520,40,{extra:1,rs:[{t:'Color just '},{t:'one word',c:'#e5484d',b:1},{t:', or make it '},{t:'bold',b:1},{t:'. Select the words, then pick a color or a size.'}]}),
+      N('Sticky notes stay movable.\nWrite on them too.',600,640,240,250,NC[1],-5,32),
+      N('Tap + to add photos, stickers and notes.',540,930,300,220,NC[2],3,32),S(2,80,960,150,-4));
+    objs.push(o)}
+  // 4 – stick things down (cream paper)
+  {const [c,x]=page();x.strokeStyle='#d6578a';x.lineWidth=4;x.setLineDash([10,10]);x.strokeRect(150,420,600,380);x.setLineDash([]);ink.push(c);ps.push({p:'blank',c:'#f6efe0'});
+    objs.push([T('Stick things down',80,60,760,84,{fm:'script',c:'#c0392b'}),
+      T('28 stickers and lots of emoji. Move, resize and turn them in View mode (the eye button at the top).',80,220,720,34,{extra:1}),
+      S(1,170,440,150,-10),S(11,380,450,140),S(13,560,440,160,8),S(14,190,620,140,-20),S(15,400,620,130),S(12,600,630,130,10),
+      S(9,100,380,190,-30),S(26,640,760,190,-30),S(24,90,880,190,-6),S(25,330,890,190,4),S(23,580,880,190,-3),S(5,700,1030,150,10),
+      T('Your favourite things, all in one place.',150,820,600,34,{fm:'hand',al:'center',c:'#7a3f66'})])}
+  // 5 – pages your way
+  {const [c,x]=page();const box=(bx,kind)=>{x.fillStyle='#fdfdfa';x.strokeStyle='#9aa7bf';x.lineWidth=3;x.fillRect(bx,330,150,200);x.strokeRect(bx,330,150,200);x.strokeStyle=x.fillStyle='rgba(60,90,140,.45)';x.lineWidth=2;
+      if(kind!=='blank')for(let yy=350;yy<530;yy+=20){if(kind==='dots'){for(let xx=bx+10;xx<bx+150;xx+=20){x.beginPath();x.arc(xx,yy,2.5,0,7);x.fill()}}else{x.beginPath();x.moveTo(bx,yy);x.lineTo(bx+150,yy);x.stroke()}}
+      if(kind==='grid')for(let xx=bx+20;xx<bx+150;xx+=20){x.beginPath();x.moveTo(xx,330);x.lineTo(xx,530);x.stroke()}};
+    ['blank','lines','grid','dots'].forEach((k,j)=>box(80+j*190,k));
+    arrow(x,[[760,700],[820,760],[800,840],[730,880]],'#2c5f8a',5);ink.push(c);ps.push({p:'dots',c:'#e3edf7'});
+    objs.push([T('Pages your way',80,60,760,80,{fm:'round',b:1,c:'#1d2b4a'}),
+      T('Blank',80,545,150,30,{al:'center'}),T('Lined',270,545,150,30,{al:'center'}),T('Grid',460,545,150,30,{al:'center'}),T('Dots',650,545,150,30,{al:'center'}),
+      T('Pick a look for each page and five paper colours, like this blue one. When you add pages, choose how the new ones look.',80,640,620,34),
+      T('Portrait or landscape notebooks, a cover you can draw on, and every page at a glance.',80,850,620,34),
+      N('Pro: import a PDF and write on it, export to PDF or images.',500,1000,340,170,NC[4],-3,28),S(6,700,150,150,0)])}
+  // 6 – private and yours
+  {const [c,x]=page();x.strokeStyle='#e0a526';x.lineWidth=8;wave(x,90,1000,500,9,30);ink.push(c);ps.push({p:'lines',c:PAPER});
+    const rows=['Lock a notebook with a PIN or a password (the padlock at the top).','On Android, open it with your fingerprint.','Saved on your device. Works offline.','Download a backup any time in Settings.','With Pro, sync across your devices.'];
+    const o=[T('Private and yours',80,60,760,80,{fm:'display',b:1,c:'#1d2b4a'})];
+    rows.forEach((t,j)=>{o.push(S(j===4?16:22,80,200+j*125,76,0),T(t,170,190+j*125,680,32))});
+    o.push(T('Now make it yours!',80,850,600,80,{fm:'hand',b:1,c:'#c0392b'}),
+      T('Go back to your notebooks and tap “New notebook”.',80,1040,560,32,{c:'#56627a'}),S(0,680,880,150,-12),S(19,700,1040,110,8));
+    objs.push(o)}
+  // every text box gets exactly the height its text needs
+  const mx=document.createElement('canvas').getContext('2d');
+  const fit=async o=>{if(o.k==='note'&&o.c==='transparent'){o.h=1e4;o.h=Math.ceil(await drawRuns(mx,o))+6}};
+  // cover
+  const cv=document.createElement('canvas');cv.width=900;cv.height=1200;const cx=cv.getContext('2d');cx.strokeStyle='rgba(255,255,255,.85)';cx.lineWidth=6;cx.lineCap='round';
+  cx.strokeRect(70,70,760,1060);
+  b.cobjs=[T('Welcome',110,330,680,150,{fm:'script',al:'center',c:'#ffffff'}),T('to Foliet Sketchbook',110,560,680,52,{fm:'round',al:'center',c:'#ffffff',b:1}),
+    S(0,380,760,140,-10),S(5,180,820,90,0),S(13,620,800,110,12)];
+  for(const o of [...objs.flat(),...b.cobjs])await fit(o);
+  b.pages=ink.map(c=>c.toDataURL('image/webp',.85));b.objs=objs;b.ps=ps;b.cover=cv.toDataURL('image/webp',.85);
+  for(let i=0;i<b.pages.length;i++)b.pv[i]=await compose(b.pages[i],b.objs[i],null,b.ps[i]);
+  b.cpv=await compose(b.cover,b.cobjs,null,null);
+  b.u=b.wu=Date.now();
+  return ens(b);
+}
+
+/* Updates ("What's new" in Settings). Listed only from version 1.0 on – until then the list stays empty.
+   For every release from 1.0: add an entry at the TOP, e.g.
+   {v:'1.0',date:'2027-02-01',items:['First public version','…']}  (date as YYYY-MM-DD) */
+const APP_VER='Beta';
+const UPDATES=[];
+function updNew(){return UPDATES.length&&lsGet('sb-upd-seen')!==UPDATES[0].v}
+function syncUpdDot(){const n=!!updNew();$('#menud').classList.toggle('hidden',!n);$('#mupdd').classList.toggle('hidden',!n);$('#s-updd').classList.toggle('hidden',!n)}
+function openUpd(){
+  $('#updv').textContent='You’re using Foliet '+APP_VER+(UPDATES.length?'':'.');
+  const l=$('#updl');l.innerHTML='';
+  if(!UPDATES.length){const e=document.createElement('p');e.className='uempty';e.textContent='No updates yet. Starting with version 1.0, every update will be listed here with its date.';l.append(e)}
+  UPDATES.forEach(u=>{
+    const d=document.createElement('div');d.className='uv';
+    const h=document.createElement('h3');h.textContent='Version '+u.v;
+    const t=document.createElement('small');try{t.textContent=new Date(u.date+'T12:00:00').toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'})}catch(e){t.textContent=u.date}
+    const ul=document.createElement('ul');(u.items||[]).forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.append(li)});
+    d.append(h,t,ul);l.append(d);
+  });
+  if(UPDATES.length)lsSet('sb-upd-seen',UPDATES[0].v);
+  syncUpdDot();$('#set').classList.add('hidden');$('#upd').classList.remove('hidden');
+}
+/* the shelf menu: account, theme, what's new, settings, help, admin, sign out */
+function menuOpen(v){const m=$('#menu');if(!m)return;m.classList.toggle('hidden',!v);$('#menub').setAttribute('aria-expanded',v);if(v)menuHead()}
+function menuHead(){
+  const h=$('#mhead');if(!h)return;h.innerHTML='';const u=ACC.user;
+  const av=el('span','av',((u&&(u.displayName||u.email))||'?').trim().charAt(0).toUpperCase());
+  const t=el('div','');t.append(el('b','',u?(u.email||u.displayName||'Signed in'):'Not signed in'),el('small','',ACC.pro?'Pro'+(proUntil(ACC.proDoc)?' until '+fmtDay(proUntil(ACC.proDoc)):''):'Free plan'));
+  h.append(av,t);$('#madm').classList.toggle('hidden',!ACC.admin);$('#mout').classList.toggle('hidden',!u);
+}
+function initMenu(){
+  $('#menub').onclick=e=>{e.stopPropagation();menuOpen($('#menu').classList.contains('hidden'))};
+  $('#menu').addEventListener('click',e=>{if(e.target.closest('button.mi'))menuOpen(false)});
+  document.addEventListener('click',e=>{if(!e.target.closest('.mwrap'))menuOpen(false)});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')menuOpen(false)});
+  document.querySelectorAll('#mtheme button').forEach(b=>b.onclick=e=>{e.stopPropagation();setTheme(b.dataset.v)});
+  $('#mupd').onclick=openUpd;$('#madm').onclick=openAdmin;$('#mout').onclick=()=>{if(ACC.F&&ACC.user)accOut()};
+  $('#themeb').onclick=toggleTheme;$('#acc-theme').onclick=toggleTheme;
+  syncThemeBtns();
+}
+function initUpd(){
+  $('#s-upd').onclick=openUpd;$('#upd-x').onclick=()=>$('#upd').classList.add('hidden');
+  $('#upd').addEventListener('click',e=>{if(e.target===$('#upd'))$('#upd').classList.add('hidden')});
+  syncUpdDot();
+}
 /* Backup: one .json file with every notebook. Restore adds the notebooks from such a file. */
 async function backupAll(){
   if(!$('#ed').classList.contains('hidden'))await savePage();
@@ -2449,7 +3199,7 @@ function initSettings(){
   $('#s-ok').onclick=()=>d.classList.add('hidden');d.addEventListener('click',e=>{if(e.target===d)d.classList.add('hidden')});
 }
 function syncSet(){
-  document.querySelectorAll('#s-theme button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===SET.theme));
+  document.querySelectorAll('#s-theme button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===SET.theme));syncThemeBtns();
   document.querySelectorAll('#s-desk .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===SET.desk));
   $('#s-snd').checked=SET.snd;
 }
@@ -2563,7 +3313,7 @@ async function renderTpl(){
   });
 }
 async function useTpl(t,btn){
-  if(data.length>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}
+  if(ownBooks()>=LIM().nb){upsell('The free plan includes '+LIM().nb+' notebooks. Upgrade to Pro for unlimited notebooks.');return}
   btn.disabled=true;btn.style.opacity=.6;
   try{
     await tplFonts();
@@ -2588,6 +3338,7 @@ function ago(t){
 function libMatch(b,q){
   if(!q)return {ok:true};
   if((b.title||'').toLowerCase().includes(q))return {ok:true,title:true};
+  if(b.lock)return {ok:false}; // a locked notebook's pages are not searched
   for(let i=0;i<b.objs.length;i++)for(const o of (b.objs[i]||[])){
     if(o&&o.k==='note'&&o.t&&o.t.toLowerCase().includes(q)){
       const t=o.t.replace(/\s+/g,' ').trim(),k=t.toLowerCase().indexOf(q),st=Math.max(0,k-24);
@@ -2695,7 +3446,7 @@ function initKeys(){
     const tg=e.target,tn=tg&&tg.tagName;
     if(/INPUT|TEXTAREA|SELECT/.test(tn)||(tg&&tg.isContentEditable))return;
     const k=e.key,lk=k.toLowerCase(),mod=e.ctrlKey||e.metaKey;
-    const modals=['#set','#xd','#shd','#hd','#csheet'].map($).filter(x=>x&&!x.classList.contains('hidden'));
+    const modals=['#set','#upd','#xd','#shd','#hd','#csheet'].map($).filter(x=>x&&!x.classList.contains('hidden'));
     if(k==='Escape'&&modals.length){modals[modals.length-1].classList.add('hidden');return}
     if(modals.length||!$('#tour').classList.contains('hidden')||!$('#dlg').classList.contains('hidden')||!$('#up').classList.contains('hidden'))return;
     if(k==='?'){e.preventDefault();toggleHelp(true);return}
@@ -2811,7 +3562,7 @@ function initExport(){
     }catch(e){console.error(e);busy(0,'Export failed. Please try again.')}
   };
 }
-initExport();initObar();initTools();initKb();initAcc();initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');initData();
+initExport();initObar();initTools();initKb();initAcc();initMenu();initUpd();$('#block').onclick=lockSettings;$('#adm-x').onclick=()=>$('#admin').classList.add('hidden');$('#adm-r').onclick=adminLoad;initSel();initZoom();initLayers();initOpts();initCover();initSettings();initLib();initShare();initHelp();initKeys();initPwa();initPS();initOv();initPlan();selectTool('pen');startApp();
 </script>
 </body>
 </html>
