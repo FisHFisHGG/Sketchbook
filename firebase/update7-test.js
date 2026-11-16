@@ -32,6 +32,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   const C1=await ctxOf(),A=await open(C1,'A');await signUp(A,'ana@example.com');
   await newBook(A,'Trip',3);await newBook(A,'Recipes',2);
   ok(await titles(A)==='Recipes, Trip, Welcome to Foliet','Ana has Trip, Recipes and the welcome notebook');
+  ok(await A.evaluate(()=>!!document.querySelector('#pdfb .soon:not(.hidden)')),'free plan: the button says "Import PDF  Pro"');
   const wid=await A.evaluate(()=>String(data.find(b=>b.welcome).id));
   await setIdx(A,[wid]); // the shelf list on the device loses Trip and Recipes (what used to happen)
   await reload(A);
@@ -59,20 +60,21 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   const del=async(p,t)=>{const c=p.locator('.cell:not(.add)',{hasText:t}).locator('xpath=..').locator('.del');await c.click();await c.click();await p.waitForTimeout(600)};
   await del(A,'Recipes');
   ok(!/Recipes/.test(await titles(A))&&await A.evaluate(()=>TRASH.length===1&&TRASH[0].title==='Recipes'),'deleting Recipes moves it to Recently deleted');
+  ok(await A.evaluate(()=>Math.round((trashEnd(TRASH[0])-TRASH[0].at)/864e5)===2),'free plan: it is kept 2 days');
   ok(await A.evaluate(()=>!!document.querySelector('#trashb:not(.hidden)')&&/Recently deleted \(1\)/.test($('#trashb').textContent)),'the shelf shows "Recently deleted (1)"');
   await reload(A);
   ok(!/Recipes/.test(await titles(A))&&await A.evaluate(()=>TRASH.length===1),'it stays deleted after a restart (not brought back by mistake)');
   await A.click('#trashb');await A.waitForSelector('#lockc .trow');
-  ok(await A.evaluate(()=>/Recipes/.test($('#lockc').textContent)&&/30 days/.test($('#lockc').textContent)),'Recently deleted lists Recipes and says it\'s kept for 30 days');
+  ok(await A.evaluate(()=>/Recipes/.test($('#lockc').textContent)&&/kept here for 2 days\. With Pro, 30 days/.test($('#lockc').textContent)&&/2 days left/.test($('#lockc').textContent)),'Recently deleted lists Recipes: "2 days left" (free plan; with Pro, 30 days)');
   await A.click('#lockc .trow >> text=Restore');await A.waitForTimeout(800);
   ok(/Recipes/.test(await titles(A))&&await A.evaluate(()=>data.find(b=>b.title==='Recipes').pages.length===2&&TRASH.length===0),'Restore brings Recipes back with its 2 pages');
   const recId=await A.evaluate(()=>String(data.find(b=>b.title==='Recipes').id));
   await del(A,'Recipes');
   ok((await idbKeys(A)).some(k=>k.includes(':b:'+recId)),'while in Recently deleted, its records stay on the device');
-  await A.evaluate(async()=>{TRASH[0].at=Date.now()-31*864e5;persist();await saveNow()});
+  await A.evaluate(async()=>{TRASH[0].x=Date.now()-1000;persist();await saveNow()}); // its time is up
   await reload(A);await A.evaluate(()=>saveNow());await A.waitForTimeout(500);
   const left=(await idbKeys(A)).filter(k=>/:b:|:p:/.test(k)),rid=await A.evaluate(()=>TRASH.length);
-  ok(rid===0&&!left.some(k=>k.includes(recId))&&await A.evaluate(()=>!document.querySelector('#trashb:not(.hidden)')),'after 30 days it is removed for good (records erased)');
+  ok(rid===0&&!left.some(k=>k.includes(recId))&&await A.evaluate(()=>!document.querySelector('#trashb:not(.hidden)')),'when its time is up it is removed for good (records erased)');
 
   // ---- 5) Pro sync: a notebook missing on this device is brought back from the cloud, not deleted from it
   const uid=await A.evaluate(()=>ACC.user.uid);
@@ -95,6 +97,19 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(/Trip/.test(await titles(B)),'device B gets all the notebooks ('+await titles(B)+')');
   await A.evaluate(()=>renderShelf());await del(A,'From window two');await syncDone(A);await syncDone(B);
   ok(!/From window two/.test(await titles(B))&&await B.evaluate(()=>TRASH.some(t=>t.title==='From window two')),'deleted on A → on B it moves to Recently deleted (can still be restored there)');
+  ok(await A.evaluate(()=>{const t=TRASH.find(t=>t.title==='From window two');return t&&Math.round((trashEnd(t)-t.at)/864e5)===30}),'Pro: a deleted notebook is kept 30 days');
+
+  // ---- 6) PDF import (Pro): no "Pro" badge on the button; a page that can't be read doesn't stop the rest
+  ok(await A.evaluate(()=>!document.querySelector('#pdfb .soon:not(.hidden)')&&$('#pdfb').innerText.trim()==='Import PDF'),'Pro: the button just says "Import PDF"');
+  const mk2=await b.newPage();
+  await mk2.setContent('<style>@page{size:600px 800px;margin:0}body{margin:0}div{width:600px;height:800px;page-break-after:always;font:40px serif}</style><div style="background:#d33">1</div><div style="background:#3a3">2</div><div style="background:#33d">3</div><div style="background:#dd3">4</div><div style="background:#3dd">5</div>');
+  const pdfPath=path.join(require('os').tmpdir(),'u7-test.pdf');fs.writeFileSync(pdfPath,await mk2.pdf({width:'600px',height:'800px',printBackground:true}));await mk2.close();
+  await A.evaluate(()=>{const orig=renderPdfPage;window.renderPdfPage=async(doc,i,w,h)=>{if(i===3)throw new Error('a page this device can\'t read');return orig(doc,i,w,h)}});
+  await A.setInputFiles('#pdff',pdfPath);await A.waitForSelector('#dlg:not(.hidden)',{timeout:15000});await A.click('#dyes');
+  await A.waitForFunction(()=>/Imported/.test($('#sv').textContent),null,{timeout:30000});
+  const imp=await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return {t:$('#sv').textContent,n:b.pages.length,bg:Array.from({length:b.pages.length},(_,i)=>!!b.bg[i]),cbg:!!b.cbg,imp:!!b._imp,shelf:/u7-test/.test($('#grid').textContent)||!$('#bv').classList.contains('hidden')}});
+  ok(imp.n===4&&imp.cbg&&imp.bg.join()==='true,false,true,true'&&!imp.imp,'PDF with an unreadable page: cover + 4 pages, only that page left blank ('+JSON.stringify(imp.bg)+')');
+  ok(/Imported 3 pages and the cover\. 1 page couldn’t be read and was left blank\./.test(imp.t),'… and it says so ("'+imp.t+'")');
 
   for(const p of [A,B])p.errs.forEach(e=>console.log('  ERR',e));
   console.log(fails?fails+' FAILED':'ALL PASSED');await b.close();process.exit(fails?1:0);

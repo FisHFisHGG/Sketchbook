@@ -625,7 +625,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 
 <div id="up" class="hidden" role="dialog" aria-modal="true" aria-labelledby="upt"><div class="card">
   <h2 id="upt">Foliet Pro</h2><p id="upm"></p>
-  <ul class="upl"><li>Unlimited notebooks and pages</li><li>Up to 8 layers per page</li><li>PDF import</li><li>A photo on the cover</li><li>Export to PDF and image</li></ul>
+  <ul class="upl"><li>Unlimited notebooks and pages</li><li>Up to 8 layers per page</li><li>PDF import</li><li>A photo on the cover</li><li>Deleted notebooks kept 30 days</li><li>Export to PDF and image</li></ul>
   <p class="upp"><b>€3.99</b> a month or <b>€29.99</b> a year</p>
   <p class="upn">Pro isn’t on sale yet. Payments open together with accounts and cloud sync. Everything you make on the free plan stays yours.</p>
   <div class="acts2"><button class="ib" id="upno">OK</button><a class="btn" id="upgo" href="../#pricing" target="_blank" rel="noopener">Compare plans</a></div>
@@ -755,7 +755,9 @@ async function idbDel(k){const db=await idb();return new Promise((res,rej)=>{con
 let P2='v2:'; // this account's records on the device (see openLibrary)
 const LIBST={ready:false,purge:[],recovered:0}; // ready: the library is loaded and may be saved
 let TRASH=[]; // Recently deleted (see trashBook)
-const TRASH_DAYS=30;
+const TRASH_DAYS=30,TRASH_FREE=2; // Recently deleted: 30 days with Pro, 2 days on the free plan
+const trashDays=()=>plan==='pro'?TRASH_DAYS:TRASH_FREE;
+const trashEnd=t=>t.x||(t.at||0)+TRASH_DAYS*864e5; // each entry keeps the end date it got when it was deleted
 const PK=['pages','objs','pv','bg','ps','lay'];
 let snaps=new Map(),usingLS=false;
 /* cheap fingerprint: small values as JSON, long strings (images) compared by identity */
@@ -830,7 +832,7 @@ async function loadV2(){
   const m=new Map(keys.map((k,i)=>[k,vals[i]])),idx=m.get(P2+'idx'),tr=m.get(P2+'trash');
   // Recently deleted: older than 30 days → erased on the next save
   TRASH=Array.isArray(tr)?tr.filter(t=>t&&t.id!=null).map(t=>({...t,id:String(t.id)})):[];
-  const now=Date.now();LIBST.purge=TRASH.filter(t=>now-(t.at||0)>TRASH_DAYS*864e5).map(t=>t.id);
+  const now=Date.now();LIBST.purge=TRASH.filter(t=>now>trashEnd(t)).map(t=>t.id);
   TRASH=TRASH.filter(t=>!LIBST.purge.includes(t.id));
   // the shelf list, plus any notebook whose records are here but that fell out of the list (it comes back)
   const list=[...new Set((Array.isArray(idx)?idx:[]).map(String))],gone=new Set([...TRASH.map(t=>t.id),...LIBST.purge]);
@@ -904,7 +906,7 @@ function makeBook(b){
 function renderShelf(){
   const g=$('#grid'),q=LIB.q.trim().toLowerCase();g.innerHTML='';g.classList.toggle('list',LIB.view==='list');
   const tb=$('#trashb');if(tb){tb.textContent='Recently deleted ('+TRASH.length+')';tb.classList.toggle('hidden',!TRASH.length||$('#grid').classList.contains('hidden'))}
-  let items=data.map(b=>({b,m:libMatch(b,q)})).filter(x=>x.m.ok);
+  let items=data.filter(b=>!b._imp).map(b=>({b,m:libMatch(b,q)})).filter(x=>x.m.ok);
   const srt={rec:(x,y)=>(y.b.u||created(y.b))-(x.b.u||created(x.b)),name:(x,y)=>(x.b.title||'').localeCompare(y.b.title||'',undefined,{sensitivity:'base'}),pages:(x,y)=>y.b.pages.length-x.b.pages.length,new:(x,y)=>created(y.b)-created(x.b)};
   items.sort(srt[LIB.sort]||srt.rec);
   items.forEach(({b,m})=>{
@@ -918,7 +920,7 @@ function renderShelf(){
     const x=document.createElement('button');x.className='del';x.textContent='×';x.setAttribute('aria-label','Delete notebook');
     x.onclick=async()=>{
       if(!x.dataset.s&&b.lock&&!await unlockBook(b))return;
-      if(x.dataset.s){trashBook(b);toast('“'+(b.title||'Untitled')+'” moved to Recently deleted. You can restore it for '+TRASH_DAYS+' days.')}
+      if(x.dataset.s){trashBook(b);const d=trashDays();toast('“'+(b.title||'Untitled')+'” moved to Recently deleted. You can restore it for '+d+(d===1?' day.':' days.'))}
       else{x.dataset.s=1;x.textContent='Sure?';x.classList.add('on');setTimeout(()=>{delete x.dataset.s;x.textContent='×';x.classList.remove('on')},2500)}
     };
     w.append(c,x);g.append(w);
@@ -942,7 +944,7 @@ function closeBook(){if(cur)UNL.delete(String(cur.id));$('#bv').classList.add('h
 /* ----- Recently deleted: a deleted notebook is kept 30 days and can be restored ----- */
 function trashBook(b,remote){
   const id=String(b.id);data=data.filter(k=>k!==b);UNL.delete(id);
-  TRASH=[{id,title:b.title||'Untitled',at:Date.now(),n:b.pages.length,c:b.color,...(remote?{r:1}:{})},...TRASH.filter(t=>t.id!==id)];
+  const now=Date.now();TRASH=[{id,title:b.title||'Untitled',at:now,x:now+trashDays()*864e5,n:b.pages.length,c:b.color,...(remote?{r:1}:{})},...TRASH.filter(t=>t.id!==id)];
   if(!data.length)data=[mk('Sketches',0)];
   persist();if(!$('#shelf').classList.contains('hidden'))renderShelf();
 }
@@ -954,11 +956,11 @@ async function restoreTrash(t){
 }
 function openTrash(){
   lockDlg((c,close)=>{
-    c.append(el('h2','','Recently deleted'),el('p','lk-sub','Notebooks you deleted are kept here for '+TRASH_DAYS+' days, then removed for good.'));
+    c.append(el('h2','','Recently deleted'),el('p','lk-sub',plan==='pro'?'Notebooks you delete are kept here for '+TRASH_DAYS+' days, then removed for good.':'On the free plan, notebooks you delete are kept here for '+TRASH_FREE+' days. With Pro, '+TRASH_DAYS+' days.'));
     const list=el('div','tlist');c.append(list);
     const draw=()=>{list.innerHTML='';if(!TRASH.length){list.append(el('p','muted','Nothing here.'));return}
       TRASH.forEach(t=>{const r=el('div','trow'),i=el('i','tsw');i.style.background=t.c||'#23407a';
-        const left=Math.max(1,TRASH_DAYS-Math.floor((Date.now()-(t.at||0))/864e5));
+        const left=Math.max(1,Math.ceil((trashEnd(t)-Date.now())/864e5));
         const tx=el('div','');tx.append(el('b','',t.title),el('small','',(t.n||1)+(t.n===1?' page':' pages')+' · '+(t.r?'deleted on another device':'deleted '+fmtDay(t.at))+' · '+left+(left===1?' day':' days')+' left'));
         const rs=el('button','ib','Restore');rs.onclick=async()=>{rs.disabled=true;await restoreTrash(t);draw();if(!TRASH.length)close(true)};
         const rm=el('button','ib','Delete now');rm.onclick=()=>{if(!rm.dataset.s){rm.dataset.s=1;rm.textContent='Sure?';return}TRASH=TRASH.filter(x=>x.id!==t.id);LIBST.purge.push(t.id);persist();renderShelf();draw();if(!TRASH.length)close(true)};
@@ -2328,14 +2330,23 @@ async function pdfLib(){
   pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+'pdf.worker.min.js';
   return pdfjsLib;
 }
-async function renderPdfPage(doc,i){
-  const pg=await doc.getPage(i),v=pg.getViewport({scale:1}),k=Math.min(W/v.width,H/v.height),vp=pg.getViewport({scale:k});
-  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-  x.fillStyle='#fff';x.fillRect(0,0,W,H);
-  x.translate((W-vp.width)/2,(H-vp.height)/2);
-  await pg.render({canvasContext:x,viewport:vp}).promise;
+async function renderPdfPage(doc,i,w0,h0){ // → an image of PDF page i (tries again smaller if the device runs short of memory)
+  const pg=await doc.getPage(i),v=pg.getViewport({scale:1});let err=null;
+  for(const s of [1,.7,.5]){
+    const w=Math.round((w0||W)*s),h=Math.round((h0||H)*s),c=document.createElement('canvas');c.width=w;c.height=h;
+    try{
+      const x=c.getContext('2d');if(!x)throw new Error('no canvas');
+      const k=Math.min(w/v.width,h/v.height),vp=pg.getViewport({scale:k});
+      x.fillStyle='#fff';x.fillRect(0,0,w,h);x.translate((w-vp.width)/2,(h-vp.height)/2);
+      await pg.render({canvasContext:x,viewport:vp}).promise;
+      const u=await canvasURL(c,.8);if(!u||u.length<100)throw new Error('empty image');
+      try{pg.cleanup()}catch(e){}
+      return u;
+    }catch(e){err=e;console.warn('PDF page '+i+' at '+s,e)}
+    finally{c.width=c.height=0} // frees the canvas memory right away (helps phones)
+  }
   try{pg.cleanup()}catch(e){}
-  return canvasURL(c,.8);
+  throw err||new Error('page '+i);
 }
 function pdfProgress(onCancel){
   const w=el('div','pdfprog');w.setAttribute('role','status');const t=el('span','','Importing…');const c=el('button','ib','Cancel');c.onclick=onCancel;w.append(t,c);document.body.append(w);
@@ -2352,24 +2363,25 @@ $('#pdff').onchange=async e=>{
     const N=Math.min(doc.numPages,PDF_MAX);
     const o=await askOrient('Import PDF',v.width>v.height?'l':'p',(doc.numPages>PDF_MAX?'This PDF has '+doc.numPages+' pages; the first '+PDF_MAX+' will be imported. ':N+(N===1?' page. ':' pages. ')+'')+'The first page becomes the cover. Is this PDF portrait or landscape?','Import');
     if(!o){note('');return}
-    const b=mk(f.name.replace(/\.pdf$/i,'').slice(0,40)||'PDF',data.length,o);b.pages=[];
-    setDims(b);
+    const b=mk(f.name.replace(/\.pdf$/i,'').slice(0,40)||'PDF',data.length,o);b.pages=[];b._imp=1; // hidden on the shelf until the import is done
+    setDims(b);const PW=W,PH=H; // this notebook's page size (even if another notebook is opened meanwhile)
+    let stop=false,bad=0;const pr=pdfProgress(()=>stop=true);pr.set('Importing the cover…');note('');
     // the first PDF page is the cover's photo (you can draw on it); the pages inside start with page 2
-    const cov=await renderPdfPage(doc,1);
-    b.cbg=cov;b.cpv=await compose(null,[],cov,null);
+    try{const cov=await renderPdfPage(doc,1,PW,PH);b.cbg=cov;b.cpv=await compose(null,[],cov,null)}catch(e){bad++}
     const first=N>1?2:1;
     data.push(b);
-    let stop=false;const pr=pdfProgress(()=>stop=true);
     for(let i=first;i<=N&&!stop;i++){
       pr.set('Importing page '+(i-first+1)+' of '+(N-first+1)+'…');
-      b.pages.push(null);b.bg[b.pages.length-1]=await renderPdfPage(doc,i);
+      let u=null;try{u=await renderPdfPage(doc,i,PW,PH)}catch(e){bad++} // a page that can't be read stays blank; the others still come in
+      b.pages.push(null);if(u)b.bg[b.pages.length-1]=u;
       if((i-first+1)%25===0){persist();await new Promise(r=>setTimeout(r,0))} // saved as it goes
     }
     pr.done();try{doc.destroy()}catch(e){}
     if(!b.pages.length)b.pages=[null];
-    persist();note('');renderShelf();showBrowse(b);
-    if(stop)toast('Import stopped – '+b.pages.length+' pages were kept.');
-  }catch(err){note('Could not import this PDF.',1);console.error(err)}
+    delete b._imp;persist();renderShelf();if($('#ed').classList.contains('hidden')&&$('#bv').classList.contains('hidden'))showBrowse(b);
+    const got=b.bg.filter(Boolean).length;
+    toast((stop?'Import stopped – ':'Imported ')+got+(got===1?' page':' pages')+(stop?' were kept.':' and the cover.')+(bad?' '+bad+(bad===1?' page':' pages')+' couldn’t be read and '+(bad===1?'was':'were')+' left blank.':''));
+  }catch(err){note('Could not import this PDF.',1);console.error(err);toast('Could not import this PDF. Try another file, or save it again as a PDF and retry.')}
 };
 
 /* Page style (background) */
@@ -2485,7 +2497,8 @@ try{const q=new URLSearchParams(location.search).get('demo');if(q==='pro'||q==='
 let plan=demoPlan; // becomes 'pro' for real when the signed-in account has Pro
 const LIM=()=>plan==='pro'?{nb:1e9,pg:1e9,ly:8}:{nb:2,pg:20,ly:2};
 function upsell(msg){$('#upm').textContent=msg;$('#upm').classList.toggle('hidden',!msg);$('#up').classList.remove('hidden')}
-function setPlanBtn(){const b=$('#plan');if(!b)return;b.textContent=ACC.pro?'Pro':plan==='pro'?'Pro (demo)':'Free plan';b.title=plan==='pro'?'Pro demo for testing. Open the app with ?demo=free to turn it off.':'See what Pro adds'}
+function setPlanBtn(){const pb=$('#pdfb .soon');if(pb)pb.classList.toggle('hidden',plan==='pro'); // Pro: just “Import PDF”
+  const b=$('#plan');if(!b)return;b.textContent=ACC.pro?'Pro':plan==='pro'?'Pro (demo)':'Free plan';b.title=plan==='pro'?'Pro demo for testing. Open the app with ?demo=free to turn it off.':'See what Pro adds'}
 function initPlan(){
   setPlanBtn();
   $('#plan').onclick=()=>{if(ACC.pro){openAcc();return}if(plan==='pro')toast('Pro demo is on. Open the app with ?demo=free to turn it off.');else upsell('')};
@@ -2921,7 +2934,7 @@ async function pullRec(k){
 function applyRec(k,v){ // v=null deletes
   if(k.startsWith('b:')){
     const id=k.slice(2);let b=data.find(x=>String(x.id)===id);
-    if(v==null){if(b){data.splice(data.indexOf(b),1);TRASH=[{id,title:b.title||'Untitled',at:Date.now(),n:b.pages.length,c:b.color,r:1},...TRASH.filter(t=>t.id!==id)]}return} // deleted on another device → Recently deleted here
+    if(v==null){if(b){const now=Date.now();data.splice(data.indexOf(b),1);TRASH=[{id,title:b.title||'Untitled',at:now,x:now+TRASH_DAYS*864e5,n:b.pages.length,c:b.color,r:1},...TRASH.filter(t=>t.id!==id)]}return} // deleted on another device → Recently deleted here
     if(!b){b=ens({id:v.id,pages:[null]});data.push(b)}
     for(const f of Object.keys(b))if(!PK.includes(f)&&f[0]!=='_'&&!(f in v))delete b[f];
     for(const f in v)if(f!=='n')b[f]=v[f];
