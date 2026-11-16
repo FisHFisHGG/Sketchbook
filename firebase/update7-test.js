@@ -90,7 +90,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
 
   // ---- 4) deleting goes to "Recently deleted" (30 days); restore; purge after 30 days
   await A.evaluate(()=>renderShelf());
-  const del=async(p,t)=>{const c=p.locator('.cell:not(.add)',{hasText:t}).locator('xpath=..').locator('.del');await c.click();await c.click();await p.waitForTimeout(600)};
+  const del=async(p,t)=>{const c=p.locator('.cell:not(.add)',{hasText:t}).locator('xpath=..').locator('.more');await c.click();await p.click('#pop >> text=Delete');await p.click('#lockd .btn.danger');await p.waitForTimeout(600)};
   await del(A,'Recipes');
   ok(!/Recipes/.test(await titles(A))&&await A.evaluate(()=>TRASH.length===1&&TRASH[0].title==='Recipes'),'deleting Recipes moves it to Recently deleted');
   ok(await A.evaluate(()=>Math.round((trashEnd(TRASH[0])-TRASH[0].at)/864e5)===2),'free plan: it is kept 2 days');

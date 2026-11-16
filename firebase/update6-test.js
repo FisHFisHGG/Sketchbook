@@ -54,7 +54,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   ok((await listDocs('feedback'))[0].fields.done.booleanValue===true&&await A.evaluate(()=>/0 not done yet/.test($('#adm-body').textContent)),'admin marks it done');
 
   // ---- template store
-  await B.click('#tb2');await B.waitForSelector('.tstore',{timeout:10000});
+  await B.click('#storeb');await B.waitForSelector('.tstore',{timeout:10000});
   const cards=await B.evaluate(()=>({all:document.querySelectorAll('#tpl .tcardx').length,free:document.querySelectorAll('#tpl .tprice.free').length,lock:document.querySelectorAll('#tpl .tcardx.lock').length,price:[...document.querySelectorAll('#tpl .tcardx.lock .tprice')].every(e=>e.textContent==='€0.99')}));
   ok(cards.all===17&&cards.free===8&&cards.lock===9&&cards.price,'store: 17 templates, 8 free, 9 locked at €0.99 ('+JSON.stringify(cards)+')');
   await B.click('.tchips >> text=Free');await B.waitForTimeout(200);
@@ -64,7 +64,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   ok(await B.evaluate(()=>/Free template/.test($('#lockc').textContent)&&/New notebook with these pages/.test($('#t-new').textContent)),'tapping a free template: "✓ Free template" + "New notebook with these pages"');
   await B.click('#t-new');await B.waitForSelector('#bv:not(.hidden)',{timeout:10000});
   ok(await B.evaluate(()=>cur.title==='Cornell notes'&&cur.pages.length===8&&cur.design==='frame'&&cur.bg.filter(Boolean).length===8&&cur.ps.every((s,i)=>s.p==='tpl'&&s.t==='cornell'&&s.k===i)),'a notebook made of the template (Cornell notes, 8 template pages, cover design)');
-  await B.click('#bclose');await B.waitForTimeout(400);await B.click('#tb2');await B.waitForTimeout(300);
+  await B.click('#bclose');await B.waitForTimeout(400);await B.click('#storeb');await B.waitForTimeout(300);
   const nb0=await B.evaluate(()=>data.length);
   await B.click('#tpl .tcardx[data-t="habit"]');await B.waitForSelector('#lockd:not(.hidden) .tbuy');
   ok(await B.evaluate(()=>/Habit tracker/.test($('#lockc').textContent)&&/€0\.99/.test($('#lockc .tbuy').textContent)),'a paid template opens "Buy for €0.99"');
@@ -96,7 +96,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.reload();await B.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});await B.waitForTimeout(800);
   ok(await B.evaluate(()=>ACC.owned.has('habit')&&JSON.parse(localStorage.getItem('sb-own:'+ACC.user.uid)).includes('habit')),'after reopening the app it\'s still his (also kept on the device for offline)');
   // add a template's pages to a notebook you already have
-  await B.click('#tb2');await B.waitForSelector('.tstore');await B.click('#tpl .tcardx[data-t="cornell"]');await B.waitForSelector('#t-book');
+  await B.click('#storeb');await B.waitForSelector('.tstore');await B.click('#tpl .tcardx[data-t="cornell"]');await B.waitForSelector('#t-book');
   const hid=await B.evaluate(()=>String(data.find(x=>x.title==='Habit tracker').id));
   await B.selectOption('#t-book',hid);await B.selectOption('#t-n','2');await B.click('#t-add');await B.waitForSelector('#bv:not(.hidden)',{timeout:10000});await B.waitForTimeout(500);
   ok(await B.evaluate(()=>cur.title==='Habit tracker'&&cur.pages.length===14&&cur.ps[12].t==='cornell'&&cur.ps[12].k===0&&cur.ps[13].k===1&&!!cur.bg[13]&&cur.cs===6),'"Add" puts 2 Cornell notes pages at the end of the Habit tracker notebook and opens it there');
@@ -104,7 +104,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.click('#bclose');await B.waitForTimeout(300);
   // Carol: used-up code, a trick with the wrong template, then a real code in the account window
   const C=await user('carol@example.com');
-  await C.click('#tb2');await C.waitForSelector('.tstore');
+  await C.click('#storeb');await C.waitForSelector('.tstore');
   await C.click('#tpl .tcardx[data-t="habit"]');await C.waitForSelector('#t-code');await C.fill('#t-code','HABIT-1');await C.click('#lockc .codebox button');await C.waitForTimeout(1500);
   ok(/used up|expired/.test(await C.evaluate(()=>$('#lockc .cmsg').textContent)),'a used-up template code is refused');
   await C.click('#lockc >> text=Not now');
@@ -125,7 +125,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await C.waitForTimeout(400);
   ok(await C.evaluate(()=>ACC.owned.has('all')&&ACC.owned.has('comic')&&!document.querySelector('#tpl .tcardx.lock')),'admin gives Carol all paid templates by email → nothing is locked for her');
   // ---- templates in your notebooks: a new notebook starting with a template, new pages, page style; the cover label while turning
-  await C.click('#tb1');await C.waitForTimeout(300);
+  await C.click('#storex');await C.waitForTimeout(300);
   await C.click('.cell.add');await C.waitForSelector('#dlg:not(.hidden) #dpg:not(.hidden)');await C.waitForSelector('#dtpl [data-p="tpl:comic"]');
   ok(await C.evaluate(()=>document.querySelectorAll('#dpats button').length===4&&document.querySelectorAll('#dtpl button').length===17&&/change any page later with Page style/.test($('#dpg').textContent)),'"New notebook" asks how the pages look: blank, lined, grid, dots or one of her 17 templates (and says it can be changed later)');
   await C.click('#dlg .opts [data-o="l"]');await C.click('#dtpl [data-p="tpl:comic"]');await C.click('#dyes');await C.waitForSelector('#bv:not(.hidden)');
@@ -191,7 +191,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.click('#bclose');await B.waitForTimeout(300);
 
   // ---- the store: covers, labels and sticker packs
-  await B.click('#tb2');await B.waitForSelector('.skinds');
+  await B.click('#storeb');await B.waitForSelector('.skinds');
   const kinds={};for(const k of ['cov','lbl','stk']){await B.click('.skinds [data-k="'+k+'"]');await B.waitForTimeout(300);kinds[k]=await B.evaluate(()=>[document.querySelectorAll('#tpl .tcardx').length,document.querySelectorAll('#tpl .tcardx.lock').length])}
   ok(kinds.cov+''==='22,6'&&kinds.lbl+''==='12,6'&&kinds.stk+''==='9,3','store: 22 covers (6 paid), 12 labels (6 paid), 9 sticker packs of 7 (3 paid) ('+JSON.stringify(kinds)+')');
   await B.click('.skinds [data-k="stk"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="stk-treats"]');await B.waitForSelector('#lockc .tbuy-pv');await B.waitForTimeout(300);
@@ -213,7 +213,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.click('#csx');await B.click('#plus');await B.click('#stabs [data-p="stick"]');await B.waitForTimeout(300);
   ok(await B.evaluate(()=>[...document.querySelectorAll('#spane .eg.st')].map(g=>g.dataset.pk).join()==='stk-basics,stk-marks,stk-tags,stk-days,stk-doodles,stk-desk'&&document.querySelectorAll('#spane .eg.st button').length===42&&[...document.querySelectorAll('#spane .eg.st')].every(g=>g.children.length===7)),'+ → Stickers: the 6 free packs, 7 stickers each (42)');
   await B.click('#shx');await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.click('#bclose');await B.waitForTimeout(300);
-  await B.click('#tb2');await B.click('.skinds [data-k="lbl"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="lbl-oval"]');await B.waitForSelector('#t-use');
+  await B.click('#storeb');await B.click('.skinds [data-k="lbl"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="lbl-oval"]');await B.waitForSelector('#t-use');
   await B.selectOption('#t-book',hid);await B.click('#t-use');await B.waitForSelector('#bv:not(.hidden)');await B.waitForTimeout(400);
   ok(await B.evaluate(()=>cur.title==='Habit tracker'&&cur.cobjs.some(o=>o.lb&&o.lb.id==='lbl-oval'&&o.lb.t==='Habit tracker')&&!!cur.cpv),'store → Oval label → "Add" puts it on the Habit tracker cover');
   await B.click('#bclose');await B.waitForTimeout(300);

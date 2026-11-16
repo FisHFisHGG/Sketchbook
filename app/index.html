@@ -71,6 +71,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .tabs{max-width:980px;margin:0 auto 28px;display:flex;gap:6px;border-bottom:1px solid var(--line)}
 .tabs button{background:none;border:0;padding:10px 16px;font-weight:600;opacity:.6;border-bottom:3px solid transparent;margin-bottom:-1px}
 .tabs button[aria-selected="true"]{opacity:1;border-color:var(--accent)}
+#cats{overflow-x:auto;scrollbar-width:none;align-items:flex-end}#cats::-webkit-scrollbar{display:none}#cats .cat{flex:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;color:inherit;font:inherit;font-weight:600;border-radius:10px 10px 0 0;transition:background .15s}#cats .cat .cat-more{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:color-mix(in srgb,var(--ink) 9%,transparent)}#cats .cat .cat-more .ic{width:15px;height:15px}#cats .cat.drop{opacity:1;background:color-mix(in srgb,var(--accent) 18%,transparent);border-color:var(--accent);outline:2px dashed var(--accent);outline-offset:-4px}#cats .cat-add{flex:none;display:inline-flex;align-items:center;gap:2px;margin:0 0 4px 4px;padding:6px 10px;min-height:36px;border:1px dashed var(--line);border-radius:999px;background:none;color:inherit;font:inherit;opacity:.75}#cats .cat-add:hover{opacity:1;border-color:var(--accent)}#cats .cat-add .ic{width:18px;height:18px}#cats .cat-add .soon{margin-left:4px}#storehd{max-width:980px;margin:0 auto 14px;display:flex;align-items:center;gap:12px}.storeb{display:inline-flex;align-items:center;gap:6px}.storeb .ic{width:19px;height:19px}.storeb[aria-pressed="true"]{background:var(--ink);color:var(--bar);border-color:var(--ink)}@media (max-width:560px){.storeb span{display:none}.storeb{padding-left:9px;padding-right:9px}}#tagrow{max-width:980px;margin:-12px auto 20px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}.tg-ic{display:inline-grid;place-items:center;opacity:.55;margin-right:2px}.tg-ic .ic{width:18px;height:18px}.tg{--tc:#4a7fd6;display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:2px 9px 2px 7px;border-radius:999px;font-size:.78em;font-weight:600;line-height:1.5;color:inherit;background:color-mix(in srgb,var(--tc) 16%,transparent);border:1px solid color-mix(in srgb,var(--tc) 38%,transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tg::before{content:'';flex:none;width:7px;height:7px;border-radius:50%;background:var(--tc)}.tg.more::before{display:none}button.tg{font:inherit;font-size:.85em;font-weight:600;padding:5px 12px 5px 9px;min-height:32px;cursor:pointer}button.tg[aria-pressed="true"]{background:var(--tc);border-color:var(--tc);color:#fff}button.tg[aria-pressed="true"]::before{background:#fff}.tg-clr{border:0;background:none;color:inherit;font:inherit;font-size:.85em;text-decoration:underline;opacity:.7;padding:4px 6px}.tgs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;font-weight:400}.tgs .tg{max-width:100%}.tgpick{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px;max-height:40vh;overflow:auto}.tg-none{opacity:.6;margin:0}.tgadd{display:flex;gap:8px}.tgadd .lk-in{margin:0;text-align:left;letter-spacing:0;flex:1;min-width:0}#nm-in{text-align:left;letter-spacing:0}.del.more{display:grid;place-items:center;padding:0;width:30px;opacity:.85}.del.more .ic{width:18px;height:18px}.pop{position:fixed;z-index:80;min-width:210px;max-width:min(300px,calc(100vw - 16px));background:var(--bar);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 44px var(--sh);padding:6px;animation:popin .14s ease-out}@keyframes popin{from{opacity:0;transform:translateY(-4px) scale(.98)}}.pop-h{padding:6px 10px 6px;font-size:.78em;font-weight:700;opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}.pop-i{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:6px 10px;border:0;border-radius:9px;background:none;color:inherit;font:inherit;text-align:left}.pop-i:hover:not(:disabled),.pop-i:focus-visible{background:color-mix(in srgb,var(--ink) 8%,transparent);outline:none}.pop-i:disabled{opacity:.38}.pop-i .ic{flex:none;width:18px;height:18px;opacity:.8}.pop-i span:not(.soon){flex:1}.pop-i.danger{color:#c2473a}.pop-i[aria-checked="true"]{font-weight:700}.pop-i[aria-checked="true"] .ic{color:var(--accent);opacity:1}.pop-sep{height:1px;background:var(--line);margin:5px 4px}.cell{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.cell img{-webkit-user-drag:none}.cw.drag-src{opacity:.25}.drag-ghost{position:fixed;z-index:90;pointer-events:none;margin:0;transform-origin:50% 40%;filter:drop-shadow(0 18px 26px rgba(0,0,0,.35));transition:none}.drag-ghost .del{display:none}body.dragging,body.dragging *{cursor:grabbing!important}#shelf{transition:padding-top .25s ease}#shelf.sp{padding-top:calc(env(safe-area-inset-top,0px) + 62px)}#syncpill{position:fixed;z-index:85;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);display:flex;align-items:center;gap:9px;max-width:calc(100vw - 32px);padding:7px 14px 7px 11px;border-radius:999px;background:color-mix(in srgb,var(--bar) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--line);box-shadow:0 8px 24px var(--sh);font-size:.82em;font-weight:600;white-space:nowrap;pointer-events:none;overflow:hidden;animation:spin-in .25s ease-out}#syncpill span{overflow:hidden;text-overflow:ellipsis}#syncpill.low{top:calc(env(safe-area-inset-top,0px) + 64px)}#syncpill::after{content:'';position:absolute;left:0;bottom:0;height:2px;width:var(--sp,0%);background:var(--accent);transition:width .3s}#syncpill .spin{flex:none;width:14px;height:14px;border-radius:50%;border:2px solid color-mix(in srgb,var(--accent) 25%,transparent);border-top-color:var(--accent);animation:spin .8s linear infinite}#syncpill.done .spin{animation:none;border:0;width:14px;height:14px;background:var(--accent);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}@keyframes spin{to{transform:rotate(360deg)}}@keyframes spin-in{from{opacity:0;transform:translate(-50%,-6px)}}@media (prefers-reduced-motion:reduce){#syncpill .spin{animation-duration:2.4s}#syncpill,.pop{animation:none}}
 #tpl{max-width:980px;margin:0 auto;padding:40px 0;opacity:.7}
 .btn{background:var(--ink);color:var(--desk);border:0;border-radius:999px;padding:10px 18px;font-weight:600}
 .ib{background:transparent;border:1px solid var(--line);border-radius:10px;padding:6px 11px;min-height:36px}
@@ -512,12 +513,15 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 <script>try{if(!(window.CSS&&CSS.supports('container-type','inline-size')&&CSS.supports('aspect-ratio','1')&&window.IntersectionObserver))document.getElementById('oldb').style.display='grid'}catch(e){document.getElementById('oldb').style.display='grid'}</script>
 
 <div id="sv" role="status" aria-live="polite"></div>
+<div id="syncpill" class="hidden" role="status" aria-live="polite"><i class="spin" aria-hidden="true"></i><span></span></div>
 <section id="shelf">
-  <header><h1><i class="bk" aria-hidden="true"></i>My notebooks</h1><span id="note" role="status"></span><button class="ib i" id="themeb" aria-label="Switch theme"></button><div class="mwrap"><button class="ib i" id="menub" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i class="ndot hidden" id="menud"></i></button><div id="menu" class="hidden" role="menu"><div class="mhead" id="mhead"></div><button role="menuitem" class="mi" id="accb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Account &amp; promo code</span></button><div class="mi mtheme"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>Theme</span><div class="seg3" id="mtheme"><button data-v="auto">Auto</button><button data-v="light" aria-label="Light">☀</button><button data-v="dark" aria-label="Dark">☾</button></div></div><button role="menuitem" class="mi" id="mupd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span>What’s new</span><i class="ndot hidden" id="mupdd"></i></button><button role="menuitem" class="mi" id="setb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Settings</span></button><button role="menuitem" class="mi" id="mfb"><svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><span>Send feedback</span></button><button role="menuitem" class="mi" id="hlpb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg><span>Help &amp; shortcuts</span></button><a role="menuitem" class="mi" id="mlegal" href="../privacy.html" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span>Privacy &amp; terms</span></a><button role="menuitem" class="mi hidden" id="madm"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Admin panel</span></button><button role="menuitem" class="mi" id="mout"><svg class="ic" viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/></svg><span>Sign out</span></button></div></div><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
-  <nav class="tabs" role="tablist"><button role="tab" id="tb1" aria-selected="true">Notebooks</button><button role="tab" id="tb2" aria-selected="false">Store</button></nav>
+  <header><h1><i class="bk" aria-hidden="true"></i>My notebooks</h1><span id="note" role="status"></span><button class="ib storeb" id="storeb" aria-pressed="false" title="Store: templates, covers, labels and stickers"><svg class="ic" viewBox="0 0 24 24"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 10V7a3 3 0 016 0v3"/></svg><span>Store</span></button><button class="ib i" id="themeb" aria-label="Switch theme"></button><div class="mwrap"><button class="ib i" id="menub" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><i class="ndot hidden" id="menud"></i></button><div id="menu" class="hidden" role="menu"><div class="mhead" id="mhead"></div><button role="menuitem" class="mi" id="accb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Account &amp; promo code</span></button><div class="mi mtheme"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>Theme</span><div class="seg3" id="mtheme"><button data-v="auto">Auto</button><button data-v="light" aria-label="Light">☀</button><button data-v="dark" aria-label="Dark">☾</button></div></div><button role="menuitem" class="mi" id="mupd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span>What’s new</span><i class="ndot hidden" id="mupdd"></i></button><button role="menuitem" class="mi" id="setb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Settings</span></button><button role="menuitem" class="mi" id="mfb"><svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><span>Send feedback</span></button><button role="menuitem" class="mi" id="hlpb"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 115 .9c0 1.7-2.5 2-2.5 3.7M12 17.3v.1"/></svg><span>Help &amp; shortcuts</span></button><a role="menuitem" class="mi" id="mlegal" href="../privacy.html" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span>Privacy &amp; terms</span></a><button role="menuitem" class="mi hidden" id="madm"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Admin panel</span></button><button role="menuitem" class="mi" id="mout"><svg class="ic" viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/></svg><span>Sign out</span></button></div></div><button class="ib" id="plan" aria-label="Current plan" title="Tap to switch plan (demo)">Free plan</button><button class="btn" id="pdfb">Import PDF <span class="soon">Pro</span></button><input type="file" id="pdff" accept="application/pdf" hidden></header>
+  <nav class="tabs" id="cats" role="tablist" aria-label="Categories"></nav>
+  <div id="storehd" class="hidden"><button class="ib" id="storex">‹ My notebooks</button></div>
   <div id="lib"><label class="srch"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="q" type="search" placeholder="Search notebooks" aria-label="Search notebooks and notes" autocomplete="off"></label>
-    <select id="sortb" aria-label="Sort notebooks"><option value="rec">Recently edited</option><option value="name">Name A–Z</option><option value="pages">Most pages</option><option value="new">Newest first</option></select>
+    <select id="sortb" aria-label="Sort notebooks"><option value="own">My order</option><option value="rec">Recently edited</option><option value="name">Name A–Z</option><option value="pages">Most pages</option><option value="new">Newest first</option></select>
     <div class="grp" id="vw"><button class="ib i" data-v="grid" aria-label="Shelf view" title="Shelf view"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg></button><button class="ib i" data-v="list" aria-label="List view" title="List view"><svg class="ic" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></button></div></div>
+  <div id="tagrow" class="hidden" role="group" aria-label="Show notebooks with a tag"></div>
   <div id="grid"></div>
   <button class="ib hidden" id="trashb"></button>
   <div id="tpl" class="hidden"></div>
@@ -641,7 +645,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 
 <div id="up" class="hidden" role="dialog" aria-modal="true" aria-labelledby="upt"><div class="card">
   <h2 id="upt">Foliet Pro</h2><p id="upm"></p>
-  <ul class="upl"><li>Unlimited notebooks and pages</li><li>Up to 8 layers per page</li><li>PDF import</li><li>A photo on the cover</li><li>Deleted notebooks kept 30 days</li><li>Export to PDF and image</li></ul>
+  <ul class="upl"><li>Unlimited notebooks and pages</li><li>Your own categories, like Study</li><li>Up to 8 layers per page</li><li>PDF import</li><li>A photo on the cover</li><li>Deleted notebooks kept 30 days</li><li>Export to PDF and image</li></ul>
   <p class="upp"><b>€3.99</b> a month or <b>€29.99</b> a year</p>
   <p class="upn">Pro isn’t on sale yet. Payments open together with accounts and cloud sync. Everything you make on the free plan stays yours.</p>
   <div class="acts2"><button class="ib" id="upno">OK</button><a class="btn" id="upgo" href="../#pricing" target="_blank" rel="noopener">Compare plans</a></div>
@@ -788,7 +792,7 @@ async function writeDiff(){
   const db=await idb(),puts=[],dels=[],next=new Map(),here=new Set(data.map(b=>String(b.id))),purge=new Set(LIBST.purge.filter(id=>!here.has(id)));
   TRASH=TRASH.filter(t=>!here.has(String(t.id)));
   const chk=(k,v)=>{const s=sig(v);next.set(k,s);if(!same(s,snaps.get(k)))puts.push([k,v])};
-  chk(P2+'idx',data.map(b=>String(b.id)));chk(P2+'trash',TRASH);
+  chk(P2+'idx',data.map(b=>String(b.id)));chk(P2+'trash',TRASH);chk(P2+'shelf',SHELF);
   for(const b of data){chk(P2+'b:'+b.id,metaOf(b));for(let i=0;i<b.pages.length;i++)chk(P2+'p:'+b.id+':'+i,pageOf(b,i))}
   for(const [k,v] of snaps){
     if(next.has(k))continue;const r=recId(k);
@@ -846,7 +850,8 @@ async function loadV2(){
     const t=db.transaction('kv'),s=t.objectStore('kv'),r=IDBKeyRange.bound(P2,P2+'￿');
     const a=s.getAllKeys(r),b=s.getAll(r);t.oncomplete=()=>res([a.result,b.result]);t.onerror=()=>rej(t.error);
   });
-  const m=new Map(keys.map((k,i)=>[k,vals[i]])),idx=m.get(P2+'idx'),tr=m.get(P2+'trash');
+  const m=new Map(keys.map((k,i)=>[k,vals[i]])),idx=m.get(P2+'idx'),tr=m.get(P2+'trash'),sh=m.get(P2+'shelf');
+  SHELF=sh&&Array.isArray(sh.cats)?{cats:sh.cats.filter(c=>c&&c.id),u:sh.u||0}:{cats:[],u:0}; // your categories
   // Recently deleted: older than 30 days → erased on the next save
   TRASH=Array.isArray(tr)?tr.filter(t=>t&&t.id!=null).map(t=>({...t,id:String(t.id)})):[];
   const now=Date.now();LIBST.purge=TRASH.filter(t=>now>trashEnd(t)).map(t=>t.id);
@@ -856,7 +861,7 @@ async function loadV2(){
   const found=[];for(const k of m.keys()){const r=recId(k);if(r&&r.t==='b'&&!list.includes(r.id)&&!gone.has(r.id)&&!found.includes(r.id))found.push(r.id)}
   if(!Array.isArray(idx)&&!found.length)return null;
   found.sort((x,y)=>((m.get(P2+'b:'+x)||{}).u||0)-((m.get(P2+'b:'+y)||{}).u||0));
-  const used=new Set([P2+'idx',P2+'trash']),out=[];let back=0;
+  const used=new Set([P2+'idx',P2+'trash',P2+'shelf']),out=[];let back=0;
   for(const id of [...list,...found]){
     const mkey=P2+'b:'+id,meta=m.get(mkey);if(!meta)continue;used.add(mkey);
     out.push(bookFrom(meta,i=>{const pk=P2+'p:'+id+':'+i;used.add(pk);return m.get(pk)}));
@@ -876,7 +881,7 @@ async function loadBook(id){ // a notebook's records (for Recently deleted → R
 }
 const lsKey=()=>P2==='v2:'?KEY:KEY+'@'+P2;
 async function initData(legacy){
-  let d=null,old=false;usingLS=false;LIBST.ready=false;LIBST.recovered=0;TRASH=[];LIBST.purge=[];
+  let d=null,old=false;usingLS=false;LIBST.ready=false;LIBST.recovered=0;TRASH=[];LIBST.purge=[];SHELF={cats:[],u:0};
   try{d=await loadV2()}catch(e){usingLS=true}
   if(!d&&usingLS){try{d=JSON.parse(localStorage.getItem(lsKey()))}catch(e){}}
   if(!d&&legacy){ // notebooks saved by an older version of the app (only for the first account on this device)
@@ -921,28 +926,32 @@ function makeBook(b){
   return el;
 }
 function renderShelf(){
+  renderCats();
   const g=$('#grid'),q=LIB.q.trim().toLowerCase();g.innerHTML='';g.classList.toggle('list',LIB.view==='list');
-  const tb=$('#trashb');if(tb){tb.textContent='Recently deleted ('+TRASH.length+')';tb.classList.toggle('hidden',!TRASH.length||$('#grid').classList.contains('hidden'))}
-  let items=data.filter(b=>!b._imp).map(b=>({b,m:libMatch(b,q)})).filter(x=>x.m.ok);
-  const srt={rec:(x,y)=>(y.b.u||created(y.b))-(x.b.u||created(x.b)),name:(x,y)=>(x.b.title||'').localeCompare(y.b.title||'',undefined,{sensitivity:'base'}),pages:(x,y)=>y.b.pages.length-x.b.pages.length,new:(x,y)=>created(y.b)-created(x.b)};
-  items.sort(srt[LIB.sort]||srt.rec);
+  const store=$('#storeb').getAttribute('aria-pressed')==='true';
+  const tb=$('#trashb');if(tb){tb.textContent='Recently deleted ('+TRASH.length+')';tb.classList.toggle('hidden',!TRASH.length||g.classList.contains('hidden'))}
+  const here=data.filter(b=>!b._imp&&catOf(b)===LIB.cat);
+  renderTags(here,store||!!q);
+  // searching looks in every category; otherwise the open category (and tag)
+  let items=(q?data.filter(b=>!b._imp):here.filter(b=>!LIB.tag||hasTag(b,LIB.tag))).map(b=>({b,m:libMatch(b,q)})).filter(x=>x.m.ok);
+  const cmp=shelfCmp();items.sort((x,y)=>cmp(x.b,y.b));
   items.forEach(({b,m})=>{
-    const w=document.createElement('div');w.className='cw';
-    const c=document.createElement('button');c.className='cell';c.append(makeBook(b));
-    const cap=document.createElement('span');cap.className='cap';hl(cap,b.title||'Untitled',q);
-    const sm=document.createElement('small');sm.textContent=b.pages.length+(b.pages.length===1?' page':' pages')+(LIB.view==='list'?' · '+ago(b.u||created(b)):'');cap.append(sm);
-    if(m.snip){const sn=document.createElement('span');sn.className='snip';sn.append('Page '+(m.page+1)+': ');hl(sn,m.snip,q,true);cap.append(sn)}
+    const w=el('div','cw');w.dataset.id=String(b.id);
+    const c=el('button','cell');c.append(makeBook(b));
+    const cap=el('span','cap');hl(cap,b.title||'Untitled',q);
+    const sm=el('small');sm.textContent=b.pages.length+(b.pages.length===1?' page':' pages')+(LIB.view==='list'?' · '+ago(b.u||created(b)):'')+(q&&catOf(b)!==LIB.cat?' · in '+catName(catOf(b)):'');cap.append(sm);
+    if(b.tags&&b.tags.length)cap.append(tagChips(b.tags,LIB.view==='list'?6:3));
+    if(m.snip){const sn=el('span','snip');sn.append('Page '+(m.page+1)+': ');hl(sn,m.snip,q,true);cap.append(sn)}
     c.append(cap);
-    c.onclick=async()=>{if(!await unlockBook(b))return;if(typeof m.page==='number')b.cs=m.page>>1;showBrowse(b)};
-    const x=document.createElement('button');x.className='del';x.textContent='×';x.setAttribute('aria-label','Delete notebook');
-    x.onclick=async()=>{
-      if(!x.dataset.s&&b.lock&&!await unlockBook(b))return;
-      if(x.dataset.s){trashBook(b);const d=trashDays();toast('“'+(b.title||'Untitled')+'” moved to Recently deleted. You can restore it for '+d+(d===1?' day.':' days.'))}
-      else{x.dataset.s=1;x.textContent='Sure?';x.classList.add('on');setTimeout(()=>{delete x.dataset.s;x.textContent='×';x.classList.remove('on')},2500)}
-    };
+    const x=el('button','del more');x.type='button';x.innerHTML=DOTS_IC;x.title='Options';x.setAttribute('aria-label','Options for '+(b.title||'Untitled'));x.setAttribute('aria-haspopup','menu');
+    x.onclick=e=>{e.stopPropagation();bookMenu(b,x)};
+    c.onclick=async()=>{if(Date.now()-DRAGT<450)return;if(!await unlockBook(b))return;if(typeof m.page==='number')b.cs=m.page>>1;showBrowse(b)};
+    c.oncontextmenu=e=>{e.preventDefault();if(DRAG||Date.now()-DRAGT<900)return;bookMenu(b,x)};
+    shelfDrag(w,c,b);
     w.append(c,x);g.append(w);
   });
-  if(q){if(!items.length){const e=document.createElement('p');e.className='empty';e.textContent='No notebooks match “'+LIB.q.trim()+'”.';g.append(e)}return}
+  if(q){if(!items.length){const e=el('p','empty','No notebooks match “'+LIB.q.trim()+'”.');g.append(e)}return}
+  if(!items.length&&(LIB.tag||LIB.cat))g.append(el('p','empty',LIB.tag?'No notebooks with the tag “'+LIB.tag+'” here.':'Nothing here yet. Drag a notebook onto this tab, or tap ⋯ on a notebook → Move to category.'));
   const a=document.createElement('button');a.className='cell add';
   a.innerHTML='<div class="book"><div class="pages"></div><div class="cover"><div class="front"><span class="plus">+</span></div><div class="inside"></div></div></div><span class="cap">New notebook</span>';
   a.onclick=newNotebook;
@@ -955,7 +964,7 @@ async function newNotebook(){
   const b=mk('Notebook '+(data.length+1),data.length,r.o),T=r.pg.startsWith('tpl:')&&tplById(r.pg.slice(4));
   if(T&&ownsTpl(T)){await tplFonts();tplPages(b,T,0,1,PAPER)}
   else if(r.pg!=='blank'){b.ps[0]={...DEF,p:r.pg};cur=b;setDims(b);await rebuildPv(0)}
-  data.push(b);persist();showBrowse(b);
+  catNew(b);data.push(b);persist();showBrowse(b);
 }
 function closeBook(){if(cur)UNL.delete(String(cur.id));$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;docTitle();syncSoon(300);if(libStale)setTimeout(reloadLib,300)}
 /* ----- Recently deleted: a deleted notebook is kept 30 days and can be restored ----- */
@@ -1307,11 +1316,15 @@ dp.onclick=async()=>{
   endFloat();showBrowse();
 };
 $('#trashb').onclick=openTrash;
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
-  const t=b.id==='tb2';
-  $('#tb1').setAttribute('aria-selected',!t);$('#tb2').setAttribute('aria-selected',t);
-  $('#grid').classList.toggle('hidden',t);$('#lib').classList.toggle('hidden',t);$('#tpl').classList.toggle('hidden',!t);if(t)renderTpl();$('#trashb').classList.toggle('hidden',t||!TRASH.length);
-});
+/* The Store has its own button at the top; the tabs under the title are your categories */
+function showStore(on){
+  on=!!on;$('#storeb').setAttribute('aria-pressed',on);
+  $('#cats').classList.toggle('hidden',on);$('#storehd').classList.toggle('hidden',!on);
+  $('#grid').classList.toggle('hidden',on);$('#lib').classList.toggle('hidden',on);$('#tpl').classList.toggle('hidden',!on);
+  if(on){renderTpl();$('#tagrow').classList.add('hidden');$('#trashb').classList.add('hidden')}else renderShelf();
+}
+$('#storeb').onclick=()=>{showStore(true);$('#shelf').scrollTop=0};
+$('#storex').onclick=()=>showStore(false);
 
 /* Text tool */
 function endFloat(){const e=rtEditing();if(e)rtFinish(e);commitSel();const a=$('#ph');if(a)a.remove()}
@@ -1459,6 +1472,7 @@ async function relabel(b,from,to){ // the notebook was renamed: labels that show
   const ls=(b.cobjs||[]).filter(o=>o.lb&&o.lb.t===from);if(!ls.length)return;
   await lblFonts();ls.forEach(o=>{o.lb.t=to;o.src=labelURL(o.lb.id,to)});
   if(b===cur){b.cpv=await compose(b.cover,b.cobjs,b.cbg,null);if(!$('#bv').classList.contains('hidden'))renderBrowse()}
+  else if(!cur){const W0=W,H0=H;W=b.o==='l'?1200:900;H=b.o==='l'?900:1200;try{b.cpv=await compose(b.cover,b.cobjs,b.cbg,null)}finally{W=W0;H=H0}renderShelf()} // renamed from the shelf
   persist();
 }
 async function ensureCoverLabel(){ // first time a plain cover is edited, its name tag becomes a label you can move
@@ -2345,7 +2359,7 @@ function askOrient(title,pre,sub,yes,pages){ // pages: also ask how the pages lo
     dlg.querySelectorAll('#dpats button').forEach(b=>b.onclick=()=>{pg=b.dataset.p;markP()});markP();
     const done=v=>{dlg.classList.add('hidden');res(v)};
     $('#dyes').onclick=()=>done(pages?{o,pg}:o);$('#dno').onclick=()=>done(null);
-    $('#dmore').onclick=()=>{done(null);$('#tb2').click()};
+    $('#dmore').onclick=()=>{done(null);showStore(true)};
     dlg.classList.remove('hidden');row();
   });
 }
@@ -2448,7 +2462,7 @@ async function pdfImport(f,target){
       try{const cov=await renderPdfPage(doc,sel[0],PW,PH);b.cbg=cov;b.cpv=await compose(null,[],cov,null);b.color=PAPER;b.cc=2}catch(e){bad++}
       if(cur&&cur!==b)setDims(cur);else{W=W0;H=H0}
       if(sel.length>1)sel=sel.slice(1);
-      data.push(b);
+      catNew(b);data.push(b);
     }
     for(let k=0;k<sel.length&&!stop;k++){
       pr.set('Importing page '+(k+1)+' of '+sel.length+'…');
@@ -2974,6 +2988,7 @@ async function accUser(u){
 function setPro(){
   const was=ACC.pro;ACC.pro=!!ACC.user&&(ACC.claimPro||ACC.docPro);
   plan=ACC.pro?'pro':demoPlan;setPlanBtn();
+  try{if(LIBST.ready)renderCats()}catch(e){} // the "+" for categories shows or hides its Pro badge
   if(ACC.pro&&!was)syncStart();
   if(!ACC.pro&&was)syncStop();
   renderAcc();
@@ -2988,7 +3003,7 @@ const hcache=new Map();
 function recHash(k,v){const s=sig(v),c=hcache.get(k);if(c&&same(c.s,s))return c.h;const h=cyrb(canon(v));hcache.set(k,{s,h});return h}
 const k2c=k=>k.replace(/:/g,'~'),c2k=c=>c.replace(/~/g,':'),chunkId=(c,i)=>i?c+'~~'+i:c;
 function localRecs(){
-  const m=new Map();m.set('idx',data.map(b=>String(b.id)));
+  const m=new Map();m.set('idx',data.map(b=>String(b.id)));m.set('shelf',SHELF);
   for(const b of data){m.set('b:'+b.id,metaOf(b));for(let i=0;i<b.pages.length;i++)m.set('p:'+b.id+':'+i,pageOf(b,i))}
   return m;
 }
@@ -3046,11 +3061,12 @@ async function syncOnce(){
   if(!Object.keys(base).length&&Object.keys(man).length>1){const keep=data.filter(b=>!isStarter(b)||String(b.id)===open);if(keep.length!==data.length){data.forEach(b=>{if(!keep.includes(b))LIBST.purge.push(String(b.id))});data=keep}}
   const here=new Set(data.map(b=>String(b.id))),gone=new Set(TRASH.map(t=>t.id));
   const L=localRecs(),keys=new Set([...L.keys(),...Object.keys(man).map(c2k),...Object.keys(base)]);
-  const push=[],pull=[];let idx=null,changedHere=false;
+  const push=[],pull=[];let idx=null,shk=null,changedHere=false;
   for(const k of keys){
     const lv=L.get(k),lh=lv===undefined?null:recHash(k,lv),r=man[k2c(k)],rh=r?r.h:null,bh=base[k]??null;
     if(lh===rh){if(lh===null)delete base[k];else base[k]=lh;continue}
     if(k==='idx'){idx={lh,rh,bh};continue}
+    if(k==='shelf'){shk={lh,rh,bh};continue} // your categories: merged below, never removed by the cloud
     // a notebook that is missing on this device but that you didn't delete here: bring it back from the cloud
     // (only a notebook you deleted – it's in Recently deleted – is removed from the cloud)
     const rid=k.startsWith('b:')?k.slice(2):k.startsWith('p:')?k.slice(2,k.lastIndexOf(':')):null;
@@ -3061,13 +3077,20 @@ async function syncOnce(){
       pull.push(k);
     }else push.push(k); // changed here (or on both sides: this device wins)
   }
+  // how many notebooks have something to send or bring (the pill at the top: "Syncing 1 of 3 notebooks")
+  const nbOf=k=>k.startsWith('b:')?k.slice(2):k.startsWith('p:')?k.slice(2,k.lastIndexOf(':')):null,left=new Map();
+  [...pull,...push].forEach(k=>{const id=nbOf(k);if(id)left.set(id,(left.get(id)||0)+1)});
+  const total=left.size;let doneN=0;spStart(total);
+  const tick=k=>{const id=nbOf(k);if(!id||!left.has(id))return;const r=left.get(id)-1;if(r>0){left.set(id,r);return}left.delete(id);doneN++;spSet(total,doneN)};
   // 1) bring cloud changes here (notebooks first, then pages)
   pull.sort((a,b)=>(a[0]==='b'?0:1)-(b[0]==='b'?0:1));
   for(const k of pull){
-    const v=await pullRec(k);if(v===undefined)continue;
-    applyRec(k,v);changedHere=true;
+    const v=await pullRec(k);if(v===undefined){tick(k);continue}
+    applyRec(k,v);changedHere=true;tick(k);
     const r=man[k2c(k)];if(r)base[k]=r.h;else delete base[k];
   }
+  // 1b) your categories: both copies are merged (the newest change of each category wins); a missing cloud copy is sent again
+  if(shk&&shk.rh!==null){const remote=await pullRec('shelf');if(remote&&Array.isArray(remote.cats)){const mg=shelfMerge(SHELF,remote);if(canon(mg)!==canon(SHELF)){SHELF=mg;changedHere=true}}}
   // 2) the notebook order (merged when both sides changed it)
   if(idx){
     const local=data.map(b=>String(b.id));let order=null;
@@ -3081,16 +3104,34 @@ async function syncOnce(){
   if(changedHere){await flushSave();if(!$('#shelf').classList.contains('hidden'))renderShelf()}
   // 3) send this device's changes (fresh copy of the records, in case something changed meanwhile)
   const L2=localRecs();
-  const todo=[...push.filter(k=>k!=='idx'),'idx'];
+  const todo=[...push.filter(k=>k!=='idx'),...(shk?['shelf']:[]),'idx'];
   for(const k of todo){
     const lv=L2.get(k),r=ACC.man[k2c(k)];
-    if(k==='idx'){const h=recHash('idx',lv);if(r&&r.h===h){base.idx=h;st.idx=lv;continue}}
-    const h=await pushRec(k,lv);
+    if(k==='idx'||k==='shelf'){const h=recHash(k,lv);if(r&&r.h===h){base[k]=h;if(k==='idx')st.idx=lv;continue}}
+    const h=await pushRec(k,lv);tick(k);
     if(h===null)delete base[k];else base[k]=h;
     if(k==='idx')st.idx=lv;
   }
   try{await idbSet('sync:'+ACC.user.uid,{h:base,idx:st.idx||null})}catch(e){}
   ACC.last=Date.now();ACC.err='';
+}
+/* The sync pill at the top: a small spinner and "Syncing 1 of 3 notebooks" while notebooks are being sent or brought
+   (only when it takes a moment), then "All notebooks synced" for a second and a half. */
+const SP={on:false,n:0,d:0,t:0,h:0,wait:500}; // wait: show the pill only when syncing takes longer than this (ms)
+function spStart(n){clearTimeout(SP.t);SP.n=n;SP.d=0;if(!n||SP.on){spDraw();return}SP.t=setTimeout(()=>{SP.on=true;spDraw()},n>1?SP.wait:SP.wait*3)} // one notebook: only if it takes a while
+function spSet(n,d){SP.n=n;SP.d=d;spDraw()}
+function spDraw(){
+  const p=$('#syncpill');if(!p||!SP.on)return;clearTimeout(SP.h);
+  const inside=$('#shelf').classList.contains('hidden');p.classList.toggle('low',inside);$('#shelf').classList.toggle('sp',!inside); // on the shelf, make room at the top
+  p.classList.remove('hidden','done');p.querySelector('span').textContent=SP.n>1?'Syncing '+Math.min(SP.d+1,SP.n)+' of '+SP.n+' notebooks':'Syncing your notebook…';
+  p.style.setProperty('--sp',SP.n?Math.round(SP.d/SP.n*100)+'%':'0%');
+}
+function spEnd(ok){
+  clearTimeout(SP.t);const p=$('#syncpill');if(!p)return;const was=SP.on;SP.on=false;SP.n=SP.d=0;
+  const off=()=>{p.classList.add('hidden');$('#shelf').classList.remove('sp')};
+  if(!was){off();return}
+  if(ok){p.classList.add('done');p.style.setProperty('--sp','100%');p.querySelector('span').textContent='All notebooks synced';SP.h=setTimeout(off,1600)}
+  else{p.querySelector('span').textContent=navigator.onLine?'Sync paused – trying again soon':'Offline – your notebooks will sync later';p.classList.add('done');SP.h=setTimeout(off,2600)}
 }
 async function syncRun(){
   if(!ACC.pro||!ACC.man)return;
@@ -3098,7 +3139,7 @@ async function syncRun(){
   ACC.busy=true;renderAcc();
   try{do{ACC.again=false;await syncOnce()}while(ACC.again)}
   catch(e){ACC.err=e&&(e.code==='unavailable'||!navigator.onLine)?'offline':'error';console.warn('sync',e)}
-  finally{ACC.busy=false;renderAcc()}
+  finally{ACC.busy=false;spEnd(!ACC.err);renderAcc()}
 }
 function syncSoon(ms){if(!ACC.pro)return;clearTimeout(ACC.timer);ACC.timer=setTimeout(syncRun,ms)}
 async function syncStart(){
@@ -3410,7 +3451,7 @@ async function downloadMyData(){
   toast('Preparing your data…');
   const out={app:'foliet',kind:'my-data',exported:new Date().toISOString(),
     account:{id:u.uid,email:u.email||'',name:u.displayName||'',signInWith:u.providerData.map(p=>p.providerId),created:u.metadata&&u.metadata.creationTime,lastSignIn:u.metadata&&u.metadata.lastSignInTime},
-    ...(await myRecords()),notebooks:data};
+    ...(await myRecords()),categories:cats().map(c=>c.n),notebooks:data};
   await saveFile('foliet-my-data-'+new Date().toISOString().slice(0,10)+'.json',new Blob([JSON.stringify(out,tsJSON,1)],{type:'application/json'}));
 }
 async function wipeLocal(uid){
@@ -3941,7 +3982,7 @@ async function makeWelcome(){
     const o=[T('Private and yours',80,60,760,80,{fm:'display',b:1,c:'#1d2b4a'})];
     rows.forEach((t,j)=>{o.push(S(j===4?16:22,80,200+j*125,76,0),T(t,170,190+j*125,680,32))});
     o.push(T('Now make it yours!',80,850,600,80,{fm:'hand',b:1,c:'#c0392b'}),
-      T('Go back to your notebooks and tap “New notebook”.',80,1040,560,32,{c:'#56627a'}),S(0,680,880,150,-12),S(19,700,1040,110,8));
+      T('Back on your shelf, tap “New notebook”. Drag notebooks into your own order and use ⋯ for tags. With Pro, add categories like Study.',80,960,560,30,{c:'#56627a'}),S(0,680,880,150,-12),S(19,700,1040,110,8));
     objs.push(o)}
   // every text box gets exactly the height its text needs
   const mx=document.createElement('canvas').getContext('2d');
@@ -4007,7 +4048,7 @@ function initUpd(){
 async function backupAll(){
   if(!$('#ed').classList.contains('hidden'))await savePage();
   await savesDone();
-  const clean=(k,v)=>k&&k[0]==='_'?undefined:v,parts=['{"app":"foliet","v":1,"saved":',JSON.stringify(new Date().toISOString()),',"books":['];
+  const clean=(k,v)=>k&&k[0]==='_'?undefined:v,parts=['{"app":"foliet","v":1,"saved":',JSON.stringify(new Date().toISOString()),',"shelf":',JSON.stringify(SHELF),',"books":['];
   data.forEach((b,i)=>{if(i)parts.push(',');parts.push(JSON.stringify(b,clean))});parts.push(']}');
   const day=new Date().toISOString().slice(0,10);
   if(await saveFile('foliet-backup-'+day+'.json',new Blob(parts,{type:'application/json'})))toast('Backup saved. Keep the file somewhere safe.');
@@ -4018,6 +4059,7 @@ async function restoreFrom(f){
   if(!books||!books.every(b=>b&&Array.isArray(b.pages))){toast('This file is not a Foliet backup.');return}
   const ids=new Set(data.map(b=>String(b.id)));let n=0;
   books.forEach(b=>{b=ens(b);if(ids.has(String(b.id))){b.id=Date.now()+Math.random();b.title=(b.title||'Untitled')+' (restored)'}ids.add(String(b.id));data.push(b);n++});
+  if(j&&j.shelf&&Array.isArray(j.shelf.cats))SHELF=shelfMerge(SHELF,j.shelf); // the categories come back too
   persist();renderShelf();storeInfo();
   toast(n===1?'1 notebook restored':n+' notebooks restored');
 }
@@ -4337,14 +4379,14 @@ function ownedItem(it,k){
 }
 async function useCover(it,b){
   if(!ownsItem(it)||!(await unlockBook(b)))return;
-  b.design=it.des;b.u=Date.now();persist();$('#tb1').click();showBrowse(b);toast(it.n+' is now the cover of '+(b.title||'Untitled')+'.');
+  b.design=it.des;b.u=Date.now();persist();showStore(false);showBrowse(b);toast(it.n+' is now the cover of '+(b.title||'Untitled')+'.');
 }
 async function addLabelTo(L,b){
   if(!ownsItem(L)||!(await unlockBook(b)))return;
   await lblFonts();cur=b;setDims(b);const t=b.title||'Untitled',{w,h}=lblBox(L);
   b.cobjs=b.cobjs||[];b.lbl0=1;b.cobjs.push({k:'img',src:labelURL(L.id,t),lb:{id:L.id,t},x:(W-w)/2,y:Math.max(0,H*.4-h/2),w,h,r:0});
   b.cpv=await compose(b.cover,b.cobjs,b.cbg,null);b.cs=-1;b.u=Date.now();persist();
-  $('#tb1').click();showBrowse(b);toast('The '+L.n+' label is on '+(b.title||'Untitled')+'. Open the cover to move it.');
+  showStore(false);showBrowse(b);toast('The '+L.n+' label is on '+(b.title||'Untitled')+'. Open the cover to move it.');
 }
 /* Templates as a page style: ps[i] = {p:'tpl', t:id, k:variant (Week 1, 2…), c:paper}, bg[i] = the template's lines on a
    transparent background, drawn for the notebook's orientation (so the paper color shows through; on dark paper the
@@ -4381,8 +4423,8 @@ async function useTpl(t,btn){ // a whole new notebook made of this template
     await tplFonts();
     const b=mk(t.n,data.length,t.o);b.color=t.c;if(t.tex)b.tex=t.tex;if(t.des)b.design=t.des;b.tpl=t.id;b.pages=Array(t.pages).fill(null);
     tplPages(b,t,0,t.pages,PAPER);
-    data.push(b);persist();
-    $('#tb1').click();showBrowse(b);
+    catNew(b);data.push(b);persist();
+    showStore(false);showBrowse(b);
   }catch(e){console.error(e);note('Could not create the notebook.',1)}
   if(btn){btn.disabled=false;btn.style.opacity=''}
 }
@@ -4397,7 +4439,7 @@ async function addTplToBook(t,b,n){ // add pages of this template at the end of 
   tplPages(b,t,n0,n,c);
   if(c!==PAPER){cur=b;setDims(b);for(let i=n0;i<b.pages.length;i++)await rebuildPv(i)}
   b.cs=(b.pages.length-1)>>1;b.u=Date.now();persist();
-  $('#tb1').click();showBrowse(b);
+  showStore(false);showBrowse(b);
   toast('Added '+n+' page'+(n>1?'s':'')+' of '+t.n+' to '+(b.title||'Untitled')+'.');
 }
 function ownedTpl(t){ // you have this template: a new notebook, or add its pages to one you have
@@ -4421,10 +4463,10 @@ function ownedTpl(t){ // you have this template: a new notebook, or add its page
 }
 
 /* Library: search, sort, list view */
-let LIB={view:'grid',sort:'rec',q:''};
-try{const l=JSON.parse(localStorage.getItem('sb-lib')||'{}');if(l.view)LIB.view=l.view;if(l.sort)LIB.sort=l.sort}catch(e){}
+let LIB={view:'grid',sort:'rec',q:'',cat:'',tag:''};
+try{const l=JSON.parse(localStorage.getItem('sb-lib')||'{}');if(l.view)LIB.view=l.view;if(l.sort)LIB.sort=l.sort;if(l.cat)LIB.cat=l.cat}catch(e){}
 const created=b=>Math.floor(b.id);
-function saveLib(){try{localStorage.setItem('sb-lib',JSON.stringify({view:LIB.view,sort:LIB.sort}))}catch(e){}}
+function saveLib(){try{localStorage.setItem('sb-lib',JSON.stringify({view:LIB.view,sort:LIB.sort,cat:LIB.cat}))}catch(e){}}
 function ago(t){
   const d=new Date(t),n=new Date(),day=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime(),df=Math.round((day(n)-day(d))/864e5);
   if(df<=0)return 'Edited today';if(df===1)return 'Edited yesterday';if(df<7)return 'Edited '+df+' days ago';
@@ -4447,8 +4489,277 @@ function hl(el,txt,q){
   if(k<0){el.append(txt);return}
   el.append(txt.slice(0,k));const m=document.createElement('mark');m.textContent=txt.slice(k,k+q.length);el.append(m,txt.slice(k+q.length));
 }
+
+/* ----- Your shelf, your way: categories (tabs), tags and your own order -----
+   SHELF = {cats:[{id, n, u, x?}], u}: the categories you made (Pro), saved as the record 'shelf' (synced, merged per category).
+   "Notebooks" is the first tab: always there, can't be renamed or removed. A notebook's category is b.cat
+   (missing or unknown → Notebooks); its tags are b.tags. The order is the order of `data` (the idx record, synced);
+   dragging a notebook (or ⋯ → Move earlier/later) changes it and turns on the "My order" sorting. */
+let SHELF={cats:[],u:0};
+const CAT_MAX=20,TAG_MAX=10;
+const cats=()=>(SHELF.cats||[]).filter(c=>c&&c.id&&!c.x);
+const catOf=b=>b.cat&&cats().some(c=>c.id===b.cat)?b.cat:'';
+const catName=id=>{const c=id&&cats().find(c=>c.id===id);return c?c.n:'Notebooks'};
+function catNew(b){if(LIB.cat&&cats().some(c=>c.id===LIB.cat))b.cat=LIB.cat} // a new notebook goes in the open tab
+function shelfMerge(a,b){ // two copies of the category list → one: the newest change of each category wins
+  a=a&&Array.isArray(a.cats)?a:{cats:[],u:0};b=b&&Array.isArray(b.cats)?b:{cats:[],u:0};
+  const m=new Map();for(const c of [...a.cats,...b.cats]){if(!c||!c.id)continue;const o=m.get(c.id);if(!o||(c.u||0)>(o.u||0))m.set(c.id,c)}
+  const first=(b.u||0)>(a.u||0)?b:a,second=first===a?b:a;
+  return {cats:[...new Set([...first.cats,...second.cats].filter(c=>c&&c.id).map(c=>c.id))].map(id=>m.get(id)),u:Math.max(a.u||0,b.u||0)};
+}
+function shelfSaved(){SHELF.u=Date.now();persist();renderShelf()}
+function shelfCmp(){
+  const pos=new Map(data.map((b,i)=>[b,i]));
+  const S={own:(x,y)=>pos.get(x)-pos.get(y),rec:(x,y)=>(y.u||created(y))-(x.u||created(x)),name:(x,y)=>(x.title||'').localeCompare(y.title||'',undefined,{sensitivity:'base'}),pages:(x,y)=>y.pages.length-x.pages.length,new:(x,y)=>created(y)-created(x)};
+  return S[LIB.sort]||S.rec;
+}
+const DOTS_IC='<svg class="ic" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>';
+const TAG_IC='<svg class="ic" viewBox="0 0 24 24"><path d="M3.5 12.2V4.5a1 1 0 011-1h7.7l8.3 8.3a1.4 1.4 0 010 2l-6.2 6.2a1.4 1.4 0 01-2 0z"/><circle cx="8" cy="8" r="1.5"/></svg>';
+const MI_IC={open:'<path d="M4 6h6l2 2h8v11H4z"/>',pen:'<path d="M4 20l1-4L16 5l3 3L8 19z"/>',tag:'<path d="M3.5 12.2V4.5a1 1 0 011-1h7.7l8.3 8.3a1.4 1.4 0 010 2l-6.2 6.2a1.4 1.4 0 01-2 0z"/><circle cx="8" cy="8" r="1.5"/>',
+  folder:'<path d="M3 6h7l2 2h9v11H3z"/><path d="M12 11v5M9.5 13.5h5"/>',left:'<path d="M14 6l-6 6 6 6"/>',right:'<path d="M10 6l6 6-6 6"/>',trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',up:'<path d="M14 6l-6 6 6 6"/>',down:'<path d="M10 6l6 6-6 6"/>'};
+// tags: a colour for each tag (the same on every device), chips under a notebook's name and a filter row
+const TAGC=['#e2574c','#ee8a2f','#cfa418','#4f9e5a','#2e9aa2','#4a7fd6','#8a66d6','#d05a97'];
+const tagCol=t=>{let h=0;for(const ch of String(t).toLowerCase())h=(h*31+ch.charCodeAt(0))|0;return TAGC[Math.abs(h)%TAGC.length]};
+const sameTag=(a,b)=>String(a).toLowerCase()===String(b).toLowerCase();
+const hasTag=(b,t)=>(b.tags||[]).some(x=>sameTag(x,t));
+const normTag=t=>String(t||'').replace(/^#+/,'').replace(/\s+/g,' ').trim().slice(0,20);
+function allTags(list){const out=[];(list||data).forEach(b=>(b.tags||[]).forEach(t=>{if(!out.some(x=>sameTag(x,t)))out.push(t)}));return out.sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}))}
+function tagChips(tags,max){
+  const s=el('span','tgs');tags.slice(0,max).forEach(t=>{const c=el('span','tg',t);c.style.setProperty('--tc',tagCol(t));s.append(c)});
+  if(tags.length>max)s.append(el('span','tg more','+'+(tags.length-max)));return s;
+}
+function renderTags(here,hide){
+  const r=$('#tagrow');if(!r)return;r.innerHTML='';const all=allTags(here);
+  if(LIB.tag&&!all.some(t=>sameTag(t,LIB.tag)))LIB.tag='';
+  r.classList.toggle('hidden',hide||!all.length);if(hide||!all.length)return;
+  const ic=el('span','tg-ic');ic.innerHTML=TAG_IC;r.append(ic);
+  all.forEach(t=>{const on=!!LIB.tag&&sameTag(t,LIB.tag),c=el('button','tg',t);c.type='button';c.style.setProperty('--tc',tagCol(t));c.setAttribute('aria-pressed',on);c.onclick=()=>{LIB.tag=on?'':t;renderShelf()};r.append(c)});
+  if(LIB.tag){const x=el('button','tg-clr','Show all');x.type='button';x.onclick=()=>{LIB.tag='';renderShelf()};r.append(x)}
+}
+// the category tabs: Notebooks (always first) + yours + "+"
+function renderCats(){
+  const n=$('#cats');if(!n)return;n.innerHTML='';
+  if(LIB.cat&&!cats().some(c=>c.id===LIB.cat)){LIB.cat='';LIB.tag='';saveLib()}
+  const tab=(id,name)=>{
+    const t=el('button','cat');t.type='button';t.setAttribute('role','tab');t.dataset.cat=id;const on=LIB.cat===id;t.setAttribute('aria-selected',on);
+    t.append(el('span','',name));
+    if(on&&id){const m=el('i','cat-more');m.innerHTML=DOTS_IC;t.append(m);t.title='Category options';t.setAttribute('aria-haspopup','menu')}
+    t.onclick=()=>{if(on&&id){catMenu(id,t);return}LIB.cat=id;LIB.tag='';saveLib();renderShelf()};
+    t.oncontextmenu=e=>{if(!id)return;e.preventDefault();catMenu(id,t)};
+    return t;
+  };
+  const nb=tab('','Notebooks');nb.id='tb1';n.append(nb);
+  cats().forEach(c=>n.append(tab(c.id,c.n)));
+  const add=el('button','cat-add');add.type='button';add.id='catadd';add.innerHTML='<svg class="ic" viewBox="0 0 24 24">'+MI_IC.plus+'</svg>';add.title='Add a category';add.setAttribute('aria-label','Add a category');
+  if(plan!=='pro')add.append(el('span','soon','Pro'));
+  add.onclick=()=>addCat();n.append(add);
+}
+async function addCat(b){
+  if(plan!=='pro'){upsell('Make your own categories with Pro: tabs like Study or Travel, each with its own notebooks, in the order you like.');return}
+  if(cats().length>=CAT_MAX){toast('You can have up to '+CAT_MAX+' categories.');return}
+  const n=await askName('New category','A short name, like Study or Travel. It becomes a tab above your notebooks.','','Create',24);if(!n)return;
+  if(cats().some(c=>sameTag(c.n,n))||sameTag(n,'Notebooks')){toast('There is already a category called “'+n+'”.');return}
+  const c={id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),n,u:Date.now()};
+  SHELF.cats=[...(SHELF.cats||[]),c];LIB.cat=c.id;LIB.tag='';saveLib();
+  if(b){b.cat=c.id;toast('“'+(b.title||'Untitled')+'” is now in '+n+'.')}
+  else toast('“'+n+'” is ready. Drag notebooks onto its tab, or use ⋯ → Move to category.');
+  shelfSaved();
+}
+function catMenu(id,anchor){
+  const c=cats().find(c=>c.id===id);if(!c)return;const list=cats(),i=list.indexOf(c);
+  const shift=d=>{const all=SHELF.cats,j=all.indexOf(c),k=all.indexOf(list[i+d]);[all[j],all[k]]=[all[k],all[j]];shelfSaved()};
+  popMenu(anchor,[{h:c.n},
+    {t:'Rename',ic:'pen',fn:async()=>{const v=await askName('Rename category','',c.n,'Save',24);if(!v||v===c.n)return;
+      if(cats().some(o=>o!==c&&sameTag(o.n,v))||sameTag(v,'Notebooks')){toast('There is already a category called “'+v+'”.');return}c.n=v;c.u=Date.now();shelfSaved()}},
+    {t:'Move left',ic:'up',dis:i<=0,fn:()=>shift(-1)},
+    {t:'Move right',ic:'down',dis:i>=list.length-1,fn:()=>shift(1)},
+    {sep:1},
+    {t:'Delete category',ic:'trash',danger:1,fn:async()=>{
+      const n=data.filter(b=>b.cat===id).length;
+      const ok=await askYes('Delete “'+c.n+'”?',n?(n===1?'Its notebook goes back to Notebooks.':'Its '+n+' notebooks go back to Notebooks.')+' No notebook is deleted.':'It has no notebooks.','Delete category');if(!ok)return;
+      c.x=1;c.u=Date.now();data.forEach(b=>{if(b.cat===id)delete b.cat});LIB.cat='';LIB.tag='';saveLib();shelfSaved();toast('Category deleted. Its notebooks are in Notebooks.')}}]);
+}
+function moveToCat(b,id){
+  if(catOf(b)===id)return;if(id)b.cat=id;else delete b.cat;persist();renderShelf();
+  toast('“'+(b.title||'Untitled')+'” moved to '+catName(id)+'.');
+}
+function moveMenu(b,anchor){
+  if(!cats().length){addCat(b);return}
+  popMenu(anchor,[{h:'Move to'},
+    {t:'Notebooks',on:catOf(b)==='',fn:()=>moveToCat(b,'')},
+    ...cats().map(c=>({t:c.n,on:catOf(b)===c.id,fn:()=>moveToCat(b,c.id)})),
+    {sep:1},{t:'New category',ic:'plus',badge:plan!=='pro'?'Pro':'',fn:()=>addCat(b)}]);
+}
+// the ⋯ menu of a notebook
+function bookMenu(b,anchor,held){
+  const vis=[...$('#grid').querySelectorAll('.cw[data-id]')].map(e=>e.dataset.id),i=vis.indexOf(String(b.id)),q=!!LIB.q.trim();
+  const guard=f=>async()=>{if(b.lock&&!await unlockBook(b))return;f()};
+  popMenu(anchor,[{h:b.title||'Untitled'},
+    {t:'Open',ic:'open',fn:async()=>{if(!await unlockBook(b))return;showBrowse(b)}},
+    {t:'Rename',ic:'pen',fn:guard(()=>renameBook(b))},
+    {t:'Tags',ic:'tag',fn:guard(()=>tagDlg(b))},
+    {t:'Move to category',ic:'folder',badge:plan!=='pro'&&!cats().length?'Pro':'',fn:()=>moveMenu(b,anchor)},
+    {sep:1},
+    {t:'Move earlier',ic:'left',dis:q||i<=0,fn:()=>nudgeBook(b,-1)},
+    {t:'Move later',ic:'right',dis:q||i<0||i>=vis.length-1,fn:()=>nudgeBook(b,1)},
+    {sep:1},
+    {t:'Delete',ic:'trash',danger:1,fn:guard(async()=>{
+      const d=trashDays();if(!await askYes('Delete “'+(b.title||'Untitled')+'”?','It goes to Recently deleted, where you can restore it for '+d+(d===1?' day.':' days.'),'Delete'))return;
+      trashBook(b);toast('“'+(b.title||'Untitled')+'” moved to Recently deleted. You can restore it for '+d+(d===1?' day.':' days.'))})}],held);
+}
+async function renameBook(b){
+  const v=await askName('Rename notebook','',b.title||'','Save',40);if(!v||v===b.title)return;
+  const from=b.title;b.title=v;persist();renderShelf();relabel(b,from,v);
+}
+function tagDlg(b){
+  let sel=[...(b.tags||[])];const lib=allTags();
+  return lockDlg((c,close)=>{
+    c.append(el('h2','','Tags'),el('p','lk-sub','Tags help you find notebooks. Tap a tag to add it or take it off.'));
+    const box=el('div','tgpick');c.append(box);
+    const draw=()=>{box.innerHTML='';const list=[...lib];sel.forEach(t=>{if(!list.some(x=>sameTag(x,t)))list.push(t)});
+      if(!list.length)box.append(el('p','tg-none','No tags yet – type one below.'));
+      list.forEach(t=>{const on=sel.some(x=>sameTag(x,t)),k=el('button','tg',t);k.type='button';k.style.setProperty('--tc',tagCol(t));k.setAttribute('aria-pressed',on);
+        k.onclick=()=>{if(on)sel=sel.filter(x=>!sameTag(x,t));else if(sel.length<TAG_MAX)sel.push(t);else{err.textContent='Up to '+TAG_MAX+' tags on a notebook.';return}err.textContent='';draw()};box.append(k)})};
+    const f=el('form','tgadd'),inp=el('input','lk-in');inp.id='tg-in';inp.maxLength=20;inp.placeholder='New tag, like school';inp.autocomplete='off';
+    const ad=el('button','ib','Add');ad.type='submit';f.append(inp,ad);c.append(f);
+    const err=el('p','lk-err');err.setAttribute('role','alert');c.append(err);
+    f.onsubmit=e=>{e.preventDefault();const t=normTag(inp.value);if(!t)return;
+      const ex=lib.find(x=>sameTag(x,t))||sel.find(x=>sameTag(x,t))||t;
+      if(!sel.some(x=>sameTag(x,ex))){if(sel.length>=TAG_MAX){err.textContent='Up to '+TAG_MAX+' tags on a notebook.';return}sel.push(ex)}
+      if(!lib.some(x=>sameTag(x,ex)))lib.push(ex);inp.value='';err.textContent='';draw()};
+    draw();
+    const acts=el('div','acts2'),no=el('button','ib','Cancel'),ok=el('button','btn','Save');no.type=ok.type='button';
+    no.onclick=()=>close(false);
+    ok.onclick=()=>{const t=normTag(inp.value);if(t&&!sel.some(x=>sameTag(x,t))&&sel.length<TAG_MAX)sel.push(lib.find(x=>sameTag(x,t))||t);
+      if(sel.length)b.tags=sel;else delete b.tags;persist();renderShelf();close(true)};
+    acts.append(no,ok);c.append(acts);
+  });
+}
+function nudgeBook(b,d){
+  const ids=[...$('#grid').querySelectorAll('.cw[data-id]')].map(e=>e.dataset.id),i=ids.indexOf(String(b.id)),j=i+d;
+  if(i<0||j<0||j>=ids.length)return;[ids[i],ids[j]]=[ids[j],ids[i]];applyShelfOrder(ids);renderShelf();
+  const m=$('#grid').querySelector('.cw[data-id="'+String(b.id)+'"] .more');if(m)m.focus();
+}
+function applyShelfOrder(ids){ // the notebooks you see take this order; the others keep their places
+  if(LIB.sort!=='own'){ // keep what you see on every tab: the whole shelf first takes the current sorting
+    const cmp=shelfCmp();data=[...data].sort(cmp);LIB.sort='own';saveLib();$('#sortb').value='own';
+    toast('Your own order is on. You can change it in the sort menu.');
+  }
+  const byId=new Map(data.map(b=>[String(b.id),b])),set=new Set(ids),slots=[];
+  data.forEach((b,i)=>{if(set.has(String(b.id)))slots.push(i)});
+  const next=[...data];ids.forEach((id,k)=>{if(byId.has(id)&&k<slots.length)next[slots[k]]=byId.get(id)});
+  data=next;persist();
+}
+// small dialogs
+function askName(title,sub,val,yes,max){
+  return lockDlg((c,close)=>{
+    c.append(el('h2','',title));if(sub)c.append(el('p','lk-sub',sub));
+    const f=el('form'),i=el('input','lk-in');i.type='text';i.id='nm-in';i.maxLength=max||40;i.value=val||'';i.autocomplete='off';f.append(i);c.append(f);
+    const err=el('p','lk-err');err.setAttribute('role','alert');c.append(err);
+    const acts=el('div','acts2'),no=el('button','ib','Cancel'),ok=el('button','btn',yes||'Save');no.type=ok.type='button';
+    const go=()=>{const v=i.value.replace(/\s+/g,' ').trim();if(!v){err.textContent='Type a name.';i.focus();return}close(v)};
+    f.onsubmit=e=>{e.preventDefault();go()};ok.onclick=go;no.onclick=()=>close(null);acts.append(no,ok);c.append(acts);
+    setTimeout(()=>{i.focus();i.select()},60);
+  });
+}
+function askYes(title,sub,yes){
+  return lockDlg((c,close)=>{
+    c.append(el('h2','',title));if(sub)c.append(el('p','lk-sub',sub));
+    const acts=el('div','acts2'),no=el('button','ib','Cancel'),ok=el('button','btn danger',yes||'OK');no.type=ok.type='button';
+    no.onclick=()=>close(false);ok.onclick=()=>close(true);acts.append(no,ok);c.append(acts);setTimeout(()=>ok.focus(),60);
+  });
+}
+// a small menu next to a button
+let POP=null;
+function closePop(back){if(!POP)return;const P=POP;POP=null;P.m.remove();document.removeEventListener('pointerdown',P.out,true);document.removeEventListener('keydown',P.key,true);removeEventListener('resize',P.out2);$('#shelf').removeEventListener('scroll',P.out2);if(back&&P.anchor&&P.anchor.isConnected)P.anchor.focus()}
+function popMenu(anchor,items,guard){ // guard: opened by a long press, so ignore the tap that comes right after it
+  closePop();
+  const m=el('div','pop'),t0=performance.now();m.setAttribute('role','menu');m.id='pop';
+  items.forEach(it=>{
+    if(it.sep){m.append(el('div','pop-sep'));return}
+    if(it.h){m.append(el('div','pop-h',it.h));return}
+    const b=el('button','pop-i'+(it.danger?' danger':''));b.type='button';b.setAttribute('role',it.on!==undefined?'menuitemradio':'menuitem');
+    if(it.on!==undefined)b.setAttribute('aria-checked',!!it.on);
+    b.innerHTML='<svg class="ic" viewBox="0 0 24 24">'+(it.on?'<path d="M5 12.5l4.5 4.5L19 7.5"/>':(MI_IC[it.ic]||''))+'</svg>';
+    b.append(el('span','',it.t));if(it.badge)b.append(el('span','soon',it.badge));
+    b.disabled=!!it.dis;b.onclick=e=>{e.stopPropagation();if(guard&&performance.now()-t0<350)return;closePop();it.fn()};m.append(b); // a tap that opened the menu doesn't also pick an item
+  });
+  document.body.append(m);
+  const r=anchor.getBoundingClientRect(),w=m.offsetWidth,h=m.offsetHeight;
+  let x=Math.min(Math.max(8,r.right-w),innerWidth-w-8),y=r.bottom+6;if(y+h>innerHeight-8)y=Math.max(8,r.top-h-6);
+  m.style.left=x+'px';m.style.top=y+'px';
+  const P={m,anchor,out:e=>{if(!m.contains(e.target))closePop()},out2:()=>closePop(),
+    key:e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closePop(true);return}
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='Tab'){const bs=[...m.querySelectorAll('button:not([disabled])')];if(!bs.length)return;e.preventDefault();const k=bs.indexOf(document.activeElement);bs[(k+((e.key==='ArrowUp'||e.shiftKey&&e.key==='Tab')?-1:1)+bs.length)%bs.length].focus()}}};
+  POP=P;setTimeout(()=>{if(POP!==P)return;document.addEventListener('pointerdown',P.out,true);addEventListener('resize',P.out2);$('#shelf').addEventListener('scroll',P.out2,{passive:true})},0);
+  document.addEventListener('keydown',P.key,true);
+  const f=m.querySelector('button:not([disabled])');if(f)f.focus({preventScroll:true});
+}
+/* Drag a notebook to its new place (mouse: drag it; touch: hold it a moment, then drag), or drop it on a category tab.
+   On touch, holding without moving opens its menu. Escape cancels. */
+let DRAG=null,DRAGT=0;
+function shelfDrag(w,c,b){
+  c.addEventListener('pointerdown',e=>{
+    if(e.button>0||DRAG||e.target.closest('.more'))return;
+    const sx=e.clientX,sy=e.clientY,touch=e.pointerType!=='mouse';let timer=0,on=false;
+    const move=ev=>{
+      if(on){dragMove(ev);return}
+      const d=Math.hypot(ev.clientX-sx,ev.clientY-sy);
+      if(!touch&&d>6){on=true;dragBegin(w,b,e);dragMove(ev)}
+      else if(touch&&d>10)stop(); // the finger moved first: a scroll, not a drag
+    };
+    const up=ev=>{stop();if(on)dragEnd(ev)};
+    const cancel=ev=>{stop();if(on)dragEnd(ev,true)};
+    const stop=()=>{clearTimeout(timer);removeEventListener('pointermove',move);removeEventListener('pointerup',up);removeEventListener('pointercancel',cancel)};
+    if(touch)timer=setTimeout(()=>{on=true;try{navigator.vibrate&&navigator.vibrate(12)}catch(x){}dragBegin(w,b,e,true)},380);
+    addEventListener('pointermove',move);addEventListener('pointerup',up);addEventListener('pointercancel',cancel);
+  });
+}
+function dragBegin(w,b,e,touch){
+  closePop();const r=w.getBoundingClientRect(),gh=w.cloneNode(true);
+  gh.classList.add('drag-ghost');gh.style.width=r.width+'px';gh.style.left=r.left+'px';gh.style.top=r.top+'px';document.body.append(gh);
+  w.classList.add('drag-src');document.body.classList.add('dragging');
+  DRAG={w,b,gh,x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,moved:false,touch:!!touch,last:'',vy:0,raf:0,lock:0,
+    key:ev=>{if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();dragEnd(null,true)}}};
+  document.addEventListener('keydown',DRAG.key,true);
+  const tick=()=>{if(!DRAG)return;if(DRAG.vy)$('#shelf').scrollTop+=DRAG.vy;dragOver();DRAG.raf=requestAnimationFrame(tick)};DRAG.raf=requestAnimationFrame(tick);
+}
+function dragMove(ev){
+  const D=DRAG;if(!D)return;D.x=ev.clientX;D.y=ev.clientY;
+  D.gh.style.transform='translate('+(D.x-D.x0)+'px,'+(D.y-D.y0)+'px) rotate(-2deg) scale(1.05)';
+  const z=70;D.vy=D.y<z?-Math.ceil((z-D.y)/5):D.y>innerHeight-z?Math.ceil((D.y-innerHeight+z)/5):0;
+  if(Math.hypot(D.x-D.x0,D.y-D.y0)>8)D.moved=true;
+  dragOver();
+}
+function dragOver(){
+  const D=DRAG;if(!D||performance.now()<D.lock)return;const t=document.elementFromPoint(D.x,D.y),g=$('#grid');
+  const tab=t&&t.closest('#cats .cat');
+  document.querySelectorAll('#cats .cat.drop').forEach(x=>{if(x!==tab)x.classList.remove('drop')});
+  if(tab){if(tab.dataset.cat!==catOf(D.b))tab.classList.add('drop');return}
+  const cw=t&&t.closest('#grid .cw');if(!cw||cw===D.w||!cw.dataset.id)return;
+  const r=cw.getBoundingClientRect(),after=g.classList.contains('list')?D.y>r.top+r.height/2:D.x>r.left+r.width/2,key=cw.dataset.id+(after?'>':'<');
+  if(key===D.last)return;D.last=key;
+  const ref=after?cw.nextSibling:cw;if(ref===D.w||(ref&&ref.previousSibling===D.w&&!after))return;
+  const els=[...g.children],before=new Map(els.map(x=>[x,x.getBoundingClientRect()]));
+  g.insertBefore(D.w,ref);D.lock=performance.now()+200; // let the others slide into place first
+  els.forEach(x=>{if(x===D.w)return;const a=before.get(x),n=x.getBoundingClientRect(),dx=a.left-n.left,dy=a.top-n.top;
+    if((dx||dy)&&x.animate)x.animate([{transform:'translate('+dx+'px,'+dy+'px)'},{transform:'none'}],{duration:180,easing:'ease-out'})});
+}
+function dragEnd(ev,cancel){
+  const D=DRAG;if(!D)return;DRAG=null;DRAGT=Date.now();cancelAnimationFrame(D.raf);document.removeEventListener('keydown',D.key,true);
+  D.gh.remove();D.w.classList.remove('drag-src');document.body.classList.remove('dragging');
+  const tab=!cancel&&ev?(document.elementFromPoint(D.x,D.y)||{closest:()=>null}).closest('#cats .cat'):null;
+  document.querySelectorAll('#cats .cat.drop').forEach(x=>x.classList.remove('drop'));
+  const hold=D.touch&&!D.moved&&ev; // held without moving (some phones end a long press with "cancel"): its menu
+  if(cancel&&!hold){renderShelf();return}
+  if(tab){const id=tab.dataset.cat;if(id!==catOf(D.b))moveToCat(D.b,id);else renderShelf();return}
+  if(!D.moved){renderShelf();if(hold){const m=$('#grid').querySelector('.cw[data-id="'+String(D.b.id)+'"] .more');if(m)bookMenu(D.b,m,true)}return}
+  applyShelfOrder([...$('#grid').querySelectorAll('.cw[data-id]')].map(x=>x.dataset.id));renderShelf();
+}
 function initLib(){
   const q=$('#q'),so=$('#sortb');so.value=LIB.sort;
+  const g=$('#grid');g.addEventListener('touchmove',e=>{if(DRAG&&e.cancelable)e.preventDefault()},{passive:false});g.addEventListener('dragstart',e=>e.preventDefault());
   q.oninput=()=>{LIB.q=q.value;renderShelf()};
   q.onkeydown=e=>{if(e.key==='Escape'){q.value='';LIB.q='';renderShelf();q.blur()}};
   so.onchange=()=>{LIB.sort=so.value;saveLib();renderShelf()};
@@ -4548,7 +4859,7 @@ function initKeys(){
     const sh=!$('#shelf').classList.contains('hidden'),bv=!$('#bv').classList.contains('hidden'),ed=!$('#ed').classList.contains('hidden');
     if(mod&&lk==='s'){e.preventDefault();if(ed)savePage();persist();return}
     if(sh){
-      if((k==='/'&&!mod)||(mod&&lk==='k')){e.preventDefault();$('#tb1').click();$('#q').focus();return}
+      if((k==='/'&&!mod)||(mod&&lk==='k')){e.preventDefault();showStore(false);$('#q').focus();return}
       if(lk==='n'&&!mod&&!$('#grid').classList.contains('hidden')){e.preventDefault();newNotebook()}
       return;
     }
