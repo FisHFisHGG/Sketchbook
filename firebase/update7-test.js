@@ -38,9 +38,25 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(await A.evaluate(()=>{const v=JSON.parse(localStorage.getItem('sb-fbn:'+ACC.user.uid)||'null');return v&&v.n===0&&Math.round((v.next-Date.now())/864e5)===5&&!$('#fbnudge')}),'feedback reminder: not on the first days (first one after 5 days)');
   await A.evaluate(()=>{const k='sb-fbn:'+ACC.user.uid,v=JSON.parse(localStorage.getItem(k));v.next=Date.now()-1000;localStorage.setItem(k,JSON.stringify(v))});
   await A.reload();await ready(A);await A.waitForSelector('#fbnudge',{timeout:8000});
-  ok(await A.evaluate(()=>/How is Foliet working for you/.test($('#fbnudge').textContent)),'after that, a small card on the shelf asks for feedback');
-  await A.click('#fbnudge >> text=Later');
-  ok(await A.evaluate(()=>{const v=JSON.parse(localStorage.getItem('sb-fbn:'+ACC.user.uid));return !$('#fbnudge')&&v.n===1&&Math.round((v.next-Date.now())/864e5)===21}),'"Later" hides it; the next one comes in 3 weeks at the earliest');
+  ok(await A.evaluate(()=>{const o=$('#fbnudge').getBoundingClientRect(),q=$('#fbnudge .fbn-sq').getBoundingClientRect();
+    return /How is Foliet working for you/.test($('#fbnudge').textContent)&&/Every suggestion helps us a lot/.test($('#fbnudge').textContent)
+      &&o.width===innerWidth&&o.height===innerHeight&&q.width>=400&&Math.abs(q.width-q.height)<40}),'after that, a big square in the middle of the screen asks for feedback ("Every suggestion helps us a lot")');
+  await A.click('#fbnudge >> text=Maybe later');
+  ok(await A.evaluate(()=>{const v=JSON.parse(localStorage.getItem('sb-fbn:'+ACC.user.uid));return !$('#fbnudge')&&v.n===1&&Math.round((v.next-Date.now())/864e5)===21}),'"Maybe later" hides it; the next one comes in 3 weeks at the earliest');
+  // after the first 6 it does not stop: around 8 months and 1 year after you started, then every 6 months
+  const setN=(n,ago)=>A.evaluate(([n,ago])=>{const now=Date.now();localStorage.setItem('sb-fbn:'+ACC.user.uid,JSON.stringify({f:now-ago*864e5,n,next:now-1000}))},[n,ago]);
+  const fbv=()=>A.evaluate(()=>JSON.parse(localStorage.getItem('sb-fbn:'+ACC.user.uid)));
+  await setN(5,110);await A.reload();await ready(A);await A.waitForSelector('#fbnudge',{timeout:8000});
+  let v6=await fbv();ok(v6.n===6&&Math.round((v6.next-v6.f)/864e5)===243,'the 6th reminder: the next one comes about 8 months after you started');
+  await A.keyboard.press('Escape');ok(await A.evaluate(()=>!$('#fbnudge')),'Escape closes it');
+  await setN(6,250);await A.reload();await ready(A);await A.waitForSelector('#fbnudge',{timeout:8000});
+  v6=await fbv();ok(v6.n===7&&Math.round((v6.next-v6.f)/864e5)===365,'… then about 1 year after you started');
+  await A.mouse.click(5,5);ok(await A.evaluate(()=>!$('#fbnudge')),'a click next to the square closes it');
+  ok(await A.evaluate(()=>[fbNudgeNext({n:8,f:1},400*864e5),fbNudgeNext({n:9,f:1},560*864e5)].map(t=>Math.round(t/864e5)).join()==='547,729'),'… and then every 6 months, for as long as you use Foliet');
+  await setN(1,30);await A.evaluate(()=>{showBrowse(data.find(b=>b.title==='Trip'))});await A.waitForTimeout(600);await A.evaluate(()=>fbNudge());
+  ok(await A.evaluate(()=>!$('#fbnudge')&&JSON.parse(localStorage.getItem('sb-fbn:'+ACC.user.uid)).n===1),'never over an open notebook (it waits for the shelf)');
+  await A.evaluate(()=>closeBook());await A.waitForTimeout(300);
+  await A.evaluate(()=>{const now=Date.now();localStorage.setItem('sb-fbn:'+ACC.user.uid,JSON.stringify({f:now,n:1,next:now+21*864e5}))});
   await A.click('#menub');await A.click('#mfb');await A.waitForSelector('#fbk');
   ok(await A.evaluate(()=>$('#fb-rto').value==='ana@example.com'&&/No spam, ever/.test($('#fbk').textContent)),'the feedback form asks where to reply (your account email to start with) and says no spam');
   await A.fill('#fbk textarea','Could you add more colors?');await A.fill('#fb-rto','not-an-email');await A.click('#fbk .btn');await A.waitForTimeout(400);
