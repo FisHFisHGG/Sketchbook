@@ -110,6 +110,10 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   const imp=await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return {t:$('#sv').textContent,n:b.pages.length,bg:Array.from({length:b.pages.length},(_,i)=>!!b.bg[i]),cbg:!!b.cbg,imp:!!b._imp,shelf:/u7-test/.test($('#grid').textContent)||!$('#bv').classList.contains('hidden')}});
   ok(imp.n===4&&imp.cbg&&imp.bg.join()==='true,false,true,true'&&!imp.imp,'PDF with an unreadable page: cover + 4 pages, only that page left blank ('+JSON.stringify(imp.bg)+')');
   ok(/Imported 3 pages and the cover\. 1 page couldn’t be read and was left blank\./.test(imp.t),'… and it says so ("'+imp.t+'")');
+  ok(await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return b.cc===1&&/^#[0-9a-f]{6}$/.test(b.color)&&!BC.includes(b.color)}),'the cover color comes from the PDF cover, not a random notebook color');
+  await A.evaluate(async()=>{const b=data.find(x=>x.title==='u7-test');b.color=BC[2];delete b.cc;persist();await saveNow()}); // as an import from before this update
+  await reload(A);
+  ok(await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return b.cc===1&&!BC.includes(b.color)}),'a PDF notebook imported before gets its cover color fixed when the app starts');
 
   for(const p of [A,B])p.errs.forEach(e=>console.log('  ERR',e));
   console.log(fails?fails+' FAILED':'ALL PASSED');await b.close();process.exit(fails?1:0);
