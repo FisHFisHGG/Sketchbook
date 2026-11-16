@@ -33,6 +33,23 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await newBook(A,'Trip',3);await newBook(A,'Recipes',2);
   ok(await titles(A)==='Recipes, Trip, Welcome to Foliet','Ana has Trip, Recipes and the welcome notebook');
   ok(await A.evaluate(()=>!!document.querySelector('#pdfb .soon:not(.hidden)')),'free plan: the button says "Import PDF  Pro"');
+  // feedback: a gentle reminder now and then, and a reply-to address of your choice
+  await A.waitForFunction(()=>localStorage.getItem('sb-fbn:'+ACC.user.uid),null,{timeout:8000});
+  ok(await A.evaluate(()=>{const v=JSON.parse(localStorage.getItem('sb-fbn:'+ACC.user.uid)||'null');return v&&v.n===0&&Math.round((v.next-Date.now())/864e5)===5&&!$('#fbnudge')}),'feedback reminder: not on the first days (first one after 5 days)');
+  await A.evaluate(()=>{const k='sb-fbn:'+ACC.user.uid,v=JSON.parse(localStorage.getItem(k));v.next=Date.now()-1000;localStorage.setItem(k,JSON.stringify(v))});
+  await A.reload();await ready(A);await A.waitForSelector('#fbnudge',{timeout:8000});
+  ok(await A.evaluate(()=>/How is Foliet working for you/.test($('#fbnudge').textContent)),'after that, a small card on the shelf asks for feedback');
+  await A.click('#fbnudge >> text=Later');
+  ok(await A.evaluate(()=>{const v=JSON.parse(localStorage.getItem('sb-fbn:'+ACC.user.uid));return !$('#fbnudge')&&v.n===1&&Math.round((v.next-Date.now())/864e5)===21}),'"Later" hides it; the next one comes in 3 weeks at the earliest');
+  await A.click('#menub');await A.click('#mfb');await A.waitForSelector('#fbk');
+  ok(await A.evaluate(()=>$('#fb-rto').value==='ana@example.com'&&/No spam, ever/.test($('#fbk').textContent)),'the feedback form asks where to reply (your account email to start with) and says no spam');
+  await A.fill('#fbk textarea','Could you add more colors?');await A.fill('#fb-rto','not-an-email');await A.click('#fbk .btn');await A.waitForTimeout(400);
+  ok(await A.evaluate(()=>/check the email address/.test($('#fbk .lk-err').textContent)),'a wrong reply address is caught');
+  await A.fill('#fb-rto','ana.home@example.org');await A.click('#fbk .btn');await A.waitForSelector('#fbk',{state:'detached',timeout:10000});
+  const fbs=await (await admin('feedback',null,'GET')).json();
+  const mine=(fbs.documents||[]).find(d=>/more colors/.test(d.fields.text.stringValue));
+  ok(mine&&mine.fields.rto.stringValue==='ana.home@example.org'&&mine.fields.email.stringValue==='ana@example.com','saved with the reply address she chose (the rules accept it)');
+  ok(await A.evaluate(()=>Math.round((JSON.parse(localStorage.getItem('sb-fbn:'+ACC.user.uid)).next-Date.now())/864e5)===60),'after sending feedback, no reminder for 2 months');
   const wid=await A.evaluate(()=>String(data.find(b=>b.welcome).id));
   await setIdx(A,[wid]); // the shelf list on the device loses Trip and Recipes (what used to happen)
   await reload(A);
@@ -132,6 +149,31 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await A.evaluate(async()=>{const b=data.find(x=>x.title==='u7-test');b.color=BC[2];delete b.cc;persist();await saveNow()}); // as an import from before this update
   await reload(A);
   ok(await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return b.cc===2&&b.color===PAPER}),'a PDF notebook imported before gets its cover color fixed when the app starts');
+
+  // ---- 7) admin panel: categories, overview, money & profit (income, fees, costs), discount codes
+  await admin('admins/'+uid,{fields:{note:{stringValue:'test'}}});await A.evaluate(()=>checkAdmin(ACC.user));await A.waitForTimeout(500);
+  const nowS=Math.floor(Date.now()/1000);
+  await admin('customers/'+uid+'/payments/pi_sub',{fields:{status:{stringValue:'succeeded'},amount:{integerValue:'399'},amount_received:{integerValue:'399'},currency:{stringValue:'eur'},created:{integerValue:String(nowS)},invoice:{stringValue:'in_1'}}});
+  await admin('customers/'+uid+'/payments/pi_store',{fields:{status:{stringValue:'succeeded'},amount:{integerValue:'99'},amount_received:{integerValue:'99'},currency:{stringValue:'eur'},created:{integerValue:String(nowS)}}});
+  await A.evaluate(()=>{showBrowse(data[0]);$('#bclose').click()});await A.waitForTimeout(300);
+  await A.click('#menub');await A.click('#madm');await A.waitForSelector('.acats',{timeout:15000});
+  ok(await A.evaluate(()=>[...document.querySelectorAll('.acats button')].map(b=>b.textContent).join('|')==='Overview|Money & profit|Accounts|Who uses it|Found us|Feedback|Codes & discounts|Pro members|Store|Find an account'),'admin: a bar of categories that jumps to each part');
+  await A.click('#adm-body .aper >> text=This month');await A.waitForTimeout(300);
+  const card=l=>A.evaluate(l=>{const c=[...document.querySelectorAll('#adm-body .acard')].find(x=>x.querySelector('span').textContent===l);return c?c.querySelector('b').textContent:null},l);
+  ok(await card('Income')==='€4.98'&&await card('From subscriptions')==='€3.99'&&await card('From the store')==='€0.99','Overview income €4.98; Money splits it: €3.99 subscriptions, €0.99 store');
+  ok(await card('Stripe fees (est.)')==='€0.57','Stripe fees estimated (1.5% + €0.25 a payment): €0.57');
+  await A.fill('#adm-cost input[placeholder="e.g. Firebase"]','Firebase');await A.fill('#adm-cost input[type=number]','2.50');await A.click('#adm-cost button[type=submit]');
+  await A.waitForFunction(()=>/Firebase/.test($('.acosts').textContent),null,{timeout:10000});await A.waitForTimeout(300);
+  const cdoc=await (await admin('config/costs',null,'GET')).json();
+  ok(cdoc.fields&&cdoc.fields.items.arrayValue.values.length===1&&await card('Running costs')==='€2.50','a running cost (Firebase €2.50 a month) is saved and counted');
+  ok(await card('Profit (est.)')==='€1.91','profit = income − fees − costs = €1.91');
+  await A.fill('#adm-cf input[placeholder="CODE"]','HALF-1');await A.selectOption('#adm-kind','off');await A.fill('#adm-pct','50');await A.selectOption('#adm-for','pro-m');await A.selectOption('#adm-dur','once');await A.fill('#adm-max','100');
+  await A.click('#adm-cf >> text=Create code');await A.waitForSelector('#adm-codes >> text=HALF-1',{timeout:10000});
+  const hd=await (await admin('codes/HALF-1',null,'GET')).json();
+  ok(hd.fields.kind.stringValue==='off'&&hd.fields.pct.integerValue==='50'&&hd.fields.for.stringValue==='pro-m'&&hd.fields.dur.stringValue==='once'&&await A.evaluate(()=>/Discount: 50% off Pro monthly – the first payment/.test($('#adm-codes').textContent)),'a discount code: 50% off Pro monthly, first payment');
+  const dm=await B.evaluate(()=>redeemCode('half-1').then(r=>r.msg));
+  ok(/50% off Pro monthly – the first payment\. You can use it at checkout/.test(dm),'a person typing it is told what it gives and that it works at checkout ("'+dm+'")');
+  await A.click('#adm-x');
 
   for(const p of [A,B])p.errs.forEach(e=>console.log('  ERR',e));
   console.log(fails?fails+' FAILED':'ALL PASSED');await b.close();process.exit(fails?1:0);

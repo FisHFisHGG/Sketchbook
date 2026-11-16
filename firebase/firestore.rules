@@ -13,8 +13,10 @@ rules_version = '2';
 // profiles/{uid}         {email, name, via, os, lang, app, created, seen} – for the admin panel's statistics
 // act/{YYYY-MM_uid}      this account used Foliet in that month (one tiny record per month)
 // survey/{uid}           how this person found Foliet: {src, other, at} (asked once, after signing up)
-// feedback/{id}          messages sent from the app: {uid, email, type, text, reply, os, ver, w, at, done?}
+// feedback/{id}          messages sent from the app: {uid, email, type, text, reply, rto?, os, ver, w, at, done?} (rto = reply to)
 // admins/{uid}           exists = admin (made by hand in the console)
+// config/{id}            admin settings: config/costs = {items:[{n, c, per, at}]} (running costs)
+//                        codes/{CODE} can also be {kind:'off', pct, for, dur, …}: a discount typed at checkout (Stripe)
 // customers/{uid}/...    written by the "Run Payments with Stripe" extension (payments, subscriptions)
 //
 // Only the owner can read their notebooks. Only Pro users can write them (so free users can't create costs).
@@ -181,7 +183,9 @@ service cloud.firestore {
       allow get, list, update, delete: if isAdmin();
       allow get, list, delete: if signedIn() && resource.data.uid == request.auth.uid; // your own messages
       allow create: if signedIn()
-        && request.resource.data.keys().hasOnly(['uid', 'email', 'type', 'text', 'reply', 'os', 'ver', 'w', 'at'])
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'type', 'text', 'reply', 'rto', 'os', 'ver', 'w', 'at'])
+        && (!('rto' in request.resource.data) || (request.resource.data.rto is string && request.resource.data.rto.size() <= 120
+            && request.resource.data.rto.matches('^[^@\\s]+@[^@\\s]+[.][^@\\s]+$'))) // the address to reply to
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.email == request.auth.token.get('email', '')
         && request.resource.data.type in ['idea', 'problem', 'other']
@@ -191,6 +195,10 @@ service cloud.firestore {
         && request.resource.data.ver is string && request.resource.data.ver.size() <= 20
         && request.resource.data.w is int
         && request.resource.data.at == request.time;
+    }
+
+    match /config/{id} { // admin settings, e.g. config/costs (running costs for the profit figures)
+      allow read, write: if isAdmin();
     }
 
     match /admins/{uid} {

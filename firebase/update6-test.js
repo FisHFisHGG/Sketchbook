@@ -75,7 +75,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.click('#lockc >> text=Not now');
   // admin makes a template code
   await A.click('#adm-r');await A.waitForSelector('#adm-cf',{timeout:15000});
-  await A.fill('#adm-cf input[placeholder="CODE"]','HABIT-1');await A.selectOption('#adm-kind','tpl');await A.selectOption('#adm-ctpl','habit');await A.fill('#adm-cf input[type=number]','1');
+  await A.fill('#adm-cf input[placeholder="CODE"]','HABIT-1');await A.selectOption('#adm-kind','tpl');await A.selectOption('#adm-ctpl','habit');await A.fill('#adm-max','1');
   await A.click('#adm-cf >> text=Create code');await A.waitForSelector('#adm-codes >> text=HABIT-1',{timeout:10000});
   const hc=await getDoc('codes/HABIT-1');
   ok(hc&&hc.fields.kind.stringValue==='tpl'&&hc.fields.tpl.stringValue==='habit'&&hc.fields.max.integerValue==='1'&&!hc.fields.days,'admin makes a template code (Habit tracker, 1 person)');

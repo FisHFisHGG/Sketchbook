@@ -52,7 +52,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await A.click('#madm');await A.waitForSelector('.astats',{timeout:15000});
   const card=(p,label)=>p.evaluate(l=>{const c=[...document.querySelectorAll('#adm-body .acard')].find(x=>x.querySelector('span').textContent===l);return c?c.querySelector('b').textContent:null},label);
   ok(await card(A,'Accounts in total')==='1','admin overview counts accounts (1)');
-  await A.fill('.aform input[placeholder="CODE"]','TEST-30');await A.selectOption('#adm-days','30');await A.fill('.aform input[type=number]','2');
+  await A.fill('.aform input[placeholder="CODE"]','TEST-30');await A.selectOption('#adm-days','30');await A.fill('#adm-max','2');
   await A.click('text=Create code');await A.waitForSelector('text=TEST-30',{timeout:10000});
   ok(await (await admin('codes/TEST-30',null,'GET')).json().then(j=>j.fields.days.integerValue==='30'&&j.fields.max.integerValue==='2'),'admin creates a code: Pro for 30 days, 2 people');
   await A.click('#adm-x');

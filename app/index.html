@@ -246,7 +246,9 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .astats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .aper{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-top:8px}.aper .lk-in{width:auto;min-width:200px;margin:0;text-align:left;min-height:38px}.aper .seg3 button{padding:8px 12px}
 .aplabel{margin:8px 0 0;font-weight:700;opacity:.8}.anote{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,transparent);font-size:.9em}
-.acard.big b{color:#2e9d5b}.acard small{opacity:.6;font-size:.8em}
+.acard.big b{color:#2e9d5b}.acard.neg b{color:#c2473a}
+[id^=as-]{scroll-margin-top:calc(var(--abh,48px) + 56px)}.acats{position:sticky;top:var(--abh,48px);z-index:2;display:flex;gap:6px;overflow-x:auto;padding:8px 0;margin:6px 0 0;background:var(--desk)}.acats button{flex:none;border:1px solid var(--line);background:var(--bar);color:inherit;font:inherit;font-size:.85em;padding:6px 12px;border-radius:999px;white-space:nowrap}
+#adm-body h3{scroll-margin-top:110px}.acosts{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--bar)}.acosts>b{display:block}.acosts>small{display:block;margin-bottom:8px}.acard small{opacity:.6;font-size:.8em}
 .acharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:10px}
 .achart{background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px}.achart>b{display:block;margin-bottom:8px}
 .cbars{display:flex;align-items:flex-end;gap:3px;height:150px}.cbar{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px}
@@ -308,7 +310,9 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .tl-own{color:#2e7d5b;font-weight:700;margin:0 0 4px!important;opacity:1!important}
 #lockd .tadd .lk-in{text-align:left;margin-bottom:8px;text-transform:none}#lockd .tadd .crow{display:flex;gap:8px}#lockd .tadd .crow .lk-in{margin:0}#lockd .tadd .crow .ib{flex:none;min-height:46px}
 #npd,#dlg,#up{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding:20px}
-#npd .card,#dlg .card,#up .card{min-width:0;max-width:100%}.tplrow{max-width:100%}#nppdf{display:block;margin:2px 0 14px}
+#npd .card,#dlg .card,#up .card{min-width:0;max-width:100%}.tplrow{max-width:100%}
+.fb-rto{margin:-2px 0 8px}.fb-rto .lk-in{text-align:left;margin:0 0 4px}.fb-rto small{display:block}
+.fbn{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--accent) 12%,var(--bar));border:1px solid var(--line)}.fbn>div{flex:1 1 220px}.fbn b{display:block}.fbn span{font-size:.9em;opacity:.8}#nppdf{display:block;margin:2px 0 14px}
 #pdfd{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding:20px}
 #pdfd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(560px,100%);min-width:0;max-height:calc(100vh - 40px);overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #pdfd h2{margin:0 0 2px;font-size:1.3em}.pd-sub{margin:0 0 14px;opacity:.7;overflow-wrap:anywhere}#pdfd .alab{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}#pdfd .alab span{font-size:.85em;opacity:.7}#pdfd .lk-in{text-align:left;margin:0}
@@ -884,7 +888,7 @@ async function initData(legacy){
   LIBST.ready=true;
   if(LIBST.recovered){persist();setTimeout(()=>toast(LIBST.recovered===1?'A notebook that had gone missing is back on your shelf.':LIBST.recovered+' notebooks that had gone missing are back on your shelf.'),600)}
   if(!data.length){try{data=[await makeWelcome()]}catch(e){console.warn('welcome',e);data=[mk('Sketches',0)]}persist()} // a new library starts with the welcome notebook
-  renderShelf();libStale=false;fixCoverColors();
+  renderShelf();libStale=false;fixCoverColors();setTimeout(fbNudge,2500);
   if(old&&!usingLS&&Array.isArray(d)&&d.length){
     // move the old single-record library to the new format, then drop the old copy
     try{await flushSave();await idbDel(KEY);try{localStorage.removeItem(KEY)}catch(e){}}catch(e){}
@@ -3224,6 +3228,7 @@ async function redeemCode(raw){
         tx.set(oref,{t:[...have,c.tpl],last:code});
         return {ok:true,tpl:c.tpl};
       }
+      if(c.kind==='off')return {msg:(c.active&&c.used<c.max?'This code gives '+offTxt(c).replace('Discount: ','')+'. You can use it at checkout once Pro is on sale.':'This code has expired or has been used up.')};
       if(c.kind!=='pro')return {msg:'This code gives a discount. You can use it at checkout once Pro is on sale.'};
       if(!c.active||c.used>=c.max)return {msg:'This code has expired or has been used up.'};
       const ps=await tx.get(pref);if(ps.exists()&&proActiveDoc(ps.data()))return {msg:'You already have Pro.'};
@@ -3251,6 +3256,16 @@ function openCode(){$('#up').classList.add('hidden');openAcc();setTimeout(()=>{c
 function genCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const r=crypto.getRandomValues(new Uint8Array(8));for(const x of r)s+=A[x%A.length];return 'FOLIET-'+s}
 const DUR=[[7,'7 days'],[30,'1 month'],[90,'3 months'],[365,'1 year'],[0,'Forever']];
 const durTxt=d=>!d?'forever':d%365===0?(d/365)+(d===365?' year':' years'):d%30===0?(d/30)+(d===30?' month':' months'):d+' days';
+const OFF_FOR=[['pro','Pro (monthly or yearly)'],['pro-m','Pro monthly'],['pro-y','Pro yearly'],['store','Store items'],['all','Everything']];
+const OFF_DUR=[['once','the first payment'],['3m','the first 3 months'],['1y','the first year'],['ever','every payment']];
+const offTxt=c=>'Discount: '+(c.pct||0)+'% off '+((OFF_FOR.find(x=>x[0]===c.for)||[0,'everything'])[1]).replace(/^P/,'P')+' – '+((OFF_DUR.find(x=>x[0]===c.dur)||[0,'the first payment'])[1]);
+function costsIn(items,R,first){ // running costs inside the period: monthly ones for each month, one-time ones in their month
+  const now=Date.now(),a=Math.max(R.a,first||0),b=Math.min(R.b,now);let sum=0;
+  items.forEach(c=>{const y=+c.at.slice(0,4),m=+c.at.slice(5)-1,s=+new Date(y,m,1);
+    if(c.per==='once'){if(inR(s,R))sum+=c.c;return}
+    for(let t=new Date(Math.max(s,a)),i=0;i<600;i++){const ms=+new Date(t.getFullYear(),t.getMonth(),1);if(ms>=b)break;if(ms+31*864e5>a)sum+=c.c;t=new Date(t.getFullYear(),t.getMonth()+1,1)}});
+  return sum;
+}
 function tplSelect(){const s=el('select','lk-in');s.append(new Option('Everything in the store','all'));
   [['Templates',TPL],['Covers',COVERS],['Labels',LABELS],['Sticker packs',STPK]].forEach(([n,L])=>{const g=document.createElement('optgroup');g.label=n;L.filter(t=>t.p).forEach(t=>g.append(new Option(t.n,t.id)));s.append(g)});return s}
 function durSelect(def){const s=el('select','lk-in');DUR.forEach(([v,t])=>{const o=el('option','',t);o.value=v;if(v===def)o.selected=true;s.append(o)});return s}
@@ -3305,6 +3320,23 @@ function askSurvey(u){
    feedback/{id} = {uid, email, type: idea|problem|other, text, reply, os, ver, w, at, done?}
    Read and marked done only in the admin panel. One message a minute per device, so nobody floods it. */
 const FBT=[['idea','Idea'],['problem','Problem'],['other','Other']];
+/* A gentle, rare reminder to send feedback: a small card on the shelf, first after ~5 days of use, then at most
+   every 3 weeks (2 months after you sent something), 6 times at most. sb-fbn:<uid> = {next, n}. */
+function fbNudgeKey(){return ACC.user?'sb-fbn:'+ACC.user.uid:''}
+function fbNudgeGet(){try{return JSON.parse(lsGet(fbNudgeKey())||'null')}catch(e){return null}}
+function fbNudgeSet(v){if(fbNudgeKey())lsSet(fbNudgeKey(),JSON.stringify(v))}
+function fbNudgeSent(){const v=fbNudgeGet()||{n:0};v.next=Date.now()+60*864e5;fbNudgeSet(v);const c=$('#fbnudge');if(c)c.remove()}
+function fbNudge(){
+  if(!ACC.user||ACC.gate||$('#fbnudge'))return;let v=fbNudgeGet();
+  if(!v){fbNudgeSet({next:Date.now()+5*864e5,n:0});return}
+  if(Date.now()<v.next||v.n>=6)return;
+  v.n++;v.next=Date.now()+21*864e5;fbNudgeSet(v);
+  const c=el('div','fbn');c.id='fbnudge';c.setAttribute('role','status');
+  const t=el('div','');t.append(el('b','','How is Foliet working for you?'),el('span','','Tell us what you like or what to fix – we read every message.'));
+  const go=el('button','btn','Send feedback');go.onclick=()=>{c.remove();openFeedback()};
+  const no=el('button','ib','Later');no.onclick=()=>c.remove();
+  c.append(t,go,no);const g=$('#lib');g.parentNode.insertBefore(c,g);
+}
 function openFeedback(){
   menuOpen(false);
   const ov=el('div','');ov.id='fbk';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-labelledby','fbkt');
@@ -3315,10 +3347,12 @@ function openFeedback(){
   FBT.forEach(([k,t])=>{const b=el('button','',t);b.type='button';b.onclick=()=>{type=k;sync()};b.dataset.k=k;seg.append(b)});
   const ta=el('textarea','fb-ta');ta.rows=6;ta.maxLength=2000;ta.placeholder='Write here…';ta.setAttribute('aria-label','Your message');
   const cnt=el('small','fb-cnt','');
-  const rl=el('label','chk');const rc=el('input');rc.type='checkbox';rc.checked=true;rl.append(rc,' You can reply to me by email');
+  const rl=el('label','chk');const rc=el('input');rc.type='checkbox';rc.checked=true;rl.append(rc,' Reply to me by email');
+  const rw=el('div','fb-rto');const re=el('input','lk-in');re.type='email';re.id='fb-rto';re.autocomplete='email';re.maxLength=120;re.value=(ACC.user&&ACC.user.email)||'';re.setAttribute('aria-label','Email for the reply');
+  rw.append(re,el('small','muted','We only use it to answer you. No spam, ever.'));rc.onchange=()=>rw.classList.toggle('hidden',!rc.checked);
   const err=el('p','lk-err');err.setAttribute('role','alert');
   const acts=el('div','acts2');const no=el('button','ib','Cancel');const go=el('button','btn','Send');acts.append(no,go);
-  c.append(seg,ta,cnt,rl,el('p','fb-note','We also add your device type and the app version, so we can fix problems faster.'),err,acts);
+  c.append(seg,ta,cnt,rl,rw,el('p','fb-note','We also add your device type and the app version, so we can fix problems faster.'),err,acts);
   const sync=()=>{seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===type));ta.placeholder=type==='problem'?'What happened? What did you expect?':type==='idea'?'What would make Foliet better for you?':'Write here…';
     cnt.textContent=ta.value.length+' / 2000';go.disabled=ta.value.trim().length<3};
   ta.oninput=sync;sync();
@@ -3330,7 +3364,10 @@ function openFeedback(){
     const F=ACC.F,u=ACC.user;if(!F||!u){err.textContent='Sign in to send feedback.';return}
     go.disabled=true;err.textContent='';
     try{
-      await F.setDoc(F.doc(F.collection(ACC.db,'feedback')),{uid:u.uid,email:u.email||'',type,text:ta.value.trim().slice(0,2000),reply:rc.checked,os:devOS(),ver:APP_VER,w:Math.round(innerWidth),at:F.serverTimestamp()});
+      const rto=re.value.trim();
+      if(rc.checked&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(rto)){go.disabled=false;err.textContent='Please check the email address for the reply.';re.focus();return}
+      await F.setDoc(F.doc(F.collection(ACC.db,'feedback')),{uid:u.uid,email:u.email||'',type,text:ta.value.trim().slice(0,2000),reply:rc.checked,...(rc.checked?{rto:rto.slice(0,120)}:{}),os:devOS(),ver:APP_VER,w:Math.round(innerWidth),at:F.serverTimestamp()});
+      fbNudgeSent();
       lsSet('sb-fbt',String(Date.now()));close();toast('Thank you! Your message was sent.');
     }catch(e){go.disabled=false;err.textContent=navigator.onLine?'Couldn’t send it. Please try again.':'No internet connection. Your message is still here – send it when you’re back online.'}
   };
@@ -3431,9 +3468,10 @@ async function adminFetch(){
     safe(F.getDocs(F.collectionGroup(db,'payments')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()})))),
     safe(F.getDocs(F.collectionGroup(db,'subscriptions')).then(s=>s.docs.map(d=>({id:d.id,uid:d.ref.parent.parent&&d.ref.parent.parent.id,...d.data()})))),
     safe(all('survey')),safe(all('feedback')),safe(all('owned'))]);
-  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,feedback,owned,at:Date.now()};
+  const costs=await F.getDoc(F.doc(db,'config','costs')).then(s=>s.exists()&&Array.isArray(s.data().items)?s.data().items:[]).catch(()=>[]);
+  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,feedback,owned,costs,at:Date.now()};
 }
-function openAdmin(){$('#acct').classList.add('hidden');$('#admin').classList.remove('hidden');adminLoad()}
+function openAdmin(){$('#acct').classList.add('hidden');const A=$('#admin');A.classList.remove('hidden');A.style.setProperty('--abh',($('#admin .bar').offsetHeight||48)+'px');adminLoad()}
 async function adminLoad(){
   const B=$('#adm-body');B.innerHTML='';B.append(el('p','muted','Loading…'));
   try{await adminFetch();adminRender()}
@@ -3447,7 +3485,7 @@ function adminRender(){
   const subUids=new Set(subs.filter(s=>s.on).map(s=>s.uid)); // paying subscribers (Stripe) are Pro too
   const proUids=new Set([...D.pro.filter(proActiveDoc).map(p=>p.id),...subUids]),proOn=[...proUids];
   const card=(box,v,k,sub,cls)=>{const c=el('div','acard'+(cls?' '+cls:''));c.append(el('b','',String(v)),el('span','',k));if(sub)c.append(el('small','',sub));box.append(c);return c};
-  const sec=t=>B.append(el('h3','',t));
+  const sec=(t,id)=>{const h=el('h3','',t);if(id)h.id='as-'+id;B.append(h)};
   // period picker
   const bar=el('div','aper');const seg=el('div','seg3');
   [['all','All time'],['year','This year'],['month','This month']].forEach(([v,t])=>{const b=el('button','',t);b.setAttribute('aria-pressed',ADM.per===v);b.onclick=()=>{ADM.per=v;adminRender()};seg.append(b)});
@@ -3459,9 +3497,28 @@ function adminRender(){
   sel.onchange=()=>{if(sel.value){ADM.per=sel.value;adminRender()}};
   const rf=el('small','muted','Updated '+new Date(D.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
   bar.append(seg,sel,rf);B.append(bar,el('p','aplabel','Showing: '+R.label));
+  // categories: jump to a part of the panel
+  const nav=el('nav','acats');nav.setAttribute('aria-label','Admin sections');
+  [['ov','Overview'],['money','Money & profit'],['acc','Accounts'],['who','Who uses it'],['found','Found us'],['fb','Feedback'],['codes','Codes & discounts'],['pro','Pro members'],['store','Store'],['search','Find an account']]
+    .forEach(([k,n])=>{const b=el('button','',n);b.type='button';b.onclick=()=>{const h=$('#as-'+k);if(h)h.scrollIntoView({behavior:'smooth',block:'start'})};nav.append(b)});
+  B.append(nav);
+  // money figures (used by the overview and by Money & profit)
+  const pIn=paid.filter(p=>inR(payMs(p),R)),amt=p=>p.amount_received??p.amount??0,rev=pIn.reduce((s,p)=>s+amt(p),0);
+  const subRev=pIn.filter(p=>p.invoice).reduce((s,p)=>s+amt(p),0),storeRev=rev-subRev;
+  const refunds=pIn.reduce((s,p)=>s+(p.amount_refunded||(p.charges&&p.charges.data&&p.charges.data[0]&&p.charges.data[0].amount_refunded)||0),0);
+  const fees=pIn.reduce((s,p)=>s+Math.round(amt(p)*.015+25),0); // Stripe, standard EU cards: 1.5% + €0.25 (an estimate)
+  const costIn=costsIn(D.costs||[],R,first),profit=rev-refunds-fees-costIn;
+  sec('Overview','ov');
+  const og=el('div','astats');
+  card(og,euro(rev),'Income',R.label,'big');card(og,euro(profit),'Profit (est.)','after fees, refunds and costs',profit<0?'neg':'big');
+  card(og,P.filter(p=>inR(p.c,R)).length,'New sign-ups',R.label);
+  card(og,R.b===Infinity?P.length:new Set(D.act.filter(a=>{const t=+new Date(+a.ym.slice(0,4),+a.ym.slice(5)-1,1);return t>=R.a&&t<R.b}).map(a=>a.uid)).size,'Active users',R.label);
+  card(og,proOn.length,'Pro now',P.length?Math.round(proOn.length/P.length*100)+'% of accounts':'');
+  card(og,D.feedback.filter(f=>!f.done).length,'Open feedback','not marked done');
+  card(og,D.redeem.filter(r=>inR(tsMs(r.at),R)).length,'Codes used',R.label);
+  B.append(og);
   // money
-  sec('Money');
-  const pIn=paid.filter(p=>inR(payMs(p),R)),rev=pIn.reduce((s,p)=>s+(p.amount_received??p.amount??0),0);
+  sec('Money & profit','money');
   const subOn=subs.filter(s=>s.on),mo=subOn.filter(s=>s.iv==='month'),yr=subOn.filter(s=>s.iv==='year');
   const mrr=mo.reduce((s,x)=>s+(x.amt||399),0)+yr.reduce((s,x)=>s+(x.amt||2999)/12,0);
   const payers=new Set(pIn.map(p=>p.uid)).size;
@@ -3469,10 +3526,25 @@ function adminRender(){
   card(mg,euro(rev),'Revenue',R.label,'big');card(mg,pIn.length,'Payments',R.label);card(mg,payers,'Paying customers',R.label);
   card(mg,subOn.length,'Active subscriptions',mo.length+' monthly · '+yr.length+' yearly');card(mg,euro(Math.round(mrr)),'Monthly recurring (est.)','≈ '+euro(Math.round(mrr*12))+' a year');
   card(mg,payers?euro(Math.round(rev/payers)):'–','Average per paying customer',R.label);
+  card(mg,euro(subRev),'From subscriptions',R.label);card(mg,euro(storeRev),'From the store','templates, covers, labels, stickers');
+  card(mg,euro(refunds),'Refunds',R.label);card(mg,euro(fees),'Stripe fees (est.)','1.5% + €0.25 a payment');
+  card(mg,euro(costIn),'Running costs',R.label);card(mg,euro(profit),'Profit (est.)','income − refunds − fees − costs',profit<0?'neg':'big');
   B.append(mg);
+  // running costs you enter (hosting, domain, Firebase bill…): config/costs = {items:[{n, c (cents), per: month|once, at: YYYY-MM}]}
+  const cw=el('div','acosts');cw.append(el('b','','Running costs'),el('small','muted','Add what Foliet costs you (Firebase bill, domain, tools). Monthly costs count for every month of the period; one-time costs in their month.'));
+  const saveCosts=async items=>{try{await F.setDoc(F.doc(db,'config','costs'),{items});D.costs=items;adminRender()}catch(e2){toast('Couldn’t save: '+(e2.code||e2.message))}};
+  (D.costs||[]).forEach((c,i)=>{const r=el('div','arow');const t=el('div','');t.append(el('b','',c.n),el('small','',' '+euro(c.c)+(c.per==='month'?' a month since '+c.at:' once, '+c.at)));
+    const dl=el('button','ib','Delete');dl.onclick=()=>saveCosts(D.costs.filter((_,k)=>k!==i));r.append(t,dl);cw.append(r)});
+  const cf=el('form','aform');cf.id='adm-cost';const cn=el('input','lk-in');cn.placeholder='e.g. Firebase';cn.maxLength=60;const ca=el('input','lk-in');ca.type='number';ca.min='0';ca.step='0.01';ca.placeholder='€';
+  const cp=el('select','lk-in');[['month','Every month'],['once','Once']].forEach(([v,t])=>cp.append(new Option(t,v)));const cm=el('input','lk-in');cm.type='month';cm.value=ymOf(new Date());
+  const cb2=el('button','btn','Add cost');cb2.type='submit';
+  const l2=(t,x)=>{const w=el('label','alab');w.append(el('span','',t),x);return w};
+  cf.append(l2('What',cn),l2('Amount (€)',ca),l2('How often',cp),l2('From / in',cm),cb2);
+  cf.onsubmit=e=>{e.preventDefault();const c=Math.round(parseFloat(ca.value)*100);if(!cn.value.trim()||!(c>=0)||!/^\d{4}-\d\d$/.test(cm.value))return;saveCosts([...(D.costs||[]),{n:cn.value.trim().slice(0,60),c,per:cp.value,at:cm.value}])};
+  cw.append(cf);B.append(cw);
   if(!D.payments.length&&!D.subs.length)B.append(el('p','anote','Payments aren’t connected yet. When Stripe is set up, revenue, payments and subscriptions fill in here by themselves for any period.'));
   // users
-  sec('Accounts');
+  sec('Accounts','acc');
   const newIn=P.filter(p=>inR(p.c,R)).length;
   const actIn=R.b===Infinity?P.length:new Set(D.act.filter(a=>{const t=+new Date(+a.ym.slice(0,4),+a.ym.slice(5)-1,1);return t>=R.a&&t<R.b}).map(a=>a.uid)).size;
   const proNew=D.pro.filter(p=>inR(tsMs(p.since),R)).length+subs.filter(s=>inR(s.start,R)).length;
@@ -3494,7 +3566,7 @@ function adminRender(){
   cg.append(chart('Revenue',buckets.map(k=>({...k,v:paid.filter(p=>{const t=payMs(p);return t>=k.a&&t<k.b}).reduce((s,p)=>s+(p.amount_received??p.amount??0),0)})),v=>euro(v)));
   B.append(cg);
   // where people come from (accounts that joined in the period)
-  sec('Who uses Foliet');
+  sec('Who uses Foliet','who');
   const PJ=P.filter(p=>R.b===Infinity||inR(p.c,R));
   const brk=(title,f)=>{const m={};PJ.forEach(p=>{const k=f(p);m[k]=(m[k]||0)+1});const w=el('div','abrk');w.append(el('b','',title));
     Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,6).forEach(([k,v])=>{const r=el('div','abr');const t=el('span','',k);const bar=el('i');bar.style.width=Math.round(v/PJ.length*100)+'%';r.append(t,el('em','',v+' · '+Math.round(v/PJ.length*100)+'%'),bar);w.append(r)});
@@ -3503,7 +3575,7 @@ function adminRender(){
   bg.append(brk('Signs in with',p=>p.via==='google.com'?'Google':'Email and password'),brk('Device',p=>osName(p.os)),brk('Installed as an app',p=>p.app?'Yes':p.app===false?'No, in the browser':'Unknown'),brk('Language',p=>(p.lang||'unknown').slice(0,2).toUpperCase()));
   B.append(bg);
   // promo codes
-  sec('How people found Foliet');
+  sec('How people found Foliet','found');
   const SV=D.survey.map(a=>({...a,t:tsMs(a.at)})),SVin=SV.filter(a=>R.b===Infinity||inR(a.t,R));
   const sg=el('div','abrks');const sb=el('div','abrk');sb.append(el('b','',SVin.length+' answer'+(SVin.length===1?'':'s')+' · '+R.label));
   SRC.map(([k])=>[k,SVin.filter(a=>a.src===k).length]).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{const r=el('div','abr');const bar=el('i');bar.style.width=(SVin.length?Math.round(v/SVin.length*100):0)+'%';
@@ -3515,7 +3587,7 @@ function adminRender(){
   if(!others.length)ob.append(el('small','muted','None in this period.'));
   others.slice(0,200).forEach(a=>{const r=el('div','sva');r.append(el('span','',a.other),el('small','',fmtDay(a.t)+(email[a.id]?' · '+email[a.id]:'')));ob.append(r)});
   sg.append(sb,ob);B.append(sg);
-  sec('Feedback');
+  sec('Feedback','fb');
   const FB=D.feedback.map(f=>({...f,t:tsMs(f.at)})).filter(f=>R.b===Infinity||inR(f.t,R)).sort((a,b)=>(b.t||0)-(a.t||0));
   const fbBar=el('div','aper');const fseg=el('div','seg3');
   [['all','All'],...FBT].forEach(([k,t])=>{const n=k==='all'?FB.length:FB.filter(f=>f.type===k).length;const b=el('button','',t+' ('+n+')');b.setAttribute('aria-pressed',(ADM.fbt||'all')===k);b.onclick=()=>{ADM.fbt=k;adminRender()};fseg.append(b)});
@@ -3523,43 +3595,47 @@ function adminRender(){
   const fl=el('div','alist');fl.id='adm-fbl';const shown=FB.filter(f=>(ADM.fbt||'all')==='all'||f.type===ADM.fbt);
   if(!shown.length)fl.append(el('p','muted','No feedback in this period.'));
   shown.slice(0,200).forEach(f=>{const r=el('div','arow fbr'+(f.done?' off':''));const t=el('div','');
-    t.append(el('span','fbt fbt-'+f.type,(FBT.find(x=>x[0]===f.type)||['','Other'])[1]),el('p','fbx',f.text),el('small','',fmtDay(f.t)+' · '+(f.email||'?')+' · '+osName(f.os)+(f.w?' · '+f.w+'px':'')+' · '+(f.ver||'')));
+    t.append(el('span','fbt fbt-'+f.type,(FBT.find(x=>x[0]===f.type)||['','Other'])[1]),el('p','fbx',f.text),el('small','',fmtDay(f.t)+' · '+(f.email||'?')+(f.rto&&f.rto!==f.email?' (reply to '+f.rto+')':'')+' · '+osName(f.os)+(f.w?' · '+f.w+'px':'')+' · '+(f.ver||'')));
     r.append(t);
-    if(f.reply&&f.email){const m=el('a','ib','Reply');m.href='mailto:'+encodeURIComponent(f.email)+'?subject='+encodeURIComponent('Your Foliet feedback');r.append(m)}
+    const rto=f.rto||f.email;if(f.reply&&rto){const m=el('a','ib','Reply');m.href='mailto:'+encodeURIComponent(rto)+'?subject='+encodeURIComponent('Your Foliet feedback');m.title='Reply to '+rto;r.append(m)}
     const d=el('button','ib',f.done?'Reopen':'Mark done');d.onclick=async()=>{await ACC.F.updateDoc(ACC.F.doc(ACC.db,'feedback',f.id),{done:!f.done});f.done=!f.done;const x=D.feedback.find(y=>y.id===f.id);if(x)x.done=f.done;adminRender()};
     r.append(d);fl.append(r)});
   B.append(fl);
-  sec('Promo codes');
+  sec('Codes & discounts','codes');
   const f=el('form','aform');f.id='adm-cf';
   const ci=el('input','lk-in');ci.placeholder='CODE';ci.value=genCode();ci.autocapitalize='characters';
   const gb=el('button','ib','New code');gb.type='button';gb.onclick=()=>ci.value=genCode();
-  const ds=durSelect(30);ds.id='adm-days';const mx=el('input','lk-in');mx.type='number';mx.min=1;mx.value=10;mx.title='How many people can use it';
+  const ds=durSelect(30);ds.id='adm-days';const mx=el('input','lk-in');mx.id='adm-max';mx.type='number';mx.min=1;mx.value=10;mx.title='How many people can use it';
   const nt=el('input','lk-in');nt.placeholder='Note (who it’s for)';
-  const kd=el('select','lk-in');kd.id='adm-kind';[['pro','Pro'],['tpl','Something from the store']].forEach(([v,t])=>kd.append(new Option(t,v)));
+  const kd=el('select','lk-in');kd.id='adm-kind';[['pro','Pro'],['tpl','Something from the store'],['off','A discount (at checkout)']].forEach(([v,t])=>kd.append(new Option(t,v)));
+  const dp=el('input','lk-in');dp.type='number';dp.min=1;dp.max=100;dp.value=20;dp.id='adm-pct';
+  const dfor=el('select','lk-in');dfor.id='adm-for';OFF_FOR.forEach(([v,t])=>dfor.append(new Option(t,v)));
+  const ddur=el('select','lk-in');ddur.id='adm-dur';OFF_DUR.forEach(([v,t])=>ddur.append(new Option(t,v)));
   const ts=tplSelect();ts.id='adm-ctpl';
   const cb=el('button','btn','Create code');cb.type='submit';const fm=el('p','cmsg');
   const l=(t,x)=>{const w=el('label','alab');w.append(el('span','',t),x);return w};
-  const lds=l('Gives Pro for',ds),lts=l('Item',ts);
-  kd.onchange=()=>{lds.classList.toggle('hidden',kd.value!=='pro');lts.classList.toggle('hidden',kd.value!=='tpl')};kd.onchange();
-  f.append(l('Code',ci),gb,l('Gives',kd),lds,lts,l('How many people',mx),l('Note',nt),cb,fm);
+  const lds=l('Gives Pro for',ds),lts=l('Item',ts),lpct=l('Percent off',dp),lfor=l('On',dfor),ldur=l('For',ddur);
+  kd.onchange=()=>{lds.classList.toggle('hidden',kd.value!=='pro');lts.classList.toggle('hidden',kd.value!=='tpl');[lpct,lfor,ldur].forEach(x=>x.classList.toggle('hidden',kd.value!=='off'))};kd.onchange();
+  f.append(l('Code',ci),gb,l('Gives',kd),lds,lts,lpct,lfor,ldur,l('How many people',mx),l('Note',nt),cb,fm);
   f.onsubmit=async e=>{e.preventDefault();const code=normCode(ci.value);if(code.length<4){fm.textContent='The code needs at least 4 letters or digits.';return}
     try{const r=F.doc(db,'codes',code);if((await F.getDoc(r)).exists()){fm.textContent='That code already exists.';return}
       const base={max:Math.max(1,+mx.value||1),used:0,active:true,note:nt.value.trim().slice(0,120),created:F.serverTimestamp()};
-      await F.setDoc(r,kd.value==='tpl'?{kind:'tpl',tpl:ts.value,...base}:{kind:'pro',days:+ds.value,...base});
+      const pct=Math.max(1,Math.min(100,Math.round(+dp.value||0)));
+      await F.setDoc(r,kd.value==='tpl'?{kind:'tpl',tpl:ts.value,...base}:kd.value==='off'?{kind:'off',pct,for:dfor.value,dur:ddur.value,...base}:{kind:'pro',days:+ds.value,...base});
       toast('Code '+code+' created');adminLoad()}catch(e2){fm.textContent='Couldn’t create it: '+(e2.code||e2.message)}};
-  B.append(f,el('p','muted','Discount codes (for example 50% off the first month or the first year) are made in Stripe once payments go live; people type them at checkout.'));
+  B.append(f,el('p','muted','Discount codes are typed at checkout once payments are live. Make the same code in Stripe (Product catalogue → Coupons → Promotion code) with the same percent; here you keep the list and see the uses.'));
   const cl=el('div','alist');cl.id='adm-codes';
   if(!D.codes.length)cl.append(el('p','muted','No codes yet.'));
   D.codes.sort((a,b)=>(tsMs(b.created)||0)-(tsMs(a.created)||0)).forEach(c=>{const ref=F.doc(db,'codes',c.id),r=el('div','arow'+(c.active&&c.used<c.max?'':' off'));
     const usedIn=D.redeem.filter(x=>x.code===c.id&&inR(tsMs(x.at),R)).length;
-    const t=el('div','');t.append(el('b','',c.id),el('small','',' '+(c.kind==='tpl'?'Unlocks: '+tplName(c.tpl):c.kind==='pro'?'Pro '+durTxt(c.days):'Discount')+' · '+c.used+' / '+c.max+' used'+(R.b!==Infinity?' ('+usedIn+' in '+R.label+')':'')+(c.note?' · '+c.note:'')));
+    const t=el('div','');t.append(el('b','',c.id),el('small','',' '+(c.kind==='tpl'?'Unlocks: '+tplName(c.tpl):c.kind==='pro'?'Pro '+durTxt(c.days):offTxt(c))+' · '+c.used+' / '+c.max+' used'+(R.b!==Infinity?' ('+usedIn+' in '+R.label+')':'')+(c.note?' · '+c.note:'')));
     const cp=el('button','ib','Copy');cp.onclick=async()=>{try{await navigator.clipboard.writeText(c.id);toast('Copied '+c.id)}catch(e){toast(c.id)}};
     const tg=el('button','ib',c.active?'Turn off':'Turn on');tg.onclick=async()=>{await F.updateDoc(ref,{active:!c.active});adminLoad()};
     const dl=el('button','ib','Delete');dl.onclick=async()=>{if(dl.dataset.s){await F.deleteDoc(ref);adminLoad()}else{dl.dataset.s=1;dl.textContent='Sure?'}};
     r.append(t,cp,tg,dl);cl.append(r)});
   B.append(cl);
   // pro members
-  sec('Pro members');
+  sec('Pro members','pro');
   const g=el('form','aform');g.id='adm-pf';const ge=el('input','lk-in');ge.type='email';ge.placeholder='their@email.com';const gd=durSelect(365);const gbn=el('button','btn','Give Pro');gbn.type='submit';const gm=el('p','cmsg');
   g.append(l('Email (they must have signed in once)',ge),l('For',gd),gbn,gm);
   const giveTo=async(uid,days)=>{await F.setDoc(F.doc(db,'pro',uid),{by:'admin',since:F.serverTimestamp(),days:+days})};
@@ -3576,7 +3652,7 @@ function adminRender(){
     r.append(t,rm);pl.append(r)});
   B.append(pl);
   // store: who owns what (templates, covers, labels, sticker packs), and give something by email
-  sec('Store');
+  sec('Store','store');
   const OW=D.owned||[],paidT=[...TPL,...COVERS,...LABELS,...STPK].filter(t=>t.p);
   const tg2=el('div','astats');
   card(tg2,OW.length,'People with paid items');card(tg2,OW.reduce((n,o)=>n+(o.t||[]).filter(x=>x!=='all').length,0),'Items unlocked','one by one');
@@ -3593,7 +3669,7 @@ function adminRender(){
     try{await F.setDoc(F.doc(db,'owned',p.id),{t:[...have,tgs.value],last:'admin'});toast(tplName(tgs.value)+' given to '+em);adminLoad()}catch(e2){tgm.textContent='Couldn’t do it: '+(e2.code||e2.message)}};
   B.append(tgf);
   // accounts: search, list, CSV
-  sec('Accounts');
+  sec('Find an account','search');
   const sr=el('div','aform');const si=el('input','lk-in');si.type='search';si.placeholder='Search by email';si.setAttribute('aria-label','Search accounts by email');
   const csv=el('button','ib','Download all (CSV)');csv.type='button';sr.append(l('Find an account',si),csv);B.append(sr);
   const al=el('div','alist');al.id='adm-acc';B.append(al);
