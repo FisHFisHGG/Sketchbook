@@ -62,6 +62,17 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await A.click('#tagrow .tg:text("Exam")');await A.waitForTimeout(300);
   ok(await shown(A)==='Algebra','tapping a tag shows only the notebooks with it');
   await A.click('#tagrow .tg-clr');await A.waitForTimeout(300);
+  // tag colours: pick one before adding, change one later
+  await more(A,'History');await A.click('#pop >> text=Tags');await A.waitForSelector('#tg-in');
+  await A.fill('#tg-in','urgent');await A.click('.tgsw .tgsc[aria-label="Purple"]');
+  ok(await A.evaluate(()=>$('.tgprev').style.getPropertyValue('--tc')==='#8a66d6'&&$('.tgprev').textContent==='urgent'&&$('.tgsw .tgsc[aria-label="Purple"]').getAttribute('aria-checked')==='true'),'a new tag: you pick its colour first and see how it looks before adding it (Purple)');
+  await A.keyboard.press('Enter');await A.waitForTimeout(150);
+  ok(await A.evaluate(()=>[...document.querySelectorAll('.tgpick .tg')].some(t=>t.textContent==='urgent'&&t.getAttribute('aria-pressed')==='true')),'… Enter adds it to the notebook');
+  await A.click('.tgacts .tg-clr');await A.waitForSelector('.tgrow2');
+  await A.click('.tgrow2:has(.tg:text-is("school")) .tgsc[aria-label="Teal"]');
+  await A.click('#lockd .btn:text("Save")');await A.waitForTimeout(400);
+  ok(await A.evaluate(()=>SHELF.tc.urgent==='#8a66d6'&&SHELF.tc.school==='#2e9aa2'&&hasTag(data.find(b=>b.title==='History'),'urgent')),'"Change colours" changes an existing tag (school → Teal)');
+  ok(await A.evaluate(()=>{const c=[...document.querySelectorAll('.cw .tgs .tg')].filter(t=>t.textContent==='school');return c.length===2&&c.every(t=>t.style.getPropertyValue('--tc')==='#2e9aa2')}),'… on every notebook with that tag');
   // your own order: drag a notebook
   await A.evaluate(()=>{LIB.sort='rec';saveLib();$('#sortb').value='rec';renderShelf()});
   const before=await shown(A);const list=before.split(', ');
@@ -133,7 +144,8 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(await B2.evaluate(()=>$('#syncpill').classList.contains('hidden')),'… and then it goes away by itself');
   await B2.evaluate(()=>{LIB.sort='own';renderShelf()});await B.evaluate(()=>{LIB.sort='own';renderShelf()});
   ok(await tabs(B2)==='Notebooks | Writing | School','device 2 has the same categories, in the same order');
-  ok(await B2.evaluate(()=>['Physics','Novel'].every(t=>catName(catOf(data.find(b=>b.title===t)))==='School')&&catName(catOf(data.find(b=>b.title==='Poems')))==='Writing'&&JSON.stringify(data.find(b=>b.title==='Diary').tags)==='["private"]'),'… every notebook in its category, with its tags');
+  ok(await B2.evaluate(()=>['Physics','Novel'].every(t=>catName(catOf(data.find(b=>b.title===t)))==='School')&&catName(catOf(data.find(b=>b.title==='Poems')))==='Writing'&&JSON.stringify(data.find(b=>b.title==='Diary').tags)==='["private"]'&&!!(SHELF.tc||{}).private),'… every notebook in its category, with its tags');
+  ok(await B2.evaluate(()=>JSON.stringify(SHELF.tc))===await B.evaluate(()=>JSON.stringify(SHELF.tc)),'… and the same tag colours');
   ok(await B2.evaluate(()=>data.map(b=>b.title).join())===await B.evaluate(()=>data.map(b=>b.title).join()),'… and in the same order');
   // both devices add a category at the same time: both are kept
   await B.evaluate(()=>{SHELF.cats.push({id:'cart',n:'Art',u:Date.now()});SHELF.u=Date.now();persist();renderShelf()});

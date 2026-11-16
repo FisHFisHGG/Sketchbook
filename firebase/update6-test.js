@@ -48,7 +48,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   ok(f1==='permission-denied','the rules refuse feedback sent in someone else\'s name ('+f1+')');
   const f2=await tryWrite(B,async()=>{const F=ACC.F;try{await F.getDocs(F.collection(ACC.db,'feedback'));return 'listed!'}catch(e){return e.code}});
   ok(f2==='permission-denied','users can\'t read other people\'s feedback ('+f2+')');
-  await A.click('#menub');await A.click('#madm');await A.waitForSelector('#adm-fbl',{timeout:15000});
+  await A.click('#menub');await A.click('#madm');await A.waitForSelector('.acats',{timeout:15000});await A.click('.acats >> text=Feedback');await A.waitForSelector('#adm-fbl',{timeout:15000});
   ok(await A.evaluate(()=>/eraser is too small/.test($('#adm-fbl').textContent)&&/Problem/.test($('#adm-fbl').textContent)&&/1 not done yet/.test($('#adm-body').textContent)),'admin sees the feedback (type, text, "1 not done yet")');
   await A.click('#adm-fbl .arow >> text=Mark done');await A.waitForTimeout(800);
   ok((await listDocs('feedback'))[0].fields.done.booleanValue===true&&await A.evaluate(()=>/0 not done yet/.test($('#adm-body').textContent)),'admin marks it done');
@@ -74,7 +74,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   ok(t1==='permission-denied','the rules stop people giving themselves a template ('+t1+')');
   await B.click('#lockc >> text=Not now');
   // admin makes a template code
-  await A.click('#adm-r');await A.waitForSelector('#adm-cf',{timeout:15000});
+  await A.click('#adm-r');await A.waitForSelector('.acats',{timeout:15000});await A.click('.acats >> text=Codes & discounts');await A.waitForSelector('#adm-cf',{timeout:15000});
   await A.fill('#adm-cf input[placeholder="CODE"]','HABIT-1');await A.selectOption('#adm-kind','tpl');await A.selectOption('#adm-ctpl','habit');await A.fill('#adm-max','1');
   await A.click('#adm-cf >> text=Create code');await A.waitForSelector('#adm-codes >> text=HABIT-1',{timeout:10000});
   const hc=await getDoc('codes/HABIT-1');
@@ -119,7 +119,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   ok(/Comic book is yours/.test(await toastTxt(C)),'it says "Comic book is yours"');
   await C.click('#acc-x').catch(()=>{});
   // admin gives all paid templates by email
-  await A.click('#adm-r');await A.waitForSelector('#adm-tf',{timeout:15000});
+  await A.click('#adm-r');await A.waitForSelector('.acats',{timeout:15000});await A.click('.acats >> text=Store');await A.waitForSelector('#adm-tf',{timeout:15000});
   await A.fill('#adm-tf input[type=email]','carol@example.com');await A.selectOption('#adm-tf select','all');await A.click('#adm-tf button[type=submit]');
   await C.waitForFunction(()=>ACC.owned.has('all'),null,{timeout:10000}).catch(()=>{});
   await C.waitForTimeout(400);
@@ -156,6 +156,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await A.waitForSelector('#adm-tf',{timeout:15000});await A.waitForTimeout(300);
   const card=(p,label)=>p.evaluate(l=>{const c=[...document.querySelectorAll('#adm-body .acard')].find(x=>x.querySelector('span').textContent===l);return c?c.querySelector('b').textContent:null},label);
   ok(await card(A,'People with paid items')==='2'&&await card(A,'Have everything')==='1'&&await card(A,'Items unlocked')==='2','admin → Store: 2 people with paid items, 1 has everything, 2 unlocked one by one');
+  await A.click('.acats >> text=Find an account');
   const [dl]=await Promise.all([A.waitForEvent('download'),A.click('text=Download all (CSV)')]);
   const csv=fs.readFileSync(await dl.path(),'utf8');
   ok(/"store_items"/.test(csv)&&/Habit tracker/.test(csv)&&/Everything in the store/.test(csv),'the CSV has a store_items column');
