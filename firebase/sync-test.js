@@ -40,7 +40,7 @@ async function grantPro(uid){
   const A=await device(b,'A');
   await signIn(A,'ana@example.com','secret123',true);
   // A works on the free plan first
-  await A.evaluate(()=>{const t=mk('Trip',0);t.pages=[null,null,null];t.objs=[[{k:'note',c:'#ffe14d',t:'pack',x:1,y:1,w:9,h:9,f:40,r:0}]];data=[ens(t)];persist();renderShelf()}); // replaces the welcome notebook
+  await A.evaluate(()=>{const t=mk('Trip',0);t.pages=[null,null,null];t.objs=[[{k:'note',c:'#ffe14d',t:'pack',x:1,y:1,w:9,h:9,f:40,r:0}]];const w=data[0];data.push(ens(t));trashBook(w)}); // replaces the welcome notebook (deleted the normal way)
   await A.waitForTimeout(500);
   ok(await A.evaluate(()=>ACC.user.email)==='ana@example.com','A: account created and signed in');
   ok(await A.evaluate(()=>!ACC.pro&&document.querySelector('#plan').textContent==='Free plan'),'A: free plan, no sync');
@@ -75,9 +75,9 @@ async function grantPro(uid){
   await A.waitForTimeout(1500);await settle(A);
   ok(await books(A)===await books(B),'A: got B\'s changes → '+await books(A));
   // A deletes the Recipes notebook
-  await A.evaluate(()=>{data=data.filter(b=>b.title!=='Recipes');persist()});await A.waitForTimeout(500);await settle(A);
+  await A.evaluate(()=>trashBook(data.find(b=>b.title==='Recipes')));await A.waitForTimeout(500);await settle(A); // deleted like a person does (× → Sure?): it goes to Recently deleted
   await B.waitForTimeout(1500);await settle(B);
-  ok(!(await books(B)).includes('Recipes'),'B: notebook deleted on A disappears → '+await books(B));
+  ok(!(await books(B)).includes('Recipes')&&await B.evaluate(()=>TRASH.some(t=>t.title==='Recipes')),'B: notebook deleted on A disappears (into Recently deleted) → '+await books(B));
   // reload B: everything stays, nothing re-uploaded
   await B.reload();await B.waitForTimeout(800);await B.waitForFunction(()=>ACC.pro,null,{timeout:15000});await settle(B);
   ok(await books(B)===await books(A),'B: after reload still in sync');
@@ -110,7 +110,7 @@ async function grantPro(uid){
   await A.waitForFunction(()=>!ACC.user&&ACC.gate,null,{timeout:10000});
   ok(await A.evaluate(()=>data.length)===0,'A: signed out → sign-in screen, notebooks hidden');
   await signIn(A,'ana@example.com','secret123',false);await A.waitForFunction(()=>ACC.pro,null,{timeout:15000});
-  ok(await books(A)===before,'A: signs in again → same notebooks');
+  ok(await books(A)===before,'A: signs in again → same notebooks ('+before+' → '+await books(A)+')');
   
   for(const p of [A,B,C])p.errs.forEach(e=>console.log('  ',e));
   console.log(fails?fails+' FAILED':'ALL PASSED');

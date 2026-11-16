@@ -131,6 +131,9 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .lbl::after{content:"";display:block;width:55%;margin:3cqw auto 0;border-top:.7cqw solid rgba(35,48,74,.32)}
 .pg.cv,.sl.cv{container-type:inline-size}
 .cph{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#trashb{display:block;margin:18px auto 0}#trashb.hidden{display:none}
+.tlist{display:flex;flex-direction:column;gap:8px;text-align:left;margin:4px 0 12px;max-height:50vh;overflow:auto}.trow{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:12px}
+.trow{align-items:flex-start}.trow>div{flex:1;min-width:0}.trow b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trow small{display:block;opacity:.65;font-size:.8em}.tacts{display:flex;gap:8px;margin-top:8px}.tacts .ib{padding:6px 12px}.tsw{flex:none;width:22px;height:30px;border-radius:2px 5px 5px 2px;box-shadow:inset 3px 0 0 rgba(0,0,0,.25)}
 .eg.lb{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.eg.lb button{width:auto;height:auto;padding:6px;border-radius:10px;background:color-mix(in srgb,var(--ink) 6%,transparent)}.eg.lb img{display:block;max-width:130px;max-height:64px}.shmore{margin-top:10px}.cph .hint2{flex-basis:100%;margin:0} /* the label is sized from the cover's width, also while it turns */
 .add .pages,.add .front{background:transparent;box-shadow:none;border:2px dashed var(--line)}
 .plus{position:absolute;inset:0;display:grid;place-items:center;font-size:44px;opacity:.45}
@@ -500,6 +503,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
     <select id="sortb" aria-label="Sort notebooks"><option value="rec">Recently edited</option><option value="name">Name A–Z</option><option value="pages">Most pages</option><option value="new">Newest first</option></select>
     <div class="grp" id="vw"><button class="ib i" data-v="grid" aria-label="Shelf view" title="Shelf view"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg></button><button class="ib i" data-v="list" aria-label="List view" title="List view"><svg class="ic" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></button></div></div>
   <div id="grid"></div>
+  <button class="ib hidden" id="trashb"></button>
   <div id="tpl" class="hidden"></div>
 </section>
 
@@ -736,13 +740,22 @@ function svMsg(k){
    v2:idx            -> list of notebook ids (shelf order)
    v2:b:<id>         -> notebook without its pages (title, color, cover, page count n...)
    v2:p:<id>:<i>     -> one page: drawing, objects, preview, background, style, layers
-   The old format (everything under KEY in one record) is moved over on first start. */
+   v2:trash          -> notebooks you deleted, kept 30 days ("Recently deleted"): [{id, title, at, n, c, r?}]
+   The old format (everything under KEY in one record) is moved over on first start.
+   SAFETY RULES (notebooks must never disappear):
+   - nothing is written while a library is loading or closed (LIBST.ready);
+   - the records of a notebook are erased only after it has been in Recently deleted for 30 days
+     (or for a starter notebook a new device leaves out); pages past the end of a notebook are its deleted pages;
+   - a notebook whose records are on the device but which is missing from the shelf list comes back when the app starts. */
 let dbp=null;
 function idb(){return dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('sketchbook',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{const d=r.result;d.onversionchange=()=>{d.close();dbp=null};d.onclose=()=>{dbp=null};res(d)};r.onerror=()=>{dbp=null;rej(r.error)};r.onblocked=()=>{dbp=null;rej(new Error('blocked'))}}))}
 async function idbGet(k){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>res(t.result);t.onerror=()=>rej(t.error)})}
 async function idbSet(k,v){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
 async function idbDel(k){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').delete(k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
 let P2='v2:'; // this account's records on the device (see openLibrary)
+const LIBST={ready:false,purge:[],recovered:0}; // ready: the library is loaded and may be saved
+let TRASH=[]; // Recently deleted (see trashBook)
+const TRASH_DAYS=30;
 const PK=['pages','objs','pv','bg','ps','lay'];
 let snaps=new Map(),usingLS=false;
 /* cheap fingerprint: small values as JSON, long strings (images) compared by identity */
@@ -750,19 +763,28 @@ function sig(v){const big=[];const j=JSON.stringify(v,(k,x)=>typeof x==='string'
 function same(a,b){if(!a||!b||a.j!==b.j||a.big.length!==b.big.length)return false;for(let i=0;i<a.big.length;i++)if(a.big[i]!==b.big[i])return false;return true}
 function metaOf(b){const m={};for(const k in b)if(!PK.includes(k)&&k[0]!=='_')m[k]=b[k];m.n=b.pages.length;return m}
 function pageOf(b,i){return {pg:b.pages[i]??null,o:b.objs[i]??null,pv:b.pv[i]??null,bg:b.bg[i]??null,ps:b.ps[i]??null,lay:b.lay[i]??null}}
+const recId=k=>{const r=k.slice(P2.length);if(r.startsWith('b:'))return {t:'b',id:r.slice(2)};if(r.startsWith('p:')){const j=r.lastIndexOf(':');return {t:'p',id:r.slice(2,j),i:+r.slice(j+1)}}return null};
 async function writeDiff(){
-  const db=await idb(),puts=[],dels=[],next=new Map();
+  if(!LIBST.ready)return 0; // never write while a library is loading or closed
+  const db=await idb(),puts=[],dels=[],next=new Map(),here=new Set(data.map(b=>String(b.id))),purge=new Set(LIBST.purge.filter(id=>!here.has(id)));
+  TRASH=TRASH.filter(t=>!here.has(String(t.id)));
   const chk=(k,v)=>{const s=sig(v);next.set(k,s);if(!same(s,snaps.get(k)))puts.push([k,v])};
-  chk(P2+'idx',data.map(b=>String(b.id)));
+  chk(P2+'idx',data.map(b=>String(b.id)));chk(P2+'trash',TRASH);
   for(const b of data){chk(P2+'b:'+b.id,metaOf(b));for(let i=0;i<b.pages.length;i++)chk(P2+'p:'+b.id+':'+i,pageOf(b,i))}
-  for(const k of snaps.keys())if(!next.has(k))dels.push(k);
+  for(const [k,v] of snaps){
+    if(next.has(k))continue;const r=recId(k);
+    if(r&&((here.has(r.id)&&r.t==='p')||(!here.has(r.id)&&purge.has(r.id)))){dels.push(k);continue} // a deleted page, or deleted 30+ days ago
+    next.set(k,v); // anything else stays: a notebook that isn't on the shelf right now is never erased
+  }
   if(!puts.length&&!dels.length)return 0;
   await new Promise((res,rej)=>{
     const t=db.transaction('kv','readwrite'),s=t.objectStore('kv');
     puts.forEach(([k,v])=>s.put(v,k));dels.forEach(k=>s.delete(k));
     t.oncomplete=()=>res();t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('aborted'));
   });
-  snaps=next;return puts.length+dels.length;
+  snaps=next;if(dels.length)LIBST.purge=LIBST.purge.filter(id=>!purge.has(id));
+  try{if(LIBCH)LIBCH.postMessage(P2)}catch(e){} // other windows of the app know this library changed
+  return puts.length+dels.length;
 }
 let saving=null,saveAgain=false;
 function flushSave(){
@@ -772,6 +794,7 @@ function flushSave(){
 }
 async function saveNow(){
   clearTimeout(pt);pt=null;
+  if(!LIBST.ready)return;
   try{
     if(usingLS)throw new Error('no idb');
     await flushSave();note('');svMsg('saved');askPersist();syncSoon(3000);
@@ -782,6 +805,7 @@ async function saveNow(){
   }
 }
 function persist(){
+  if(!LIBST.ready)return;
   if(cur&&!$('#ed').classList.contains('hidden'))cur.u=Date.now();
   clearTimeout(pt);svMsg('saving');
   pt=setTimeout(saveNow,250);
@@ -789,31 +813,51 @@ function persist(){
 /* pages being saved right now (the drawing is encoded in the background) */
 const pend=new Set();
 function savesDone(){return Promise.all([...pend])}
+function bookFrom(meta,pageRec){ // a notebook built from its records
+  const b={...meta};PK.forEach(k=>b[k]=[]);
+  for(let i=0;i<(meta.n||1);i++){
+    const r=pageRec(i)||{};
+    b.pages[i]=r.pg??null;if(r.o!=null)b.objs[i]=r.o;if(r.pv!=null)b.pv[i]=r.pv;if(r.bg!=null)b.bg[i]=r.bg;if(r.ps!=null)b.ps[i]=r.ps;if(r.lay!=null)b.lay[i]=r.lay;
+  }
+  delete b.n;return b;
+}
 async function loadV2(){
   const db=await idb();
   const [keys,vals]=await new Promise((res,rej)=>{
     const t=db.transaction('kv'),s=t.objectStore('kv'),r=IDBKeyRange.bound(P2,P2+'￿');
     const a=s.getAllKeys(r),b=s.getAll(r);t.oncomplete=()=>res([a.result,b.result]);t.onerror=()=>rej(t.error);
   });
-  const m=new Map(keys.map((k,i)=>[k,vals[i]])),idx=m.get(P2+'idx');
-  if(!Array.isArray(idx))return null;
-  const used=new Set([P2+'idx']),out=[];
-  for(const id of idx){
+  const m=new Map(keys.map((k,i)=>[k,vals[i]])),idx=m.get(P2+'idx'),tr=m.get(P2+'trash');
+  // Recently deleted: older than 30 days → erased on the next save
+  TRASH=Array.isArray(tr)?tr.filter(t=>t&&t.id!=null).map(t=>({...t,id:String(t.id)})):[];
+  const now=Date.now();LIBST.purge=TRASH.filter(t=>now-(t.at||0)>TRASH_DAYS*864e5).map(t=>t.id);
+  TRASH=TRASH.filter(t=>!LIBST.purge.includes(t.id));
+  // the shelf list, plus any notebook whose records are here but that fell out of the list (it comes back)
+  const list=[...new Set((Array.isArray(idx)?idx:[]).map(String))],gone=new Set([...TRASH.map(t=>t.id),...LIBST.purge]);
+  const found=[];for(const k of m.keys()){const r=recId(k);if(r&&r.t==='b'&&!list.includes(r.id)&&!gone.has(r.id)&&!found.includes(r.id))found.push(r.id)}
+  if(!Array.isArray(idx)&&!found.length)return null;
+  found.sort((x,y)=>((m.get(P2+'b:'+x)||{}).u||0)-((m.get(P2+'b:'+y)||{}).u||0));
+  const used=new Set([P2+'idx',P2+'trash']),out=[];let back=0;
+  for(const id of [...list,...found]){
     const mkey=P2+'b:'+id,meta=m.get(mkey);if(!meta)continue;used.add(mkey);
-    const b={...meta};PK.forEach(k=>b[k]=[]);
-    for(let i=0;i<(meta.n||1);i++){
-      const pk=P2+'p:'+id+':'+i,r=m.get(pk)||{};used.add(pk);
-      b.pages[i]=r.pg??null;if(r.o!=null)b.objs[i]=r.o;if(r.pv!=null)b.pv[i]=r.pv;if(r.bg!=null)b.bg[i]=r.bg;if(r.ps!=null)b.ps[i]=r.ps;if(r.lay!=null)b.lay[i]=r.lay;
-    }
-    delete b.n;out.push(b);
+    out.push(bookFrom(meta,i=>{const pk=P2+'p:'+id+':'+i;used.add(pk);return m.get(pk)}));
+    if(found.includes(id))back++;
   }
-  // what is in the database now; leftovers get removed on the next save
+  LIBST.recovered=back;
+  // what is in the database now (records of deleted notebooks stay until their 30 days are over)
   snaps=new Map();m.forEach((v,k)=>snaps.set(k,used.has(k)?sig(v):{j:'\u0000old',big:[]}));
   return out;
 }
+async function loadBook(id){ // a notebook's records (for Recently deleted → Restore)
+  const db=await idb(),pre=P2+'p:'+id+':';
+  const [meta,pk,pv]=await new Promise((res,rej)=>{const t=db.transaction('kv'),s=t.objectStore('kv'),r=IDBKeyRange.bound(pre,pre+'￿');
+    const a=s.get(P2+'b:'+id),b2=s.getAllKeys(r),c=s.getAll(r);t.oncomplete=()=>res([a.result,b2.result,c.result]);t.onerror=()=>rej(t.error)});
+  if(!meta)return null;const pm=new Map(pk.map((k,i)=>[String(k),pv[i]]));
+  return ens(bookFrom(meta,i=>pm.get(pre+i)));
+}
 const lsKey=()=>P2==='v2:'?KEY:KEY+'@'+P2;
 async function initData(legacy){
-  let d=null,old=false;usingLS=false;
+  let d=null,old=false;usingLS=false;LIBST.ready=false;LIBST.recovered=0;TRASH=[];LIBST.purge=[];
   try{d=await loadV2()}catch(e){usingLS=true}
   if(!d&&usingLS){try{d=JSON.parse(localStorage.getItem(lsKey()))}catch(e){}}
   if(!d&&legacy){ // notebooks saved by an older version of the app (only for the first account on this device)
@@ -822,8 +866,10 @@ async function initData(legacy){
     if(!d){try{d=JSON.parse(localStorage.getItem(KEY))}catch(e){}}
   }
   data=(Array.isArray(d)&&d.length?d:[]).map(ens);
+  LIBST.ready=true;
+  if(LIBST.recovered){persist();setTimeout(()=>toast(LIBST.recovered===1?'A notebook that had gone missing is back on your shelf.':LIBST.recovered+' notebooks that had gone missing are back on your shelf.'),600)}
   if(!data.length){try{data=[await makeWelcome()]}catch(e){console.warn('welcome',e);data=[mk('Sketches',0)]}persist()} // a new library starts with the welcome notebook
-  renderShelf();
+  renderShelf();libStale=false;
   if(old&&!usingLS&&Array.isArray(d)&&d.length){
     // move the old single-record library to the new format, then drop the old copy
     try{await flushSave();await idbDel(KEY);try{localStorage.removeItem(KEY)}catch(e){}}catch(e){}
@@ -857,6 +903,7 @@ function makeBook(b){
 }
 function renderShelf(){
   const g=$('#grid'),q=LIB.q.trim().toLowerCase();g.innerHTML='';g.classList.toggle('list',LIB.view==='list');
+  const tb=$('#trashb');if(tb){tb.textContent='Recently deleted ('+TRASH.length+')';tb.classList.toggle('hidden',!TRASH.length||$('#grid').classList.contains('hidden'))}
   let items=data.map(b=>({b,m:libMatch(b,q)})).filter(x=>x.m.ok);
   const srt={rec:(x,y)=>(y.b.u||created(y.b))-(x.b.u||created(x.b)),name:(x,y)=>(x.b.title||'').localeCompare(y.b.title||'',undefined,{sensitivity:'base'}),pages:(x,y)=>y.b.pages.length-x.b.pages.length,new:(x,y)=>created(y.b)-created(x.b)};
   items.sort(srt[LIB.sort]||srt.rec);
@@ -871,7 +918,7 @@ function renderShelf(){
     const x=document.createElement('button');x.className='del';x.textContent='×';x.setAttribute('aria-label','Delete notebook');
     x.onclick=async()=>{
       if(!x.dataset.s&&b.lock&&!await unlockBook(b))return;
-      if(x.dataset.s){data=data.filter(k=>k!==b);if(!data.length)data=[mk('Sketches',0)];persist();renderShelf()}
+      if(x.dataset.s){trashBook(b);toast('“'+(b.title||'Untitled')+'” moved to Recently deleted. You can restore it for '+TRASH_DAYS+' days.')}
       else{x.dataset.s=1;x.textContent='Sure?';x.classList.add('on');setTimeout(()=>{delete x.dataset.s;x.textContent='×';x.classList.remove('on')},2500)}
     };
     w.append(c,x);g.append(w);
@@ -891,7 +938,44 @@ async function newNotebook(){
   else if(r.pg!=='blank'){b.ps[0]={...DEF,p:r.pg};cur=b;setDims(b);await rebuildPv(0)}
   data.push(b);persist();showBrowse(b);
 }
-function closeBook(){if(cur)UNL.delete(String(cur.id));$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;docTitle();syncSoon(300)}
+function closeBook(){if(cur)UNL.delete(String(cur.id));$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;docTitle();syncSoon(300);if(libStale)setTimeout(reloadLib,300)}
+/* ----- Recently deleted: a deleted notebook is kept 30 days and can be restored ----- */
+function trashBook(b,remote){
+  const id=String(b.id);data=data.filter(k=>k!==b);UNL.delete(id);
+  TRASH=[{id,title:b.title||'Untitled',at:Date.now(),n:b.pages.length,c:b.color,...(remote?{r:1}:{})},...TRASH.filter(t=>t.id!==id)];
+  if(!data.length)data=[mk('Sketches',0)];
+  persist();if(!$('#shelf').classList.contains('hidden'))renderShelf();
+}
+async function restoreTrash(t){
+  let b=null;try{b=await loadBook(t.id)}catch(e){}
+  TRASH=TRASH.filter(x=>x.id!==t.id);
+  if(!b){persist();renderShelf();toast('“'+t.title+'” can’t be restored any more.');return false}
+  b.u=Date.now();data.push(b);persist();renderShelf();syncSoon(800);toast('“'+(b.title||'Untitled')+'” is back on your shelf.');return true;
+}
+function openTrash(){
+  lockDlg((c,close)=>{
+    c.append(el('h2','','Recently deleted'),el('p','lk-sub','Notebooks you deleted are kept here for '+TRASH_DAYS+' days, then removed for good.'));
+    const list=el('div','tlist');c.append(list);
+    const draw=()=>{list.innerHTML='';if(!TRASH.length){list.append(el('p','muted','Nothing here.'));return}
+      TRASH.forEach(t=>{const r=el('div','trow'),i=el('i','tsw');i.style.background=t.c||'#23407a';
+        const left=Math.max(1,TRASH_DAYS-Math.floor((Date.now()-(t.at||0))/864e5));
+        const tx=el('div','');tx.append(el('b','',t.title),el('small','',(t.n||1)+(t.n===1?' page':' pages')+' · '+(t.r?'deleted on another device':'deleted '+fmtDay(t.at))+' · '+left+(left===1?' day':' days')+' left'));
+        const rs=el('button','ib','Restore');rs.onclick=async()=>{rs.disabled=true;await restoreTrash(t);draw();if(!TRASH.length)close(true)};
+        const rm=el('button','ib','Delete now');rm.onclick=()=>{if(!rm.dataset.s){rm.dataset.s=1;rm.textContent='Sure?';return}TRASH=TRASH.filter(x=>x.id!==t.id);LIBST.purge.push(t.id);persist();renderShelf();draw();if(!TRASH.length)close(true)};
+        const ac=el('div','tacts');ac.append(rs,rm);tx.append(ac);r.append(i,tx);list.append(r)})};
+    draw();
+    const acts=el('div','acts2');const no=el('button','ib','Close');no.onclick=()=>close(false);acts.append(no);c.append(acts);
+  });
+}
+/* ----- more than one window of the app: when another window saved, this one reloads the shelf when you come back to it ----- */
+const LIBCH=(()=>{try{return 'BroadcastChannel' in window?new BroadcastChannel('foliet-library'):null}catch(e){return null}})();
+let libStale=false;
+if(LIBCH)LIBCH.onmessage=e=>{if(e.data===P2&&ACC.libUid){libStale=true;if(document.visibilityState==='visible'&&!$('#shelf').classList.contains('hidden')&&$('#ed').classList.contains('hidden')&&$('#bv').classList.contains('hidden'))setTimeout(reloadLib,400)}};
+async function reloadLib(){
+  if(!libStale||!ACC.libUid||!$('#bv').classList.contains('hidden')||!$('#ed').classList.contains('hidden'))return;
+  libStale=false;await saveNow();await initData(P2==='v2:');
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&libStale)reloadLib()});
 /* browser tab: "Foliet Sketchbook", or "<notebook> – Foliet Sketchbook" while a notebook is open */
 function docTitle(){document.title=cur&&$('#shelf').classList.contains('hidden')?(cur.title||'Untitled')+' – Foliet Sketchbook':'Foliet Sketchbook'}
 
@@ -1201,10 +1285,11 @@ dp.onclick=async()=>{
   cs=Math.min(pi>>1,SM());cur.cs=cs;persist();
   endFloat();showBrowse();
 };
+$('#trashb').onclick=openTrash;
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   const t=b.id==='tb2';
   $('#tb1').setAttribute('aria-selected',!t);$('#tb2').setAttribute('aria-selected',t);
-  $('#grid').classList.toggle('hidden',t);$('#lib').classList.toggle('hidden',t);$('#tpl').classList.toggle('hidden',!t);if(t)renderTpl();
+  $('#grid').classList.toggle('hidden',t);$('#lib').classList.toggle('hidden',t);$('#tpl').classList.toggle('hidden',!t);if(t)renderTpl();$('#trashb').classList.toggle('hidden',t||!TRASH.length);
 });
 
 /* Text tool */
@@ -2742,7 +2827,7 @@ function fbLoad(){
 const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 async function openLibrary(uid){
   if(ACC.libUid===uid)return;
-  await closeLibrary();
+  await closeLibrary();LIBST.ready=false;
   let owner=lsGet('sb-owner');if(!owner){lsSet('sb-owner',uid);owner=uid}
   P2=owner===uid?'v2:':'v2u:'+uid+':';
   snaps=new Map();hcache.clear();ACC.libUid=uid;lsSet('sb-last-uid',uid);
@@ -2752,9 +2837,10 @@ async function closeLibrary(){
   if(!ACC.libUid)return;
   try{if(!$('#ed').classList.contains('hidden')){endFloat();await savesDone()}}catch(e){}
   await saveNow();
+  LIBST.ready=false; // from here until the next library is loaded, nothing is written
   closeSheet();
   ['#ed','#bv','#ov'].forEach(q=>{const e=$(q);if(e)e.classList.add('hidden')});$('#shelf').classList.remove('hidden');
-  cur=null;data=[];snaps=new Map();hcache.clear();ACC.libUid=null;renderShelf();docTitle();
+  cur=null;data=[];TRASH=[];snaps=new Map();hcache.clear();ACC.libUid=null;renderShelf();docTitle();
 }
 function showGate(){ACC.gate=true;const a=$('#acct');a.classList.add('gate');a.classList.remove('hidden');renderAcc()}
 function hideGate(){ACC.gate=false;const a=$('#acct');a.classList.remove('gate');a.classList.add('hidden')}
@@ -2835,7 +2921,7 @@ async function pullRec(k){
 function applyRec(k,v){ // v=null deletes
   if(k.startsWith('b:')){
     const id=k.slice(2);let b=data.find(x=>String(x.id)===id);
-    if(v==null){if(b)data.splice(data.indexOf(b),1);return}
+    if(v==null){if(b){data.splice(data.indexOf(b),1);TRASH=[{id,title:b.title||'Untitled',at:Date.now(),n:b.pages.length,c:b.color,r:1},...TRASH.filter(t=>t.id!==id)]}return} // deleted on another device → Recently deleted here
     if(!b){b=ens({id:v.id,pages:[null]});data.push(b)}
     for(const f of Object.keys(b))if(!PK.includes(f)&&f[0]!=='_'&&!(f in v))delete b[f];
     for(const f in v)if(f!=='n')b[f]=v[f];
@@ -2853,19 +2939,26 @@ function applyOrder(ids){
   data.sort((x,y)=>(pos.has(String(x.id))?pos.get(String(x.id)):1e9)-(pos.has(String(y.id))?pos.get(String(y.id)):1e9));
 }
 
-/* ----- one sync round ----- */
+/* ----- one sync round -----
+   Safety: the cloud copy of a notebook is removed only when you deleted it on a device (Recently deleted);
+   a notebook deleted on another device goes to Recently deleted here, so it can still be restored. */
 async function syncOnce(){
   const man=ACC.man,st=ACC.state;if(!man||!st)return;
   await savesDone();await flushSave();
   const base=st.h,open=openBookId();
   // a brand-new device: don't upload the empty starter notebook if the cloud already has notebooks
-  if(!Object.keys(base).length&&Object.keys(man).length>1){const keep=data.filter(b=>!isStarter(b)||String(b.id)===open);if(keep.length!==data.length){data=keep}}
+  if(!Object.keys(base).length&&Object.keys(man).length>1){const keep=data.filter(b=>!isStarter(b)||String(b.id)===open);if(keep.length!==data.length){data.forEach(b=>{if(!keep.includes(b))LIBST.purge.push(String(b.id))});data=keep}}
+  const here=new Set(data.map(b=>String(b.id))),gone=new Set(TRASH.map(t=>t.id));
   const L=localRecs(),keys=new Set([...L.keys(),...Object.keys(man).map(c2k),...Object.keys(base)]);
   const push=[],pull=[];let idx=null,changedHere=false;
   for(const k of keys){
     const lv=L.get(k),lh=lv===undefined?null:recHash(k,lv),r=man[k2c(k)],rh=r?r.h:null,bh=base[k]??null;
     if(lh===rh){if(lh===null)delete base[k];else base[k]=lh;continue}
     if(k==='idx'){idx={lh,rh,bh};continue}
+    // a notebook that is missing on this device but that you didn't delete here: bring it back from the cloud
+    // (only a notebook you deleted – it's in Recently deleted – is removed from the cloud)
+    const rid=k.startsWith('b:')?k.slice(2):k.startsWith('p:')?k.slice(2,k.lastIndexOf(':')):null;
+    if(lv===undefined&&rh!==null&&rid&&!here.has(rid)&&!gone.has(rid)){pull.push(k);continue}
     const lch=lh!==bh,rch=rh!==bh;
     if(rch&&!lch){ // changed in the cloud only
       const id=k.split(':')[1];if(id===open)continue; // the open notebook updates when you close it
@@ -3209,7 +3302,7 @@ function deleteAccount(){
         for(const c2 of ['profiles','survey','pro','owned'])b2.delete(F.doc(dbi,c2,uid));
         await b2.commit();
         if(cb.checked)await wipeLocal(uid);
-        data=[];snaps=new Map();ACC.libUid=null;lsSet('sb-last-uid','');
+        LIBST.ready=false;data=[];TRASH=[];snaps=new Map();ACC.libUid=null;lsSet('sb-last-uid','');
         await F.deleteUser(u);
         close(true);toast('Your account was deleted.');
       }catch(e){console.warn(e);go.disabled=false;err.textContent='Something went wrong ('+(e.code||e.message)+'). Part of your data may already be deleted – please try again to finish.'}
