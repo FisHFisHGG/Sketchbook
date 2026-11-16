@@ -243,6 +243,23 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .pdfp .pro{position:absolute;right:6%;top:12%;background:var(--accent);color:var(--onacc);font-weight:700;font-size:calc(var(--pw)*.08);padding:2% 6%;border-radius:999px}
 .ovl{position:absolute;inset:-6% -8%;display:grid;grid-template-columns:repeat(4,1fr);gap:7%;align-content:center;opacity:0;transform:scale(.94);transition:opacity .5s,transform .5s}
 .g7 .ovl{opacity:1;transform:none}
+.g8 .ovl{opacity:0;transform:scale(.94)}.g8 .dbook{opacity:0}
+/* step 8: a locked notebook and its PIN pad */
+.lkd{position:absolute;inset:-8% -14%;display:flex;align-items:center;justify-content:center;gap:9%;opacity:0;transform:scale(.94);transition:opacity .5s,transform .5s}
+.g8 .lkd{opacity:1;transform:none}
+.lkbk{width:calc(var(--pw)*.92);aspect-ratio:3/4;background:var(--cover);border-radius:3px 9px 9px 3px;position:relative;display:grid;place-items:center;
+  box-shadow:inset 6px 0 0 rgba(0,0,0,.22),1px 1px 0 #1d3566,2px 2px 0 #1b3262,3px 3px 0 #192f5e,4px 4px 0 #172c5a,0 22px 30px -12px var(--sh)}
+.lkbk span{position:absolute;top:22%;background:var(--paper);color:#23304a;font:700 calc(var(--pw)*.13) Caveat,cursive;padding:.15em .6em;border-radius:3px}
+.lkbk i{position:absolute;bottom:18%;width:34%;aspect-ratio:1;border-radius:50%;background:#e0a526;display:grid;place-items:center;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+.lkbk svg{width:58%;fill:none;stroke:#1a1405;stroke-width:2.2;stroke-linecap:round}
+.g8 .lkbk i{animation:pop .5s .2s both}
+.pinp{width:calc(var(--pw)*.95);background:var(--paper);border-radius:14px;padding:calc(var(--pw)*.09) calc(var(--pw)*.08);display:grid;justify-items:center;gap:calc(var(--pw)*.06);box-shadow:0 18px 30px -12px var(--sh);color:#1d2b4a}
+.pinp b{font:700 calc(var(--pw)*.1) "Bricolage Grotesque",system-ui,sans-serif}
+.pdots{display:flex;gap:calc(var(--pw)*.06)}.pdots u{width:calc(var(--pw)*.085);aspect-ratio:1;border-radius:50%;border:2px solid #1d2b4a}
+.g8 .pdots u{animation:pinf 3.2s infinite}.g8 .pdots u:nth-child(2){animation-delay:.25s}.g8 .pdots u:nth-child(3){animation-delay:.5s}.g8 .pdots u:nth-child(4){animation-delay:.75s}
+@keyframes pinf{0%,8%{background:transparent}14%,80%{background:#1d2b4a}90%,100%{background:transparent}}
+.pkeys{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--pw)*.035)}.pkeys s{text-decoration:none;width:calc(var(--pw)*.17);aspect-ratio:1;border-radius:50%;background:rgba(29,43,74,.08);display:grid;place-items:center;font:600 calc(var(--pw)*.08) "Bricolage Grotesque",system-ui,sans-serif}
+.fpr{width:calc(var(--pw)*.2);fill:none;stroke:#2e7d5b;stroke-width:1.6;stroke-linecap:round}
 .ovl span{aspect-ratio:3/4;background:var(--paper);border-radius:3px;box-shadow:0 5px 12px rgba(0,0,0,.3);background-image:linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.3) 0);background-size:100% 12%}
 .ovl span:nth-child(5){outline:3px solid var(--accent);outline-offset:2px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:calc(var(--pw)*2.4);min-height:34px}
@@ -384,6 +401,9 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
               </div>
               <div class="ps"><b>Page style</b><div class="pm"><span><i class="a"></i>Blank</span><span><i class="b"></i>Lined</span><span><i class="c"></i>Grid</span><span><i class="d"></i>Dots</span></div><div class="pc"><u></u><u></u><u></u><u></u><u></u><em>Paper color</em></div></div>
               <div class="ovl"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="lkd"><div class="lkbk"><span>Diary</span><i><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></i></div>
+                <div class="pinp"><b>Enter PIN</b><div class="pdots"><u></u><u></u><u></u><u></u></div><div class="pkeys"><s>1</s><s>2</s><s>3</s><s>4</s><s>5</s><s>6</s><s>7</s><s>8</s><s>9</s></div>
+                  <svg class="fpr" viewBox="0 0 24 24"><path d="M12 4a7 7 0 017 7v2M5 13v-2a7 7 0 013.5-6M8.5 19.5A9 9 0 009 12a3 3 0 016 0c0 2.5-.3 4.9-1 7M12 12c0 3-.5 5.8-1.6 8.3M16.2 20.5c.5-1.6.8-3.4.8-5.5"/></svg></div></div>
             </div>
             <div class="chips" id="chips"></div>
           </div>
@@ -415,7 +435,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
           <div class="plan">
             <h3>Free</h3>
             <div class="price">€0</div>
-            <ul><li>2 notebooks</li><li>Up to 20 pages each</li><li>Every drawing tool</li><li>Stickers, notes and text</li><li>Free templates, covers, labels and stickers</li><li>Lock notebooks with a PIN, password or fingerprint (Android)</li></ul>
+            <ul><li>2 notebooks</li><li>Up to 20 pages each</li><li>Every drawing tool</li><li>Stickers, notes and text</li><li>Free templates, covers, labels and stickers</li><li>No ads, ever</li><li>Lock notebooks with a PIN, password or fingerprint (Android)</li></ul>
             <a class="btn sec" href="app/">Start free</a>
           </div>
           <div class="plan">
@@ -435,7 +455,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
     <div class="wrap faq">
       <h2>Questions</h2>
       <details><summary>What is Foliet Sketchbook?</summary><p>A digital sketchbook and notebook that opens in your browser. Draw, write, plan and stick things down on pages that look and turn like paper. Create a free account and start on your phone, tablet or laptop.</p></details>
-      <details><summary>Is it really free?</summary><p>Yes. The free plan gives you 2 notebooks with up to 20 pages each, every drawing tool, stickers, notes and text, and locked notebooks. Pro adds unlimited notebooks and pages, PDF import and export.</p></details>
+      <details><summary>Is it really free?</summary><p>Yes. The free plan gives you 2 notebooks with up to 20 pages each, every drawing tool, stickers, notes and text, and locked notebooks. Pro adds unlimited notebooks and pages, PDF import and export. There are no ads on any plan.</p></details>
       <details><summary>Where are my notebooks saved?</summary><p>Always on the device you use, so they open even without internet. Each browser keeps its own copy, so use Foliet from the same browser and the same web address. With Pro they’re also saved to the cloud, so the same notebooks open on your phone and your laptop, and they come back if a device loses them. You can also download a backup from Settings at any time.</p></details>
       <details><summary>What if I delete a notebook by mistake?</summary><p>It goes to Recently deleted, at the bottom of your shelf: for 30 days with Pro, or 2 days on the free plan. Tap Restore and it’s back with all its pages.</p></details>
       <details><summary>Can I keep a notebook private?</summary><p>Yes, on every plan. Lock a notebook with a 4-digit PIN or a password, and on Android you can also unlock it with your fingerprint. Anyone using the app on your device needs the PIN to open it.</p></details>
@@ -477,7 +497,7 @@ const CHIPS=[['Thick cover','Pick a color','Draw on it'],['Cover opens','Thick p
 const demo=$('#demo'),sts=[...document.querySelectorAll('.st')];
 function setStep(i){
   demo.dataset.s=i;
-  for(let k=1;k<=7;k++)demo.classList.toggle('g'+k,i>=k);
+  for(let k=1;k<=8;k++)demo.classList.toggle('g'+k,i>=k);
   sts.forEach((el,k)=>el.classList.toggle('on',k===i));
   $('#chips').innerHTML=CHIPS[i].map((t,k)=>'<span style="animation-delay:'+k*70+'ms">'+t+'</span>').join('');
 }

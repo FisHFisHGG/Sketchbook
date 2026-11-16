@@ -105,15 +105,33 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await mk2.setContent('<style>@page{size:600px 800px;margin:0}body{margin:0}div{width:600px;height:800px;page-break-after:always;font:40px serif}</style><div style="background:#d33">1</div><div style="background:#3a3">2</div><div style="background:#33d">3</div><div style="background:#dd3">4</div><div style="background:#3dd">5</div>');
   const pdfPath=path.join(require('os').tmpdir(),'u7-test.pdf');fs.writeFileSync(pdfPath,await mk2.pdf({width:'600px',height:'800px',printBackground:true}));await mk2.close();
   await A.evaluate(()=>{const orig=renderPdfPage;window.renderPdfPage=async(doc,i,w,h)=>{if(i===3)throw new Error('a page this device can\'t read');return orig(doc,i,w,h)}});
-  await A.setInputFiles('#pdff',pdfPath);await A.waitForSelector('#dlg:not(.hidden)',{timeout:15000});await A.click('#dyes');
+  await A.setInputFiles('#pdff',pdfPath);await A.waitForSelector('#pdfd',{timeout:15000});await A.click('#pi-go');
   await A.waitForFunction(()=>/Imported/.test($('#sv').textContent),null,{timeout:30000});
   const imp=await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return {t:$('#sv').textContent,n:b.pages.length,bg:Array.from({length:b.pages.length},(_,i)=>!!b.bg[i]),cbg:!!b.cbg,imp:!!b._imp,shelf:/u7-test/.test($('#grid').textContent)||!$('#bv').classList.contains('hidden')}});
   ok(imp.n===4&&imp.cbg&&imp.bg.join()==='true,false,true,true'&&!imp.imp,'PDF with an unreadable page: cover + 4 pages, only that page left blank ('+JSON.stringify(imp.bg)+')');
   ok(/Imported 3 pages and the cover\. 1 page couldn’t be read and was left blank\./.test(imp.t),'… and it says so ("'+imp.t+'")');
-  ok(await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return b.cc===1&&/^#[0-9a-f]{6}$/.test(b.color)&&!BC.includes(b.color)}),'the cover color comes from the PDF cover, not a random notebook color');
+  ok(await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return b.cc===2&&b.color===PAPER&&boardCol(b,.2)==='#e7e5dd'}),'a PDF cover gets the paper color: its sides look like the pages, not a random notebook color');
+  // choose pages: only pages 2 and 4 of the same PDF, into a notebook that already exists (Trip)
+  await A.evaluate(()=>{delete window.renderPdfPage;showBrowse(data.find(b=>b.title==='Trip'))});await A.waitForTimeout(600);
+  const tn0=await A.evaluate(()=>cur.pages.length);
+  await A.click('#badd');await A.waitForSelector('#npd:not(.hidden)');
+  ok(await A.evaluate(()=>!$('#nppdf .soon:not(.hidden)')&&/Add pages from a PDF/.test($('#nppdf').textContent)),'New pages has "Add pages from a PDF" (Pro, no badge)');
+  const [fc]=await Promise.all([A.waitForEvent('filechooser'),A.click('#nppdf')]);await fc.setFiles(pdfPath);
+  await A.waitForSelector('#pdfd');
+  ok(await A.evaluate(()=>$('#pi-to').value===String(cur.id)&&$('.pd-o').classList.contains('hidden')),'the import window already points at this notebook');
+  await A.click('#pi-pick');await A.waitForSelector('#pi-grid .pd-pg');
+  ok(await A.evaluate(()=>document.querySelectorAll('#pi-grid .pd-pg').length===5&&$('#pi-go').disabled),'"Choose pages" shows all 5 pages to tick');
+  await A.waitForFunction(()=>document.querySelector('#pi-grid .pd-pg i').style.backgroundImage,null,{timeout:10000});
+  await A.click('#pi-grid .pd-pg[data-i="2"]');await A.click('#pi-grid .pd-pg[data-i="4"]');
+  ok(await A.evaluate(()=>/2 of 5 selected/.test($('.pd-cnt').textContent)&&$('#pi-go').textContent==='Import 2 pages'),'2 of 5 selected → "Import 2 pages"');
+  await A.click('#pi-go');await A.waitForFunction(()=>/into Trip/.test($('#sv').textContent),null,{timeout:30000});
+  const tr=await A.evaluate(n0=>{const b=data.find(x=>x.title==='Trip');const px=u=>new Promise(r=>{const m=new Image();m.onload=()=>{const c=document.createElement('canvas');c.width=c.height=1;c.getContext('2d').drawImage(m,m.width/2,m.height/2,1,1,0,0,1,1);r([...c.getContext('2d').getImageData(0,0,1,1).data].slice(0,3))};m.src=u});
+    return Promise.all([px(b.bg[n0]),px(b.bg[n0+1])]).then(c=>({n:b.pages.length,c,toast:$('#sv').textContent}))},tn0);
+  ok(tr.n===tn0+2&&tr.c[0][1]>130&&tr.c[0][0]<110&&tr.c[1][0]>180&&tr.c[1][1]>180&&tr.c[1][2]<110,'only pages 2 (green) and 4 (yellow) were added at the end of Trip ('+JSON.stringify(tr)+')');
+  await A.click('#bclose');await A.waitForTimeout(300);
   await A.evaluate(async()=>{const b=data.find(x=>x.title==='u7-test');b.color=BC[2];delete b.cc;persist();await saveNow()}); // as an import from before this update
   await reload(A);
-  ok(await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return b.cc===1&&!BC.includes(b.color)}),'a PDF notebook imported before gets its cover color fixed when the app starts');
+  ok(await A.evaluate(()=>{const b=data.find(x=>x.title==='u7-test');return b.cc===2&&b.color===PAPER}),'a PDF notebook imported before gets its cover color fixed when the app starts');
 
   for(const p of [A,B])p.errs.forEach(e=>console.log('  ERR',e));
   console.log(fails?fails+' FAILED':'ALL PASSED');await b.close();process.exit(fails?1:0);
