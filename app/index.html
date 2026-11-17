@@ -410,7 +410,7 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 .lyrow .ib{min-width:34px;padding:4px 6px}
 @media (min-width:700px){#tsheet,#lsheet{left:50%;right:auto;width:540px;transform:translateX(-50%)}}
 #shd,#hd{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
-#shd .card,#hd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#sh-livep{display:grid;gap:8px;margin:10px 0 4px}#sh-livep .crow{display:flex;gap:8px}#sh-livep .lk-in{margin:0;text-align:left;letter-spacing:0;font-size:.85em;flex:1;min-width:0}.sh-chk{text-align:left}.sh-note{font-size:.85em;opacity:.75;margin:0}.sh-acts{display:flex;gap:8px;flex-wrap:wrap}.sh-acts a{text-decoration:none}#shd .card,#hd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #hd .card.wide{width:min(640px,100%);max-height:88vh;overflow:auto}
 #shd h2,#hd h2{margin:0 0 4px;font-size:1.3em}#shd p{margin:0 0 14px;opacity:.7}
 .xo.later{opacity:.55;pointer-events:none;border-style:dashed}
@@ -490,7 +490,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .tchips{display:flex;flex-wrap:wrap;gap:8px}.tchips button{border:1px solid var(--line);background:var(--bar);color:inherit;font:inherit;font-size:.9em;padding:7px 14px;border-radius:999px;min-height:38px}
 .tchips button[aria-pressed="true"]{background:var(--ink);color:var(--bar);border-color:var(--ink)}
 .tcardx .pv{position:relative}.tprice{position:absolute;top:8px;right:8px;font-size:.78em!important;font-weight:700;opacity:1!important;padding:3px 9px;border-radius:999px;background:#23407a;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-.tprice.free{background:#2e7d5b}.tprice.own{background:#fff;color:#2e7d5b}
+.sbanner{grid-column:1/-1;position:relative;overflow:hidden;border-radius:20px;margin:0 0 18px;color:#fff;box-shadow:0 10px 30px var(--sh)}.sb-track{display:flex;transition:transform .5s cubic-bezier(.2,.8,.2,1)}.sb-slide{flex:0 0 100%;min-height:150px;display:flex;align-items:center;gap:18px;padding:24px 26px;box-sizing:border-box}.sb-emoji{font-size:3.4em;line-height:1;flex:none}.sb-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.sb-text b{font-size:1.45em;line-height:1.15}.sb-text span{opacity:.92}.sb-ends{display:inline-block;align-self:flex-start;margin-top:4px;padding:2px 10px;border-radius:999px;background:rgba(0,0,0,.25);font-weight:700;font-size:.78em}.sb-go{flex:none;border:0;border-radius:999px;background:#fff;color:#1c2428;font:inherit;font-weight:700;padding:10px 18px;cursor:pointer}.sb-dots{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;gap:6px}.sb-dots button{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer}.sb-dots button[aria-current="true"]{background:#fff;width:20px;border-radius:4px}@media (max-width:560px){.sb-slide{flex-wrap:wrap;padding:20px 20px 28px;min-height:170px}.sb-emoji{font-size:2.6em}.sb-text b{font-size:1.2em}.sb-go{width:100%}}@media (prefers-reduced-motion:reduce){.sb-track{transition:none}}.tbadge{position:absolute;left:8px;bottom:8px;font-size:.72em;font-weight:700;padding:3px 9px;border-radius:999px;color:#fff}.tbadge.lim{background:#c2473a}.tbadge.new{background:#8a66d6}.aavail{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;width:100%}.abnr-pv{width:100%}.abnr-pv .sbanner{margin:8px 0 0}.aitm-pv{display:flex;flex-wrap:wrap;gap:8px;width:100%}.aitm-pv img{height:72px;border-radius:8px;background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/14px 14px}#adm-bnr,#adm-item{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end}#adm-bnr>b,#adm-item>b,#adm-bnr .cmsg,#adm-item .cmsg,#adm-item>small{width:100%}.tprice.free{background:#2e7d5b}.tprice.own{background:#fff;color:#2e7d5b}
 .tcardx.lock .pv::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,transparent 55%,rgba(255,255,255,.55))}
 .tbuy-pv{width:150px;aspect-ratio:3/4;margin:0 auto 8px;border-radius:4px 8px 8px 4px;background:#fbfbf6 center/cover;box-shadow:inset 6px 0 0 rgba(0,0,0,.2),0 10px 22px rgba(0,0,0,.25);border:1px solid var(--line)}.tbuy-pv.l{width:200px;aspect-ratio:4/3}
 #lockd .tbuy{width:100%;min-height:46px}#lockd .codebox .sep{text-align:center;opacity:.75;margin:14px 0 8px;font-size:.92em}
@@ -692,7 +692,10 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 <div id="shd" class="hidden" role="dialog" aria-modal="true" aria-labelledby="sht"><div class="card">
   <h2 id="sht">Share</h2><p id="shs">Send a read-only copy of this notebook.</p>
   <button class="xo" id="sh-file"><svg class="ic" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 14h6M9 17h4"/></svg><div><b>View-only file</b><span>One .html file anyone can open in a browser. No account, no editing, works offline.</span></div></button>
-  <div class="xo later"><svg class="ic" viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></svg><div><b>Live link</b><span>Always up to date. Arrives with accounts and cloud sync.</span></div></div>
+  <button class="xo" id="sh-live"><svg class="ic" viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></svg><div><b>Live link <span class="soon" id="sh-pro">Pro</span></b><span>Anyone with the link can look, no account needed. It updates as you draw.</span></div></button>
+  <div id="sh-livep" class="hidden"><label class="lk-lbl" for="sh-url">Live link</label><div class="crow"><input class="lk-in" id="sh-url" readonly><button class="ib" id="sh-copy" type="button">Copy</button></div>
+    <label class="chk adm-chk sh-chk"><input type="checkbox" id="sh-edit"><span>People with the link can edit too (they sign in to Foliet)</span></label>
+    <p class="sh-note" id="sh-note"></p><div class="sh-acts"><a class="ib" id="sh-open" target="_blank" rel="noopener">Open</a><button class="ib" id="sh-stop" type="button">Stop sharing</button></div></div>
   <div class="acts2"><button class="ib" id="shno">Close</button></div>
 </div></div>
 <div id="hd" class="hidden" role="dialog" aria-modal="true" aria-labelledby="hdt"><div class="card wide">
@@ -831,6 +834,7 @@ async function saveNow(){
 function persist(){
   if(!LIBST.ready)return;
   if(cur&&!$('#ed').classList.contains('hidden'))cur.u=Date.now();
+  if(cur&&shareOf(cur))shareSoon(cur); // a live link: the shared copy follows
   clearTimeout(pt);svMsg('saving');
   pt=setTimeout(saveNow,250);
 }
@@ -894,7 +898,7 @@ async function initData(legacy){
   LIBST.ready=true;
   if(LIBST.recovered){persist();setTimeout(()=>toast(LIBST.recovered===1?'A notebook that had gone missing is back on your shelf.':LIBST.recovered+' notebooks that had gone missing are back on your shelf.'),600)}
   if(!data.length){try{data=[await makeWelcome()]}catch(e){console.warn('welcome',e);data=[mk('Sketches',0)]}persist()} // a new library starts with the welcome notebook
-  renderShelf();libStale=false;fixCoverColors();setTimeout(fbNudge,2500);
+  renderShelf();libStale=false;fixCoverColors();setTimeout(fbNudge,2500);if(ACC.user&&ACC.pro)shareListenAll();
   if(old&&!usingLS&&Array.isArray(d)&&d.length){
     // move the old single-record library to the new format, then drop the old copy
     try{await flushSave();await idbDel(KEY);try{localStorage.removeItem(KEY)}catch(e){}}catch(e){}
@@ -967,7 +971,7 @@ async function newNotebook(){
   else if(r.pg!=='blank'){b.ps[0]={...DEF,p:r.pg};cur=b;setDims(b);await rebuildPv(0)}
   catNew(b);data.push(b);persist();showBrowse(b);
 }
-function closeBook(){if(cur)UNL.delete(String(cur.id));$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;docTitle();syncSoon(300);if(libStale)setTimeout(reloadLib,300)}
+function closeBook(){if(cur)UNL.delete(String(cur.id));if(cur&&cur._guest){const c=cur._share;setTimeout(()=>shareStop(c),3000);GUEST=null}$('#bv').classList.add('hidden');renderShelf();$('#shelf').classList.remove('hidden');cur=null;docTitle();syncSoon(300);if(libStale)setTimeout(reloadLib,300)}
 /* ----- Recently deleted: a deleted notebook is kept 30 days and can be restored ----- */
 function trashBook(b,remote){
   const id=String(b.id);data=data.filter(k=>k!==b);UNL.delete(id);
@@ -1030,7 +1034,7 @@ function showBrowse(b){
   let tg=-1;if(b){cur=b;setDims(b);zs=0;cs=-1;tg=typeof b.cs==='number'?Math.max(-1,Math.min(b.cs,Math.max(0,(b.pages.length-1)>>1))):-1}
   endFloat();$('#btitle').value=cur.title;
   $('#shelf').classList.add('hidden');$('#ed').classList.add('hidden');$('#bv').classList.remove('hidden');
-  docTitle();syncLockBtn();renderBrowse();
+  docTitle();syncLockBtn();const gst=!!cur._guest;$('#block').classList.toggle('hidden',gst);$('#btitle').readOnly=gst;$('#bv').classList.toggle('guest',gst);renderBrowse();
   if(b){const sp=$('#sp');sp.classList.remove('in');sp.offsetWidth;sp.classList.add('in');if(tg>=0)resume(b,tg);if(tIdx===0)setTimeout(()=>{if(!$('#bv').classList.contains('hidden')&&!flipping)tourShow(0)},tg>0?2600:1100)}
 }
 function fitSp(){const s=$('#sp');s.style.perspective=Math.round(s.offsetWidth*1.7)+'px'}
@@ -1256,7 +1260,7 @@ $('#sp').addEventListener('pointercancel',()=>release(true));
 /* Editor (pi=-1 means the cover) */
 const cv=$('#cv'),ctx=cv.getContext('2d',{willReadFrequently:true}); // read for undo after every stroke
 function showEditor(i){
-  if(flipping)return;pi=i;
+  if(flipping)return;if(cur&&cur._guest&&i<0){toast('Only the owner can change the cover.');return}pi=i;
   $('#bv').classList.add('hidden');$('#ed').classList.remove('hidden');
   setView(false);$('#pstyle').classList.toggle('hidden',pi<0);$('#psheet').classList.add('hidden');$('#cc').classList.toggle('hidden',pi>=0);$('#delp').classList.toggle('hidden',pi<0);resetDel();$('#etl').textContent=pi<0?'Cover':'Page '+(pi+1);
   loadPage();
@@ -1307,7 +1311,7 @@ document.addEventListener('keydown',e=>{
 const dp=$('#delp');
 function resetDel(){dp.classList.remove('conf');delete dp.dataset.s}
 dp.onclick=async()=>{
-  if(pi<0)return;
+  if(pi<0)return;if(cur&&cur._guest){toast('Only the owner can delete pages.');return}
   if(!dp.dataset.s){dp.dataset.s=1;dp.classList.add('conf');setTimeout(resetDel,2500);return}
   resetDel();
   const e0=rtEditing();if(e0)rtFinish(e0);
@@ -1322,7 +1326,7 @@ function showStore(on){
   on=!!on;$('#storeb').setAttribute('aria-pressed',on);
   $('#cats').classList.toggle('hidden',on);$('#storehd').classList.toggle('hidden',!on);
   $('#grid').classList.toggle('hidden',on);$('#lib').classList.toggle('hidden',on);$('#tpl').classList.toggle('hidden',!on);
-  if(on){renderTpl();$('#tagrow').classList.add('hidden');$('#trashb').classList.add('hidden')}else renderShelf();
+  if(on){renderTpl();loadShop(true);$('#tagrow').classList.add('hidden');$('#trashb').classList.add('hidden')}else renderShelf();
 }
 $('#storeb').onclick=()=>{showStore(true);$('#shelf').scrollTop=0};
 $('#storex').onclick=()=>showStore(false);
@@ -2581,6 +2585,7 @@ function initOv(){
   $('#ov-l').onclick=()=>mv(-1);$('#ov-r').onclick=()=>mv(1);
   $('#ov-dup').onclick=()=>{if(cur.pages.length>=LIM().pg){upsell('The free plan includes '+LIM().pg+' pages per notebook. Upgrade to Pro for unlimited pages.');return}const i=ovSel;cur._sv=(cur._sv||0)+1;PA().forEach((a,k)=>a.splice(i+1,0,k===1?JSON.parse(JSON.stringify(a[i]||[])):k===5?(a[i]?JSON.parse(JSON.stringify(a[i])):undefined):a[i]));ovSel=i+1;persist();renderOv()};
   $('#ov-del').onclick=()=>{
+    if(cur&&cur._guest){toast('Only the owner can delete pages.');return}
     if(!ovDel){ovDel=true;$('#ov-del').textContent='Sure?';setTimeout(()=>{ovDel=false;$('#ov-del').textContent='Delete'},2500);return}
     ovDel=false;$('#ov-del').textContent='Delete';
     const i=ovSel;cur._sv=(cur._sv||0)+1;PA().forEach(a=>a.splice(i,1));ovSel=Math.min(i,cur.pages.length-1);persist();renderOv();
@@ -2979,7 +2984,8 @@ async function accUser(u){
   if(ACC.unOff){ACC.unOff();ACC.unOff=null}OFFER=null;
   syncStop();
   const had=ACC.user;ACC.user=u||null;ACC.owned=new Set();ACC.claimPro=false;ACC.docPro=false;ACC.proDoc=null;ACC.admin=false;ACC.err='';ACC.offline=false;clearTimeout(ACC.proT);
-  if(u){await openLibrary(u.uid);hideGate()}
+  if(u){await openLibrary(u.uid);hideGate();
+    const sc=new URLSearchParams(location.search).get('share');if(sc){try{history.replaceState(null,'',location.pathname+location.search.replace(/[?&]share=[^&]*/,'').replace(/^&/,'?'))}catch(e){}setTimeout(()=>openShared(sc),600)}}
   else{lsSet('sb-last-uid','');if(had)ACC.mode='in';await closeLibrary();showGate()} // after signing out, show "Sign in" again
   if(u){
     try{const t=await u.getIdTokenResult();ACC.claimPro=t.claims.stripeRole==='pro'}catch(e){}
@@ -2995,6 +3001,7 @@ async function accUser(u){
     let first=true; // a card offer waiting for this account (codes that ask for a card)
     ACC.unOff=F.onSnapshot(F.doc(ACC.db,'offers',u.uid),s=>{OFFER=s.exists()?s.data({serverTimestamps:'estimate'}):null;offerDone();if(first){first=false;showOffer()}},()=>{});
     touchProfile(u);checkAdmin(u);checkSurvey(u);loadPublic().then(()=>{if(ACC.user===u)checkIntro()});
+    loadShop(Date.now()-(+lsGet('sb-shopt')||0)>6*36e5); // things added to the store from the admin panel
   }
   setPro();
 }
@@ -3003,6 +3010,7 @@ function setPro(){
   plan=ACC.pro?'pro':demoPlan;setPlanBtn();offerDone();
   try{if(LIBST.ready)renderCats()}catch(e){} // the "+" for categories shows or hides its Pro badge
   if(ACC.pro&&!was)syncStart();
+  if(LIBST.ready)shareListenAll();
   if(!ACC.pro&&was)syncStop();
   renderAcc();
 }
@@ -3617,7 +3625,12 @@ function whenFree(fn,tries=0){
 async function myRecords(){
   const F=ACC.F,db=ACC.db,uid=ACC.user.uid,one=async(c)=>{try{const s=await F.getDoc(F.doc(db,c,uid));return s.exists()?s.data():null}catch(e){return null}};
   const mine=async(c)=>{try{const s=await F.getDocs(F.query(F.collection(db,c),F.where('uid','==',uid)));return s.docs.map(d=>({id:d.id,...d.data()}))}catch(e){return []}};
-  return {profile:await one('profiles'),survey:await one('survey'),pro:await one('pro'),offer:await one('offers'),templates:await one('owned'),feedback:await mine('feedback'),activeMonths:(await mine('act')).map(a=>a.ym).sort()};
+  const links=await myShares();
+  return {profile:await one('profiles'),survey:await one('survey'),pro:await one('pro'),offer:await one('offers'),templates:await one('owned'),feedback:await mine('feedback'),activeMonths:(await mine('act')).map(a=>a.ym).sort(),
+    liveLinks:links.map(d=>({link:shareURL(d.slug,d.id),title:d.title,anyoneCanEdit:!!d.edit,pages:d.n,made:d.at}))};
+}
+async function myShares(){ // the live links this account made
+  const F=ACC.F;try{const s=await F.getDocs(F.query(F.collection(ACC.db,'shares'),F.where('owner','==',ACC.user.uid)));return s.docs.map(d=>({id:d.id,...d.data()}))}catch(e){return []}
 }
 async function downloadMyData(){
   const u=ACC.user;if(!u||!ACC.F)return;
@@ -3641,7 +3654,7 @@ function deleteAccount(){
   $('#acct').classList.add('hidden');
   lockDlg((c,close)=>{
     c.append(el('div','lk-ic del'));c.lastChild.innerHTML='<svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
-    c.append(el('h2','','Delete your account?'),el('p','lk-sub','This deletes your Foliet account and everything we keep about it: your email, the cloud copy of your notebooks, your statistics, survey answer and feedback. It can’t be undone.'));
+    c.append(el('h2','','Delete your account?'),el('p','lk-sub','This deletes your Foliet account and everything we keep about it: your email, the cloud copy of your notebooks, your live links, your statistics, survey answer and feedback. It can’t be undone.'));
     const bk=el('button','ib','Download a backup first');bk.onclick=()=>backupAll();c.append(bk);
     const l=el('label','chk');const cb=el('input');cb.type='checkbox';cb.checked=true;l.append(cb,' Also remove my notebooks from this device');c.append(l);
     const google=u.providerData.some(p=>p.providerId==='google.com');
@@ -3664,6 +3677,11 @@ function deleteAccount(){
         b2.delete(F.doc(dbi,'users',uid));
         for(const c2 of ['act','feedback']){const q=await F.getDocs(F.query(F.collection(dbi,c2),F.where('uid','==',uid)));q.docs.forEach(d=>b2.delete(d.ref))}
         for(const c2 of ['profiles','survey','pro','offers','owned'])b2.delete(F.doc(dbi,c2,uid));
+        for(const sh of await myShares()){ // live links: their pages, then the link
+          shareStop(sh.id);const man=sh.m||{};
+          for(const k in man){const bt=F.writeBatch(dbi);for(let i=0;i<(man[k].n||1);i++)bt.delete(F.doc(dbi,'shares',sh.id,'r',chunkId(k,i)));await bt.commit()}
+          b2.delete(F.doc(dbi,'shares',sh.id));
+        }
         await b2.commit();
         if(cb.checked)await wipeLocal(uid);
         LIBST.ready=false;data=[];TRASH=[];snaps=new Map();ACC.libUid=null;lsSet('sb-last-uid','');
@@ -3706,8 +3724,9 @@ async function adminFetch(){
   const costs=await F.getDoc(F.doc(db,'config','costs')).then(s=>s.exists()&&Array.isArray(s.data().items)?s.data().items:[]).catch(()=>[]);
   const pub=await F.getDoc(F.doc(db,'config','public')).then(s=>s.exists()?s.data():{}).catch(()=>({}));
   const offers=await safe(all('offers'));
+  const shop=await safe(all('shop')).then(L=>L.map(x=>({...x,from:tsN(x.from),until:tsN(x.until),created:tsN(x.created)})));applyShop(shop);
   if(pub.pay)Object.assign(PUB.pay,pub.pay);if(pub.intro)Object.assign(PUB.intro,pub.intro);
-  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,feedback,owned,costs,offers,at:Date.now()};
+  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,feedback,owned,costs,offers,shop,at:Date.now()};
 }
 function openAdmin(){$('#acct').classList.add('hidden');const A=$('#admin');A.classList.remove('hidden');A.style.setProperty('--abh',($('#admin .bar').offsetHeight||48)+'px');adminLoad()}
 async function adminLoad(){
@@ -3979,6 +3998,71 @@ function adminRender(){
     const have=((OW.find(o=>o.id===p.id)||{}).t)||[];if(have.includes(tgs.value)||have.includes('all')){tgm.textContent='They already have it.';return}
     try{await F.setDoc(F.doc(db,'owned',p.id),{t:[...have,tgs.value],last:'admin'});toast(tplName(tgs.value)+' given to '+em);adminLoad()}catch(e2){tgm.textContent='Couldn’t do it: '+(e2.code||e2.message)}};
   B.append(tgf);
+  // banners and items you add to the store yourself: permanent, or for a few days / a week / until a date
+  {
+    const SH=D.shop||[],now=Date.now(),st=x=>x.on===false?'Off':x.from&&x.from>now?'Starts '+fmtDay(x.from):x.until&&x.until<=now?'Ended '+fmtDay(x.until):x.until?'Live · ends '+fmtDay(x.until)+' ('+leftDays(x.until-now)+' left)':'Live · permanent';
+    const ref=id=>F.doc(db,'shop',id);
+    const sl=el('div','alist');sl.id='adm-shop';
+    if(!SH.length)sl.append(el('p','muted','Nothing added yet. Add a banner or an item below.'));
+    SH.slice().sort((a,b)=>(b.created||0)-(a.created||0)).forEach(x=>{const live=inWin(x),r=el('div','arow'+(live?'':' off'));
+      const t=el('div','');t.append(el('b','',({banner:'🖼 Banner',stk:'⭐ Stickers',cov:'📕 Cover'}[x.kind]||x.kind)+' · '+(x.n||'Untitled')),el('small','',' '+st(x)+(x.kind!=='banner'?' · '+(x.p?euro(99):'free')+' · '+OW.filter(o=>(o.t||[]).includes(x.id)).length+' have it':'')));
+      const tg=el('button','ib',x.on===false?'Turn on':'Turn off');tg.onclick=async()=>{await F.updateDoc(ref(x.id),{on:x.on===false});adminLoad()};
+      const ex=el('button','ib','+1 week');ex.title='Keep it 7 days longer';ex.onclick=async()=>{await F.updateDoc(ref(x.id),{until:F.Timestamp.fromMillis(Math.max(now,x.until||now)+7*864e5)});adminLoad()};
+      const en=el('button','ib','End now');en.onclick=async()=>{await F.updateDoc(ref(x.id),{until:F.Timestamp.fromMillis(Date.now())});adminLoad()};
+      const dl=el('button','ib','Delete');dl.title='People who got it lose it too – “End now” keeps it for them';dl.onclick=async()=>{if(dl.dataset.s){await F.deleteDoc(ref(x.id));adminLoad()}else{dl.dataset.s=1;dl.textContent='Sure? They lose it'}};
+      r.append(t,tg);if(x.until)r.append(ex);if(live)r.append(en);r.append(dl);sl.append(r)});
+    // how long: permanent / 3 days / a week / 2 weeks / a month / until a date
+    const avail=pre=>{const w=el('div','aavail'),s=el('select','lk-in');s.id=pre+'-for';[['0','Permanent'],['3','3 days'],['7','1 week'],['14','2 weeks'],['30','1 month'],['date','Until a date…']].forEach(([v,t])=>s.append(new Option(t,v)));
+      const until=el('input','lk-in hidden');until.type='date';until.id=pre+'-until';const from=el('input','lk-in');from.type='date';from.id=pre+'-from';from.value=new Date(now-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+      s.onchange=()=>until.classList.toggle('hidden',s.value!=='date');w.append(l('How long',s),until,l('Starts',from));
+      w.get=()=>{const start=+new Date(from.value+'T00:00')||now;let end=null;if(s.value==='date'){end=+new Date(until.value+'T23:59');if(!end)return null}else if(+s.value)end=Math.max(start,now)+(+s.value)*864e5;
+        return {from:F.Timestamp.fromMillis(start),...(end?{until:F.Timestamp.fromMillis(end)}:{})}};return w};
+    // a banner
+    const bf=el('form','aform acosts');bf.id='adm-bnr';
+    const bt=el('input','lk-in');bt.placeholder='e.g. Summer sale';bt.maxLength=60;bt.id='bnr-t';const bd=el('input','lk-in');bd.placeholder='e.g. New sticker packs, this week only';bd.maxLength=120;bd.id='bnr-d';
+    const be=el('input','lk-in');be.placeholder='🎉';be.maxLength=8;be.id='bnr-e';be.style.maxWidth='80px';
+    const bc=el('select','lk-in');bc.id='bnr-bg';Object.keys(BNR_BG).forEach(k=>bc.append(new Option(k[0].toUpperCase()+k.slice(1),k)));
+    const bb=el('input','lk-in');bb.placeholder='e.g. Have a look';bb.maxLength=30;bb.id='bnr-btn';
+    const ba=el('select','lk-in');ba.id='bnr-act';[['none','Nothing (no button)'],['item','Opens an item'],['kind','Opens a Store section'],['pro','Opens the Pro window'],['url','Opens a web link']].forEach(([v,t])=>ba.append(new Option(t,v)));
+    const bi=el('select','lk-in');bi.id='bnr-item';[...STPK,...COVERS,...TPL,...LABELS].forEach(it=>bi.append(new Option(it.n+(it.p?' · '+euro(it.p):' · free'),it.id)));
+    const bk=el('select','lk-in');bk.id='bnr-kind';SKINDS.forEach(([k,n])=>bk.append(new Option(n,k)));
+    const bu=el('input','lk-in');bu.type='url';bu.placeholder='https://…';bu.id='bnr-url';
+    const lbi=l('Item',bi),lbk=l('Section',bk),lbu=l('Link',bu),lbb=l('Button text',bb);
+    ba.onchange=()=>{lbi.classList.toggle('hidden',ba.value!=='item');lbk.classList.toggle('hidden',ba.value!=='kind');lbu.classList.toggle('hidden',ba.value!=='url');lbb.classList.toggle('hidden',ba.value==='none')};ba.onchange();
+    const bav=avail('bnr'),bpv=el('div','abnr-pv'),bm=el('p','cmsg');
+    const bdata=()=>({kind:'banner',n:bt.value.trim(),d:bd.value.trim(),emoji:firstGlyph(be.value),bg:bc.value,btn:bb.value.trim(),act:ba.value,av:ba.value==='item'?bi.value:ba.value==='kind'?bk.value:ba.value==='url'?bu.value.trim():''});
+    const prev=el('button','ib','Preview');prev.type='button';prev.onclick=()=>{const keep=BANNERS;BANNERS=[{...bdata(),id:'pv',on:true}];bpv.innerHTML='';const x=storeBanner();if(x)bpv.append(x);BANNERS=keep};
+    const bs=el('button','btn','Add banner');bs.type='submit';
+    bf.append(el('b','','Add a banner (top of the Store)'),l('Title',bt),l('Text',bd),l('Emoji',be),l('Colour',bc),l('Button',ba),lbb,lbi,lbk,lbu,bav,prev,bs,bpv,bm);
+    bf.onsubmit=async e=>{e.preventDefault();const x=bdata(),a=bav.get();if(!x.n){bm.textContent='Give it a title.';return}if(!a){bm.textContent='Choose the end date.';return}
+      if(x.act==='url'&&!/^https:\/\//.test(x.av)){bm.textContent='The link must start with https://';return}if(x.act!=='none'&&!x.btn){bm.textContent='Write the button text.';return}
+      try{await F.setDoc(F.doc(F.collection(db,'shop')),{...x,...a,on:true,created:F.serverTimestamp()});toast('Banner added');adminLoad()}catch(e2){bm.textContent='Couldn’t save: '+(e2.code||e2.message)}};
+    // an item: a sticker pack (up to 7 pictures) or a cover (one picture)
+    const itf=el('form','aform acosts');itf.id='adm-item';
+    const ik=el('select','lk-in');ik.id='itm-kind';[['stk','Sticker pack (up to 7 pictures)'],['cov','Cover (one picture)']].forEach(([v,t])=>ik.append(new Option(t,v)));
+    const inm=el('input','lk-in');inm.placeholder='e.g. Halloween';inm.maxLength=40;inm.id='itm-n';const ids=el('input','lk-in');ids.placeholder='A few words about it';ids.maxLength=140;ids.id='itm-d';
+    const ip=el('select','lk-in');ip.id='itm-p';[['0','Free'],['99',euro(99)]].forEach(([v,t])=>ip.append(new Option(t,v)));
+    const ifile=el('input','lk-in');ifile.type='file';ifile.accept='image/*';ifile.multiple=true;ifile.id='itm-files';
+    const ipv=el('div','aitm-pv'),iav=avail('itm'),im=el('p','cmsg');let pics=[],spine='#555';
+    const fileImg=f=>new Promise((res,rej)=>{const u=URL.createObjectURL(f),m=new Image();m.onload=()=>{res(m);setTimeout(()=>URL.revokeObjectURL(u),1000)};m.onerror=rej;m.src=u});
+    ifile.onchange=async()=>{pics=[];ipv.innerHTML='';const fs=[...ifile.files].slice(0,ik.value==='stk'?7:1);
+      for(const f of fs){try{const m=await fileImg(f);let c;
+        if(ik.value==='stk'){const k=Math.min(1,220/Math.max(m.width,m.height));c=document.createElement('canvas');c.width=Math.max(1,Math.round(m.width*k));c.height=Math.max(1,Math.round(m.height*k));c.getContext('2d').drawImage(m,0,0,c.width,c.height);pics.push(c.toDataURL('image/webp',.9))}
+        else{c=document.createElement('canvas');c.width=450;c.height=600;const x=c.getContext('2d'),k=Math.max(450/m.width,600/m.height);x.drawImage(m,(450-m.width*k)/2,(600-m.height*k)/2,m.width*k,m.height*k);
+          const px=x.getImageData(0,0,24,600).data;let r=0,g=0,b2=0;for(let i=0;i<px.length;i+=4){r+=px[i];g+=px[i+1];b2+=px[i+2]}const n=px.length/4;spine='#'+[r,g,b2].map(v=>Math.round(v/n).toString(16).padStart(2,'0')).join('');
+          pics.push(c.toDataURL('image/jpeg',.85))}
+        const t=new Image();t.src=pics[pics.length-1];t.alt='';ipv.append(t)}catch(e){im.textContent='One picture couldn’t be read.'}}
+      if(ik.value==='stk'&&ifile.files.length>7)im.textContent='A pack has up to 7 stickers: the first 7 are used.'};
+    ik.onchange=()=>{ifile.value='';pics=[];ipv.innerHTML=''};
+    const is=el('button','btn','Add to the store');is.type='submit';
+    itf.append(el('b','','Add an item to the Store'),l('What',ik),l('Name',inm),l('About it',ids),l('Price',ip),l('Pictures',ifile),ipv,iav,is,im,
+      el('small','muted','Sticker pictures work best as PNGs with a see-through background. Free items: people tap “Get it free” and keep them. Paid ones ('+euro(99)+') can be given with a store code until the store sells them.'));
+    itf.onsubmit=async e=>{e.preventDefault();const a=iav.get();if(!inm.value.trim()){im.textContent='Give it a name.';return}if(!pics.length){im.textContent='Add '+(ik.value==='stk'?'1 to 7 pictures':'a picture')+'.';return}if(!a){im.textContent='Choose the end date.';return}
+      const x={kind:ik.value,n:inm.value.trim(),d:ids.value.trim(),p:+ip.value,on:true,...a,created:F.serverTimestamp(),...(ik.value==='stk'?{items:pics}:{img:pics[0],c:spine})};
+      if(JSON.stringify(x).length>900000){im.textContent='The pictures are too big together. Use fewer or smaller ones.';return}
+      is.disabled=true;try{await F.setDoc(F.doc(F.collection(db,'shop')),x);toast(x.n+' is in the Store');adminLoad()}catch(e2){im.textContent='Couldn’t save: '+(e2.code||e2.message);is.disabled=false}};
+    B.append(el('p','aplabel','Banners and items you added'),sl,bf,itf);
+  }
   // accounts: search, list, CSV
   sec('Find an account','search');
   const sr=el('div','aform');const si=el('input','lk-in');si.type='search';si.placeholder='Search by email';si.setAttribute('aria-label','Search accounts by email');
@@ -4237,7 +4321,7 @@ async function makeWelcome(){
       N('Pro: import a PDF and write on it, export to PDF or images.',500,1000,340,170,NC[4],-3,28),S(6,700,150,150,0)])}
   // 6 – private and yours
   {const [c,x]=page();x.strokeStyle='#e0a526';x.lineWidth=8;wave(x,90,1000,500,9,30);ink.push(c);ps.push({p:'lines',c:PAPER});
-    const rows=['Lock a notebook with a PIN or a password (the padlock at the top).','On Android, open it with your fingerprint.','Saved on your device. Works offline.','Download a backup any time in Settings.','With Pro, sync across your devices.'];
+    const rows=['Lock a notebook with a PIN or a password (the padlock at the top).','On Android, open it with your fingerprint.','Saved on your device. Works offline.','Download a backup any time in Settings.','With Pro, sync across your devices and share a live link.'];
     const o=[T('Private and yours',80,60,760,80,{fm:'display',b:1,c:'#1d2b4a'})];
     rows.forEach((t,j)=>{o.push(S(j===4?16:22,80,200+j*125,76,0),T(t,170,190+j*125,680,32))});
     o.push(T('Now make it yours!',80,850,600,80,{fm:'hand',b:1,c:'#c0392b'}),
@@ -4562,7 +4646,7 @@ const itemById=id=>TPL.find(t=>t.id===id)||COVERS.find(c=>c.id===id)||LABELS.fin
 const itemKind=it=>TPL.includes(it)?'tpl':COVERS.includes(it)?'cov':LABELS.includes(it)?'lbl':'stk';
 const itemName=id=>id==='all'?'Everything in the store':(itemById(id)||{n:id}).n;
 const tplName=itemName;
-const ownsItem=it=>!!it&&(!it.p||ACC.owned.has(it.id)||ACC.owned.has('all'));
+const ownsItem=it=>!!it&&((!it.p&&!it.adm)||ACC.owned.has(it.id)||ACC.owned.has('all'));
 const ownsTpl=ownsItem;
 const myBooks=()=>data.filter(b=>!b.welcome).sort((a,b)=>(b.u||0)-(a.u||0));
 function bookSelect(books){const sel=el('select','lk-in');sel.id='t-book';sel.setAttribute('aria-label','Notebook');
@@ -4582,8 +4666,79 @@ async function renderTpl(force){
   SKINDS.forEach(([k,n])=>{const b=el('button','',n);b.dataset.k=k;b.setAttribute('role','tab');b.setAttribute('aria-selected',SKIND===k);b.onclick=()=>{SKIND=k;TFILT='all';renderTpl(true)};kinds.append(b)});
   const chips=el('div','tchips');chips.setAttribute('role','group');chips.setAttribute('aria-label','Filter');
   (SKIND==='tpl'?TCAT:[['all','All'],['free','Free'],['paid','Paid']]).forEach(([k,n])=>{const b=el('button','',n);b.setAttribute('aria-pressed',TFILT===k);b.onclick=()=>{TFILT=k;renderTpl(true)};chips.append(b)});
-  head.append(kinds,chips);box.append(head);
-  KLIST[SKIND]().filter(it=>TFILT==='all'||(TFILT==='free'?!it.p:TFILT==='paid'?!!it.p:it.g===TFILT)).forEach(it=>box.append(storeCard(it,SKIND)));
+  head.append(kinds,chips);const bn=storeBanner();if(bn)box.append(bn);box.append(head);
+  KLIST[SKIND]().filter(shopVis).filter(it=>TFILT==='all'||(TFILT==='free'?!it.p:TFILT==='paid'?!!it.p:it.g===TFILT)).forEach(it=>box.append(storeCard(it,SKIND)));
+}
+/* ----- Things you add to the store from the admin panel: banners, sticker packs and covers -----
+   shop/{id} = {kind:'banner'|'stk'|'cov', n, d, p (0 or 99), on, from?, until?, created, …}
+     banner: {emoji, bg (a colour preset), btn, act:'none'|'item'|'kind'|'pro'|'url', av (what the button opens)}
+     stk: {items:[images]}   cov: {img, c (spine colour)}
+   They join STPK / COVERS (with adm:1), so the Store, + → Stickers and Cover style → Design use them like the others.
+   Shown while on and between from and until (permanent when there's no until). "Get it free" / buying puts the id in
+   owned/{uid}, and then it's yours for good – also after it leaves the store. Cached on the device (IDB 'shop'). */
+let SHOP=[],BANNERS=[];
+const tsN=v=>v==null?null:typeof v==='number'?v:v.toMillis?v.toMillis():null;
+const inWin=it=>it.on!==false&&(!it.from||it.from<=Date.now())&&(!it.until||it.until>Date.now());
+const shopVis=it=>!it.adm||ownsItem(it)||inWin(it);
+const BNR_BG={blue:['#23407a','#4a7fd6'],sunset:['#e2574c','#ee8a2f'],mint:['#2e9aa2','#4f9e5a'],berry:['#8a66d6','#d05a97'],night:['#141c45','#5a3e85'],gold:['#b5822d','#e0a526']};
+function applyShop(list){
+  SHOP=list||[];
+  for(const L of [STPK,COVERS])for(let i=L.length-1;i>=0;i--)if(L[i].adm)L.splice(i,1);
+  Object.keys(DES).forEach(k=>{if(k.startsWith('x-'))delete DES[k]});
+  BANNERS=[];
+  SHOP.forEach(s=>{
+    const base={id:s.id,n:s.n||'Untitled',d:s.d||'',p:s.p?99:0,adm:1,on:s.on!==false,from:tsN(s.from),until:tsN(s.until),created:tsN(s.created)};
+    if(s.kind==='stk'&&Array.isArray(s.items)&&s.items.length)STPK.push({...base,items:s.items.slice(0,7)});
+    else if(s.kind==='cov'&&s.img){DES['x-'+s.id]="<image href='"+s.img+"' x='0' y='0' width='300' height='400' preserveAspectRatio='xMidYMid slice'/>";COVERS.push({...base,des:'x-'+s.id,c:s.c||'#555'})}
+    else if(s.kind==='banner')BANNERS.push({...base,emoji:s.emoji||'',bg:s.bg||'blue',btn:s.btn||'',act:s.act||'none',av:s.av||''});
+  });
+  BANNERS.sort((a,b)=>(b.created||0)-(a.created||0));
+}
+async function loadShop(net){
+  if(!SHOP.length){try{const c=await idbGet('shop');if(Array.isArray(c)){applyShop(c);afterShop()}}catch(e){}}
+  if(!net||!ACC.F||!ACC.user)return;
+  try{
+    const s=await ACC.F.getDocs(ACC.F.collection(ACC.db,'shop'));
+    const list=s.docs.map(d=>{const x=d.data();return {...x,id:d.id,from:tsN(x.from),until:tsN(x.until),created:tsN(x.created)}});
+    applyShop(list);afterShop();lsSet('sb-shopt',String(Date.now()));try{await idbSet('shop',list)}catch(e){}
+  }catch(e){}
+}
+function afterShop(){if(tplReady&&!$('#tpl').classList.contains('hidden'))renderTpl(true);if(LIBST.ready&&!$('#shelf').classList.contains('hidden')&&$('#tpl').classList.contains('hidden'))renderShelf()}
+const leftDays=ms=>{const h=Math.ceil(ms/36e5);return h<48?h+(h===1?' hour':' hours'):Math.ceil(h/24)+' days'};
+function itemBadge(it){ // Limited / New, for things added from the admin panel
+  if(!it.adm)return null;
+  if(it.until&&it.until>Date.now()&&!ownsItem(it))return el('span','tbadge lim','Limited · '+leftDays(it.until-Date.now())+' left');
+  if(it.created&&Date.now()-it.created<7*864e5)return el('span','tbadge new','New');
+  return null;
+}
+// the big banner at the top of the Store (several turn every 6 seconds)
+function storeBanner(){
+  const live=BANNERS.filter(inWin);if(!live.length)return null;
+  const w=el('div','sbanner'),track=el('div','sb-track');w.append(track);let i=0,tm=0;
+  const slides=live.map(bn=>{const [a,b2]=BNR_BG[bn.bg]||BNR_BG.blue,s=el('div','sb-slide');s.style.background='linear-gradient(120deg,'+a+','+b2+')';s.dataset.id=bn.id;
+    if(bn.emoji)s.append(el('div','sb-emoji',bn.emoji));const t=el('div','sb-text');t.append(el('b','',bn.n));if(bn.d)t.append(el('span','',bn.d));
+    if(bn.until)t.append(el('small','sb-ends','Ends in '+leftDays(bn.until-Date.now())));s.append(t);
+    if(bn.btn&&bn.act!=='none'){const go=el('button','sb-go',bn.btn);go.type='button';go.onclick=()=>bannerGo(bn);s.append(go)}
+    track.append(s);return s});
+  const dots=el('div','sb-dots');
+  const show=k=>{i=(k+slides.length)%slides.length;track.style.transform='translateX('+(-100*i)+'%)';[...dots.children].forEach((d,j)=>d.setAttribute('aria-current',j===i))};
+  if(slides.length>1){slides.forEach((_,k)=>{const d=el('button','');d.type='button';d.setAttribute('aria-label','Banner '+(k+1));d.onclick=()=>{show(k);clearInterval(tm)};dots.append(d)});w.append(dots);
+    tm=setInterval(()=>{if(!w.isConnected){clearInterval(tm);return}if(!matchMedia('(prefers-reduced-motion: reduce)').matches)show(i+1)},6000)}
+  show(0);return w;
+}
+function bannerGo(bn){
+  if(bn.act==='pro')return upsell('');
+  if(bn.act==='kind'&&KLIST[bn.av]){SKIND=bn.av;TFILT='all';renderTpl(true);return}
+  if(bn.act==='item'){const it=itemById(bn.av);if(it)return ownsItem(it)?ownedItem(it,itemKind(it)):buyTpl(it)}
+  if(bn.act==='url'&&/^https:\/\//.test(bn.av))window.open(bn.av,'_blank','noopener');
+}
+// "Get it free": a free item from the admin panel becomes yours (owned/{uid}), so you keep it after it leaves the store
+async function claimFree(it){
+  const F=ACC.F,db=ACC.db,u=ACC.user;if(!F||!u)return 'Sign in first.';
+  if(it.p||!inWin(it))return 'This isn’t available any more.';
+  try{await F.runTransaction(db,async tx=>{const r=F.doc(db,'owned',u.uid),s=await tx.get(r),t=s.exists()?(s.data().t||[]):[];if(t.includes(it.id))return;tx.set(r,{t:[...t,it.id],last:'free'})});
+    ACC.owned.add(it.id);setOwned([...ACC.owned]);return ''}
+  catch(e){return e&&e.code==='permission-denied'?'This isn’t available any more.':'No connection. Try again when you’re online.'}
 }
 function itemDesc(it,k){return k==='tpl'?it.d+' '+it.pages+' pages.':k==='stk'?(it.d?it.d+' ':'')+it.items.length+' stickers.':it.d||(k==='cov'?'A cover design.':'A name label for your covers, in this shape.')}
 function itemPreview(pv,it,k){
@@ -4595,16 +4750,24 @@ function itemPreview(pv,it,k){
 function storeCard(it,k){
   const own=ownsItem(it),b=el('button','tcardx k-'+k+(k==='tpl'&&it.o==='l'?' l':'')+(own?'':' lock'));b.dataset.t=it.id;
   const pv=el('div','pv');itemPreview(pv,it,k);
-  pv.append(el('span','tprice'+(!it.p?' free':own?' own':''),!it.p?'Free':own?'✓ Yours':euro(it.p)));
+  pv.append(el('span','tprice'+(!it.p?' free':own?' own':''),own&&it.adm?'✓ Yours':!it.p?'Free':own?'✓ Yours':euro(it.p)));
+  const bd=itemBadge(it);if(bd)pv.append(bd);
   b.append(pv);const n=el('div','');
-  n.append(el('b','',it.n),el('span','',itemDesc(it,k)),el('span','go',own?'Use it ›':'Unlock for '+euro(it.p)+' ›'));
+  n.append(el('b','',it.n),el('span','',itemDesc(it,k)),el('span','go',own?'Use it ›':!it.p?'Get it free ›':'Unlock for '+euro(it.p)+' ›'));
   b.append(n);b.onclick=()=>own?ownedItem(it,k):buyTpl(it);return b;
 }
 function bigPreview(it,k){const pv=el('div','tbuy-pv'+(k==='tpl'&&it.o==='l'?' l':'')+' k-'+k);if(k==='tpl')pv.style.backgroundImage='url('+tplThumb(it)+')';else itemPreview(pv,it,k);return pv}
 function buyTpl(it){ // works for every kind of item
   const k=itemKind(it),what={tpl:'Use it for as many notebooks as you like',cov:'Use it on as many notebooks as you like',lbl:'Put it on as many covers as you like',stk:'Use them as often as you like'}[k];
+  if(!it.p)return lockDlg((c,close)=>{ // a free one from the admin panel: take it, and keep it
+    const end=it.until?' Free until '+new Date(it.until).toLocaleDateString(undefined,{day:'numeric',month:'short'})+' – take it now and it stays yours.':' It stays yours.';
+    c.append(bigPreview(it,k),el('h2','',it.n),el('p','lk-sub',itemDesc(it,k)+end));
+    const msg=el('p','cmsg');msg.setAttribute('role','status');const get=el('button','btn tbuy','Get it free');get.id='t-get';
+    get.onclick=async()=>{get.disabled=true;msg.textContent='One moment…';const e=await claimFree(it);get.disabled=false;if(e){msg.textContent=e;return}close(true);toast(it.n+' is yours. '+(k==='cov'?'Find it in Cover style → Design.':'Find it in + → Stickers.'))};
+    const acts=el('div','acts2');const no=el('button','ib','Not now');no.type='button';no.onclick=()=>close(false);acts.append(no);c.append(get,msg,acts);
+  });
   return lockDlg((c,close)=>{
-    c.append(bigPreview(it,k),el('h2','',it.n),el('p','lk-sub',itemDesc(it,k)+' Pay '+euro(it.p)+' once. '+what+', on all your devices.'));
+    c.append(bigPreview(it,k),el('h2','',it.n),el('p','lk-sub',itemDesc(it,k)+' Pay '+euro(it.p)+' once. '+what+', on all your devices.'+(it.adm&&it.until?' In the store until '+new Date(it.until).toLocaleDateString(undefined,{day:'numeric',month:'short'})+'.':'')));
     const msg=el('p','cmsg');msg.setAttribute('role','status');
     const buy=el('button','btn tbuy','Buy for '+euro(it.p));
     const f=el('form','crow');const i=el('input','lk-in');i.placeholder='Code';i.autocapitalize='characters';i.autocomplete='off';i.spellcheck=false;i.id='t-code';i.setAttribute('aria-label','Store code');
@@ -5125,9 +5288,136 @@ m.addEventListener("touchend",function(e){if(x0===null)return;var dx=e.changedTo
 addEventListener("resize",function(){show(0)});show(0);
 <\/script></body></html>`;
 }
+/* ----- Live link: anyone can look (no account needed), people you allow can edit (signed in) -----
+   shares/{code} = {owner, slug, title, o, n (pages), edit, on, m:{rec:{h,n}}, at, upd}
+   shares/{code}/r/{rec}(+~~1…) = chunks of {r: record, v: picture}: 'meta' (the notebook without its pages; v = the
+   cover) and 'p~i' (page i; v = a picture of it, for people who only look). h = hash of r, the same on every device.
+   The link is <site>/<slug>/<code>: 404.html shows it (GitHub Pages and Netlify send addresses that aren't files there),
+   so it works now on GitHub Pages and later on foliet.app. Making a link is Pro; editing needs an account and the
+   owner's OK. The owner's notebook keeps b.share={code,edit}; app/?share=CODE opens it for someone else to edit
+   (their changes go to the shared copy; the owner's app brings them into the notebook). People editing a notebook
+   that isn't theirs change its pages (and add pages), not the cover, and can't delete pages. */
+const SH_ALPHA='abcdefghjkmnpqrstuvwxyz23456789';
+const shareCode=()=>{let s='';for(const x of crypto.getRandomValues(new Uint8Array(6)))s+=SH_ALPHA[x%SH_ALPHA.length];return s};
+const shareSlug=t=>(t||'notebook').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'notebook';
+const siteRoot=()=>location.pathname.replace(/app\/.*$/,'');
+const shareURL=(sl,code)=>location.origin+siteRoot()+sl+'/'+code;
+const SHS={};let GUEST=null;
+const shareOf=b=>b&&(b._share||(b.share&&b.share.code))||'';
+const shState=code=>SHS[code]||(SHS[code]={h:null,man:null,n:0,busy:false,again:false,t:0,un:null});
+function shareMeta(b){const m=metaOf(b);['lock','cat','tags','share','cs','u','wu','welcome','lbl0','n'].forEach(k=>delete m[k]);return m}
+const shRef=(code,...p)=>p.length?ACC.F.doc(ACC.db,'shares',code,...p):ACC.F.doc(ACC.db,'shares',code);
+async function shPush(code,k,raw,v){
+  const F=ACC.F,S=shState(code),h=cyrb(canon(raw)),full=JSON.stringify({r:raw,v:v||''}),n=Math.max(1,Math.ceil(full.length/CH)),old=S.man[k],bt=F.writeBatch(ACC.db);
+  for(let i=0;i<n;i++)bt.set(shRef(code,'r',chunkId(k,i)),{h,n,i,d:full.slice(i*CH,(i+1)*CH)});
+  for(let i=n;i<(old?old.n:0);i++)bt.delete(shRef(code,'r',chunkId(k,i)));
+  await bt.commit();S.man[k]={h,n};return h;
+}
+async function shPull(code,k){
+  const F=ACC.F,r=shState(code).man[k];if(!r)return null;
+  const parts=await Promise.all([...Array(r.n||1).keys()].map(i=>F.getDoc(shRef(code,'r',chunkId(k,i)))));
+  if(parts.some(p=>!p.exists()||p.data().h!==r.h))return undefined; // changing right now
+  try{return JSON.parse(parts.map(p=>p.data().d).join(''))}catch(e){return undefined}
+}
+function shApplyPage(b,i,r){
+  while(b.pages.length<=i){b.pages.push(null)}
+  b.pages[i]=r.pg??null;[['objs','o'],['pv','pv'],['bg','bg'],['ps','ps'],['lay','lay']].forEach(([a,f])=>{if(r[f]!=null)b[a][i]=r[f];else delete b[a][i]});
+}
+async function sharePic(b,i){ // a picture of the cover (i<0) or of page i, for people who only look
+  const W0=W,H0=H,c0=cur,mine=b===cur;if(!mine){W=b.o==='l'?1200:900;H=b.o==='l'?900:1200}
+  try{const c=await renderExport(i<0?'c':i,b),k=Math.min(1,1000/Math.max(c.width,c.height)),q=document.createElement('canvas');q.width=Math.round(c.width*k);q.height=Math.round(c.height*k);q.getContext('2d').drawImage(c,0,0,q.width,q.height);return q.toDataURL('image/jpeg',.82)}
+  finally{if(!mine&&cur===c0){W=W0;H=H0}} // (if a notebook was opened meanwhile, its own size stays)
+}
+function shareSoon(b,ms){const code=shareOf(b);if(!code||!ACC.user)return;const S=shState(code);clearTimeout(S.t);S.t=setTimeout(()=>shareSync(b),ms??2500)}
+async function shareSync(b){
+  const code=shareOf(b);if(!code||!ACC.user||!ACC.F)return;const S=shState(code);
+  if(cur&&cur!==b&&!$('#ed').classList.contains('hidden')){shareSoon(b,5000);return} // busy drawing in another notebook: later
+  if(S.busy){S.again=true;return}S.busy=true;
+  try{do{S.again=false;await shareOnce(b,code,S)}while(S.again)}catch(e){console.warn('share',e)}finally{S.busy=false}
+}
+async function shareOnce(b,code,S){
+  const F=ACC.F;await savesDone();
+  if(!S.man){const s=await F.getDoc(shRef(code));if(!s.exists()){if(!b._guest&&b.share){delete b.share;persist()}return}const d=s.data();S.man={...(d.m||{})};S.n=d.n||0;S.edit=!!d.edit}
+  if(!S.h)S.h=(await idbGet('share:'+code+':'+ACC.user.uid).catch(()=>null))||{};
+  const guest=!!b._guest,editing=b===cur&&!$('#ed').classList.contains('hidden')?pi:-9;
+  const keys=['meta',...[...Array(Math.max(b.pages.length,S.n||0)).keys()].map(i=>'p~'+i)];
+  const push=[],pull=[],drop=[];let changed=false;
+  for(const k of keys){
+    const i=k==='meta'?-1:+k.slice(2),lv=k==='meta'?shareMeta(b):(i<b.pages.length?pageOf(b,i):undefined);
+    const lh=lv===undefined?null:cyrb(canon(lv)),r=S.man[k],rh=r?r.h:null,bh=S.h[k]??null;
+    if(lh===rh){if(lh)S.h[k]=lh;continue}
+    if(lv===undefined){if(bh&&!guest)drop.push(k);else if(rh)pull.push(k);continue}       // deleted here (owner) / new there
+    if(rh===null){if(bh&&guest){drop.push(k)}else push.push(k);continue}                    // deleted there (by the owner) / new here
+    if(lh===bh){if(i!==editing)pull.push(k);continue}                                      // changed there only
+    if(guest&&k==='meta')continue;                                                         // the cover and name stay the owner's
+    push.push(k);
+  }
+  for(const k of pull){const x=await shPull(code,k);if(!x)continue;
+    if(k==='meta'){for(const f in x.r)if(f!=='id')b[f]=x.r[f]}else shApplyPage(b,+k.slice(2),x.r);
+    S.h[k]=S.man[k].h;changed=true}
+  if(guest&&drop.length){const n=Math.min(...drop.map(k=>+k.slice(2)));PK.forEach(a=>{if(b[a].length>n)b[a].length=n});drop.forEach(k=>delete S.h[k]);changed=true}
+  const upd={};
+  for(const k of push){const i=k==='meta'?-1:+k.slice(2),raw=k==='meta'?shareMeta(b):pageOf(b,i);const h=await shPush(code,k,raw,await sharePic(b,i));S.h[k]=h;upd[k]={h,n:S.man[k].n}}
+  if(!guest)for(const k of drop){const r=S.man[k];if(r){const bt=F.writeBatch(ACC.db);for(let i=0;i<(r.n||1);i++)bt.delete(shRef(code,'r',chunkId(k,i)));await bt.commit()}delete S.man[k];delete S.h[k];upd[k]=F.deleteField()}
+  const n=b.pages.length;
+  if(Object.keys(upd).length||n!==S.n){await F.setDoc(shRef(code),{m:upd,n,upd:F.serverTimestamp(),...(guest?{}:{title:b.title||'Untitled'})},{merge:true});S.n=n}
+  try{await idbSet('share:'+code+':'+ACC.user.uid,S.h)}catch(e){}
+  if(changed){if(!guest)persist();if(b===cur&&!$('#bv').classList.contains('hidden'))renderBrowse();else if(!cur&&!$('#shelf').classList.contains('hidden'))renderShelf()}
+}
+// listen to a shared notebook: someone else changed it → bring it here
+function shareListen(b){
+  const code=shareOf(b),S=shState(code);if(!code||S.un||!ACC.F)return;
+  S.un=ACC.F.onSnapshot(shRef(code),s=>{if(!s.exists()){if(b._guest)toast('This notebook isn’t shared any more.');return}const d=s.data({serverTimestamps:'estimate'});S.man={...(d.m||{})};S.n=d.n||0;S.edit=!!d.edit;
+    if(b._guest)b._edit=S.edit;if(Object.keys(S.man).some(k=>S.h&&S.man[k].h!==S.h[k]))shareSoon(b,400)},()=>{});
+}
+function shareStop(code){const S=SHS[code];if(S&&S.un){S.un();S.un=null}}
+function shareListenAll(){Object.keys(SHS).forEach(c=>{if(!GUEST||c!==GUEST._share)shareStop(c)});if(!ACC.user||!ACC.pro)return;data.filter(b=>b.share&&b.share.code).forEach(shareListen)}
+async function shareStart(b){ // make a live link for this notebook
+  if(!ACC.user||!ACC.pro){upsell('Live links are part of Pro: anyone can look, no account needed, and it updates as you draw.');return null}
+  const F=ACC.F;let code='';for(let t=0;t<5&&!code;t++){const c=shareCode();try{if(!(await F.getDoc(shRef(c))).exists())code=c}catch(e){code=c}}
+  const sl=shareSlug(b.title);
+  await F.setDoc(shRef(code),{owner:ACC.user.uid,slug:sl,title:b.title||'Untitled',o:b.o||'p',n:0,edit:false,on:true,m:{},at:F.serverTimestamp(),upd:F.serverTimestamp()});
+  const S=shState(code);S.man={};S.n=0;S.h={};
+  b.share={code,slug:sl,edit:false};persist();await shareSync(b);shareListen(b);return code;
+}
+async function shareSet(b,edit){await ACC.F.updateDoc(shRef(b.share.code),{edit:!!edit});b.share.edit=!!edit;persist()}
+async function shareEnd(b){ // stop sharing: the link stops working and the shared copy is removed
+  const code=b.share.code,F=ACC.F,S=shState(code);shareStop(code);
+  try{const man=S.man||((await F.getDoc(shRef(code))).data()||{}).m||{};for(const k in man){const bt=F.writeBatch(ACC.db);for(let i=0;i<(man[k].n||1);i++)bt.delete(shRef(code,'r',chunkId(k,i)));await bt.commit()}await F.deleteDoc(shRef(code))}catch(e){console.warn(e)}
+  delete SHS[code];delete b.share;persist();
+}
+// app/?share=CODE: open a notebook someone shared with you, to edit it
+async function openShared(code){
+  if(!/^[a-z0-9]{6,10}$/.test(code))return;
+  const own=data.find(b=>b.share&&b.share.code===code);if(own){showStore(false);showBrowse(own);return}
+  const F=ACC.F;let d=null;try{const s=await F.getDoc(shRef(code));d=s.exists()?s.data():null}catch(e){}
+  if(!d||!d.on){toast('This link isn’t shared any more.');return}
+  if(d.owner===ACC.user.uid){toast('This is your notebook – it’s on your shelf.');return}
+  if(!d.edit){goTo(location.origin+siteRoot()+(d.slug||'notebook')+'/'+code);return} // view only: the viewer page
+  toast('Opening “'+(d.title||'Untitled')+'”…');
+  const S=shState(code);S.man={...(d.m||{})};S.n=d.n||0;S.edit=true;S.h={};
+  const meta=await shPull(code,'meta'),b=ens({...((meta&&meta.r)||{title:d.title,o:d.o}),id:'share-'+code,pages:[],objs:[],pv:[],bg:[],ps:[],lay:[]});
+  b._share=code;b._guest=1;b._edit=true;b._title=d.title;if(meta)S.h.meta=S.man.meta.h;
+  for(let i=0;i<S.n;i++){const x=await shPull(code,'p~'+i);if(x){shApplyPage(b,i,x.r);S.h['p~'+i]=S.man['p~'+i].h}else b.pages[i]=b.pages[i]??null}
+  if(!b.pages.length)b.pages=[null];
+  GUEST=b;shareListen(b);showStore(false);showBrowse(b);
+  toast('You can edit “'+(b.title||'Untitled')+'”. Everyone with the link sees your changes.');
+}
 function initShare(){
   const d=$('#shd'),close=()=>d.classList.add('hidden');
-  $('#bshare').onclick=()=>{$('#shs').textContent='Send a read-only copy of “'+(cur.title||'Untitled')+'”.';d.classList.remove('hidden')};
+  const live=()=>{const b=cur,sh=b&&b.share,g=b&&b._guest;$('#sh-live').classList.toggle('hidden',!!sh||!!g);$('#sh-pro').classList.toggle('hidden',ACC.pro);$('#sh-livep').classList.toggle('hidden',!sh&&!g);
+    if(g){const S=shState(b._share),u=shareURL(shareSlug(b._title||b.title),b._share);$('#sh-url').value=u;$('#sh-open').href=u;$('#sh-edit').closest('label').classList.add('hidden');$('#sh-stop').classList.add('hidden');$('#sh-note').textContent='Shared with you. Your changes show for everyone with the link.';return}
+    $('#sh-edit').closest('label').classList.remove('hidden');$('#sh-stop').classList.remove('hidden');
+    if(sh){const u=shareURL(sh.slug||shareSlug(b.title),sh.code);$('#sh-url').value=u;$('#sh-open').href=u;$('#sh-edit').checked=!!sh.edit;
+      $('#sh-note').textContent=sh.edit?'Anyone with the link can look. People who sign in can draw and write in it too – their changes come to your notebook.':'Anyone with the link can look, no account needed. It changes as you draw.'}};
+  $('#bshare').onclick=()=>{$('#shs').textContent='Share “'+(cur.title||'Untitled')+'”.';live();d.classList.remove('hidden')};
+  $('#sh-live').onclick=async()=>{const b=cur,t=$('#sh-live');if(!ACC.pro){close();upsell('Live links are part of Pro: anyone can look, no account needed, and it updates as you draw.');return}
+    t.disabled=true;$('#sh-live span:not(.soon)').textContent='Making the link…';try{await shareStart(b);live()}catch(e){console.warn(e);toast('Couldn’t make the link. Check your connection.')}
+    t.disabled=false;$('#sh-live div span:last-child').textContent='Anyone with the link can look, no account needed. It updates as you draw.'};
+  $('#sh-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('#sh-url').value);toast('Link copied')}catch(e){$('#sh-url').select();toast('Select the link and copy it')}};
+  $('#sh-edit').onchange=async e=>{try{await shareSet(cur,e.target.checked);live()}catch(x){e.target.checked=!e.target.checked;toast('Couldn’t change it. Check your connection.')}};
+  $('#sh-stop').onclick=async()=>{const s2=$('#sh-stop');if(!s2.dataset.s){s2.dataset.s=1;s2.textContent='Sure? The link stops working';setTimeout(()=>{delete s2.dataset.s;s2.textContent='Stop sharing'},3000);return}
+    delete s2.dataset.s;s2.textContent='Stop sharing';await shareEnd(cur);live();toast('The link doesn’t work any more.')};
   $('#shno').onclick=close;d.addEventListener('click',e=>{if(e.target===d)close()});
   $('#sh-file').onclick=async()=>{
     const b=$('#sh-file');b.disabled=true;const sp=b.querySelector('span'),t0=sp.textContent;
@@ -5219,19 +5509,20 @@ async function saveFile(name,blob){
   const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return true;
 }
 const slug=t=>(t||'notebook').trim().replace(/[^\w\-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'notebook';
-async function renderExport(i){
+async function renderExport(i,bk){ // bk: another notebook than the open one (live links)
+  const cur0=bk||cur;
   const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   if(i==='c'){
-    x.fillStyle=cur.color;x.fillRect(0,0,W,H);
-    if(cur.tex&&TEX[cur.tex]){const ti=await imgOf(texData(cur));if(ti){x.fillStyle=x.createPattern(ti,'repeat');x.fillRect(0,0,W,H)}}
-    if(cur.design&&DES[cur.design]){const di=await imgOf(desData(cur.design));if(di)x.drawImage(di,0,0,W,H)}
-    const has=cur.cover||cur.cbg||(cur.cobjs&&cur.cobjs.length);
-    if(has){const m=await imgOf(await compose(cur.cover,cur.cobjs||[],cur.cbg,null));if(m)x.drawImage(m,0,0)}
-    else{x.fillStyle='#fbfbf6';const bw=W*.62,bh=H*.09;x.fillRect((W-bw)/2,(H-bh)/2,bw,bh);x.fillStyle='#222';x.font='600 '+Math.round(W*.04)+'px Bricolage Grotesque,system-ui,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(cur.title||'Untitled',W/2,H/2)}
+    x.fillStyle=cur0.color;x.fillRect(0,0,W,H);
+    if(cur0.tex&&TEX[cur0.tex]){const ti=await imgOf(texData(cur0));if(ti){x.fillStyle=x.createPattern(ti,'repeat');x.fillRect(0,0,W,H)}}
+    if(cur0.design&&DES[cur0.design]){const di=await imgOf(desData(cur0.design));if(di)x.drawImage(di,0,0,W,H)}
+    const has=cur0.cover||cur0.cbg||(cur0.cobjs&&cur0.cobjs.length);
+    if(has){const m=await imgOf(await compose(cur0.cover,cur0.cobjs||[],cur0.cbg,null));if(m)x.drawImage(m,0,0)}
+    else{x.fillStyle='#fbfbf6';const bw=W*.62,bh=H*.09;x.fillRect((W-bw)/2,(H-bh)/2,bw,bh);x.fillStyle='#222';x.font='600 '+Math.round(W*.04)+'px Bricolage Grotesque,system-ui,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(cur0.title||'Untitled',W/2,H/2)}
     return c;
   }
-  const st=cur.ps[i];x.fillStyle=(st&&st.c)||PAPER;x.fillRect(0,0,W,H);
-  const m=await imgOf(await compose(cur.pages[i],cur.objs[i]||[],cur.bg[i],st));if(m)x.drawImage(m,0,0,W,H);
+  const st=cur0.ps[i];x.fillStyle=(st&&st.c)||PAPER;x.fillRect(0,0,W,H);
+  const m=await imgOf(await compose(cur0.pages[i],cur0.objs[i]||[],cur0.bg[i],st));if(m)x.drawImage(m,0,0,W,H);
   return c;
 }
 const toBlob=(c,t,q)=>new Promise(r=>c.toBlob(r,t,q));

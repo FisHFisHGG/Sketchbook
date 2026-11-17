@@ -10,6 +10,8 @@ rules_version = '2';
 //                        plus {max, used, active, note, created}
 // owned/{uid}            paid templates this person has: {t: [ids | 'all'], last: CODE | 'admin'}
 // offers/{uid}           a card offer from a code that asks for a card: {code, days, at}; 24 hours to add a card
+// shares/{code}         a live link: {owner, slug, title, o, n, edit, on, m}; shares/{code}/r/{rec} = its pages (+ pictures)
+// shop/{id}              banners and items added from the admin panel (sticker packs, covers), with from/until
 // config/public          payments (Stripe price IDs, on/off) and the welcome offer – read by every account, written by admins
 // redeem/{uid_CODE}      who used which code (one use per person per code)
 // profiles/{uid}         {email, name, via, os, lang, app, created, seen} – for the admin panel's statistics
@@ -75,6 +77,16 @@ service cloud.firestore {
         && getAfter(cp).data.used == c.used + 1
         && !exists(/databases/$(database)/documents/redeem/$(uid + '_' + d.last))
         && existsAfter(/databases/$(database)/documents/redeem/$(uid + '_' + d.last));
+    }
+    // "Get it free": a free item from the admin panel, while it's in the store, added to what this person owns
+    function validFreeClaim(prev) {
+      let d = request.resource.data;
+      let id = d.t[d.t.size() - 1];
+      let it = get(/databases/$(database)/documents/shop/$(id)).data;
+      return d.keys().hasOnly(['t', 'last']) && d.last == 'free' && d.t == prev.concat([id])
+        && it.kind in ['stk', 'cov'] && it.p == 0 && it.on == true
+        && (!('from' in it) || it.from == null || it.from <= request.time)
+        && (!('until' in it) || it.until == null || it.until > request.time);
     }
     // this code was really used in this same write: by the Pro record or by the templates record
     function redeemedHere(uid, code) {
@@ -145,8 +157,42 @@ service cloud.firestore {
       allow get: if owner(uid) || isAdmin();
       allow list, write: if isAdmin();
       allow delete: if owner(uid); // deleting the account
-      allow create: if owner(uid) && validTplRedeem(uid, []);
-      allow update: if owner(uid) && validTplRedeem(uid, resource.data.t);
+      allow create: if owner(uid) && (validTplRedeem(uid, []) || validFreeClaim([]));
+      allow update: if owner(uid) && (validTplRedeem(uid, resource.data.t) || validFreeClaim(resource.data.t));
+    }
+
+    // live links: anyone can look (no account), the owner (Pro) shares, signed-in people edit when the owner allows it
+    function shareOwner(code) { return signedIn() && get(/databases/$(database)/documents/shares/$(code)).data.owner == request.auth.uid; }
+    function shareEditable(code) {
+      let s = get(/databases/$(database)/documents/shares/$(code)).data;
+      return signedIn() && s.on == true && (s.owner == request.auth.uid || s.edit == true);
+    }
+    match /shares/{code} {
+      allow get: if resource.data.on == true || (signedIn() && resource.data.owner == request.auth.uid);
+      allow list: if signedIn() && resource.data.owner == request.auth.uid; // only your own (for “Download my data” / “Delete my account”)
+      allow create: if signedIn() && isPro() && code.matches('^[a-z0-9]{6,10}$')
+        && request.resource.data.keys().hasOnly(['owner', 'slug', 'title', 'o', 'n', 'edit', 'on', 'm', 'at', 'upd'])
+        && request.resource.data.owner == request.auth.uid && request.resource.data.on == true
+        && request.resource.data.slug is string && request.resource.data.slug.size() <= 40
+        && request.resource.data.title is string && request.resource.data.title.size() <= 80;
+      allow update: if signedIn() && resource.data.on == true && (
+          (resource.data.owner == request.auth.uid && request.resource.data.owner == resource.data.owner
+            && request.resource.data.keys().hasOnly(['owner', 'slug', 'title', 'o', 'n', 'edit', 'on', 'm', 'at', 'upd']))
+          || (resource.data.edit == true && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['m', 'n', 'upd'])
+            && request.resource.data.n is int && request.resource.data.n <= 2000));
+      allow delete: if signedIn() && resource.data.owner == request.auth.uid;
+      match /r/{rec} {
+        allow get: if get(/databases/$(database)/documents/shares/$(code)).data.on == true || shareOwner(code);
+        allow create, update: if shareEditable(code)
+          && request.resource.data.keys().hasOnly(['h', 'n', 'i', 'd'])
+          && request.resource.data.d is string && request.resource.data.d.size() <= 400000;
+        allow delete: if shareEditable(code);
+      }
+    }
+
+    match /shop/{id} { // banners and items added from the admin panel
+      allow read: if signedIn();
+      allow write: if isAdmin();
     }
 
     function profileOk(d) {

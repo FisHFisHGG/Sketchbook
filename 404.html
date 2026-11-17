@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Foliet Sketchbook</title>
+<meta name="description" content="A notebook shared from Foliet Sketchbook – a digital sketchbook that opens in your browser.">
+<script>
+// the same light / dark choice as the app and the landing page
+(function(){try{var t=(JSON.parse(localStorage.getItem('sb-set')||'{}').theme)||'auto';if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})();
+</script>
+<style>
+:root{color-scheme:light dark;--bg:#e4e9e6;--ink:#1c2428;--bar:#f7f8f6;--line:#c9d0cc;--accent:#23407a;--muted:#5d6a70;--sh:rgba(20,30,35,.25)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161d20;--ink:#e8eeec;--bar:#212b2f;--line:#35424a;--accent:#8fb0f0;--muted:#9fb0b6;--sh:rgba(0,0,0,.55)}}
+:root[data-theme="dark"]{--bg:#161d20;--ink:#e8eeec;--bar:#212b2f;--line:#35424a;--accent:#8fb0f0;--muted:#9fb0b6;--sh:rgba(0,0,0,.55)}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+a{color:inherit}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;background:color-mix(in srgb,var(--bar) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:800;flex:none}.logo i{display:inline-block;width:14px;height:19px;background:#23407a;border-radius:2px 5px 5px 2px;box-shadow:inset 3px 0 0 rgba(0,0,0,.28)}
+.logo small{font-weight:500;opacity:.7}
+.tt{flex:1;min-width:0}.tt b{display:block;font-size:1.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:.78em;color:var(--muted)}.live::before{content:'';width:8px;height:8px;border-radius:50%;background:#2f9e5b;box-shadow:0 0 0 0 rgba(47,158,91,.6);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(47,158,91,0)}100%{box-shadow:0 0 0 0 rgba(47,158,91,0)}}
+.btn{flex:none;display:inline-flex;align-items:center;border:0;border-radius:999px;background:var(--ink);color:var(--bg);font:inherit;font-weight:700;padding:9px 16px;text-decoration:none;white-space:nowrap}
+main{max-width:760px;margin:0 auto;padding:20px 16px 40px;display:grid;gap:22px}
+.pg{position:relative;margin:0;background:#fdfdfa;border-radius:6px;box-shadow:0 10px 30px var(--sh);overflow:hidden}
+.pg img{display:block;width:100%;height:auto}.pg.cover{border-radius:6px 14px 14px 6px}
+.pg figcaption{position:absolute;right:10px;bottom:8px;font-size:.75em;font-weight:700;color:#1c2428;background:rgba(255,255,255,.75);padding:1px 8px;border-radius:999px}
+.pg.empty{aspect-ratio:3/4;display:grid;place-items:center;color:#9aa3a8}.pg.empty.l{aspect-ratio:4/3}
+.pg.fresh{animation:fresh 1.2s ease}@keyframes fresh{0%{box-shadow:0 0 0 4px #2f9e5b,0 10px 30px var(--sh)}100%{box-shadow:0 10px 30px var(--sh)}}
+.msg{max-width:440px;margin:12vh auto 0;padding:0 20px;text-align:center}.msg h1{font-size:1.6em;line-height:1.2;margin:0 0 10px}.msg p{color:var(--muted)}
+.msg .btn{margin-top:10px}
+footer{text-align:center;padding:10px 16px 40px;color:var(--muted);font-size:.9em}footer a{font-weight:700}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:.88em;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none}#toast.on{opacity:1}
+.spin{width:28px;height:28px;margin:30vh auto 0;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.live::before,.spin,.pg.fresh{animation:none}}
+@media (max-width:520px){.logo small{display:none}.btn{padding:8px 12px;font-size:.9em}}
+</style>
+</head>
+<body>
+<header id="hd" hidden><a class="logo" id="home" href="./"><i aria-hidden="true"></i>Foliet <small>Sketchbook</small></a><div class="tt"><b id="title">Notebook</b><span class="live" id="state">Live · view only</span></div><a class="btn" id="edit" hidden>Edit</a></header>
+<main id="main"><div class="spin" aria-label="Loading"></div></main>
+<footer id="ft" hidden>Made with <a id="home2" href="./">Foliet Sketchbook</a> – a sketchbook in your browser. <a id="home3" href="./">Make your own, free</a></footer>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+/* A live link to a notebook: <site>/<slug>/<code> (GitHub Pages and Netlify show this page for addresses that aren't files).
+   Anyone can look – no account. The pages come from Firestore shares/{code} (+ /r/{record}) and change as the owner draws.
+   "Edit" opens the app, which asks to sign in. */
+(function(){
+  var $=function(s){return document.querySelector(s)};
+  var m=location.pathname.match(/^(.*\/)([^\/]+)\/([a-z0-9]{6,10})\/?$/);
+  var root=m?m[1]:(location.pathname.indexOf('/Sketchbook/')===0?'/Sketchbook/':'/');
+  ['#home','#home2','#home3'].forEach(function(s){$(s).href=root});
+  function page(h,t,btn){$('#main').innerHTML='<div class="msg"><h1></h1><p></p><a class="btn"></a></div>';$('.msg h1').textContent=h;$('.msg p').textContent=t;$('.msg .btn').textContent=btn||'Go to Foliet';$('.msg .btn').href=root;$('#ft').hidden=false}
+  if(!m){page('Page not found','This page doesn’t exist. Maybe the link is missing a part?');return}
+  var code=m[3],toastT=0;
+  function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){e.classList.remove('on')},2400)}
+  var s=document.createElement('script');s.src=root+'app/vendor/firebase.js';s.onerror=function(){page('Can’t open this notebook','Check your internet connection and try again.','Try again');$('.msg .btn').href=location.href};
+  s.onload=start;document.head.appendChild(s);
+  function start(){
+    var F=window.FB,app=F.initializeApp({apiKey:"AIzaSyDIlAlVdivTKEJ7nv4BfjdZS3PeERxIcms",authDomain:"sketchbook-b1de1.firebaseapp.com",projectId:"sketchbook-b1de1",storageBucket:"sketchbook-b1de1.firebasestorage.app",messagingSenderId:"924673664913",appId:"1:924673664913:web:f25d4423a121208ea1dc30"});
+    var db=F.initializeFirestore(app,{experimentalAutoDetectLongPolling:true});
+    var emu=new URLSearchParams(location.search).get('emu');
+    if(emu&&/^(localhost|127\.0\.0\.1)$/.test(emu)&&/^(localhost|127\.0\.0\.1)$/.test(location.hostname))F.connectFirestoreEmulator(db,emu,8080);
+    var shown={},nodes={},first=true,o='p';
+    function rec(k,r){ // a record's chunks → {r, v}
+      var ids=[];for(var i=0;i<(r.n||1);i++)ids.push(i?k+'~~'+i:k);
+      return Promise.all(ids.map(function(id){return F.getDoc(F.doc(db,'shares',code,'r',id))})).then(function(ps){
+        if(ps.some(function(p){return !p.exists()||p.data().h!==r.h}))return null;
+        try{return JSON.parse(ps.map(function(p){return p.data().d}).join(''))}catch(e){return null}});
+    }
+    function node(k,i){
+      if(nodes[k])return nodes[k];var f=document.createElement('figure');f.className='pg empty'+(k==='meta'?' cover':'')+(o==='l'?' l':'');f.dataset.k=k;
+      var c=document.createElement('figcaption');c.textContent=k==='meta'?'Cover':'Page '+(i+1);f.appendChild(c);nodes[k]=f;return f;
+    }
+    function lay(n){ // cover + n pages, in order
+      var main=$('#main'),want=['meta'];for(var i=0;i<n;i++)want.push('p~'+i);
+      Object.keys(nodes).forEach(function(k){if(want.indexOf(k)<0){nodes[k].remove();delete nodes[k];delete shown[k]}});
+      if(first){main.innerHTML=''}
+      want.forEach(function(k,j){main.appendChild(node(k,j-1))});
+    }
+    function show(k,x,fresh){
+      var f=nodes[k];if(!f||!x)return;var im=f.querySelector('img');
+      if(x.v){if(!im){im=new Image();im.alt=k==='meta'?'Cover':'Page '+(+k.slice(2)+1);f.insertBefore(im,f.firstChild)}im.src=x.v;f.classList.remove('empty')}
+      if(fresh){f.classList.remove('fresh');void f.offsetWidth;f.classList.add('fresh')}
+    }
+    F.onSnapshot(F.doc(db,'shares',code),function(snap){
+      if(!snap.exists()||!snap.data().on){page('This notebook isn’t shared any more','The person who shared it stopped sharing, or the link isn’t complete.');return}
+      var d=snap.data(),mf=d.m||{};o=d.o||'p';
+      document.title=(d.title||'Notebook')+' – Foliet Sketchbook';$('#title').textContent=d.title||'Notebook';$('#hd').hidden=false;$('#ft').hidden=false;
+      var ed=$('#edit');ed.hidden=!d.edit;ed.href=root+'app/?share='+code;ed.textContent='Edit';
+      $('#state').textContent=d.edit?'Live · anyone signed in can edit':'Live · view only';
+      lay(d.n||0);
+      var changed=Object.keys(mf).filter(function(k){return nodes[k]&&shown[k]!==mf[k].h});
+      changed.forEach(function(k){var h=mf[k].h;rec(k,mf[k]).then(function(x){if(x&&(mf[k]||{}).h===h){show(k,x,!first&&shown[k]!==undefined);shown[k]=h}})});
+      if(!first&&changed.length)toast(changed.length===1?'A page just changed':changed.length+' pages just changed');
+      first=false;
+    },function(){page('This notebook isn’t shared any more','The person who shared it stopped sharing, or the link isn’t complete.')});
+  }
+})();
+</script>
+</body>
+</html>
