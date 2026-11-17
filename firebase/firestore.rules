@@ -161,11 +161,11 @@ service cloud.firestore {
       allow update: if owner(uid) && (validTplRedeem(uid, resource.data.t) || validFreeClaim(resource.data.t));
     }
 
-    // live links: anyone can look (no account), the owner (Pro) shares, signed-in people edit when the owner allows it
+    // live links: anyone can look (no account), the owner (Pro) shares, Pro accounts edit when the owner allows it
     function shareOwner(code) { return signedIn() && get(/databases/$(database)/documents/shares/$(code)).data.owner == request.auth.uid; }
     function shareEditable(code) {
       let s = get(/databases/$(database)/documents/shares/$(code)).data;
-      return signedIn() && s.on == true && (s.owner == request.auth.uid || s.edit == true);
+      return signedIn() && s.on == true && (s.owner == request.auth.uid || (s.edit == true && isPro()));
     }
     match /shares/{code} {
       allow get: if resource.data.on == true || (signedIn() && resource.data.owner == request.auth.uid);
@@ -178,7 +178,7 @@ service cloud.firestore {
       allow update: if signedIn() && resource.data.on == true && (
           (resource.data.owner == request.auth.uid && request.resource.data.owner == resource.data.owner
             && request.resource.data.keys().hasOnly(['owner', 'slug', 'title', 'o', 'n', 'edit', 'on', 'm', 'at', 'upd']))
-          || (resource.data.edit == true && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['m', 'n', 'upd'])
+          || (resource.data.edit == true && isPro() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['m', 'n', 'upd'])
             && request.resource.data.n is int && request.resource.data.n <= 2000));
       allow delete: if signedIn() && resource.data.owner == request.auth.uid;
       match /r/{rec} {

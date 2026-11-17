@@ -23,7 +23,9 @@ header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;
 .tt{flex:1;min-width:0}.tt b{display:block;font-size:1.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .live{display:inline-flex;align-items:center;gap:6px;font-size:.78em;color:var(--muted)}.live::before{content:'';width:8px;height:8px;border-radius:50%;background:#2f9e5b;box-shadow:0 0 0 0 rgba(47,158,91,.6);animation:pulse 2s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 7px rgba(47,158,91,0)}100%{box-shadow:0 0 0 0 rgba(47,158,91,0)}}
-.btn{flex:none;display:inline-flex;align-items:center;border:0;border-radius:999px;background:var(--ink);color:var(--bg);font:inherit;font-weight:700;padding:9px 16px;text-decoration:none;white-space:nowrap}
+.btn{flex:none;display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;background:var(--ink);color:var(--bg);font:inherit;font-weight:700;padding:9px 16px;text-decoration:none;white-space:nowrap}
+/* only Pro features get a badge */
+.pro{font-size:.7em;font-weight:700;padding:1px 7px;border-radius:999px;background:color-mix(in srgb,var(--bg) 24%,transparent);color:inherit}
 main{max-width:760px;margin:0 auto;padding:20px 16px 40px;display:grid;gap:22px}
 .pg{position:relative;margin:0;background:#fdfdfa;border-radius:6px;box-shadow:0 10px 30px var(--sh);overflow:hidden}
 .pg img{display:block;width:100%;height:auto}.pg.cover{border-radius:6px 14px 14px 6px}
@@ -47,7 +49,7 @@ footer{text-align:center;padding:10px 16px 40px;color:var(--muted);font-size:.9e
 <script>
 /* A live link to a notebook: <site>/<slug>/<code> (GitHub Pages and Netlify show this page for addresses that aren't files).
    Anyone can look – no account. The pages come from Firestore shares/{code} (+ /r/{record}) and change as the owner draws.
-   "Edit" opens the app, which asks to sign in. */
+   "Edit" (Pro) opens the app, which asks to sign in; without Pro it explains that editing is part of Pro. */
 (function(){
   var $=function(s){return document.querySelector(s)};
   var m=location.pathname.match(/^(.*\/)([^\/]+)\/([a-z0-9]{6,10})\/?$/);
@@ -90,8 +92,8 @@ footer{text-align:center;padding:10px 16px 40px;color:var(--muted);font-size:.9e
       if(!snap.exists()||!snap.data().on){page('This notebook isn’t shared any more','The person who shared it stopped sharing, or the link isn’t complete.');return}
       var d=snap.data(),mf=d.m||{};o=d.o||'p';
       document.title=(d.title||'Notebook')+' – Foliet Sketchbook';$('#title').textContent=d.title||'Notebook';$('#hd').hidden=false;$('#ft').hidden=false;
-      var ed=$('#edit');ed.hidden=!d.edit;ed.href=root+'app/?share='+code;ed.textContent='Edit';
-      $('#state').textContent=d.edit?'Live · anyone signed in can edit':'Live · view only';
+      var ed=$('#edit');ed.hidden=!d.edit;ed.href=root+'app/?share='+code;ed.innerHTML='Edit <span class="pro">Pro</span>';ed.title='Foliet Pro members can sign in and edit it';
+      $('#state').textContent=d.edit?'Live · Pro members can edit':'Live · view only';
       lay(d.n||0);
       var changed=Object.keys(mf).filter(function(k){return nodes[k]&&shown[k]!==mf[k].h});
       changed.forEach(function(k){var h=mf[k].h;rec(k,mf[k]).then(function(x){if(x&&(mf[k]||{}).h===h){show(k,x,!first&&shown[k]!==undefined);shown[k]=h}})});

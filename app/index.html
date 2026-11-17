@@ -694,7 +694,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <button class="xo" id="sh-file"><svg class="ic" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 14h6M9 17h4"/></svg><div><b>View-only file</b><span>One .html file anyone can open in a browser. No account, no editing, works offline.</span></div></button>
   <button class="xo" id="sh-live"><svg class="ic" viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></svg><div><b>Live link <span class="soon" id="sh-pro">Pro</span></b><span>Anyone with the link can look, no account needed. It updates as you draw.</span></div></button>
   <div id="sh-livep" class="hidden"><label class="lk-lbl" for="sh-url">Live link</label><div class="crow"><input class="lk-in" id="sh-url" readonly><button class="ib" id="sh-copy" type="button">Copy</button></div>
-    <label class="chk adm-chk sh-chk"><input type="checkbox" id="sh-edit"><span>People with the link can edit too (they sign in to Foliet)</span></label>
+    <label class="chk adm-chk sh-chk"><input type="checkbox" id="sh-edit"><span>People with Foliet Pro can edit it too (they sign in)</span></label>
     <p class="sh-note" id="sh-note"></p><div class="sh-acts"><a class="ib" id="sh-open" target="_blank" rel="noopener">Open</a><button class="ib" id="sh-stop" type="button">Stop sharing</button></div></div>
   <div class="acts2"><button class="ib" id="shno">Close</button></div>
 </div></div>
@@ -2983,19 +2983,19 @@ async function accUser(u){
   if(ACC.unOwn){ACC.unOwn();ACC.unOwn=null}
   if(ACC.unOff){ACC.unOff();ACC.unOff=null}OFFER=null;
   syncStop();
-  const had=ACC.user;ACC.user=u||null;ACC.owned=new Set();ACC.claimPro=false;ACC.docPro=false;ACC.proDoc=null;ACC.admin=false;ACC.err='';ACC.offline=false;clearTimeout(ACC.proT);
+  const had=ACC.user;ACC.user=u||null;ACC.owned=new Set();ACC.claimPro=false;ACC.docPro=false;ACC.proDoc=null;ACC.proSeen=false;ACC.tokP=null;ACC.admin=false;ACC.err='';ACC.offline=false;clearTimeout(ACC.proT);
   if(u){await openLibrary(u.uid);hideGate();
     const sc=new URLSearchParams(location.search).get('share');if(sc){try{history.replaceState(null,'',location.pathname+location.search.replace(/[?&]share=[^&]*/,'').replace(/^&/,'?'))}catch(e){}setTimeout(()=>openShared(sc),600)}}
   else{lsSet('sb-last-uid','');if(had)ACC.mode='in';await closeLibrary();showGate()} // after signing out, show "Sign in" again
   if(u){
     try{const t=await u.getIdTokenResult();ACC.claimPro=t.claims.stripeRole==='pro'}catch(e){}
     // and a fresh one in the background: Stripe gives the Pro role (stripeRole) after a payment or a card for a free trial
-    u.getIdTokenResult(true).then(t=>{const c=t.claims.stripeRole==='pro';if(ACC.user===u&&c!==ACC.claimPro){ACC.claimPro=c;setPro()}}).catch(()=>{});
+    ACC.tokP=u.getIdTokenResult(true).then(t=>{const c=t.claims.stripeRole==='pro';if(ACC.user===u&&c!==ACC.claimPro){ACC.claimPro=c;setPro()}}).catch(()=>{});
     const F=ACC.F;
     ACC.unPro=F.onSnapshot(F.doc(ACC.db,'pro',u.uid),s=>{
       ACC.proDoc=s.exists()?s.data():null;ACC.docPro=proActiveDoc(ACC.proDoc);
       clearTimeout(ACC.proT);const end=proUntil(ACC.proDoc);if(ACC.docPro&&end)ACC.proT=setTimeout(()=>{ACC.docPro=false;setPro()},Math.min(end-Date.now()+1000,2e9)); // Pro from a code ends by itself
-      setPro()},()=>{ACC.docPro=false;setPro()});
+      ACC.proSeen=true;setPro()},()=>{ACC.docPro=false;ACC.proSeen=true;setPro()});
     let oc=[];try{oc=JSON.parse(lsGet('sb-own:'+u.uid)||'[]')}catch(e){}setOwned(oc); // bought templates, also offline
     ACC.unOwn=F.onSnapshot(F.doc(ACC.db,'owned',u.uid),s=>setOwned(s.exists()?s.data().t:[]),()=>{});
     let first=true; // a card offer waiting for this account (codes that ask for a card)
@@ -3012,6 +3012,7 @@ function setPro(){
   if(ACC.pro&&!was)syncStart();
   if(LIBST.ready)shareListenAll();
   if(!ACC.pro&&was)syncStop();
+  if(!ACC.pro&&was&&GUEST){toast('Editing shared notebooks is part of Pro. You can still look at it.');if(cur===GUEST&&$('#ed').classList.contains('hidden'))closeBook()}
   renderAcc();
 }
 const AUTH_MSG={'auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong email or password.','auth/user-not-found':'There is no account with this email yet.','auth/email-already-in-use':'There is already an account with this email. Sign in instead.','auth/weak-password':'Use at least 6 characters for the password.','auth/invalid-email':'That email address doesn’t look right.','auth/missing-password':'Type your password.','auth/too-many-requests':'Too many tries. Wait a few minutes and try again.','auth/network-request-failed':'No internet connection. Try again when you’re online.','auth/unauthorized-domain':'Sign-in isn’t enabled for this website yet.','auth/operation-not-allowed':'This sign-in method isn’t enabled yet.','auth/account-exists-with-different-credential':'This email already signs in another way. Use that method.'};
@@ -5386,14 +5387,29 @@ async function shareEnd(b){ // stop sharing: the link stops working and the shar
   try{const man=S.man||((await F.getDoc(shRef(code))).data()||{}).m||{};for(const k in man){const bt=F.writeBatch(ACC.db);for(let i=0;i<(man[k].n||1);i++)bt.delete(shRef(code,'r',chunkId(k,i)));await bt.commit()}await F.deleteDoc(shRef(code))}catch(e){console.warn(e)}
   delete SHS[code];delete b.share;persist();
 }
-// app/?share=CODE: open a notebook someone shared with you, to edit it
+// app/?share=CODE: open a notebook someone shared with you, to edit it (Pro; others can only look)
+async function proReady(){ // wait until we know if this account has Pro (the first answer from pro/{uid}, and the fresh token)
+  const t=Date.now();while(ACC.user&&!ACC.proSeen&&Date.now()-t<8000)await new Promise(r=>setTimeout(r,100));
+  if(!ACC.pro&&ACC.tokP)await Promise.race([ACC.tokP,new Promise(r=>setTimeout(r,4000))]);
+}
+function shareProDlg(title){ // not Pro: you can look, editing needs Pro
+  return lockDlg((c,close)=>{c.classList.add('shpro');
+    const ic=el('div','lk-ic');ic.innerHTML='<svg class="ic" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';c.append(ic);
+    c.append(el('h2','','Editing is part of Pro'),el('p','lk-sub','You can look at “'+(title||'this notebook')+'” any time, no Pro needed. To draw and write in it, you need Foliet Pro.'));
+    const acts=el('div','acts2'),look=el('button','ib','Just look'),pro=el('button','btn','See Pro');look.type=pro.type='button';look.id='shp-look';pro.id='shp-pro';
+    look.onclick=()=>close('look');pro.onclick=()=>close('pro');acts.append(look,pro);c.append(acts);setTimeout(()=>pro.focus(),60);
+  });
+}
 async function openShared(code){
   if(!/^[a-z0-9]{6,10}$/.test(code))return;
   const own=data.find(b=>b.share&&b.share.code===code);if(own){showStore(false);showBrowse(own);return}
   const F=ACC.F;let d=null;try{const s=await F.getDoc(shRef(code));d=s.exists()?s.data():null}catch(e){}
   if(!d||!d.on){toast('This link isn’t shared any more.');return}
   if(d.owner===ACC.user.uid){toast('This is your notebook – it’s on your shelf.');return}
-  if(!d.edit){goTo(location.origin+siteRoot()+(d.slug||'notebook')+'/'+code);return} // view only: the viewer page
+  const view=location.origin+siteRoot()+(d.slug||'notebook')+'/'+code;
+  if(!d.edit){goTo(view);return} // view only: the viewer page
+  await proReady();
+  if(!ACC.pro){const v=await shareProDlg(d.title);if(v==='look')goTo(view);else if(v==='pro')upsell('Editing notebooks that others share with you is part of Pro. Looking at them is free.');return}
   toast('Opening “'+(d.title||'Untitled')+'”…');
   const S=shState(code);S.man={...(d.m||{})};S.n=d.n||0;S.edit=true;S.h={};
   const meta=await shPull(code,'meta'),b=ens({...((meta&&meta.r)||{title:d.title,o:d.o}),id:'share-'+code,pages:[],objs:[],pv:[],bg:[],ps:[],lay:[]});
@@ -5409,7 +5425,7 @@ function initShare(){
     if(g){const S=shState(b._share),u=shareURL(shareSlug(b._title||b.title),b._share);$('#sh-url').value=u;$('#sh-open').href=u;$('#sh-edit').closest('label').classList.add('hidden');$('#sh-stop').classList.add('hidden');$('#sh-note').textContent='Shared with you. Your changes show for everyone with the link.';return}
     $('#sh-edit').closest('label').classList.remove('hidden');$('#sh-stop').classList.remove('hidden');
     if(sh){const u=shareURL(sh.slug||shareSlug(b.title),sh.code);$('#sh-url').value=u;$('#sh-open').href=u;$('#sh-edit').checked=!!sh.edit;
-      $('#sh-note').textContent=sh.edit?'Anyone with the link can look. People who sign in can draw and write in it too – their changes come to your notebook.':'Anyone with the link can look, no account needed. It changes as you draw.'}};
+      $('#sh-note').textContent=sh.edit?'Anyone with the link can look. People with Pro can sign in and draw and write in it too – their changes come to your notebook.':'Anyone with the link can look, no account needed. It changes as you draw.'}};
   $('#bshare').onclick=()=>{$('#shs').textContent='Share “'+(cur.title||'Untitled')+'”.';live();d.classList.remove('hidden')};
   $('#sh-live').onclick=async()=>{const b=cur,t=$('#sh-live');if(!ACC.pro){close();upsell('Live links are part of Pro: anyone can look, no account needed, and it updates as you draw.');return}
     t.disabled=true;$('#sh-live span:not(.soon)').textContent='Making the link…';try{await shareStart(b);live()}catch(e){console.warn(e);toast('Couldn’t make the link. Check your connection.')}

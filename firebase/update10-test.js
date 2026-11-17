@@ -113,11 +113,25 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(/\/Sketchbook\/trip-to-rome\//.test(G.url()),'opening it in the app while it’s view only shows the view');
   // the owner allows editing
   await O.check('#sh-edit');await O.waitForTimeout(800);
-  ok((await (await admin('shares/'+code,null,'GET')).json()).fields.edit.booleanValue===true&&await O.evaluate(()=>/can draw and write/.test($('#sh-note').textContent)),'Olga ticks “People with the link can edit too”');
+  ok((await (await admin('shares/'+code,null,'GET')).json()).fields.edit.booleanValue===true&&await O.evaluate(()=>/People with Pro can sign in and draw and write/.test($('#sh-note').textContent)),'Olga ticks “People with Foliet Pro can edit it too”');
   await V.waitForFunction(()=>!document.querySelector('#edit').hidden,null,{timeout:10000});
-  ok(await V.evaluate(()=>/app\/\?share=/.test(document.querySelector('#edit').href)),'the link now has an “Edit” button (it opens Foliet, which asks to sign in)');
+  ok(await V.evaluate(()=>/app\/\?share=/.test(document.querySelector('#edit').href)&&/Pro/.test(document.querySelector('#edit .pro').textContent)&&/Pro members can edit/.test(document.querySelector('#state').textContent)),'the link now has an “Edit” button with a Pro badge (it opens Foliet, which asks to sign in)');
+  // Gabi has the free plan: she can only look
+  await G.goto(URL0);await ready(G);
+  const wr2=await G.evaluate(c=>{const F=ACC.F;return F.setDoc(F.doc(ACC.db,'shares',c,'r','p~0'),{h:'x',n:1,i:0,d:'{}'}).then(()=>'ok',e=>e.code)},code);
+  ok(wr2==='permission-denied','editing allowed, but a free account still can’t change it (the rules)');
+  await G.goto(URL0+'&share='+code);await ready(G);await G.waitForSelector('#shp-look',{timeout:20000});
+  if(process.env.SHOT){await G.screenshot({path:process.env.SHOT+'/shpro.png'});await V.screenshot({path:process.env.SHOT+'/viewer.png'})}
+  ok(await G.evaluate(()=>/Editing is part of Pro/.test($('#lockc').textContent)&&/Trip to Rome/.test($('#lockc').textContent)&&!cur),'free plan: “Editing is part of Pro – you can look at it any time”');
+  await G.click('#shp-pro');await G.waitForTimeout(300);
+  ok(await G.evaluate(()=>!$('#up').classList.contains('hidden')&&/part of Pro/.test($('#upm').textContent)),'“See Pro” opens the Pro window');
+  await G.goto(URL0+'&share='+code);await ready(G);await G.waitForSelector('#shp-look',{timeout:20000});await G.click('#shp-look');
+  await G.waitForURL(/\/Sketchbook\/trip-to-rome\//,{timeout:20000}).catch(()=>{});
+  ok(/\/Sketchbook\/trip-to-rome\//.test(G.url()),'“Just look” shows the notebook (view only)');
+  // with Pro she can edit
+  await G.goto(URL0);await ready(G);await givePro(G);
   await G.goto(URL0+'&share='+code);await ready(G);await G.waitForFunction(()=>cur&&cur._guest,null,{timeout:20000});
-  ok(await G.evaluate(()=>cur.title==='Trip to Rome'&&cur.pages.length===2&&!!cur.pages[0]&&$('#block').classList.contains('hidden')&&$('#btitle').readOnly&&!data.some(b=>b._guest)),'Gabi (signed in) opens it to edit: the notebook with its pages (not on her own shelf; no lock, no renaming)');
+  ok(await G.evaluate(()=>cur.title==='Trip to Rome'&&cur.pages.length===2&&!!cur.pages[0]&&$('#block').classList.contains('hidden')&&$('#btitle').readOnly&&!data.some(b=>b._guest)),'Gabi (Pro) opens it to edit: the notebook with its pages (not on her own shelf; no lock, no renaming)');
   await G.evaluate(()=>showEditor(-1));
   ok(await G.evaluate(()=>$('#ed').classList.contains('hidden')),'… she can’t change the cover');
   // Gabi draws on page 1 and adds a page
