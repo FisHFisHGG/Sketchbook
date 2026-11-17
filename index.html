@@ -29,8 +29,8 @@
   "applicationCategory":"DesignApplication","operatingSystem":"Any (web browser), Android, iOS, Windows, macOS","browserRequirements":"Requires a modern browser",
   "featureList":["Pen, pencil, brush, marker, highlighter, shapes and fill","Text in 8 fonts, stickers and sticky notes","Blank, lined, grid and dot pages","Lock notebooks with a PIN or password","Fingerprint unlock on Android","Works offline","Light and dark theme","PDF import and export (Pro)","Cloud sync across devices (Pro)"],
   "offers":[{"@type":"Offer","name":"Free","price":"0","priceCurrency":"EUR"},
-            {"@type":"Offer","name":"Pro monthly","price":"3.99","priceCurrency":"EUR"},
-            {"@type":"Offer","name":"Pro yearly","price":"29.99","priceCurrency":"EUR"}]}
+            {"@type":"Offer","name":"Pro monthly","price":"5.99","priceCurrency":"EUR"},
+            {"@type":"Offer","name":"Pro yearly","price":"44.99","priceCurrency":"EUR"}]}
 ]}
 </script>
 <meta name="theme-color" content="#e4e9e6">
@@ -377,7 +377,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
           <article class="st" data-s="5"><h3>Pages set up your way</h3><p>Choose how each page looks: blank, lined, grid, dots or one of your templates, on paper from bright white and warm white (easier on the eyes) to black, or any color you like. Portrait or landscape. Apply it to one page or to all of them.</p></article>
           <article class="st" data-s="6"><h3>Your PDFs, ready to mark up<span class="soon">Pro</span></h3><p>Choose portrait or landscape and each PDF page fits a notebook page. Write, circle and annotate on top.</p></article>
           <article class="st" data-s="7"><h3>Every page at a glance</h3><p>See the whole notebook at once. Reorder pages, duplicate them, delete them, or jump straight to one.</p></article>
-          <article class="st" data-s="8"><h3>Private notebooks<span class="soon">Free</span></h3><p>Lock any notebook with a 4-digit PIN or a password. On Android you can also open it with your fingerprint.</p></article>
+          <article class="st" data-s="8"><h3>Private notebooks</h3><p>Lock any notebook with a 4-digit PIN or a password. On Android you can also open it with your fingerprint.</p></article>
         </div>
         <div class="tour-demo" aria-hidden="true">
           <div class="demo g0" id="demo" data-s="0">
@@ -440,7 +440,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
           </div>
           <div class="plan">
             <h3>Pro</h3>
-            <div class="price"><span id="pp">€29.99</span> <small id="pu">per year</small></div>
+            <div class="price"><span id="pp">€44.99</span> <small id="pu">per year</small></div>
             <p class="eq" id="pe">That’s €2.50 a month.</p>
             <ul><li>Unlimited notebooks and pages</li><li>Your own categories, like Study or Travel</li><li>PDF import</li><li>A photo on the cover, to draw on</li><li>Deleted notebooks kept 30 days</li><li>Export to PDF and image</li><li>Cloud sync across your devices</li></ul>
             <button class="btn pri" id="pbtn" disabled>Pro is coming soon</button>
@@ -494,7 +494,7 @@ $('#themeb').onclick=()=>{const want=themeNow()==='dark'?'light':'dark',sys=mq&&
 if(mq&&mq.addEventListener)mq.addEventListener('change',paintTheme);
 paintTheme();
 const scue=$('#scue');if(scue)addEventListener('scroll',()=>scue.classList.toggle('gone',scrollY>60),{passive:true});
-const CHIPS=[['Thick cover','Pick a color','Draw on it'],['Cover opens','Thick pages','Stack on both sides'],['Drag to turn','Follows your finger','Real page edge'],['Pen','Pencil','Brush','Marker','Highlighter','Shapes','Fill'],['8 fonts','28 stickers','Sticky notes','Move and rotate'],['Blank','Lined','Grid','Dots','Paper colors'],['Portrait or landscape','Fits each page','Write on top'],['Reorder','Duplicate','Delete','Jump to a page'],['PIN or password','Fingerprint on Android','Included free']];
+const CHIPS=[['Thick cover','Pick a color','Draw on it'],['Cover opens','Thick pages','Stack on both sides'],['Drag to turn','Follows your finger','Real page edge'],['Pen','Pencil','Brush','Marker','Highlighter','Shapes','Fill'],['8 fonts','28 stickers','Sticky notes','Move and rotate'],['Blank','Lined','Grid','Dots','Paper colors'],['Portrait or landscape','Fits each page','Write on top'],['Reorder','Duplicate','Delete','Jump to a page'],['PIN or password','Fingerprint on Android','Locks again when you leave']];
 const demo=$('#demo'),sts=[...document.querySelectorAll('.st')];
 function setStep(i){
   demo.dataset.s=i;
@@ -507,7 +507,7 @@ if('IntersectionObserver' in window){
   sts.forEach(el=>io.observe(el));
 }
 setStep(0);
-const bill={y:['€29.99','per year','That’s €2.50 a month.','Pro is coming soon'],m:['€3.99','per month','Billed monthly. Cancel any time.','Pro is coming soon']};
+const bill={y:['€44.99','per year','That’s €3.75 a month.','Pro is coming soon'],m:['€5.99','per month','Billed monthly. Cancel any time.','Pro is coming soon']};
 function setBill(k){
   $('#b-year').setAttribute('aria-pressed',k==='y');$('#b-month').setAttribute('aria-pressed',k==='m');
   $('#pp').textContent=bill[k][0];$('#pu').textContent=bill[k][1];$('#pe').textContent=bill[k][2];$('#pbtn').textContent=bill[k][3];

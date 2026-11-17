@@ -6,9 +6,11 @@ rules_version = '2';
 // users/{uid}/r/{rec}    one notebook record (or a chunk of it): {h, n, i, d}
 // pro/{uid}              Pro for this user: {by, since, days, code?}. days 0 / missing = forever.
 //                        Made by you in the console, from the admin panel, or by redeeming a code.
-// codes/{CODE}           promo codes: {kind:'pro', days, …} or {kind:'tpl', tpl: template id | 'all', …},
+// codes/{CODE}           promo codes: {kind:'pro', days, card?, …} or {kind:'tpl', tpl: template id | 'all', …},
 //                        plus {max, used, active, note, created}
 // owned/{uid}            paid templates this person has: {t: [ids | 'all'], last: CODE | 'admin'}
+// offers/{uid}           a card offer from a code that asks for a card: {code, days, at}; 24 hours to add a card
+// config/public          payments (Stripe price IDs, on/off) and the welcome offer – read by every account, written by admins
 // redeem/{uid_CODE}      who used which code (one use per person per code)
 // profiles/{uid}         {email, name, via, os, lang, app, created, seen} – for the admin panel's statistics
 // act/{YYYY-MM_uid}      this account used Foliet in that month (one tiny record per month)
@@ -42,7 +44,21 @@ service cloud.firestore {
       return d.keys().hasOnly(['code', 'by', 'since', 'days'])
         && d.code is string && d.code.matches('^[A-Z0-9-]{4,24}$')
         && d.by == 'code' && d.since == request.time
-        && c.active == true && c.kind == 'pro' && c.used < c.max && d.days == c.days
+        && c.active == true && c.kind == 'pro' && c.get('card', false) != true && c.used < c.max && d.days == c.days
+        && getAfter(cp).data.used == c.used + 1
+        && !exists(/databases/$(database)/documents/redeem/$(uid + '_' + d.code))
+        && existsAfter(/databases/$(database)/documents/redeem/$(uid + '_' + d.code));
+    }
+    // a Pro code that asks for a card: it makes an offer (offers/{uid}), not Pro – Pro starts when they add a card (Stripe)
+    function validOfferRedeem(uid) {
+      let d = request.resource.data;
+      let cp = /databases/$(database)/documents/codes/$(d.code);
+      let c = get(cp).data;
+      return d.keys().hasOnly(['code', 'days', 'at'])
+        && d.code is string && d.code.matches('^[A-Z0-9-]{4,24}$')
+        && d.at == request.time
+        && c.active == true && c.kind == 'pro' && c.get('card', false) == true && c.used < c.max
+        && d.days == c.days && d.days is int && d.days > 0
         && getAfter(cp).data.used == c.used + 1
         && !exists(/databases/$(database)/documents/redeem/$(uid + '_' + d.code))
         && existsAfter(/databases/$(database)/documents/redeem/$(uid + '_' + d.code));
@@ -64,8 +80,10 @@ service cloud.firestore {
     function redeemedHere(uid, code) {
       let pp = /databases/$(database)/documents/pro/$(uid);
       let op = /databases/$(database)/documents/owned/$(uid);
+      let fp = /databases/$(database)/documents/offers/$(uid);
       return (existsAfter(pp) && getAfter(pp).data.get('code', '') == code)
-        || (existsAfter(op) && getAfter(op).data.get('last', '') == code);
+        || (existsAfter(op) && getAfter(op).data.get('last', '') == code)
+        || (existsAfter(fp) && getAfter(fp).data.get('code', '') == code);
     }
 
     match /users/{uid} {
@@ -92,6 +110,13 @@ service cloud.firestore {
       allow delete: if owner(uid); // deleting the account
       allow create: if owner(uid) && validRedeem(uid);
       allow update: if owner(uid) && validRedeem(uid) && !proActive(resource.data);
+    }
+
+    match /offers/{uid} { // a card offer waiting (24 hours) – see validOfferRedeem
+      allow get: if owner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow delete: if owner(uid) || isAdmin();
+      allow create, update: if owner(uid) && validOfferRedeem(uid);
     }
 
     match /codes/{code} {
@@ -197,8 +222,9 @@ service cloud.firestore {
         && request.resource.data.at == request.time;
     }
 
-    match /config/{id} { // admin settings, e.g. config/costs (running costs for the profit figures)
-      allow read, write: if isAdmin();
+    match /config/{id} { // admin settings: config/costs (running costs), config/public (payments + welcome offer, read by every account)
+      allow read: if isAdmin() || (id == 'public' && signedIn());
+      allow write: if isAdmin();
     }
 
     match /admins/{uid} {
