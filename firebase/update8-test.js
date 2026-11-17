@@ -73,6 +73,19 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await A.click('#lockd .btn:text("Save")');await A.waitForTimeout(400);
   ok(await A.evaluate(()=>SHELF.tc.urgent==='#8a66d6'&&SHELF.tc.school==='#2e9aa2'&&hasTag(data.find(b=>b.title==='History'),'urgent')),'"Change colours" changes an existing tag (school → Teal)');
   ok(await A.evaluate(()=>{const c=[...document.querySelectorAll('.cw .tgs .tg')].filter(t=>t.textContent==='school');return c.length===2&&c.every(t=>t.style.getPropertyValue('--tc')==='#2e9aa2')}),'… on every notebook with that tag');
+  // tag icons: emoji or symbols, by theme, or your own
+  await more(A,'Algebra');await A.click('#pop >> text=Tags');await A.waitForSelector('#tg-in');
+  await A.fill('#tg-in','maths');await A.click('#tg-icb');await A.waitForSelector('.tgicp:not(.hidden) .icpk');
+  ok(await A.evaluate(()=>[...document.querySelectorAll('.icpk-c')].map(b=>b.textContent).join()==='School,Work,Home,Travel,Food,Hobbies,Health,Nature,Faces,Marks,Symbols'&&document.querySelectorAll('.icpk-g .icpk-i').length>=16),'a tag can get an icon: emoji and symbols in 11 themes (School, Work, Home, Travel, Food, Hobbies, Health, Nature, Faces, Marks, Symbols)');
+  await A.click('.icpk-c:text("School")');await A.click('.icpk-i[aria-label="📐"]');await A.waitForTimeout(150);
+  ok(await A.evaluate(()=>$('.tgicp').classList.contains('hidden')&&$('.tgprev .tgi').textContent==='📐'&&/maths/.test($('.tgprev').textContent)),'… picked before adding, and shown in the preview (📐 maths)');
+  await A.click('.tgadd button');await A.waitForTimeout(150);
+  await A.click('.tgacts .tg-clr');await A.waitForSelector('.tgrow2');
+  await A.click('.tgrow2:has(.tg:text-is("Exam")) .tgicb');await A.click('.tgicp:not(.hidden) .icpk-c:text("Symbols")');await A.click('.tgicp:not(.hidden) .icpk-i[aria-label="★\uFE0E"]');
+  await A.click('.tgrow2:has(.tg:text-is("school")) .tgicb');await A.fill('.tgicp:not(.hidden) .icpk-own','🦄');await A.waitForTimeout(100);
+  await A.click('#lockd .btn:text("Save")');await A.waitForTimeout(400);
+  ok(await A.evaluate(()=>SHELF.ti.maths==='📐'&&SHELF.ti.exam==='★\uFE0E'&&SHELF.ti.school==='🦄'),'"Colours & icons": a symbol for Exam (★, plain, in the tag\'s colour) and your own emoji for school (🦄)');
+  ok(await A.evaluate(()=>{const c=[...document.querySelectorAll('.cw .tgs .tg')];const f=t=>c.filter(x=>x.textContent.endsWith(t));return f('school').length===2&&f('school').every(x=>x.querySelector('.tgi').textContent==='🦄')&&f('maths')[0].querySelector('.tgi').textContent==='📐'&&!!document.querySelector('#tagrow .tg.has-ic')}),'the icons show on the notebooks and in the tag row');
   // your own order: drag a notebook
   await A.evaluate(()=>{LIB.sort='rec';saveLib();$('#sortb').value='rec';renderShelf()});
   const before=await shown(A);const list=before.split(', ');
@@ -84,7 +97,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(await shown(A)===after,'the order stays after a restart');
   const l2=after.split(', ');await more(A,l2[0]);await A.click('#pop >> text=Move later');await A.waitForTimeout(400);
   ok((await shown(A)).split(', ')[1]===l2[0],'⋯ → Move later moves it one place');
-  ok(await A.evaluate(()=>JSON.stringify(data.find(b=>b.title==='Algebra').tags)==='["school","Exam"]'),'tags stay after a restart');
+  ok(await A.evaluate(()=>JSON.stringify(data.find(b=>b.title==='Algebra').tags)==='["school","Exam","maths"]'&&SHELF.ti.school==='🦄'),'tags, their colours and icons stay after a restart');
   await more(A,'History');await A.click('#pop >> text=Move to category');await A.waitForTimeout(300);
   ok(await A.evaluate(()=>!$('#up').classList.contains('hidden')),'free plan: ⋯ → Move to category explains Pro');
   await A.evaluate(()=>$('#up').classList.add('hidden'));
