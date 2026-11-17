@@ -145,7 +145,7 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #bmain,#main{flex:1;min-height:0;container-type:size;display:grid;place-items:center;padding:4px}
 #bmain{perspective:1500px;background:radial-gradient(ellipse at 50% 45%,var(--bar),var(--desk) 72%)}
 #tilt{transform:rotateX(8deg);transform-origin:50% 50%;transition:transform .35s ease}
-#sp::before{content:"";position:absolute;left:6%;right:6%;bottom:-5%;height:9%;background:radial-gradient(ellipse at center,var(--sh),transparent 70%);filter:blur(8px);z-index:-1;pointer-events:none}
+#sp::before{content:"";position:absolute;left:4%;right:4%;bottom:-6%;height:11%;background:radial-gradient(ellipse at center,var(--sh),transparent 68%);z-index:-1;pointer-events:none}
 #sp{position:relative;perspective:1800px;display:grid;grid-template-columns:1fr 1fr;width:min(100cqw - 36px,(100cqh - 28px)*var(--spr,1.5));aspect-ratio:var(--sar,3/2);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 #sp.in{animation:enter .5s cubic-bezier(.2,.7,.2,1)}
 @keyframes enter{from{opacity:0;scale:.88}}
@@ -155,6 +155,12 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #sp .cv{box-shadow:inset 9px 0 0 rgba(0,0,0,.22),2px 1px 0 #fff,3px 1px 0 #d4d4cc,5px 2px 0 #fff,6px 2px 0 #cbcbc2,8px 3px 0 #fff,9px 3px 0 #c2c2b9,0 20px 36px -12px var(--sh)}
 .pg img,.face img{width:100%;height:100%;display:block;pointer-events:none}
 .pg.ghost{background-color:#e8e8e1}
+/* a page still coming from the cloud */
+.ld::before{content:"";position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-24px 0 0 -13px;border-radius:50%;border:3px solid rgba(0,0,0,.12);border-top-color:#23407a;animation:ldspin 1s linear infinite}
+.ld::after{content:"Loading page…";position:absolute;left:0;right:0;top:50%;margin-top:12px;text-align:center;font-size:.8em;font-weight:600;color:#6b767c}
+.tp.ld::after{content:""}
+@keyframes ldspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.ld::before{animation:none}}
 .pg.ghost::after{content:"+";position:absolute;inset:0;display:grid;place-items:center;font-size:48px;color:#555;opacity:.4}
 .fl{position:absolute;top:0;width:50%;height:100%;transform-style:preserve-3d;display:none}
 .seg{position:absolute;top:0;height:100%;transform-style:preserve-3d}
@@ -1014,7 +1020,22 @@ function docTitle(){document.title=cur&&$('#shelf').classList.contains('hidden')
 
 /* Book: cover + pages. State cs: -1 = closed cover; s>=0: left=2s-1 (s=0: inside of cover), right=2s */
 const L=s=>s<0?'x':2*s,R=s=>s<0?'c':2*s+1,SM=()=>Math.max(0,(cur.pages.length-1)>>1);
+// pages that are still coming from the cloud (filled by syncOnce): notebook id → page numbers
+const PEND=new Map(),pendPg=(b,i)=>{const p=b&&PEND.get(String(b.id));return !!p&&p.has(i)};
+const pgSrc=i=>i==='c'?(cur.cpv||cur.cover):typeof i==='number'?(cur.pv[i]||cur.bg[i]||cur.pages[i]):null;
+// pictures decoded ahead (the page that lands at the end of a turn), so they show at once – no blank flash
+const DEC=new Map();
+function decodeSrc(s){
+  if(!s)return Promise.resolve();let m=DEC.get(s);
+  if(m){DEC.delete(s);DEC.set(s,m);return m._p}
+  m=new Image();m.src=s;m._p=(m.decode?m.decode():Promise.resolve()).catch(()=>{});DEC.set(s,m);
+  while(DEC.size>6)DEC.delete(DEC.keys().next().value);
+  return m._p;
+}
 function setImg(el,i){
+  const ld=typeof i==='number'&&pendPg(cur,i),src0=typeof i==='number'?pgSrc(i):null;
+  if(src0&&!ld&&el._i===i&&el._s===src0&&el.firstChild){el.classList.remove('ghost','ld');return} // the same picture: leave it (no flash)
+  el._i=i;el._s=src0;el.classList.toggle('ld',ld);
   el.innerHTML='';el.style.backgroundImage='';el.style.backgroundColor='';el.style.backgroundSize='';el.style.backgroundRepeat='';el.style.boxShadow='';el.style.visibility=i==='x'?'hidden':'';
   el.classList.toggle('ghost',typeof i==='number'&&i>=cur.pages.length);
   el.classList.toggle('cv',i==='c');
@@ -1048,8 +1069,9 @@ function renderDecks(){
       if(typeof idx!=='number'||idx<0||idx>=P)return;
       const d=document.createElement('div');d.className='dk '+sd;
       d.style.transform='translate3d('+(sd==='r'?'':'-')+k*15+'%,0,'+(-k*55)+'px)';
-      d.style.filter='brightness('+(1-.06*k)+')';
-      setImg(d,idx);sp.prepend(d);
+      // only their edges show, so they're plain paper: no big pictures and no filters (lighter for tablets)
+      const pc=(cur.ps[idx]&&cur.ps[idx].c)||PAPER;d.style.backgroundColor=/^#[0-9a-f]{6}$/i.test(pc)?shade(pc,.06*k):pc;
+      sp.prepend(d);
     });
   }
 }
@@ -1104,6 +1126,8 @@ function prep(ts){
   fl.innerHTML='';fl.style.left=nx?'50%':'0';
   const fr=nx?R(cs):L(cs),bk=nx?L(ts):R(ts),cov=cs<0||ts<0;
   const LT=cov?thick().tc:Math.max(3,Math.round(pw*2*.007));
+  fl.style.transform='translateZ('+(-LT/2)+'px)'; // the leaf's faces then lie exactly on the pages when it starts and when it lands
+  [L(ts),R(ts)].forEach(j=>decodeSrc(typeof j==='number'?pgSrc(j):null)); // the pages that will show at the end
   let par=fl;
   for(let i=0;i<NS;i++){
     const sg=document.createElement('div');sg.className='seg';
@@ -1140,9 +1164,13 @@ function tween(from,to,ms,done){
   (function f(now){const k=Math.min(1,(now-t0)/ms);setAng(from+(to-from)*ez(k));if(k<1)requestAnimationFrame(f);else done()})(t0);
 }
 function endFlip(commit){
-  if(commit){cs=fs.ts;if(!auto){cur.cs=cs;persist()}}
-  $('#fl').style.display='none';$('#fl').innerHTML='';$('#sp').style.setProperty('--t',0);
-  fs=null;renderBrowse();flipping=false;
+  const t=commit?fs.ts:fs.from,want=[L(t),R(t)].map(j=>typeof j==='number'?pgSrc(j):null);
+  // the leaf rests on the page until the pictures underneath are ready, so the swap shows no blank page
+  return Promise.race([Promise.all(want.map(decodeSrc)),new Promise(r=>setTimeout(r,350))]).then(()=>{
+    if(commit){cs=fs.ts;if(!auto){cur.cs=cs;persist()}}
+    $('#fl').style.display='none';$('#fl').innerHTML='';$('#sp').style.setProperty('--t',0);
+    fs=null;renderBrowse();flipping=false;
+  });
 }
 let auto=false;
 function flip(ts,ms,cb){
@@ -1151,14 +1179,15 @@ function flip(ts,ms,cb){
   if(zs)resetZoom();
   flipping=true;prep(ts);
   const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  tween(0,180,rm?1:(ms||1000),()=>{endFlip(true);if(cb)cb()});
+  tween(0,180,rm?1:(ms||1000),()=>endFlip(true).then(()=>{if(cb)cb()}));
   return true;
 }
 function resume(b,target){
   auto=true;
   const step=()=>{
     if(cur!==b||$('#bv').classList.contains('hidden')||cs>=target){auto=false;return}
-    const last=cs+1===target,ms=last?850:Math.max(260,620-35*target);
+    if(cs>=0&&target-cs>2){cs=target-2;renderBrowse()} // a long way: skip ahead, only the last 2 pages turn
+    const last=cs+1===target,ms=last?850:620;
     if(!flip(cs+1,ms,()=>setTimeout(step,last?0:20)))auto=false;
   };
   setTimeout(step,700);
@@ -1245,6 +1274,7 @@ function release(cancel){
     if(cancel||d.moved||flipping)return;
     if(cs<0){if(d.right)showEditor(-1);return}
     const i=d.right?2*cs+1:2*cs;if(i<0)return;
+    if(pendPg(cur,i)){toast('This page is still loading from the cloud…');return}
     if(i>=cur.pages.length&&i>=LIM().pg){upsell('The free plan includes '+LIM().pg+' pages per notebook. Upgrade to Pro for unlimited pages.');return}
     const n0=cur.pages.length,last=cur.ps[n0-1];
     while(cur.pages.length<=i)cur.pages.push(null);
@@ -2560,15 +2590,23 @@ function initPS(){
 /* All pages overview */
 let ovSel='c',ovDel=false;
 const PA=()=>[cur.pages,cur.objs,cur.pv,cur.bg,cur.ps,cur.lay];
+let ovIO=null;
 function renderOv(){
   const g=$('#ovg');g.innerHTML='';
+  // only the pictures near the screen are loaded (a 500-page PDF would otherwise load every page at once)
+  if(ovIO)ovIO.disconnect();
+  ovIO='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const t=e.target;ovIO.unobserve(t);t._shown=1;setImg(t,t._it)}}),{rootMargin:'600px 0px'}):null;
   ['c',...cur.pages.map((_,i)=>i)].forEach(it=>{
-    const b=document.createElement('button');b.className='th';b.setAttribute('aria-pressed',it===ovSel);
-    const tp=document.createElement('div');tp.className='tp';setImg(tp,it);
+    const b=document.createElement('button');b.className='th';b.setAttribute('aria-pressed',it===ovSel);b._it=it;
+    const tp=document.createElement('div');tp.className='tp';tp._it=it;if(ovIO)ovIO.observe(tp);else{tp._shown=1;setImg(tp,it)}
     const l=document.createElement('span');l.textContent=it==='c'?'Cover':it+1;
-    b.append(tp,l);b.onclick=()=>{ovSel=it;ovDel=false;$('#ov-del').textContent='Delete';renderOv()};
+    b.append(tp,l);b.onclick=()=>{ovSel=it;ovDel=false;$('#ov-del').textContent='Delete';ovMark()};
     g.append(b);
   });
+  ovMark();
+}
+function ovMark(){ // the chosen page and the buttons (without loading the pictures again)
+  document.querySelectorAll('#ovg .th').forEach(b=>b.setAttribute('aria-pressed',b._it===ovSel));
   const c=ovSel==='c';
   $('#ov-l').disabled=c||ovSel<=0;$('#ov-r').disabled=c||ovSel>=cur.pages.length-1;
   $('#ov-dup').disabled=c;$('#ov-del').disabled=c||cur.pages.length<2;
@@ -3029,6 +3067,12 @@ function localRecs(){
   for(const b of data){m.set('b:'+b.id,metaOf(b));for(let i=0;i<b.pages.length;i++)m.set('p:'+b.id+':'+i,pageOf(b,i))}
   return m;
 }
+const emptyPg=v=>!!v&&v.pg==null&&v.pv==null&&v.bg==null&&v.ps==null&&v.lay==null&&(v.o==null||(Array.isArray(v.o)&&!v.o.length));
+const editingRec=k=>{if(!cur||$('#ed').classList.contains('hidden'))return false;const j=k.lastIndexOf(':');return k.slice(2,j)===String(cur.id)&&+k.slice(j+1)===pi};
+function pendDone(k){const j=k.lastIndexOf(':'),id=k.slice(2,j),p=PEND.get(id);if(!p)return;p.delete(+k.slice(j+1));if(!p.size)PEND.delete(id);if(cur&&String(cur.id)===id)bvSoon()}
+let bvT=0;function bvSoon(){clearTimeout(bvT);bvT=setTimeout(()=>{ // the open notebook shows pages as they arrive
+  if(!cur||!$('#bv')||$('#bv').classList.contains('hidden'))return;if(flipping){bvSoon();return}renderBrowse();
+  if(!$('#ov').classList.contains('hidden'))document.querySelectorAll('#ovg .tp').forEach(t=>{if(t._shown)setImg(t,t._it)})},150)}
 const isStarter=b=>(b.welcome&&b.u===b.wu)||b.pages.length===1&&!b.pages[0]&&!b.cover&&!b.cpv&&!b.cbg&&!(b.objs[0]||[]).length&&!(b.cobjs||[]).length&&!b.bg[0]&&!b.lay[0];
 const openBookId=()=>cur&&$('#shelf').classList.contains('hidden')?String(cur.id):null;
 
@@ -3089,6 +3133,8 @@ async function syncOnce(){
     if(lh===rh){if(lh===null)delete base[k];else base[k]=lh;continue}
     if(k==='idx'){idx={lh,rh,bh};continue}
     if(k==='shelf'){shk={lh,rh,bh};continue} // your categories: merged below, never removed by the cloud
+    // a page this device never got from the cloud (blank here): the cloud's copy comes in – a blank page never replaces it
+    if(bh===null&&rh!==null&&k.startsWith('p:')&&emptyPg(lv)){pull.push(k);continue}
     // a notebook that is missing on this device but that you didn't delete here: bring it back from the cloud
     // (only a notebook you deleted – it's in Recently deleted – is removed from the cloud)
     const rid=k.startsWith('b:')?k.slice(2):k.startsWith('p:')?k.slice(2,k.lastIndexOf(':')):null;
@@ -3106,8 +3152,12 @@ async function syncOnce(){
   const tick=k=>{const id=nbOf(k);if(!id||!left.has(id))return;const r=left.get(id)-1;if(r>0){left.set(id,r);return}left.delete(id);doneN++;spSet(total,doneN)};
   // 1) bring cloud changes here (notebooks first, then pages)
   pull.sort((a,b)=>(a[0]==='b'?0:1)-(b[0]==='b'?0:1));
+  PEND.clear(); // pages on their way: an open notebook shows "Loading page…" for them, not a blank page
+  for(const k of pull)if(k.startsWith('p:')&&(L.get(k)===undefined||emptyPg(L.get(k)))){const j=k.lastIndexOf(':'),id=k.slice(2,j);if(!PEND.has(id))PEND.set(id,new Set());PEND.get(id).add(+k.slice(j+1))}
+  if(PEND.size)bvSoon();
   for(const k of pull){
-    const v=await pullRec(k);if(v===undefined){tick(k);continue}
+    if(k.startsWith('p:')&&editingRec(k))continue; // the page open for drawing: next round
+    const v=await pullRec(k);if(k.startsWith('p:'))pendDone(k);if(v===undefined){tick(k);continue}
     applyRec(k,v);changedHere=true;tick(k);
     const r=man[k2c(k)];if(r)base[k]=r.h;else delete base[k];
   }
@@ -3161,7 +3211,7 @@ async function syncRun(){
   ACC.busy=true;renderAcc();
   try{do{ACC.again=false;await syncOnce()}while(ACC.again)}
   catch(e){ACC.err=e&&(e.code==='unavailable'||!navigator.onLine)?'offline':'error';console.warn('sync',e)}
-  finally{ACC.busy=false;spEnd(!ACC.err);renderAcc()}
+  finally{ACC.busy=false;spEnd(!ACC.err);if(PEND.size){PEND.clear();bvSoon()}renderAcc()}
 }
 function syncSoon(ms){if(!ACC.pro)return;clearTimeout(ACC.timer);ACC.timer=setTimeout(syncRun,ms)}
 async function syncStart(){
