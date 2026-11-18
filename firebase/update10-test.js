@@ -69,6 +69,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await A.click('#adm-r');await A.waitForSelector('.acats');await A.click('.acats >> text=Codes & discounts');
   await A.fill('#adm-cf input[placeholder="CODE"]','NIGHT-1');await A.selectOption('#adm-kind','tpl');await A.selectOption('#adm-ctpl',cid);await A.click('#adm-cf >> text=Create code');await A.waitForSelector('#adm-codes >> text=NIGHT-1',{timeout:10000});
   const rc=await U.evaluate(()=>redeemCode('NIGHT-1'));
+  await U.waitForFunction(id=>ACC.owned.has(id),cid,{timeout:10000}).catch(()=>{}); // the account's list of things it owns comes back from the cloud a moment later
   ok(rc.ok&&rc.tpl===cid&&await U.evaluate(id=>ACC.owned.has(id),cid),'a store code can give the new cover too');
   await U.evaluate(id=>{const b=data[0];useCover(COVERS.find(c=>c.id===id),b)},cid);await U.waitForTimeout(600);
   ok(await U.evaluate(id=>data[0].design==='x-'+id&&/data:image\/svg/.test(covImg(data[0])),cid),'… and it goes on a notebook cover');
