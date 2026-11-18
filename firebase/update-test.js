@@ -41,7 +41,9 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await p.waitForTimeout(1500);await p.evaluate(()=>syncRun());await p.waitForFunction(()=>!ACC.busy,null,{timeout:30000});await p.waitForTimeout(1500);
   const cloud=async()=>{const r=await admin('users/'+uid,null,'GET');const j=await r.json();return Object.keys((j.fields&&j.fields.m&&j.fields.m.mapValue.fields)||{}).length};
   const c0=await cloud();
-  ok(c0>30,'the old version saved and synced the notebooks ('+c0+' records in the cloud)');
+  // versions before Update 14 can't change the cloud copy any more (the rules want the server's time on every change),
+  // so their notebooks stay on the device and go up after the update; a newer old version syncs them right away
+  ok(c0>30||c0===0,c0?'the old version saved and synced the notebooks ('+c0+' records in the cloud)':'the old version saved the notebooks on the device; the cloud refuses its changes (an old version can’t delete or change anything there)');
   ok(await p.evaluate(()=>!!navigator.serviceWorker.controller),'the app is installed (service worker running), like on a phone');
 
   // ---- the update: the same address now serves the new version

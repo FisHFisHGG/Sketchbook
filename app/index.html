@@ -3146,12 +3146,12 @@ async function pushRec(k,v){
   const F=ACC.F,db=ACC.db,uid=ACC.user.uid,c=k2c(k),old=ACC.man[c],b=F.writeBatch(db),udoc=F.doc(db,'users',uid);
   if(v===undefined){
     for(let i=0;i<(old?old.n:1);i++)b.delete(F.doc(db,'users',uid,'r',chunkId(c,i)));
-    b.set(udoc,{m:{[c]:F.deleteField()}},{merge:true});await b.commit();delete ACC.man[c];return null;
+    b.set(udoc,{m:{[c]:F.deleteField()},at:F.serverTimestamp()},{merge:true});await b.commit();delete ACC.man[c];return null;
   }
   const j=canon(v),h=cyrb(j),n=Math.max(1,Math.ceil(j.length/CH));
   for(let i=0;i<n;i++)b.set(F.doc(db,'users',uid,'r',chunkId(c,i)),{h,n,i,d:j.slice(i*CH,(i+1)*CH)});
   for(let i=n;i<(old?old.n:0);i++)b.delete(F.doc(db,'users',uid,'r',chunkId(c,i)));
-  b.set(udoc,{m:{[c]:{h,n}},v:1},{merge:true});await b.commit();ACC.man[c]={h,n};return h;
+  b.set(udoc,{m:{[c]:{h,n}},v:2,at:F.serverTimestamp()},{merge:true});await b.commit();ACC.man[c]={h,n};return h; // at: the cloud refuses changes from old versions of the app
 }
 async function pullRec(k){
   const F=ACC.F,db=ACC.db,uid=ACC.user.uid,c=k2c(k),r=ACC.man[c];if(!r)return null;
@@ -3170,7 +3170,7 @@ function applyRec(k,v){ // v=null deletes
     const n=v.n||1;PK.forEach(a=>{if(b[a].length>n)b[a].length=n});while(b.pages.length<n)b.pages.push(null);
   }else if(k.startsWith('p:')){
     const j=k.lastIndexOf(':'),id=k.slice(2,j),i=+k.slice(j+1),b=data.find(x=>String(x.id)===id);if(!b)return;
-    if(v==null){if(i<b.pages.length){b.pages[i]=null;['objs','pv','bg','ps','lay'].forEach(a=>{delete b[a][i]})}return}
+    if(v==null)return; // a page missing from the cloud never wipes the page here: a real page deletion comes with a smaller page count in the notebook's own record (applied first); this page goes up to the cloud again
     while(b.pages.length<=i)b.pages.push(null);
     b.pages[i]=v.pg??null;
     [['objs','o'],['pv','pv'],['bg','bg'],['ps','ps'],['lay','lay']].forEach(([a,f])=>{if(v[f]!=null)b[a][i]=v[f];else delete b[a][i]});
@@ -3191,6 +3191,9 @@ async function syncOnce(){
   // a brand-new device: don't upload the empty starter notebook if the cloud already has notebooks
   if(!Object.keys(base).length&&Object.keys(man).length>1){const keep=data.filter(b=>!isStarter(b)||String(b.id)===open);if(keep.length!==data.length){data.forEach(b=>{if(!keep.includes(b))LIBST.purge.push(String(b.id))});data=keep}}
   const here=new Set(data.map(b=>String(b.id))),gone=new Set(TRASH.map(t=>t.id));
+  // a notebook in Recently deleted here, but changed on another device since this device last synced: it comes back –
+  // a newer copy in the cloud is never deleted because of an older deletion on this device
+  const revive=new Set([...gone].filter(id=>{const r=man[k2c('b:'+id)];return r&&r.h!==(base['b:'+id]??null)}));
   const L=localRecs();await warmHashes(L);
   for(const k of hcache.keys())if(!L.has(k)&&!k.startsWith('sh:'))hcache.delete(k); // pages of deleted notebooks don't stay in memory
   const keys=new Set([...L.keys(),...Object.keys(man).map(c2k),...Object.keys(base)]);
@@ -3205,7 +3208,7 @@ async function syncOnce(){
     // a notebook that is missing on this device but that you didn't delete here: bring it back from the cloud
     // (only a notebook you deleted – it's in Recently deleted – is removed from the cloud)
     const rid=k.startsWith('b:')?k.slice(2):k.startsWith('p:')?k.slice(2,k.lastIndexOf(':')):null;
-    if(lv===undefined&&rh!==null&&rid&&!here.has(rid)&&!gone.has(rid)){pull.push(k);continue}
+    if(lv===undefined&&rh!==null&&rid&&!here.has(rid)&&(!gone.has(rid)||revive.has(rid))){pull.push(k);continue}
     const lch=lh!==bh,rch=rh!==bh;
     if(rch&&!lch){ // changed in the cloud only
       const id=k.split(':')[1];if(id===open)continue; // the open notebook updates when you close it
@@ -3217,12 +3220,24 @@ async function syncOnce(){
   [...pull,...push].forEach(k=>{const id=nbOf(k);if(id)left.set(id,(left.get(id)||0)+1)});
   const total=left.size;let doneN=0;spStart(total);
   const tick=k=>{const id=nbOf(k);if(!id||!left.has(id))return;const r=left.get(id)-1;if(r>0){left.set(id,r);return}left.delete(id);doneN++;spSet(total,doneN)};
+  // 1a) notebooks that look deleted on another device (no longer in the cloud's list): the server is asked once more before
+  // they go to Recently deleted; and never all of this device's notebooks at once – then the cloud copy itself is broken,
+  // so nothing goes to Recently deleted and this device sends its notebooks to the cloud again
+  const keepIds=new Set(),gonePull=pull.filter(k=>k.startsWith('b:')&&!man[k2c(k)]);
+  if(gonePull.length){
+    let fresh=null;try{const s=await ACC.F.getDoc(ACC.F.doc(ACC.db,'users',ACC.user.uid));if(!s.metadata.fromCache)fresh=s.exists()?(s.data().m||{}):{}}catch(e){}
+    const sure=fresh?gonePull.filter(k=>!fresh[k2c(k)]):[],synced=Object.keys(base).filter(k=>k.startsWith('b:')).length,all=sure.length>=2&&sure.length>=synced;
+    gonePull.forEach(k=>{if(all||!sure.includes(k))keepIds.add(k.slice(2))});
+    if(all){console.warn('sync: the cloud list lost every notebook – nothing goes to Recently deleted, this device sends them again');
+      Object.keys(base).forEach(k=>{const id=k.startsWith('b:')?k.slice(2):k.startsWith('p:')?k.slice(2,k.lastIndexOf(':')):null;if(id&&keepIds.has(id))delete base[k]})}
+  }
   // 1) bring cloud changes here (notebooks first, then pages)
   pull.sort((a,b)=>(a[0]==='b'?0:1)-(b[0]==='b'?0:1));
   PEND.clear(); // pages on their way: an open notebook shows "Loading page…" for them, not a blank page
   for(const k of pull)if(k.startsWith('p:')&&(L.get(k)===undefined||emptyPg(L.get(k)))){const j=k.lastIndexOf(':'),id=k.slice(2,j);if(!PEND.has(id))PEND.set(id,new Set());PEND.get(id).add(+k.slice(j+1))}
   if(PEND.size)bvSoon();
   for(const k of pull){
+    if(keepIds.has(nbOf(k))){tick(k);continue} // not confirmed as deleted: stays as it is
     if(k.startsWith('p:')&&editingRec(k))continue; // the page open for drawing: next round
     const v=await pullRec(k);if(k.startsWith('p:'))pendDone(k);if(v===undefined){tick(k);continue}
     applyRec(k,v);changedHere=true;tick(k);
@@ -3285,7 +3300,9 @@ async function syncStart(){
   const F=ACC.F,u=ACC.user;
   try{ACC.state=(await idbGet('sync:'+u.uid))||{h:{},idx:null}}catch(e){ACC.state={h:{},idx:null}}
   if(!ACC.state.h)ACC.state.h={};
-  ACC.unMan=F.onSnapshot(F.doc(ACC.db,'users',u.uid),s=>{ACC.man={...((s.exists()&&s.data().m)||{})};syncSoon(400)},e=>{ACC.err='error';renderAcc();console.warn(e)});
+  ACC.unMan=F.onSnapshot(F.doc(ACC.db,'users',u.uid),{includeMetadataChanges:true},s=>{
+    if(s.metadata.fromCache)return; // only the server's list counts: one from the cache (offline, not loaded yet) can be empty or old – and an empty list looked like "every notebook was deleted"
+    ACC.man={...((s.exists()&&s.data().m)||{})};syncSoon(400)},e=>{ACC.err='error';renderAcc();console.warn(e)});
 }
 function syncStop(){if(ACC.unMan){ACC.unMan();ACC.unMan=null}clearTimeout(ACC.timer);ACC.man=null;ACC.state=null}
 window.addEventListener('online',()=>{syncSoon(500);if(ACC.user&&ACC.F)checkSurvey(ACC.user)});

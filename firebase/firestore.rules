@@ -100,9 +100,13 @@ service cloud.firestore {
 
     match /users/{uid} {
       allow read: if owner(uid);
+      // every change carries the server's time (at == request.time). Old versions of the app never set it, so they
+      // can't change the cloud copy any more – an old version deleted from the cloud the notebooks it didn't have.
+      // The pages (r/…) are always written in the same batch as this list, so an old version's whole batch is refused.
       allow create, update: if owner(uid) && isPro()
-        && request.resource.data.keys().hasOnly(['m', 'v'])
-        && request.resource.data.m is map;
+        && request.resource.data.keys().hasOnly(['m', 'v', 'at'])
+        && request.resource.data.m is map
+        && request.resource.data.at == request.time;
       allow delete: if owner(uid);
 
       match /r/{rec} {
