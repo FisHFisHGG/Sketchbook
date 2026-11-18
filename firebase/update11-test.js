@@ -22,7 +22,7 @@ const N=120,AT=40; // pages in the big notebook; it was left open at spread 40 (
     res.writeHead(404,{'Content-Type':'text/html'});res.end(fs.readFileSync(path.join(SITE,'404.html')))}).listen(5194,'127.0.0.1');
   const b=await chromium.launch();
   const URL0='http://127.0.0.1:5194/Sketchbook/app/?emu=127.0.0.1';
-  const dev=async name=>{const ctx=await b.newContext({viewport:{width:1100,height:800}});await ctx.addInitScript(()=>{try{localStorage.setItem('sb-tour','99')}catch(e){}});await ctx.route(u=>u.hostname!=='127.0.0.1',r=>r.abort());
+  const dev=async name=>{const ctx=await b.newContext({viewport:{width:1100,height:800},...(process.env.VIDEO&&name==='A'?{recordVideo:{dir:process.env.VIDEO,size:{width:1100,height:800}}}:{})});await ctx.addInitScript(()=>{try{localStorage.setItem('sb-tour','99')}catch(e){}});await ctx.route(u=>u.hostname!=='127.0.0.1',r=>r.abort());
     const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(name+': '+e.message));await p.goto(URL0);return p};
   const ready=p=>p.waitForFunction(()=>ACC.libUid&&!ACC.gate&&data.length,null,{timeout:20000});
   const signIn=async(p,em,create)=>{await p.waitForSelector('#a-em',{timeout:15000});if(create)await p.click('.btn2');await p.fill('#a-em',em);await p.fill('#a-pw','secret123');await p.click('#acc-body button[type=submit]');await ready(p);await answerSurvey(p);await p.waitForTimeout(500)};
@@ -39,11 +39,13 @@ const N=120,AT=40; // pages in the big notebook; it was left open at spread 40 (
   ok(await A.evaluate(n=>Object.keys(ACC.man).filter(k=>k.startsWith('p~')).length>=n,N),'A: the 120-page notebook is in the cloud');
 
   // ---- opening it: the cover opens, then only the last 2 pages turn
-  await A.evaluate(()=>{window._flips=0;const f0=flip;flip=function(...a){window._flips++;return f0.apply(this,a)}});
+  await A.evaluate(()=>{window._flips=0;const f0=flip;flip=function(...a){window._flips++;return f0.apply(this,a)};
+    window._rf=0;(function w(){window._rf=Math.max(window._rf,document.querySelectorAll('#sp .rf').length);requestAnimationFrame(w)})()}); // how many riffling pages fly at once
   const t0=Date.now();await A.evaluate(()=>showBrowse(data.find(x=>x.title==='Big book')));
   await A.waitForFunction(at=>cs===at&&!flipping,AT,{timeout:20000});const took=Date.now()-t0;
-  const fl=await A.evaluate(()=>window._flips);
-  ok(fl===3&&took<5000,'opening it at pages 81–82: the cover opens, then 2 page turns ('+fl+' turns, '+(took/1000).toFixed(1)+' s) – not 40 turns');
+  const fl=await A.evaluate(()=>window._flips),rf=await A.evaluate(()=>window._rf);
+  ok(fl===3&&rf===7&&took<5500,'opening it at pages 81–82: the cover opens, '+rf+' light pages riffle over, then 2 page turns ('+fl+' turns, '+(took/1000).toFixed(1)+' s) – not 40 turns');
+  ok(await A.evaluate(()=>!document.querySelector('#sp .rf')),'… and the riffling pages are gone afterwards');
   if(process.env.SHOT)await A.screenshot({path:process.env.SHOT+'/book.png'});
   ok(await A.evaluate(()=>$('#bpg').textContent==='Pages 81–82 of 120'),'… and it’s at pages 81–82');
   // lighter for tablets

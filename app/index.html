@@ -171,6 +171,15 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .dk.l{left:0;border-radius:10px 0 0 10px}
 .dk img{width:100%;height:100%;display:block;pointer-events:none}
 .face.back{transform:rotateY(180deg)}
+/* the quick riffle when opening a notebook far inside (riffle()) */
+.rf{position:absolute;top:0;left:50%;width:50%;height:100%;transform-origin:left center;transform-style:preserve-3d;pointer-events:none}
+.rff{position:absolute;inset:0;border-radius:0 10px 10px 0;background-color:var(--paper);background-image:var(--tex);backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.rff.rfb{transform:rotateY(180deg);border-radius:10px 0 0 10px}
+.rff img{width:100%;height:100%;display:block;pointer-events:none}
+.rff.tx::before{content:"";position:absolute;inset:10% 12% 12%;background:repeating-linear-gradient(transparent 0 10px,rgba(40,45,50,.08) 10px 12px)}
+/* a soft shadow near the spine while the page is in the air */
+.rff .sh{position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,20,24,.42),rgba(14,20,24,.1) 35%,transparent 75%);opacity:0;pointer-events:none}
+.rff.rfb .sh{background:linear-gradient(270deg,rgba(14,20,24,.42),rgba(14,20,24,.1) 35%,transparent 75%)}
 
 
 
@@ -1186,11 +1195,47 @@ function resume(b,target){
   auto=true;
   const step=()=>{
     if(cur!==b||$('#bv').classList.contains('hidden')||cs>=target){auto=false;return}
-    if(cs>=0&&target-cs>2){cs=target-2;renderBrowse()} // a long way: skip ahead, only the last 2 pages turn
-    const last=cs+1===target,ms=last?850:620;
+    if(cs>=0&&target-cs>3){riffle(target-2).then(()=>setTimeout(step,60));return} // a long way: a quick riffle, then the last 2 pages turn
+    const last=cs+1===target,ms=last?820:560;
     if(!flip(cs+1,ms,()=>setTimeout(step,last?0:20)))auto=false;
   };
   setTimeout(step,700);
+}
+/* Many pages at once (opening a notebook far inside): a few light pages fan over quickly, one after another,
+   like riffling through a book with your thumb – then the book is at spread t2. Only the first page (front)
+   and the last one (back) carry real pictures; the others are plain paper (or faint lines for printed pages),
+   so it stays light on tablets. The stacks on both sides change as the pages go. */
+function riffle(t2){
+  return new Promise(async done=>{
+    const from=cs,sp=$('#sp');
+    if(flipping||t2<=from){done();return}
+    flipping=true;resetZoom();
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches||!sp.animate){cs=t2;flipping=false;renderBrowse();done();return}
+    await Promise.race([Promise.all([R(from),L(t2),R(t2)].map(j=>decodeSrc(typeof j==='number'?pgSrc(j):null))),new Promise(r=>setTimeout(r,350))]);
+    const K=Math.min(7,t2-from),GAP=85,DUR=640,P=cur.pages.length,at=j=>from+Math.round((t2-from)*j/K);
+    const lab=x=>{const a=[2*x,2*x+1].filter(i=>i<P).map(i=>i+1);return (a.length>1?'Pages ':'Page ')+a.join('–')+' of '+P};
+    const face=(idx,back,real)=>{
+      const f=document.createElement('div');f.className='rff'+(back?' rfb':'');
+      if(real)setImg(f,idx);
+      else if(typeof idx==='number'&&idx<P){const st=cur.ps[idx];if(st&&st.c&&st.c!==PAPER)f.style.backgroundColor=st.c;if(cur.bg[idx]||(st&&st.p&&st.p!=='blank'))f.classList.add('tx')}
+      const sh=document.createElement('div');sh.className='sh';f.append(sh);return f;
+    };
+    setImg($('#pr'),R(t2)); // under the pages that fly over
+    const leaves=[],anims=[];
+    for(let j=0;j<K;j++){
+      const l=document.createElement('div');l.className='rf';
+      l.append(face(j?2*at(j)+1:R(from),false,j===0),face(j===K-1?L(t2):2*at(j+1),true,j===K-1));
+      sp.append(l);leaves.push(l);
+      // each page goes a little faster than the one before; it moves on top of the pile as it passes the middle
+      const z0=K-j,z1=K+1+j,o={duration:DUR-j*18,delay:j*GAP,easing:'cubic-bezier(.42,0,.28,1)',fill:'both'};
+      anims.push(l.animate([{transform:'rotateY(0deg)',zIndex:z0},{offset:.5,transform:'rotateY(-90deg)',zIndex:z0},{offset:.5,transform:'rotateY(-90deg)',zIndex:z1},{transform:'rotateY(-180deg)',zIndex:z1}],o));
+      l.querySelectorAll('.sh').forEach(x=>x.animate([{opacity:0},{opacity:.55},{opacity:0}],o));
+      setTimeout(()=>setEdges($('#pr'),1,at(j+1)),j*GAP+o.duration*.25);
+      setTimeout(()=>{setEdges($('#pl'),-1,at(j+1));$('#bpg').textContent=lab(at(j+1))},j*GAP+o.duration*.85); // the page numbers count up as the pages land
+    }
+    await Promise.all(anims.map(a=>a.finished.catch(()=>{})));
+    cs=t2;renderBrowse();leaves.forEach(l=>l.remove());flipping=false;done();
+  });
 }
 $('#bclose').onclick=()=>{if(!flipping)closeBook()};
 let rnT=0,rnFrom=null;
