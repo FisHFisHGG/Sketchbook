@@ -154,6 +154,8 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #pr{border-radius:0 10px 10px 0;box-shadow:2px 1px 0 #fff,3px 1px 0 #d4d4cc,5px 2px 0 #fff,6px 2px 0 #cbcbc2,8px 3px 0 #fff,9px 3px 0 #c2c2b9,0 20px 36px -12px var(--sh)}
 #sp .cv{box-shadow:inset 9px 0 0 rgba(0,0,0,.22),2px 1px 0 #fff,3px 1px 0 #d4d4cc,5px 2px 0 #fff,6px 2px 0 #cbcbc2,8px 3px 0 #fff,9px 3px 0 #c2c2b9,0 20px 36px -12px var(--sh)}
 .pg img,.face img{width:100%;height:100%;display:block;pointer-events:none}
+/* the ink shown over a page's picture (an annotated PDF page isn't stored as a second picture) */
+img.ink2{position:absolute;left:0;top:0;width:100%;height:100%;display:block;pointer-events:none}
 .pg.ghost{background-color:#e8e8e1}
 /* a page still coming from the cloud */
 .ld::before{content:"";position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-24px 0 0 -13px;border-radius:50%;border:3px solid rgba(0,0,0,.12);border-top-color:#23407a;animation:ldspin 1s linear infinite}
@@ -904,7 +906,7 @@ async function initData(legacy){
   LIBST.ready=true;
   if(LIBST.recovered){persist();setTimeout(()=>toast(LIBST.recovered===1?'A notebook that had gone missing is back on your shelf.':LIBST.recovered+' notebooks that had gone missing are back on your shelf.'),600)}
   if(!data.length){try{data=[await makeWelcome()]}catch(e){console.warn('welcome',e);data=[mk('Sketches',0)]}persist()} // a new library starts with the welcome notebook
-  renderShelf();libStale=false;fixCoverColors();setTimeout(fbNudge,2500);if(ACC.user&&ACC.pro)shareListenAll();
+  renderShelf();libStale=false;fixCoverColors();dropExtraPv();setTimeout(fbNudge,2500);if(ACC.user&&ACC.pro)shareListenAll();
   if(old&&!usingLS&&Array.isArray(d)&&d.length){
     // move the old single-record library to the new format, then drop the old copy
     try{await flushSave();await idbDel(KEY);try{localStorage.removeItem(KEY)}catch(e){}}catch(e){}
@@ -1022,7 +1024,10 @@ function docTitle(){document.title=cur&&$('#shelf').classList.contains('hidden')
 const L=s=>s<0?'x':2*s,R=s=>s<0?'c':2*s+1,SM=()=>Math.max(0,(cur.pages.length-1)>>1);
 // pages that are still coming from the cloud (filled by syncOnce): notebook id → page numbers
 const PEND=new Map(),pendPg=(b,i)=>{const p=b&&PEND.get(String(b.id));return !!p&&p.has(i)};
-const pgSrc=i=>i==='c'?(cur.cpv||cur.cover):typeof i==='number'?(cur.pv[i]||cur.bg[i]||cur.pages[i]):null;
+// the pictures a page shows, bottom to top: its composite (pv, when it has objects or a paper style), or the page's picture
+// (a PDF page) with the ink on top – shown layered, so an annotated PDF page isn't stored twice – or just one of them
+const pgParts=i=>{if(typeof i!=='number')return [];if(cur.pv[i])return [cur.pv[i]];const bg=cur.bg[i],ink=cur.pages[i];return bg&&ink?[bg,ink]:(bg||ink)?[bg||ink]:[]};
+const decodePg=j=>Promise.all(pgParts(j).map(decodeSrc));
 // pictures decoded ahead (the page that lands at the end of a turn), so they show at once – no blank flash
 const DEC=new Map();
 function decodeSrc(s){
@@ -1033,7 +1038,7 @@ function decodeSrc(s){
   return m._p;
 }
 function setImg(el,i){
-  const ld=typeof i==='number'&&pendPg(cur,i),src0=typeof i==='number'?pgSrc(i):null;
+  const ld=typeof i==='number'&&pendPg(cur,i),parts=typeof i==='number'?pgParts(i):[],src0=parts.join('|');
   if(src0&&!ld&&el._i===i&&el._s===src0&&el.firstChild){el.classList.remove('ghost','ld');return} // the same picture: leave it (no flash)
   el._i=i;el._s=src0;el.classList.toggle('ld',ld);
   el.innerHTML='';el.style.backgroundImage='';el.style.backgroundColor='';el.style.backgroundSize='';el.style.backgroundRepeat='';el.style.boxShadow='';el.style.visibility=i==='x'?'hidden':'';
@@ -1048,7 +1053,7 @@ function setImg(el,i){
     const n=document.createElement('div');n.style.cssText='position:absolute;inset:2.2%;border-radius:6px;background:var(--paper);box-shadow:inset 0 0 18px rgba(0,0,0,.18)';
     o.append(n);el.append(o);
   }
-  else if(typeof i==='number')s=cur.pv[i]||cur.bg[i]||cur.pages[i];
+  else if(typeof i==='number')parts.forEach((src,k)=>{const m=new Image();m.alt='';m.src=src;if(k)m.className='ink2';el.append(m)});
   if(s){const m=new Image();m.alt='';m.src=s;el.append(m)}
 }
 function showBrowse(b){
@@ -1127,7 +1132,7 @@ function prep(ts){
   const fr=nx?R(cs):L(cs),bk=nx?L(ts):R(ts),cov=cs<0||ts<0;
   const LT=cov?thick().tc:Math.max(3,Math.round(pw*2*.007));
   fl.style.transform='translateZ('+(-LT/2)+'px)'; // the leaf's faces then lie exactly on the pages when it starts and when it lands
-  [L(ts),R(ts)].forEach(j=>decodeSrc(typeof j==='number'?pgSrc(j):null)); // the pages that will show at the end
+  [L(ts),R(ts)].forEach(decodePg); // the pages that will show at the end
   let par=fl;
   for(let i=0;i<NS;i++){
     const sg=document.createElement('div');sg.className='seg';
@@ -1164,7 +1169,7 @@ function tween(from,to,ms,done){
   (function f(now){const k=Math.min(1,(now-t0)/ms);setAng(from+(to-from)*ez(k));if(k<1)requestAnimationFrame(f);else done()})(t0);
 }
 function endFlip(commit){
-  const t=commit?fs.ts:fs.from,want=[L(t),R(t)].map(j=>typeof j==='number'?pgSrc(j):null);
+  const t=commit?fs.ts:fs.from,want=[L(t),R(t)].flatMap(pgParts);
   // the leaf rests on the page until the pictures underneath are ready, so the swap shows no blank page
   return Promise.race([Promise.all(want.map(decodeSrc)),new Promise(r=>setTimeout(r,350))]).then(()=>{
     if(commit){cs=fs.ts;if(!auto){cur.cs=cs;persist()}}
@@ -1202,7 +1207,7 @@ function riffle(t2){
     if(flipping||t2<=from){done();return}
     flipping=true;resetZoom();
     if(matchMedia('(prefers-reduced-motion:reduce)').matches||!sp.animate){cs=t2;flipping=false;renderBrowse();done();return}
-    await Promise.race([Promise.all([R(from),L(t2),R(t2)].map(j=>decodeSrc(typeof j==='number'?pgSrc(j):null))),new Promise(r=>setTimeout(r,350))]);
+    await Promise.race([Promise.all([R(from),L(t2),R(t2)].map(decodePg)),new Promise(r=>setTimeout(r,350))]);
     const K=Math.min(7,t2-from),GAP=85,DUR=640,P=cur.pages.length,at=j=>from+Math.round((t2-from)*j/K);
     const lab=x=>{const a=[2*x,2*x+1].filter(i=>i<P).map(i=>i+1);return (a.length>1?'Pages ':'Page ')+a.join('–')+' of '+P};
     const face=(idx,back,real)=>{
@@ -1408,13 +1413,18 @@ $('#photo').onclick=()=>{if(pi<0&&!coverPhotoPro())return;photoCover=pi<0;$('#fi
 $('#file').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>photoCover&&pi<0?setCoverPhoto(im):placePhoto(im);im.src=r.result};r.readAsDataURL(f)};
 function coverFill(im){ // the photo cropped to fill the cover
   const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),k=Math.max(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*k,h=im.naturalHeight*k;
-  x.drawImage(im,(W-w)/2,(H-h)/2,w,h);return c.toDataURL('image/webp',.85);
+  x.drawImage(im,(W-w)/2,(H-h)/2,w,h);return c.toDataURL('image/webp',.8);
 }
 function showBgImg(){const s=pi<0?cur.cbg:cur.bg[pi];$('#bgimg').classList.toggle('on',!!s);if(s)$('#bgimg').src=s;else $('#bgimg').removeAttribute('src');syncCovPhoto()}
 function syncCovPhoto(){const has=!!(cur&&cur.cbg);$('#cph').textContent=has?'Change photo':'Add a photo';$('#cphx').classList.toggle('hidden',!has)}
 async function setCoverPhoto(im){cur.cbg=im?coverFill(im):null;if(!cur.cbg)delete cur.cbg;else{cur.color=PAPER;cur.cc=2;applyPS()}showBgImg();await savePage()}
 /* A cover with a photo gets the paper color, and its sides and inside look like the pages (boardCol), so no odd color
    shows around the picture. b.cc = 2: set that way (1 = an earlier version took the photo's edge color). */
+function dropExtraPv(){ // stored page composites that add nothing (no objects, no paper style): the page shows its picture with the ink on top instead
+  let ch=false;
+  for(const b of data)for(let i=0;i<b.pages.length;i++)if(b.pv[i]&&!needPv(b.objs[i],b.ps[i])){delete b.pv[i];ch=true}
+  if(ch)persist();
+}
 async function fixCoverColors(){ // notebooks with a cover photo from before this: paper color once (unless you picked a color)
   let ch=false;
   for(const b of data){if(!b.cbg||b.cc===2||!(b.cc===1||BC.includes(b.color)))continue;b.color=PAPER;b.cc=2;ch=true}
@@ -1505,16 +1515,16 @@ function addObj(o,stay){
   commitText();objList().push(o);renderObjs();if(!stay)setView(true);
   const d=elOf(o);selectObj(d);savePage();return d;
 }
-function shrink(im,max){
+function shrink(im,max){ // a photo for a page: at most `max` px, WebP 80 % (looks the same, ~25 % smaller than 1400 px at 85 %)
   const k=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');
   c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);
-  c.getContext('2d').drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/webp',.85);
+  c.getContext('2d').drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/webp',.8);
 }
 function placePhoto(im,fr){
   const q=im.naturalHeight/im.naturalWidth,full=!fr;
   let w=W*(fr||.6),h=w*q,x=(W-w)/2,y=H*.3;
   if(pi<0&&full){const qq=1/q;w=Math.max(W,H*qq);h=w/qq;x=(W-w)/2;y=(H-h)/2}
-  addObj({k:'img',src:full?shrink(im,1400):im.src,x,y,w,h,r:0});
+  addObj({k:'img',src:full?shrink(im,1280):im.src,x,y,w,h,r:0});
 }
 function newText(e){
   const r=$('#paper').getBoundingClientRect(),u=r.width/W,f=size*4+30,w=W*.5,h=f*1.3+w*.12;
@@ -1789,7 +1799,7 @@ function initKb(){
   window.addEventListener('orientationchange',()=>{setTimeout(()=>{base=window.innerHeight;bw=window.innerWidth;upd()},300)});
 }
 function rrx(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
-async function compose(ink,objs,bg,st){
+async function compose(ink,objs,bg,st,q){ // q: WebP quality (the stored page preview uses .8; exports .85)
   const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   if(styled(st))drawBg(x,st);
   if(bg){const m=await imgOf(bg);if(m)x.drawImage(m,0,0,W,H)}
@@ -1806,9 +1816,36 @@ async function compose(ink,objs,bg,st){
     }
     x.restore();
   }
-  return canvasURL(c,.85);
+  return canvasURL(c,q||.85);
 }
 /* encode a canvas without freezing the screen (the browser does the work in the background) */
+/* Smaller page pictures. A page of a PDF that is black and white (text, line drawings – most books and documents)
+   becomes a PNG with 16 shades of grey: ~60 % smaller than WebP and sharper (no blur around the letters).
+   Colour pages and photos stay WebP. The PNG is built here (palette + deflate from the browser), no library. */
+const PNG_CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function pngChunk(type,data){
+  const o=new Uint8Array(12+data.length),dv=new DataView(o.buffer);dv.setUint32(0,data.length);
+  for(let i=0;i<4;i++)o[4+i]=type.charCodeAt(i);o.set(data,8);
+  let c=0xffffffff;for(let i=4;i<8+data.length;i++)c=PNG_CRC[(c^o[i])&255]^(c>>>8);dv.setUint32(8+data.length,(c^0xffffffff)>>>0);return o;
+}
+async function grayPng(c){ // → a PNG Blob: 4-bit palette of 16 greys
+  const w=c.width,h=c.height,d=c.getContext('2d').getImageData(0,0,w,h).data,rowB=(w+1)>>1,raw=new Uint8Array((rowB+1)*h);
+  for(let y=0;y<h;y++){const o=y*(rowB+1);for(let x=0;x<w;x++){const p=(y*w+x)*4,v=(d[p]*77+d[p+1]*150+d[p+2]*29+128)>>8,q=(v*15+127)/255|0;raw[o+1+(x>>1)]|=x&1?q:q<<4}}
+  const ih=new Uint8Array(13),dv=new DataView(ih.buffer);dv.setUint32(0,w);dv.setUint32(4,h);ih[8]=4;ih[9]=3;
+  const pl=new Uint8Array(48);for(let k=0;k<16;k++)pl[k*3]=pl[k*3+1]=pl[k*3+2]=k*17;
+  const z=new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer());
+  return new Blob([new Uint8Array([137,80,78,71,13,10,26,10]),pngChunk('IHDR',ih),pngChunk('PLTE',pl),pngChunk('IDAT',z),pngChunk('IEND',new Uint8Array(0))],{type:'image/png'});
+}
+function isDocGray(c){ // black-and-white document? (no colour; mostly paper with dark marks – not a grey photo)
+  const w=c.width,h=c.height,d=c.getContext('2d').getImageData(0,0,w,h).data;let n=0,col=0,mid=0;
+  for(let p=0;p<d.length;p+=8){const r=d[p],g=d[p+1],b=d[p+2];n++;if(Math.max(r,g,b)-Math.min(r,g,b)>24)col++;const l=(r*77+g*150+b*29)>>8;if(l>48&&l<208)mid++}
+  return col<n*.003&&mid<n*.2;
+}
+const blobURL=bl=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(bl)});
+async function pageURL(c){ // a PDF page (or a page picture): grey PNG when it's a black-and-white document, else WebP 80 %
+  try{if(window.CompressionStream&&isDocGray(c)){const bl=await grayPng(c);if(bl.size<170000)return await blobURL(bl);const u=await canvasURL(c,.8);return u.length*.75<bl.size?u:await blobURL(bl)}}catch(e){console.warn('grey page',e)}
+  return canvasURL(c,.8);
+}
 function canvasURL(c,q){
   const sync=()=>c.toDataURL('image/webp',q);
   return new Promise(res=>{try{c.toBlob(bl=>{if(!bl){res(sync());return}const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>res(sync());r.readAsDataURL(bl)},'image/webp',q)}catch(e){res(sync())}});
@@ -1831,7 +1868,7 @@ async function savePage0(){
     if(svSeq[key]!==seq||b._sv!==sv)return;
   }
   if(idx<0)b.cover=ink;else b.pages[idx]=flat;
-  const bg=idx<0?b.cbg:b.bg[idx],st=idx<0?null:b.ps[idx],pv=(objs.length||bg||styled(st))?await compose(flat,objs,bg,st):null;
+  const bg=idx<0?b.cbg:b.bg[idx],st=idx<0?null:b.ps[idx],pv=(idx<0?(objs.length||bg):needPv(objs,st))?await compose(flat,objs,bg,st,.8):null;
   if(b._sv!==sv)return;
   if(idx<0)b.cpv=pv;else if(pv)b.pv[idx]=pv;else delete b.pv[idx];
   persist();
@@ -2440,7 +2477,7 @@ async function renderPdfPage(doc,i,w0,h0){ // → an image of PDF page i (tries 
       const k=Math.min(w/v.width,h/v.height),vp=pg.getViewport({scale:k});
       x.fillStyle='#fff';x.fillRect(0,0,w,h);x.translate((w-vp.width)/2,(h-vp.height)/2);
       await pg.render({canvasContext:x,viewport:vp}).promise;
-      const u=await canvasURL(c,.8);if(!u||u.length<100)throw new Error('empty image');
+      const u=await pageURL(c);if(!u||u.length<100)throw new Error('empty image');
       try{pg.cleanup()}catch(e){}
       return u;
     }catch(e){err=e;console.warn('PDF page '+i+' at '+s,e)}
@@ -2547,6 +2584,7 @@ const PAPER='#fdfdfa',DEF={p:'blank',c:PAPER};
 const PAPERN=[['#fdfdfa','Paper white'],['#ffffff','Bright white'],['#faf1d7','Warm white – easier on the eyes'],['#f6efe0','Cream'],['#e9e9e9','Light gray'],['#e3edf7','Light blue'],['#e7f1e3','Mint'],['#f8e6ec','Blush'],['#26292e','Dark gray'],['#000000','Black']];
 const PAPERS=PAPERN.map(x=>x[0]),paperName=c=>(PAPERN.find(x=>x[0]===c)||[0,'Your color'])[1];
 const styled=st=>!!st&&(st.p!=='blank'||st.c!==PAPER);
+const needPv=(o,st)=>!!(o&&o.length)||styled(st); // a page needs a stored composite only with objects or a paper style
 const lumOf=h=>{const v=parseInt(h.slice(1),16);return(.2126*(v>>16)+.7152*(v>>8&255)+.0722*(v&255))/255};
 function drawBg(x,st){
   x.fillStyle=st.c||PAPER;x.fillRect(0,0,W,H);
@@ -2574,7 +2612,7 @@ function syncPS(){
 }
 async function rebuildPv(i){
   const st=cur.ps[i],o=cur.objs[i]||[],bg=cur.bg[i];
-  if(o.length||bg||styled(st))cur.pv[i]=await compose(cur.pages[i],o,bg,st);else delete cur.pv[i];
+  if(needPv(o,st))cur.pv[i]=await compose(cur.pages[i],o,bg,st,.8);else delete cur.pv[i];
 }
 async function setPS(patch){
   if(pi<0)return;

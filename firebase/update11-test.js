@@ -73,7 +73,22 @@ const N=120,AT=40; // pages in the big notebook; it was left open at spread 40 (
   const dark=await A.evaluate(async b64=>{const im=new Image();im.src='data:image/png;base64,'+b64;await im.decode();const k=document.createElement('canvas');k.width=im.width;k.height=im.height;const x=k.getContext('2d');x.drawImage(im,0,0);
     const d=x.getImageData(0,0,k.width,k.height).data;let n=0;for(let i=0;i<d.length;i+=4)if(d[i]+d[i+1]+d[i+2]<240)n++;return n},shot);
   ok(dark>50,'drawing on a page from a PDF: the line shows in the editor, over the PDF page ('+dark+' dark pixels)');
-  await A.click('#back');await A.waitForTimeout(800);await A.evaluate(()=>closeBook());await A.waitForTimeout(400);
+  await A.click('#back');await A.waitForTimeout(1000);
+  // smaller storage: an annotated PDF page isn't stored twice – the book shows the page with the ink on top
+  const lay=await A.evaluate(()=>{const i=2*cs+1,el=$('#pr');return {pv:!!cur.pv[i],bg:!!cur.bg[i],ink:!!cur.pages[i],imgs:el.querySelectorAll('img').length,top:!!el.querySelector('img.ink2'),same:el.querySelector('img.ink2')?.src===cur.pages[i]}});
+  ok(!lay.pv&&lay.bg&&lay.ink&&lay.imgs===2&&lay.top&&lay.same,'an annotated PDF page: no second stored picture; the book shows the PDF page with the writing on top');
+  const pv=await A.evaluate(async()=>{const bk=cur,i=2*cs;bk.pv[i]='data:image/webp;base64,AAAA';bk.objs[i+2]=[{k:'note',c:'#ffe14d',t:'hi',x:1,y:1,w:90,h:90,f:40,r:0}];bk.pv[i+2]='data:image/webp;base64,BBBB';dropExtraPv();return {drop:!bk.pv[i],keep:!!bk.pv[i+2]}});
+  ok(pv.drop&&pv.keep,'older notebooks: page pictures that add nothing are dropped at start; pages with notes or stickers keep theirs');
+  await A.evaluate(()=>{const i=2*cs+2;delete cur.pv[i];cur.objs[i]=[]});
+  // PDF pages: black-and-white → a grey PNG (smaller, sharper); colour → WebP
+  const enc=await A.evaluate(async()=>{const mk=f=>{const c=document.createElement('canvas');c.width=900;c.height=1200;const x=c.getContext('2d');f(x);return c};
+    const text=mk(x=>{x.fillStyle='#fff';x.fillRect(0,0,900,1200);x.fillStyle='#111';x.font='16px serif';for(let y=100;y<1150;y+=22)x.fillText('A page of a book, with plain black text on white paper, line after line.',80,y)});
+    const colour=mk(x=>{x.fillStyle='#fde7c8';x.fillRect(0,0,900,1200);['#e84a5f','#2a9d8f','#264653'].forEach((c,i)=>{x.fillStyle=c;x.fillRect(100+i*250,300,200,400)})});
+    const photo=mk(x=>{const g=x.createLinearGradient(0,0,900,1200);g.addColorStop(0,'#222');g.addColorStop(1,'#ddd');x.fillStyle=g;x.fillRect(0,0,900,1200)});
+    const t=await pageURL(text),w=await canvasURL(text,.8),c=await pageURL(colour),ph=await pageURL(photo);
+    return {t:t.slice(5,14),tk:Math.round(t.length*.75/1024),wk:Math.round(w.length*.75/1024),c:c.slice(5,15),ph:ph.slice(5,15)}});
+  ok(enc.t==='image/png'&&enc.tk<enc.wk*.6&&enc.c==='image/webp'&&enc.ph==='image/webp','PDF pages: black-and-white text → grey PNG ('+enc.tk+' KB instead of '+enc.wk+' KB as WebP); colour and grey photos stay WebP');
+  await A.evaluate(()=>closeBook());await A.waitForTimeout(400);
 
   // ---- device B, new: pages still on their way show "Loading page…", then appear
   await setPro(uid,false);await A.waitForFunction(()=>!ACC.pro,null,{timeout:15000});
