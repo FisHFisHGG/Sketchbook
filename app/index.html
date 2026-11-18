@@ -192,7 +192,7 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent)}
 #pcols{flex-wrap:wrap;gap:8px}#pcn{font-size:1em;margin-left:6px}.cpk[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent)}
 .paper{position:relative;width:min(100cqw - 20px,(100cqh - 20px)*var(--pr,.75));aspect-ratio:var(--ar,3/4);background-color:var(--paper);background-image:var(--tex);border-radius:2px 6px 6px 2px;box-shadow:0 12px 32px var(--sh)}
-#cv{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+#cv{position:relative;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair} /* positioned, so it paints over the page picture (#bgimg: a PDF page or a cover photo) and the layers under it – in DOM order */
 #ph{position:absolute;touch-action:none;outline:2px dashed var(--accent);cursor:move}
 #ph img{width:100%;display:block;pointer-events:none}
 #ph .rs{position:absolute;right:-11px;bottom:-11px;width:24px;height:24px;border-radius:50%;background:var(--accent);cursor:nwse-resize;touch-action:none}

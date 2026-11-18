@@ -64,7 +64,16 @@ const N=120,AT=40; // pages in the big notebook; it was left open at spread 40 (
   ok(await A.evaluate(()=>!!document.querySelector('#ovg .th:last-child .tp img')),'… scrolling down loads the others');
   await A.click('#ovg .th:nth-child(3)');await A.waitForTimeout(200);
   ok(await A.evaluate(()=>document.querySelector('#ovg .th:nth-child(3)').getAttribute('aria-pressed')==='true'&&!!document.querySelector('#ovg .th:last-child .tp img')),'choosing a page only marks it (the pictures stay)');
-  await A.click('#ovx');await A.evaluate(()=>closeBook());await A.waitForTimeout(400);
+  await A.click('#ovx');await A.waitForTimeout(300);
+  // drawing on a PDF page: the ink shows in the editor (over the page's picture), not only in the book
+  await A.evaluate(()=>showEditor(cs*2+1));await A.waitForTimeout(900);
+  const box=await A.locator('#paper').boundingBox(),y=box.y+box.height*.15;
+  await A.mouse.move(box.x+box.width*.15,y);await A.mouse.down();await A.mouse.move(box.x+box.width*.85,y,{steps:14});await A.mouse.up();await A.waitForTimeout(500);
+  const shot=(await A.screenshot({clip:{x:box.x,y:y-6,width:box.width,height:12}})).toString('base64');
+  const dark=await A.evaluate(async b64=>{const im=new Image();im.src='data:image/png;base64,'+b64;await im.decode();const k=document.createElement('canvas');k.width=im.width;k.height=im.height;const x=k.getContext('2d');x.drawImage(im,0,0);
+    const d=x.getImageData(0,0,k.width,k.height).data;let n=0;for(let i=0;i<d.length;i+=4)if(d[i]+d[i+1]+d[i+2]<240)n++;return n},shot);
+  ok(dark>50,'drawing on a page from a PDF: the line shows in the editor, over the PDF page ('+dark+' dark pixels)');
+  await A.click('#back');await A.waitForTimeout(800);await A.evaluate(()=>closeBook());await A.waitForTimeout(400);
 
   // ---- device B, new: pages still on their way show "Loading page…", then appear
   await setPro(uid,false);await A.waitForFunction(()=>!ACC.pro,null,{timeout:15000});
