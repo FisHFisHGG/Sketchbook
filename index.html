@@ -171,10 +171,6 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .pc u:nth-child(1){background:#fff}.pc u:nth-child(2){background:#faf1d7}.pc u:nth-child(3){background:#e6eef7}.pc u:nth-child(4){background:#eaf3e7}.pc u:nth-child(5){background:#000}
 .pc em{margin-left:auto;font-style:normal;opacity:.65;font-size:.85em}
 
-.mi{display:inline-block;width:12px;height:15px;margin-right:6px;vertical-align:-2px;border-radius:2px;background:#fbfbf6;background-size:4px 4px}
-.mi.m1{background-image:linear-gradient(transparent 3px,rgba(60,90,140,.6) 0);background-size:100% 4px}
-.mi.m2{background-image:linear-gradient(rgba(60,90,140,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(60,90,140,.55) 1px,transparent 1px)}
-.mi.m3{background-image:radial-gradient(circle,rgba(60,90,140,.8) .8px,transparent 1.2px)}
 .sub{color:var(--muted);margin:-18px 0 30px;max-width:46ch}
 .tour{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:start}
 .st{min-height:78vh;display:flex;flex-direction:column;justify-content:center;opacity:.28;transition:opacity .4s}
@@ -195,8 +191,6 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .dpr>*{position:absolute}
 .pat{inset:0;border-radius:inherit}
 .pl-lines{background:linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.3) 0) 0 0/100% calc(var(--pw)/7)}
-.pl-grid{background:linear-gradient(rgba(60,90,140,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(60,90,140,.3) 1px,transparent 1px);background-size:calc(var(--pw)/7) calc(var(--pw)/7)}
-.pl-dots{background:radial-gradient(circle,rgba(60,90,140,.45) 1.2px,transparent 1.7px) 0 0/calc(var(--pw)/7) calc(var(--pw)/7)}
 @keyframes ls{0%{opacity:0}6%,30%{opacity:1}36%,100%{opacity:0}}
 .ink{inset:0;width:100%;height:100%;opacity:0;fill:none;stroke:#1d1d1b;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .ink path{stroke-dasharray:1;stroke-dashoffset:1}
@@ -265,7 +259,7 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:calc(var(--pw)*2.4);min-height:34px}
 .chips span{padding:5px 12px;border-radius:999px;background:color-mix(in srgb,var(--ink) 10%,transparent);font-size:.85rem;font-weight:600;animation:chip .4s both}
 @keyframes chip{from{opacity:0;transform:translateY(6px)}}
-@media (prefers-reduced-motion:reduce){.dbook,.leaf,.cvr,.pdfp,.ovl{transition:none}.g3 .ink path,.g6 .pdfp svg path{animation:none;stroke-dashoffset:0}.g4 .txt,.g4 .stk,.g4 .snote{animation:none;opacity:1}.g5 .pat{animation:none}.g5 .pl-grid{opacity:1}.chips span{animation:none}}
+@media (prefers-reduced-motion:reduce){.dbook,.leaf,.cvr,.pdfp,.ovl{transition:none}.g3 .ink path,.g6 .pdfp svg path{animation:none;stroke-dashoffset:0}.g4 .txt,.g4 .stk,.g4 .snote{animation:none;opacity:1}.g5 .pat{animation:none}.chips span{animation:none}}
 /* FAQ */
 details{border-top:1px solid var(--line);padding:18px 0}
 details:last-of-type{border-bottom:1px solid var(--line)}
@@ -313,21 +307,6 @@ h2{font-size:clamp(1.9rem,4vw,2.9rem);letter-spacing:-.03em;line-height:1.05;mar
 .closing{text-align:left}
 footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:.92rem}
 
-/* Login dialog */
-dialog{border:0;border-radius:18px;padding:0;width:min(420px,calc(100% - 32px));background:var(--paper);color:#1b2430;box-shadow:0 30px 80px rgba(0,0,0,.5)}
-dialog::backdrop{background:rgba(8,12,14,.6)}
-.dg{padding:26px}
-.dg h2{font-size:1.7rem;margin:0 0 4px}
-.dg .sub{margin:0 0 18px;color:#56626c;font-size:.95rem}
-.tabs{display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid #d5d8d0}
-.tabs button{background:none;border:0;padding:8px 14px;font-weight:700;color:#56626c;border-bottom:3px solid transparent;margin-bottom:-1px}
-.tabs button[aria-selected="true"]{color:#1b2430;border-color:var(--cover)}
-label{display:block;font-weight:600;font-size:.92rem;margin-bottom:12px}
-input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px solid #b9c0bd;border-radius:10px;font:inherit;background:#fff;color:#1b2430}
-.dg .btn{width:100%;margin-top:6px}
-.dg .alt{display:block;text-align:center;margin-top:14px;color:#56626c;font-size:.92rem}
-.note-demo{margin:16px 0 0;padding:10px 12px;border-radius:10px;background:rgba(224,165,38,.22);font-size:.85rem;color:#4a3a08}
-.x{position:absolute;right:12px;top:10px;background:none;border:0;font-size:1.4rem;color:#56626c;padding:6px 10px}
 .btn:disabled{opacity:.6;cursor:default}
 </style>
 </head>

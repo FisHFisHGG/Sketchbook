@@ -193,10 +193,6 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #pcols{flex-wrap:wrap;gap:8px}#pcn{font-size:1em;margin-left:6px}.cpk[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent)}
 .paper{position:relative;width:min(100cqw - 20px,(100cqh - 20px)*var(--pr,.75));aspect-ratio:var(--ar,3/4);background-color:var(--paper);background-image:var(--tex);border-radius:2px 6px 6px 2px;box-shadow:0 12px 32px var(--sh)}
 #cv{position:relative;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair} /* positioned, so it paints over the page picture (#bgimg: a PDF page or a cover photo) and the layers under it – in DOM order */
-#ph{position:absolute;touch-action:none;outline:2px dashed var(--accent);cursor:move}
-#ph img{width:100%;display:block;pointer-events:none}
-#ph .rs{position:absolute;right:-11px;bottom:-11px;width:24px;height:24px;border-radius:50%;background:var(--accent);cursor:nwse-resize;touch-action:none}
-#ph .acts{position:absolute;left:0;top:-48px;display:flex;gap:6px}
 .bar.bot.ed{flex-direction:column;align-items:stretch;gap:5px;padding:5px 8px;position:relative}
 .row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
 .ed .ib.i{min-width:36px;padding:6px}
@@ -223,9 +219,6 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 .eg.st img{width:100%;aspect-ratio:1;object-fit:contain;display:block}
 .eg.nt{grid-template-columns:repeat(auto-fill,minmax(64px,1fr))}
 .eg.nt button{height:64px;border-radius:4px;box-shadow:0 3px 8px rgba(0,0,0,.2)}
-#ph.note{outline:none;box-shadow:0 8px 18px rgba(0,0,0,.25);border-radius:4px;padding:16px 6px 6px}
-#ph.note::before{content:"";position:absolute;left:50%;top:6px;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:rgba(0,0,0,.18)}
-#ph.note textarea{width:100%;height:100%;border:0;background:transparent;resize:none;padding:10px;font:inherit;line-height:1.3;color:#222;font-size:clamp(13px,4.2vw,18px);outline:none;display:block}
 #paper{container-type:inline-size}
 #ol{position:absolute;inset:0;pointer-events:none}
 #ed.vm #ol,#ed.tm #ol{pointer-events:auto}
@@ -267,8 +260,6 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #adm-body h3{scroll-margin-top:110px}.acosts{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--bar)}.acosts>b{display:block}.acosts>small{display:block;margin-bottom:8px}.acard small{opacity:.6;font-size:.8em}
 .acharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:12px}.achart{position:relative;min-width:0}.achart.wide{grid-column:1/-1}.ach-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin-bottom:6px}.ach-h>b{font-size:.95em}.ach-h>small{opacity:.6;font-size:.78em}.ach-lg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8em;margin:0 0 8px}.ach-lg span{display:inline-flex;align-items:center;gap:6px}.ach-lg i{width:16px;height:0;border-top:3px solid var(--c)}.ach-lg i.dash{border-top-style:dashed}.ach-plot{position:relative;height:190px;margin:8px 4px 24px 46px;touch-action:pan-y}.achart.wide .ach-plot{height:220px}.ach-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.ach-grid{stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}.ach-zero{stroke:var(--ink);stroke-opacity:.45;stroke-width:1.4;vector-effect:non-scaling-stroke}.ach-y{position:absolute;right:calc(100% + 7px);transform:translateY(-50%);font-size:.7em;opacity:.6;white-space:nowrap}.ach-x{position:absolute;top:calc(100% + 5px);transform:translateX(-50%);font-size:.7em;opacity:.6;white-space:nowrap}.ach-dot{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px var(--bar);pointer-events:none}.ach-gd{position:absolute;top:0;bottom:0;width:0;border-left:1px dashed color-mix(in srgb,var(--ink) 45%,transparent);pointer-events:none}.ach-tip{position:absolute;top:-6px;z-index:3;pointer-events:none;background:var(--ink);color:var(--bar);border-radius:9px;padding:6px 10px;font-size:.78em;line-height:1.45;white-space:nowrap;box-shadow:0 8px 22px var(--sh)}.ach-tip b,.ach-tip span{display:flex;align-items:center;gap:6px}.ach-tip i{width:8px;height:8px;border-radius:50%}.ach-dn{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.ach-dsvg{width:136px;height:136px;flex:none}.ach-dt{fill:currentColor;font-size:15px;font-weight:700}.ach-ds{fill:currentColor;opacity:.6;font-size:9px}.ach-dl{flex:1;min-width:150px;display:grid;gap:5px}.dl-r{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:.86em}.dl-r i{width:11px;height:11px;border-radius:3px}.dl-r span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dl-r em{font-style:normal;opacity:.7;white-space:nowrap}.ach-ins{margin-top:10px;padding:10px 14px;border-radius:14px;background:color-mix(in srgb,#2f9e5b 10%,var(--bar));border:1px solid color-mix(in srgb,#2f9e5b 30%,var(--line));font-size:.9em}.ach-ins p{margin:3px 0}.acats button[aria-pressed="true"]{background:var(--ink);color:var(--bar);border-color:var(--ink)}
 .achart{background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px}.achart>b{display:block;margin-bottom:8px}
-.cbars{display:flex;align-items:flex-end;gap:3px;height:150px}.cbar{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px}
-.cbar i{display:block;width:100%;background:var(--accent);border-radius:4px 4px 0 0}.cbar small{font-size:.65em;opacity:.65;height:1.2em}.cbar .bv{font-size:.6em;opacity:.8;white-space:nowrap}
 .abrks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .abrk{background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px}.abrk>b{display:block;margin-bottom:8px}
 .abr{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:6px 0;font-size:.9em}.abr em{font-style:normal;opacity:.7}.abr i{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:var(--accent);opacity:.8}
@@ -1407,7 +1398,7 @@ $('#storeb').onclick=()=>{showStore(true);$('#shelf').scrollTop=0};
 $('#storex').onclick=()=>showStore(false);
 
 /* Text tool */
-function endFloat(){const e=rtEditing();if(e)rtFinish(e);commitSel();const a=$('#ph');if(a)a.remove()}
+function endFloat(){const e=rtEditing();if(e)rtFinish(e);commitSel()}
 function pushHist(){histAdd();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1}
 /* A photo on the cover is Pro: it fills the cover as its background (cur.cbg), under the drawing, so you can draw on it.
    Photos on pages stay free (movable objects). */
@@ -1798,11 +1789,6 @@ function initKb(){
   window.addEventListener('orientationchange',()=>{setTimeout(()=>{base=window.innerHeight;bw=window.innerWidth;upd()},300)});
 }
 function rrx(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
-function wrapT(c,t,maxW){
-  const out=[];
-  t.split('\n').forEach(par=>{let line='';par.split(' ').forEach(w=>{const test=line?line+' '+w:w;if(c.measureText(test).width>maxW&&line){out.push(line);line=w}else line=test});out.push(line)});
-  return out;
-}
 async function compose(ink,objs,bg,st){
   const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   if(styled(st))drawBg(x,st);
@@ -2118,7 +2104,7 @@ function cancelStroke(){
 }
 const tps=new Map();
 cv.addEventListener('pointerdown',e=>{
-  if(e.button>0||$('#ph'))return;if(tool==='text'){e.preventDefault();newText(e);return}
+  if(e.button>0)return;if(tool==='text'){e.preventDefault();newText(e);return}
   if(e.pointerType==='pen'){penSeen=true;penDown=true;autoPen()}
   else if(e.pointerType==='touch'&&(penDown||tps.size>0||(penSeen&&!ENV.fingers)))return;
   cv.setPointerCapture(e.pointerId);
@@ -2420,11 +2406,6 @@ function emojiImg(e,cb){
   const im=new Image();im.onload=()=>cb(im);im.src=c.toDataURL();
 }
 function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
-function wrapText(t,maxW){
-  const out=[];
-  t.split('\n').forEach(par=>{let line='';par.split(' ').forEach(w=>{const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxW&&line){out.push(line);line=w}else line=test});out.push(line)});
-  return out;
-}
 
 /* Orientation dialog + PDF import */
 function askOrient(title,pre,sub,yes,pages){ // pages: also ask how the pages look → {o, pg}
@@ -2709,7 +2690,6 @@ const TEX={
 };
 const TEXSZ={leather:160,linen:4,kraft:160,dots:40,stripes:20};
 function texData(b){const k=b.tex,z=TEXSZ[k];return 'data:image/svg+xml,'+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='"+z+"' height='"+z+"'>"+TEX[k]+'</svg>')}
-function texUrl(b){return b&&b.tex&&TEX[b.tex]?'url("'+texData(b)+'")':'none'}
 /* Cover designs: artwork over the cover color (and texture). Drawn in a 300×400 box and stretched to the cover.
    Mostly white/black with transparency, so every design works with every cover color. Saved as b.design. */
 const W5='rgba(255,255,255,.5)',W3='rgba(255,255,255,.3)',W2='rgba(255,255,255,.18)',K3='rgba(0,0,0,.28)';
@@ -2925,7 +2905,6 @@ const STPK=[
     "<ellipse cx='50' cy='64' rx='34' ry='16' fill='#ffb3c7' "+OL+"/><rect x='19' y='46' width='62' height='12' rx='6' fill='#fff6e8' stroke='#3b2f2f' stroke-width='3'/><ellipse cx='50' cy='38' rx='34' ry='17' fill='#ffb3c7' "+OL+"/>"+EYES(41,59,36)+BLUSH(31,69,42)+SMILE(41)
   ].map(SU)}
 ];
-const DESN=[['','None'],['frame','Frame'],['classic','Classic'],['band','Elastic band'],['waves','Waves'],['mountains','Mountains'],['botanical','Botanical'],['stars','Starry night'],['confetti','Confetti'],['geo','Geometric'],['retro','Retro'],['plaid','Plaid'],['hearts','Hearts']];
 function desData(k){return 'data:image/svg+xml,'+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 400' preserveAspectRatio='none'>"+DES[k]+'</svg>')}
 /* everything that paints a cover uses these: design on top, texture below (two layers, always) */
 const NOIMG='linear-gradient(transparent,transparent)';
@@ -3106,6 +3085,9 @@ function canon(v){return JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.
 function cyrb(s){let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677)}a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909);b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);return(b>>>0).toString(36)+'.'+(a>>>0).toString(36)+'.'+s.length.toString(36)}
 const hcache=new Map();
 function recHash(k,v){const s=sig(v),c=hcache.get(k);if(c&&same(c.s,s))return c.h;const h=cyrb(canon(v));hcache.set(k,{s,h});return h}
+// hashes for many records at once (a big notebook: ~100 MB of pages), giving the screen a moment every ~20 ms so nothing freezes;
+// the results stay in hcache, so the sync loop right after only looks them up
+async function warmHashes(list){let t=performance.now();for(const [k,v] of list){if(v!==undefined)recHash(k,v);if(performance.now()-t>20){await new Promise(r=>setTimeout(r,0));t=performance.now()}}}
 const k2c=k=>k.replace(/:/g,'~'),c2k=c=>c.replace(/~/g,':'),chunkId=(c,i)=>i?c+'~~'+i:c;
 function localRecs(){
   const m=new Map();m.set('idx',data.map(b=>String(b.id)));m.set('shelf',SHELF);
@@ -3171,7 +3153,9 @@ async function syncOnce(){
   // a brand-new device: don't upload the empty starter notebook if the cloud already has notebooks
   if(!Object.keys(base).length&&Object.keys(man).length>1){const keep=data.filter(b=>!isStarter(b)||String(b.id)===open);if(keep.length!==data.length){data.forEach(b=>{if(!keep.includes(b))LIBST.purge.push(String(b.id))});data=keep}}
   const here=new Set(data.map(b=>String(b.id))),gone=new Set(TRASH.map(t=>t.id));
-  const L=localRecs(),keys=new Set([...L.keys(),...Object.keys(man).map(c2k),...Object.keys(base)]);
+  const L=localRecs();await warmHashes(L);
+  for(const k of hcache.keys())if(!L.has(k)&&!k.startsWith('sh:'))hcache.delete(k); // pages of deleted notebooks don't stay in memory
+  const keys=new Set([...L.keys(),...Object.keys(man).map(c2k),...Object.keys(base)]);
   const push=[],pull=[];let idx=null,shk=null,changedHere=false;
   for(const k of keys){
     const lv=L.get(k),lh=lv===undefined?null:recHash(k,lv),r=man[k2c(k)],rh=r?r.h:null,bh=base[k]??null;
@@ -5438,9 +5422,11 @@ async function shareOnce(b,code,S){
   const guest=!!b._guest,editing=b===cur&&!$('#ed').classList.contains('hidden')?pi:-9;
   const keys=['meta',...[...Array(Math.max(b.pages.length,S.n||0)).keys()].map(i=>'p~'+i)];
   const push=[],pull=[],drop=[];let changed=false;
+  const vals=new Map(keys.map(k=>{const i=k==='meta'?-1:+k.slice(2);return [k,k==='meta'?shareMeta(b):(i<b.pages.length?pageOf(b,i):undefined)]}));
+  await warmHashes([...vals].map(([k,v])=>['sh:'+code+':'+k,v])); // remembered, so a change on one page doesn't hash the whole notebook again
   for(const k of keys){
-    const i=k==='meta'?-1:+k.slice(2),lv=k==='meta'?shareMeta(b):(i<b.pages.length?pageOf(b,i):undefined);
-    const lh=lv===undefined?null:cyrb(canon(lv)),r=S.man[k],rh=r?r.h:null,bh=S.h[k]??null;
+    const i=k==='meta'?-1:+k.slice(2),lv=vals.get(k);
+    const lh=lv===undefined?null:recHash('sh:'+code+':'+k,lv),r=S.man[k],rh=r?r.h:null,bh=S.h[k]??null;
     if(lh===rh){if(lh)S.h[k]=lh;continue}
     if(lv===undefined){if(bh&&!guest)drop.push(k);else if(rh)pull.push(k);continue}       // deleted here (owner) / new there
     if(rh===null){if(bh&&guest){drop.push(k)}else push.push(k);continue}                    // deleted there (by the owner) / new here

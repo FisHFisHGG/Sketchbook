@@ -52,12 +52,13 @@ footer{text-align:center;padding:10px 16px 40px;color:var(--muted);font-size:.9e
    "Edit" (Pro) opens the app, which asks to sign in; without Pro it explains that editing is part of Pro. */
 (function(){
   var $=function(s){return document.querySelector(s)};
-  var m=location.pathname.match(/^(.*\/)([^\/]+)\/([a-z0-9]{6,10})\/?$/);
-  var root=m?m[1]:(location.pathname.indexOf('/Sketchbook/')===0?'/Sketchbook/':'/');
+  // the site lives at / (Netlify, foliet.app) or at /Sketchbook/ (GitHub Pages); after it: <notebook-name>/<code>
+  var root=location.pathname.indexOf('/Sketchbook/')===0?'/Sketchbook/':'/';
+  var m=location.pathname.slice(root.length).match(/^([^\/]+)\/([a-z0-9]{6,10})\/?$/);
   ['#home','#home2','#home3'].forEach(function(s){$(s).href=root});
   function page(h,t,btn){$('#main').innerHTML='<div class="msg"><h1></h1><p></p><a class="btn"></a></div>';$('.msg h1').textContent=h;$('.msg p').textContent=t;$('.msg .btn').textContent=btn||'Go to Foliet';$('.msg .btn').href=root;$('#ft').hidden=false}
   if(!m){page('Page not found','This page doesn’t exist. Maybe the link is missing a part?');return}
-  var code=m[3],toastT=0;
+  var code=m[2],toastT=0;
   function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){e.classList.remove('on')},2400)}
   var s=document.createElement('script');s.src=root+'app/vendor/firebase.js';s.onerror=function(){page('Can’t open this notebook','Check your internet connection and try again.','Try again');$('.msg .btn').href=location.href};
   s.onload=start;document.head.appendChild(s);
