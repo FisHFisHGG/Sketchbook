@@ -131,6 +131,26 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .pp.print mark{background:linear-gradient(transparent 10%,rgba(255,214,64,.85) 10% 92%,transparent 92%);color:inherit;padding:0 .04em}
 .pp.print .ring{border:1.5px solid #c0392b;border-radius:50%;padding:0 .18em;margin:0 -.18em}
 .pp.print .pn{left:0;right:0;text-align:center;font-size:calc(var(--pw)*.038);color:#8a8478}
+/* a Bible page: John 3:16 gets highlighted once the page lands, then the notes on the right are written line by line */
+.pp.bible .bkx{font-size:calc(var(--pw)*.045);line-height:1.55}
+.pp.bible sup{font-size:.62em;font-weight:700;color:#a5382a;vertical-align:.45em;line-height:0;margin:0 .2em 0 .05em}
+.pp.bible .hi{background:linear-gradient(rgba(255,214,64,.85),rgba(255,214,64,.85)) 0 70%/100% 80% no-repeat}
+.hb-back .pp.bible .hi{background-size:0 80%}
+.hb-l .pp.bible .hi{animation:hisweep 2.4s .35s cubic-bezier(.45,.1,.55,.9) both}
+@keyframes hisweep{from{background-size:0 80%}to{background-size:100% 80%}}
+.hb-back .pp.bible .hw{opacity:0}
+.hb-l .pp.bible .hw{animation:hwin .5s 2.8s both}
+@keyframes hwin{from{opacity:0;transform:translateY(4px) rotate(-8deg) scale(.8)}to{opacity:1;transform:rotate(-8deg)}}
+.pp.study .nt{left:10%;top:22%;display:grid;gap:calc(var(--pw)*.03)}
+.pp.study .w{display:block;white-space:nowrap;font-size:calc(var(--pw)*.072);line-height:1.1;color:#2a52be}
+.pp.study .w b{color:#a5382a;font-weight:700}
+.hb-r .pp.study .w{animation:wr .7s ease both}
+.hb-r .pp.study .w:nth-child(1){animation-delay:3.9s}.hb-r .pp.study .w:nth-child(2){animation-delay:4.5s}.hb-r .pp.study .w:nth-child(3){animation-delay:5.1s}.hb-r .pp.study .w:nth-child(4){animation-delay:5.7s}.hb-r .pp.study .w:nth-child(5){animation-delay:6.3s}
+@keyframes wr{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% -5% -20% 0)}}
+.hb-r .pp.study .snt{animation:sdrop .6s 7s both}
+@keyframes sdrop{from{opacity:0;transform:translateY(-14px) rotate(-12deg)}to{opacity:1;transform:rotate(-4deg)}}
+.hb-r .pp.study .hstk{animation:spop .5s 7.5s both}
+@keyframes spop{from{opacity:0;transform:scale(0)}70%{transform:scale(1.15)}to{opacity:1;transform:none}}
 .pp .hw{position:absolute;margin:0;font:700 calc(var(--pw)*.085)/1 Caveat,cursive;color:#2a52be}
 .pp svg.dw text{fill:#2a52be;stroke:none;font:700 8.5px Caveat,cursive}
 .pp svg.dw .ld{stroke:#2a52be;stroke-width:.7}
@@ -282,9 +302,7 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .pdfp .doc b{display:block;height:calc(var(--pw)*.07);width:60%;background:#23407a;border-radius:2px;margin-bottom:8%}
 .pdfp .doc i{display:block;height:calc(var(--pw)*.035);background:#cfd4d8;border-radius:2px;margin-bottom:5%}
 .pdfp .doc i.s{width:70%}
-.pdfp .chart{display:flex;align-items:flex-end;gap:6%;height:24%;margin-top:8%}
-.pdfp .chart u{flex:1;background:#9db3d6;border-radius:2px 2px 0 0}
-.pdfp .chart u:nth-child(1){height:40%}.pdfp .chart u:nth-child(2){height:75%}.pdfp .chart u:nth-child(3){height:55%}.pdfp .chart u:nth-child(4){height:95%}
+.pdfp .doc b.b2{width:44%;height:calc(var(--pw)*.05);margin:12% 0 7%;background:#5571a8}
 .pdfp svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#c0392b;stroke-width:1.8;stroke-linecap:round}
 .pdfp svg path{stroke-dasharray:1;stroke-dashoffset:1}
 .g6 .pdfp svg path{animation:dr 1s .5s ease forwards}
@@ -504,9 +522,9 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
         <a class="btn sec" href="#inside">See what’s inside</a>
       </div>
       <p class="fine">Works on phones, tablets and laptops.</p>
-      <ul class="chips2" aria-label="What your notebook can be"><li><a href="#uses">Sketchbook</a></li><li><a href="#uses">Class notes</a></li><li><a href="#uses">Textbooks</a></li><li><a href="#uses">Books &amp; PDFs</a></li><li><a href="#uses">Planner</a></li><li><a href="#uses">Journal</a></li></ul>
+      <ul class="chips2" aria-label="What your notebook can be"><li><a href="#uses">Sketchbook</a></li><li><a href="#uses">Class notes</a></li><li><a href="#uses">Textbooks</a></li><li><a href="#uses">Books &amp; PDFs</a></li><li><a href="#uses">Bible study</a></li><li><a href="#uses">Planner</a></li><li><a href="#uses">Journal</a></li></ul>
     </div>
-    <div class="stage" role="img" aria-label="A notebook that opens and turns its pages: a photo album, sketches, class notes with a photo of the board, a marked-up book with a page of notes, and a weekly plan">
+    <div class="stage" role="img" aria-label="A notebook that opens and turns its pages: a photo album, sketches, a Bible page where John 3:16 gets highlighted next to study notes, class notes with a photo of the board, a marked-up book with a page of notes, and a weekly plan">
       <div class="hb closed" id="hb"><div class="hb-l"></div><div class="hb-r"></div><div class="hb-leaf"><div class="hb-front"></div><div class="hb-back"></div></div></div>
     </div>
   </div>
@@ -523,7 +541,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
             <svg viewBox="0 0 112 150"><path class="dr" pathLength="1" d="M18 66c10-9 56-10 72-2 10 6-4 13-30 13-24 0-48-3-42-11z" stroke="#e0533d" stroke-width="2.4"/><path class="dr" pathLength="1" d="M14 133c20-3 46-3 70 0" stroke="#2a52be" stroke-width="2"/></svg>
             <span class="mnote" style="right:6px;top:84px">key idea!</span></div></div></div>
           <h3>Read and mark up books<span class="soon">Pro</span></h3>
-          <p>Import a book or any PDF, up to 500 pages, and read it like a real book. Underline, circle, write in the margins and stick notes right on the page.</p>
+          <p>Import a book, your Bible or any PDF, up to 500 pages, and read it like a real book. Highlight verses, circle, write in the margins and stick notes right on the page.</p>
         </article>
         <article class="use">
           <div class="ill" aria-hidden="true"><div class="spr"><div class="mp l"><span class="mtit">Chapter 4</span><span class="ln" style="top:24px;width:40%"></span><span class="ln" style="top:30px"></span><span class="ln" style="top:42px;right:22px"></span><span class="ln" style="top:54px"></span><span class="ln" style="top:66px;right:30px"></span><span class="ln" style="top:78px"></span><span class="ln" style="top:90px;right:18px"></span><span class="ln" style="top:102px"></span><span class="ln" style="top:114px;right:40px"></span><span class="ln" style="top:126px"></span></div><div class="mp grid">
@@ -584,7 +602,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
           <article class="st" data-s="3"><span class="sn">04</span><h3>Drawing tools that behave</h3><p>Pen, pencil, a brush that thins as you move faster, marker, highlighter, shapes and fill. Each tool remembers its size, opacity is one slider away, and a stylus draws with pressure.</p></article>
           <article class="st" data-s="4"><span class="sn">05</span><h3>Words, stickers and notes</h3><p>Eight fonts, 42 free stickers, emoji and sticky notes. Every one stays movable. Resize, rotate or edit it any time.</p></article>
           <article class="st" data-s="5"><span class="sn">06</span><h3>Pages set up your way</h3><p>Choose how each page looks: blank, lined, grid, dots or one of your templates, on paper from bright white and warm white (easier on the eyes) to black, or any color you like. Portrait or landscape. Apply it to one page or to all of them.</p></article>
-          <article class="st" data-s="6"><span class="sn">07</span><h3>Books and PDFs, ready to mark up<span class="soon">Pro</span></h3><p>Import a book, your textbooks or any PDF, up to 500 pages. Each page fits a notebook page: highlight, circle, write in the margins, and add your own pages between chapters.</p></article>
+          <article class="st" data-s="6"><span class="sn">07</span><h3>Books and PDFs, ready to mark up<span class="soon">Pro</span></h3><p>Import a book, your Bible, your textbooks or any PDF, up to 500 pages. Each page fits a notebook page: highlight, circle, write in the margins, and add your own pages between chapters.</p></article>
           <article class="st" data-s="7"><span class="sn">08</span><h3>Every page at a glance</h3><p>See the whole notebook at once. Reorder pages, duplicate them, delete them, or jump straight to one.</p></article>
           <article class="st" data-s="8"><span class="sn">09</span><h3>Private notebooks</h3><p>Lock any notebook with a 4-digit PIN or a password. On Android you can also open it with your fingerprint. It locks again when you leave.</p></article>
           <article class="st" data-s="9"><span class="sn">10</span><h3>On your phone, tablet and laptop</h3><p>Foliet opens in any browser and your notebooks are saved on your device, so they open even without internet. Add it to your home screen like an app. With Pro, they sync across all your devices.</p></article>
@@ -611,7 +629,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
                   <svg class="stk" viewBox="0 0 100 100"><path d="M50 8l12 28 30 3-23 20 7 30-26-16-26 16 7-30L8 39l30-3z" fill="#ffd23f" stroke="#e0a800" stroke-width="5" stroke-linejoin="round"/></svg>
                   <div class="snote">water the plants</div>
                 </div>
-                <div class="pdfp"><div class="bar">Biology.pdf</div><div class="doc"><b></b><i></i><i class="h"></i><i class="s"></i><div class="chart"><u></u><u></u><u></u><u></u></div></div><svg viewBox="0 0 100 133"><path pathLength="1" d="M52 78c-2-12 22-18 34-8s6 22-12 24-24-4-22-16z"/></svg><span class="pro">Pro</span><span class="note">learn this!</span></div>
+                <div class="pdfp"><div class="bar">Biology.pdf</div><div class="doc"><b></b><i></i><i class="h"></i><i class="s"></i><b class="b2"></b><i></i><i></i><i></i><i class="s"></i></div><svg viewBox="0 0 100 133"><path pathLength="1" d="M52 78c-2-12 22-18 34-8s6 22-12 24-24-4-22-16z"/></svg><span class="pro">Pro</span><span class="note">learn this!</span></div>
                 <div class="leaf"><div class="lf">Welcome<small>This one is yours.</small></div><div class="lb"></div></div>
                 <div class="cvr"><div class="cf"><span>Sketches</span></div><div class="cb">Day one</div></div>
               </div>
@@ -711,6 +729,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
       <details><summary>What’s in the store?</summary><p>Templates, cover designs, name labels and sticker packs. Lots are free: 8 templates (weekly planner, daily agenda, to-do lists, math grid, Cornell notes, journal, storyboard, sheet music), 16 covers, 6 label shapes and 6 sticker packs (7 stickers each). The rest – like a habit tracker, budget, recipe book, a galaxy or art deco cover, a kraft tag or gold foil label, and packs of cute animals, space and sweet treats – cost €0.99 each on any plan. Buy once and use it as often as you like. Some items are only around for a few days, so look in now and then. Paid items go on sale together with Pro.</p></details>
       <details><summary>Can I share a notebook?</summary><p>Yes. Share → “View-only file” works on every plan. With Pro you can also make a live link, like foliet.app/trip-to-rome/k3x9qa: anyone who has it opens your notebook as a real book that turns its pages, without an account, and it changes as you draw. Big notebooks show their first pages right away. If you allow it, people with Pro can sign in and draw and write in it too, and their changes come to your notebook. Stop sharing whenever you like: the link stops at once.</p></details>
       <details><summary>Can I use it for school or university?</summary><p>Yes, that’s one of the best uses. Write your lecture notes and add photos of the board or the slides right on the page. With Pro, import your textbooks or any book as a PDF, read it like a real book, write in the margins, and add blank, lined or grid pages between chapters to practise. Make a category for each course, and share a live link with your classmates.</p></details>
+      <details><summary>Can I use it for Bible study?</summary><p>Yes. With Pro, import a Bible as a PDF and read it like a real book: highlight a verse like John 3:16, write in the margins, and add lined pages between the books or chapters for your notes and prayers. Keep a separate notebook as a prayer journal, and lock it with a PIN if you like.</p></details>
       <details><summary>Can I import a PDF?</summary><p>With Pro, up to 500 pages per PDF. The first page becomes the cover, and every other page is fitted onto a notebook page so you can write on top of it.</p></details>
       <details><summary>Can I cancel any time?</summary><p>Yes. Monthly plans can be cancelled whenever you like, and yearly plans simply don’t renew. Nobody is charged yet, because paid plans haven’t launched.</p></details>
       <details><summary>What happens if I go back to the free plan?</summary><p>Your notebooks stay. You just can’t add more pages or notebooks beyond the free limits.</p></details>
@@ -795,7 +814,7 @@ function setBill(k){
   $('#pp').textContent=bill[k][0];$('#pu').textContent=bill[k][1];$('#pe').textContent=bill[k][2];$('#pbtn').textContent=bill[k][3];
 }
 $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
-/* hero notebook: closed → opens (inside cover + hello) → album → sketches → class notes → a book (PDF) + notes → planner → closes → again (pauses when not on screen) */
+/* hero notebook: closed → opens (inside cover + hello) → album → sketches → a Bible page (John 3:16 highlighted) + study notes → class notes → a book (PDF) + notes → planner → closes → again (pauses when not on screen) */
 (function(){
   const hb=document.getElementById('hb');if(!hb)return;
   const L=hb.querySelector('.hb-l'),Rp=hb.querySelector('.hb-r'),leaf=hb.querySelector('.hb-leaf'),F=leaf.firstElementChild,B=leaf.lastElementChild;
@@ -816,6 +835,18 @@ $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
   const HELLO=P('dots','<h4 class="ab" style="left:12%;top:8%">Hello!</h4><p class="ab t" style="left:12%;top:27%">ideas, trips,<br><span class="hl">doodles</span> &amp; plans</p>'
         +'<svg class="dw" viewBox="0 0 100 100" style="left:46%;top:50%;width:40%"><circle cx="50" cy="50" r="16"/><path d="M50 18v-12M50 94v-12M18 50h-12M94 50h-12M27 27l-8-8M81 81l-8-8M27 73l-8 8M81 19l-8 8"/></svg>'
         +'<p class="ab s" style="left:12%;top:84%">June 2026</p>'+star.replace('WIDTH','left:14%;top:56%;width:22%'));
+  // a Bible page (King James Version) and a page of study notes; this spread stays a little longer, for the highlighter and the notes
+  const BIBLE=[P('print bible','<p class="ab bkh" style="left:12%;top:6%">JOHN 3</p><p class="ab bkh" style="right:12%;top:6%">1032</p>'
+        +'<div class="ab bkx" style="left:11%;right:27%;top:14%"><sup>14</sup>And as Moses lifted up the serpent in the wilderness, even so must the Son of man be lifted up: <sup>15</sup>That whosoever believeth in him should not perish, but have eternal life. '
+        +'<span class="hi"><sup>16</sup>For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.</span> '
+        +'<sup>17</sup>For God sent not his Son into the world to condemn the world; but that the world through him might be saved.</div>'
+        +'<p class="hw" style="right:3%;top:50%;font-size:calc(var(--pw)*.07)">for me ♥</p>'),
+     P('lines study','<h4 class="ab" style="left:10%;top:4%">John 3:16</h4>'
+        +'<svg class="dw" viewBox="0 0 100 100" style="left:76%;top:5%;width:11%"><path d="M50 6v88M24 32h52"/></svg>'
+        +'<div class="ab nt"><span class="w"><b>so loved</b> → me too!</span><span class="w"><b>He gave</b> → Jesus, His Son</span><span class="w"><b>whosoever</b> → anyone</span><span class="w"><b>not perish</b> → forgiven</span><span class="w"><b>everlasting life</b> → with Him</span></div>'
+        +'<div class="snt" style="left:9%;top:72%;width:50%;transform:rotate(-4deg);background:#ffe9a8;color:#5a4300">1 John 1:9<br>He forgives<br>all our sins</div>'
+        +heart.replace('WIDTH','left:68%;top:76%;width:17%'))];
+  BIBLE.hold=9800;
   const S=[ // [left page, right page]; the first spread is the inside of the cover + the first page
     [INSIDE,HELLO],
     [P('album','<h4 class="ab" style="left:10%;top:6%">Summer ’26</h4>'+ph('sunset','sea at sunset','left:7%;top:20%;width:58%;transform:rotate(-4deg)')+'<p class="ab s" style="left:68%;top:30%">12 July</p>'
@@ -828,6 +859,7 @@ $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
         +'<p class="ab s" style="left:12%;top:84%">coffee &amp; plants</p>'),
      P('dots','<svg class="dw" viewBox="0 0 100 100" style="left:14%;top:10%;width:58%"><path d="M24 40L18 14L40 30M76 40L82 14L60 30"/><path d="M20 52a30 26 0 1 0 60 0a30 26 0 1 0-60 0"/><circle cx="38" cy="52" r="3" fill="#2b2f3a"/><circle cx="62" cy="52" r="3" fill="#2b2f3a"/><path d="M46 62l4 3 4-3M50 65v5M10 60l18 2M10 70l18-2M90 60l-18 2M90 70l-18-2"/></svg>'
         +'<div class="snt" style="left:38%;top:58%;width:48%;transform:rotate(4deg)">draw a little<br>every day</div>'+star.replace('WIDTH','left:10%;top:66%;width:26%'))],
+    BIBLE,
     [P('lines','<h4 class="ab" style="left:10%;top:4%">Biology</h4><p class="ab s" style="right:10%;top:6%;text-align:right">lecture 4<br>3 Oct</p>'
         +ph('board','the board','left:9%;top:20%;width:60%;transform:rotate(-3deg)')+'<i class="tape" style="left:27%;top:17%"></i>'
         +'<p class="ab t" style="left:10%;top:67%;line-height:1.22">• cells: the <span class="hl">units of life</span><br>• nucleus → keeps the DNA<br>• mitochondria = energy</p>'),
@@ -847,18 +879,19 @@ $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
      P('lines','<h4 class="ab" style="left:12%;top:5%">July</h4>'+cal+'<p class="ab t" style="left:46%;top:70%;color:#c0392b">Mia’s<br>birthday!</p>'+heart.replace('WIDTH','left:16%;top:70%;width:22%'))]
   ];
   // -1 = closed. open → turn, turn, turn → close → open … (like a real notebook)
-  let i=-1,busy=false,timer=0;
+  let i=-1,busy=false,timer=0,tgt=-1; // tgt: the spread being opened (it decides how long to stay)
   const flip=(cls,front,back,end)=>{F.innerHTML=front;B.innerHTML=back;leaf.className='hb-leaf';void leaf.offsetWidth;leaf.className='hb-leaf '+cls;setTimeout(()=>{end();leaf.className='hb-leaf';busy=false},1260)};
   function step(){
     if(busy)return;busy=true;
     if(i<0){ // open the cover: the left side stays empty until the cover lands there
+      tgt=0;
       Rp.innerHTML=S[0][1];hb.classList.add('noleft');hb.classList.remove('closed');
       flip('turn',COVER,S[0][0],()=>{L.innerHTML=S[0][0];hb.classList.add('atcover');hb.classList.remove('noleft');i=0});
     }else if(i<S.length-1){ // turn a page
-      const j=i+1;Rp.innerHTML=S[j][1];
+      const j=i+1;tgt=j;Rp.innerHTML=S[j][1];
       flip('turn',S[i][1],S[j][0],()=>{L.innerHTML=S[j][0];hb.classList.remove('atcover');i=j});
     }else{ // last spread: close the notebook (the left side folds back over), then start again
-      hb.classList.add('noleft','closed');hb.classList.remove('atcover');
+      tgt=-1;hb.classList.add('noleft','closed');hb.classList.remove('atcover');
       flip('shut',COVER,S[i][0],()=>{Rp.innerHTML=COVER;L.innerHTML='';hb.classList.remove('noleft');i=-1});
     }
   }
@@ -866,7 +899,7 @@ $('#b-year').onclick=()=>setBill('y');$('#b-month').onclick=()=>setBill('m');
   if(reduce){L.innerHTML=S[1][0];Rp.innerHTML=S[1][1];hb.classList.remove('closed');return}
   Rp.innerHTML=COVER;hb.classList.add('closed');
   let visible=true,first=true;
-  const loop=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(visible&&!document.hidden){step();first=false}loop()},i<0?(first?1600:2600):3600)};
+  const loop=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(visible&&!document.hidden){step();first=false}loop()},tgt<0?(first?1600:2600):(S[tgt].hold||3600))};
   if('IntersectionObserver' in window)new IntersectionObserver(es=>{visible=es[0].isIntersecting}).observe(hb);
   loop();
 })();

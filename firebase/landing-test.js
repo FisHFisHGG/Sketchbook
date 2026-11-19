@@ -3,7 +3,8 @@
 // Tour: 10 steps close together, the card with 01 / 10, a dot per step and arrows; the dots, the arrows and a tap on a step
 // bring that step to the reading line; plain scrolling goes through every step; the card never slides under the top bar;
 // no sideways scroll on a phone, a tablet or a computer.
-// Notebook at the top: opens, turns through all its spreads (album, sketches, class notes, a book + notes, planner),
+// Notebook at the top: opens, turns through all its spreads (album, sketches, a Bible page where John 3:16 gets highlighted
+// + study notes written line by line, class notes, a book + notes, planner),
 // closes and starts again; no dark pages (only the cover); it waits while it isn't on screen; reduce motion shows the album.
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
 const SITE=path.join(__dirname,'..');
@@ -53,17 +54,23 @@ let bad=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)bad++};
     await p.goto(URL0);
     const look=()=>p.evaluate(()=>{const lum=c=>{const m=c.match(/[\d.]+/g)||[0,0,0];return (0.2126*m[0]+0.7152*m[1]+0.0722*m[2])/255};
       const pages=[...document.querySelectorAll('#hb .hb-l .pp,#hb .hb-r .pp')].map(e=>({k:[...e.classList].filter(c=>c!=='pp').join('.'),l:lum(getComputedStyle(e).backgroundColor),t:e.textContent.trim().slice(0,24)}));
-      return {cls:document.querySelector('#hb').className,pages}});
-    const kinds=new Set(),texts=new Set();let dark=0,closedAgain=false,opened=false;const t0=Date.now();
-    while(Date.now()-t0<30000){
+      const hi=document.querySelector('#hb .hb-l .pp.bible .hi'),notes=[...document.querySelectorAll('#hb .hb-r .pp.study .w')];
+      return {cls:document.querySelector('#hb').className,pages,hi:hi?getComputedStyle(hi).backgroundSize:'',
+        notes:notes.length?notes.filter(n=>!/100%/.test(getComputedStyle(n).clipPath)).length:-1}});
+    const kinds=new Set(),texts=new Set(),his=new Set(),written=new Set();let dark=0,closedAgain=false,opened=false;const t0=Date.now();
+    while(Date.now()-t0<50000){
       const s=await look();
       if(!/closed/.test(s.cls))opened=true;else if(opened)closedAgain=true;
       s.pages.forEach(x=>{kinds.add(x.k);texts.add(x.t);if(x.l<.45&&!/cover|inside/.test(x.k))dark++});
+      if(s.hi)his.add(parseFloat(s.hi));if(s.notes>=0)written.add(s.notes);
       if(closedAgain&&texts.size>6)break;
-      await p.waitForTimeout(400);
+      await p.waitForTimeout(300);
     }
     const all=[...texts].join(' / ');
-    ok(['Hello!','Summer','Sketches','Biology','The cell','CHAPTER 3','Ch. 3','This week','July'].every(w=>all.includes(w)),'top notebook: shows every spread – album, sketches, class notes, the book + notes, planner');
+    ok(['Hello!','Summer','Sketches','JOHN 3','John 3:16','Biology','The cell','CHAPTER 3','Ch. 3','This week','July'].every(w=>all.includes(w)),'top notebook: shows every spread – album, sketches, the Bible page + study notes, class notes, the book + notes, planner');
+    const hv=[...his];
+    ok(hv.some(v=>v>0&&v<100)&&hv.includes(100),'top notebook: the highlighter sweeps over John 3:16 ('+hv.map(Math.round).sort((a,b)=>a-b).join(', ')+' %)');
+    ok(written.has(0)&&[...written].some(n=>n>0),'top notebook: the study notes are written line by line, after the highlight');
     ok(kinds.has('print')&&kinds.has('grid')&&kinds.has('album'),'top notebook: the new page kinds are there (a printed book page, grid paper)');
     ok(dark===0,'top notebook: no dark pages (only the cover)');
     ok(closedAgain,'top notebook: closes at the end and starts again');
