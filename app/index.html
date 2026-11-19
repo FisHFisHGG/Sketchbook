@@ -3104,7 +3104,7 @@ function fbLoad(){
     const db=F.initializeFirestore(app,{experimentalAutoDetectLongPolling:true});
     // local test servers only (never on the real site)
     const emu=new URLSearchParams(location.search).get('emu');
-    if(emu&&/^(localhost|127\.0\.0\.1)$/.test(emu)&&(location.protocol==='file:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))){F.connectAuthEmulator(auth,'http://'+emu+':9099',{disableWarnings:true});F.connectFirestoreEmulator(db,emu,8080)}
+    if(emu&&/^(localhost|127\.0\.0\.1)$/.test(emu)&&(location.protocol==='file:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))){F.connectAuthEmulator(auth,'http://'+emu+':9099',{disableWarnings:true});F.connectFirestoreEmulator(db,emu,8080);ACC.emu=emu}
     Object.assign(ACC,{F,auth,db});
     let q=Promise.resolve();F.onAuthStateChanged(auth,u=>{q=q.then(()=>accUser(u)).catch(e=>console.warn(e))}); // one at a time
     F.getRedirectResult(auth).catch(accErr);
@@ -5635,7 +5635,7 @@ function shareCount(b){
   return {n,t,busy:!!S.prog,big:!!S.prog&&S.prog.total>=3};
 }
 function shareProg(b){
-  if(b._guest)return;const c=shareCount(b);if(!c)return;const S=SHS[b.share.code],d=$('#shd'),open=b===cur&&d&&!d.classList.contains('hidden');
+  if(b._guest)return;const c=shareCount(b);if(!c){if(!b.share)$('#shpill').classList.add('hidden');return}const S=SHS[b.share.code],d=$('#shd'),open=b===cur&&d&&!d.classList.contains('hidden');
   const pct=c.t?Math.round(c.n/c.t*100):100,el2=$('#sh-prog');
   if(open&&el2){
     el2.classList.toggle('hidden',!c.t);el2.classList.toggle('ok',!c.busy&&c.n===c.t);
@@ -5731,13 +5731,26 @@ const shEndKey=()=>'sb-shend:'+(ACC.user?ACC.user.uid:'');
 function shEndList(){try{return JSON.parse(lsGet(shEndKey())||'[]')}catch(e){return []}}
 function shEndSet(code,on){const l=shEndList().filter(c=>c!==code);if(on)l.push(code);lsSet(shEndKey(),JSON.stringify(l))}
 function shareEnd(b){
-  const code=b.share.code,S=shState(code);S.dead=true;clearTimeout(S.t);shareStop(code);
+  const code=b.share.code,S=shState(code);S.dead=true;S.prog=null;clearTimeout(S.t);clearTimeout(S.pillT);shareStop(code);
+  if(S.pill){S.pill=false;$('#shpill').classList.add('hidden')} // the "pages online" pill goes away at once
   delete b.share;persist();shEndSet(code,true);
   shareGone(code,S).catch(e=>console.warn('share end',e)); // in the background: nothing to wait for
 }
+/* Switch a link off right away: straight to the server (one small request), not behind the pages that are still
+   going up through Firebase's own queue – with a slow connection that queue can take a minute. The rules check it
+   like any other change (only the owner, the account's sign-in token). If that fails, the normal way. */
+async function shareOff(code){
+  try{
+    const tok=await ACC.user.getIdToken(),host=ACC.emu?'http://'+ACC.emu+':8080':'https://firestore.googleapis.com';
+    const r=await fetch(host+'/v1/projects/'+FB_CFG.projectId+'/databases/(default)/documents/shares/'+code+'?updateMask.fieldPaths=on&currentDocument.exists=true',
+      {method:'PATCH',headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({fields:{on:{booleanValue:false}}})});
+    if(r.ok||r.status===404)return;
+  }catch(e){}
+  await ACC.F.updateDoc(shRef(code),{on:false}).catch(e=>{if(e&&e.code!=='not-found')throw e});
+}
 async function shareGone(code,S){
   const F=ACC.F;S=S||shState(code);
-  await F.updateDoc(shRef(code),{on:false}).catch(e=>{if(e&&e.code!=='not-found')throw e}); // the link stops working now
+  await shareOff(code); // the link stops working now
   let srv={};try{const d=await F.getDoc(shRef(code));srv=d.exists()?d.data():null}catch(e){}
   if(srv){ // every page the link may have: its list, what this device sent, and all page numbers (so nothing is left behind)
     const m={...(srv.m||{}),...(S.man||{})},n=Math.max(srv.n||0,...Object.keys(m).map(k=>k.startsWith('p~')?+k.slice(2)+1:0));

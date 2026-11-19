@@ -205,6 +205,19 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await V3.evaluate(()=>flip(19));await V3.waitForFunction(()=>cs===19&&!flipping,null,{timeout:20000});
   ok(await V3.evaluate(()=>!!$('#pr img')&&!!$('#pl img')),'the last pages are there too');
   await O.evaluate(()=>shareEnd(data.find(b=>b.title==='Study guide')));await V3.close();await O.waitForTimeout(1500);
+  // ---- stopping while the pages are still going up: the link stops at once, and nothing of it is left in the cloud
+  await O.evaluate(()=>showBrowse(data.find(b=>b.title==='Study guide')));await O.waitForTimeout(600);
+  await O.evaluate(()=>{const f0=window._spm=shPushMany;shPushMany=async function(c,items,g,done){ // a slow connection: 3 pages at a time, with a pause
+    for(let i=0;i<items.length;i+=3){if(SHS[c]&&SHS[c].dead){items.slice(i).forEach(it=>done(it.k,undefined,null));return}await new Promise(r=>setTimeout(r,400));await f0.call(this,c,items.slice(i,i+3),g,done)}}});
+  await O.click('#bshare');await O.click('#sh-live');await O.waitForSelector('#sh-livep:not(.hidden)',{timeout:30000});
+  const code4=await O.evaluate(()=>cur.share.code);await O.waitForTimeout(1500);
+  const up4=await O.evaluate(()=>{const S=SHS[cur.share.code];return !!S.prog&&S.prog.done<S.prog.total});
+  await O.click('#sh-stop');const t4=Date.now();await O.click('#sh-stop');
+  let off4=0;for(let i=0;i<100&&!off4;i++){const r=await admin('shares/'+code4,null,'GET');if(r.status===404)off4=Date.now();else{const j=await r.json();if(j.fields&&j.fields.on&&j.fields.on.booleanValue===false)off4=Date.now()}if(!off4)await new Promise(r=>setTimeout(r,50))}
+  ok(up4&&off4&&off4-t4<2000&&await O.evaluate(()=>!cur.share&&$('#shpill').classList.contains('hidden')),'stopping while the pages are still going up: the link stops at once ('+((off4-t4)/1000).toFixed(1)+' s), nothing keeps showing its progress');
+  let left4=1;for(let i=0;i<100&&left4;i++){const st=await Promise.all(['','/r/meta','/r/p~0','/r/p~1','/r/p~5','/r/p~39'].map(x=>admin('shares/'+code4+x,null,'GET').then(r=>r.status)));left4=st.some(x=>x!==404);if(left4)await new Promise(r=>setTimeout(r,300))}
+  ok(!left4&&await O.evaluate(()=>!JSON.parse(localStorage.getItem('sb-shend:'+ACC.user.uid)||'[]').length),'… and nothing of it is left in the cloud (the pages that went up are removed too)');
+  await O.evaluate(()=>{shPushMany=window._spm});await O.click('#shno');
   await O.evaluate(()=>showBrowse(data.find(b=>b.title==='Trip to Rome')));await O.waitForTimeout(300);await O.click('#bshare');await O.waitForSelector('#shd:not(.hidden)');
   // your data (GDPR): the live links are in “Download my data” and go with “Delete my account”
   await O.click('#shno');await O.evaluate(()=>showBrowse(data.find(b=>b.title==='Trip to Rome')));await O.waitForTimeout(300);await O.click('#bshare');await O.click('#sh-live');await O.waitForSelector('#sh-url',{timeout:30000});
