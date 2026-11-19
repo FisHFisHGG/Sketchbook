@@ -111,7 +111,7 @@ const claim=(uid,c)=>fetch('http://127.0.0.1:9099/identitytoolkit.googleapis.com
   await A.click('#adm-intro >> text=Preview');await A.waitForSelector('#offer[data-k="intro"]');
   ok(await A.evaluate(()=>/15% off Pro yearly/.test($('#offer h2').textContent)),'… Preview');await A.click('#offer .fbn-no');
   await A.click('#adm-intro button[type=submit]');await A.waitForTimeout(800);
-  await reload(D);await D.waitForTimeout(1500);
+  await reload(D);await D.waitForSelector('#offer[data-k="intro"]',{timeout:8000}).catch(()=>{}); // after the start window
   const iw=await D.evaluate(()=>{const o=$('#offer[data-k="intro"]');return o&&{h:o.querySelector('h2').textContent,t:o.textContent,left:o.querySelector('.off-left').textContent}});
   ok(iw&&iw.h==='A welcome gift: 15% off Pro yearly'&&/€38\.24 instead of €44\.99/.test(iw.t)&&/This offer ends in (4[78]) h/.test(iw.left),'Dana comes back: “A welcome gift: 15% off Pro yearly” – €38.24 instead of €44.99, ends in 48 h');
   await goneTo(D);await D.click('#offer .btn');await D.waitForTimeout(1200);
