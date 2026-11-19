@@ -123,6 +123,61 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
   await A.click('#tools [data-t="text"]');await A.waitForTimeout(200);
   ok(await A.evaluate(()=>!view&&tool==='text'&&!$('#tsheet').classList.contains('hidden')),'… tap Text: back to writing, with its menu');
   await A.evaluate(()=>{closeTS();selectTool('pen')});
+
+  // ---- Page style: not on a page from a PDF
+  await A.evaluate(async()=>{const b=mk('Pdf book',data.length,'p');const k=document.createElement('canvas');k.width=k.height=8;k.getContext('2d').fillRect(0,0,8,8);
+    b.pages=[null,null,null,null];b.bg[1]=k.toDataURL();data.push(b);persist();await saveNow();showBrowse(b)});await A.waitForTimeout(400);
+  await A.evaluate(()=>showEditor(1));await A.waitForTimeout(500);
+  const ps1=await A.evaluate(()=>!$('#pstyle').offsetParent);
+  await A.evaluate(()=>showEditor(2));await A.waitForTimeout(500);
+  const ps2=await A.evaluate(()=>!!$('#pstyle').offsetParent);
+  ok(ps1&&ps2,'Page style: hidden on a page from a PDF, there on a normal page');
+  await A.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});
+
+  // ---- New pages: 1 or 2, and where
+  // six pages, each with its own little picture, so the order can be checked; the book open at pages 3–4
+  const mkBook=()=>A.evaluate(async()=>{const b=mk('Order',data.length,'p');b.pages=[];
+    for(let i=0;i<6;i++){const k=document.createElement('canvas');k.width=k.height=4;const x=k.getContext('2d');x.fillStyle='rgb('+(i*40)+',10,10)';x.fillRect(0,0,4,4);b.pages.push(k.toDataURL())}
+    window._mk=b.pages.slice();b.cs=1;data.push(b);persist();await saveNow();SET.oanim=false;showBrowse(b);return b.pages.length});
+  const order=()=>A.evaluate(()=>cur.pages.map(p=>{const i=window._mk.indexOf(p);return i<0?'N':String(i+1)}).join(''));
+  const addPg=async(n,k)=>{await A.click('#badd');await A.waitForSelector('#npd:not(.hidden)');await A.click('#npn [data-n="'+n+'"]');await A.click('#npw [data-k="'+k+'"]');await A.click('#npats [data-p="blank"]');await A.click('#npyes');await A.waitForTimeout(1300)};
+  await mkBook();await A.waitForTimeout(500);
+  ok(await A.evaluate(()=>cs===1),'(the book opens at pages 3–4)');
+  await A.click('#badd');await A.waitForSelector('#npd:not(.hidden)');
+  const dlg=await A.evaluate(()=>({n:[...document.querySelectorAll('#npn button')].map(b=>b.textContent+':'+b.getAttribute('aria-pressed')).join(),
+    w:[...document.querySelectorAll('#npw button')].map(b=>b.dataset.k+':'+b.getAttribute('aria-checked')).join()}));
+  ok(dlg.n==='1 page:false,2 pages:true'&&dlg.w==='before:false,after:true,end:false','New pages asks how many (1 or 2) and where: before these pages, after them (chosen), or at the end');
+  await A.click('#npn [data-n="1"]');
+  ok(await A.evaluate(()=>[...document.querySelectorAll('#npw button')].map(b=>b.dataset.k).join()==='left,right,end'&&/Between pages 3 and 4/.test($('#npw').textContent)),'… 1 page: on the left, on the right (between pages 3 and 4), or at the end');
+  await A.click('#npno');
+  await addPg(1,'left');ok(await order()==='12N3456'&&await A.evaluate(()=>cs===1),'1 page on the left: it’s page 3 now, the old pages 3–4 move on ('+await order()+')');
+  await addPg(1,'right');ok(await order()==='12NN3456','1 page on the right: right after page 3 ('+await order()+')');
+  await A.evaluate(()=>{data.pop();persist()});await mkBook();await A.waitForTimeout(500);
+  await addPg(2,'before');ok(await order()==='12NN3456'&&await A.evaluate(()=>cs===1),'2 pages before these pages ('+await order()+')');
+  await A.evaluate(()=>{data.pop();persist()});await mkBook();await A.waitForTimeout(500);
+  await addPg(2,'after');ok(await order()==='1234NN56'&&await A.evaluate(()=>cs===2),'2 pages after these pages, and the book turns to them ('+await order()+')');
+  await addPg(1,'end');ok(await order()==='1234NN56N','1 page at the end ('+await order()+')');
+  ok(await A.evaluate(async()=>{await saveNow();for(let i=0;i<cur.pages.length;i++){const r0=await idbGet(P2+'p:'+cur.id+':'+i),r=typeof r0==='string'?JSON.parse(r0):r0;if(!r||(r.pg??null)!==cur.pages[i])return false}return true}),'… every page is saved in its new place');
+  // the free plan: 20 pages at most, so with 19 only 1 more fits
+  await A.evaluate(async()=>{while(cur.pages.length<19)cur.pages.push(null);persist();await saveNow();renderBrowse()});
+  await A.click('#badd');await A.waitForSelector('#npd:not(.hidden)');
+  ok(await A.evaluate(()=>$('#npn [data-n="2"]').disabled&&$('#npn [data-n="1"]').getAttribute('aria-pressed')==='true'),'free plan with 19 pages: only 1 more page can be added');
+  await A.click('#npno');
+
+  // ---- Settings: no page-turn sound; the opening animation can be switched off
+  await A.evaluate(()=>{$('#bv').classList.add('hidden')});
+  ok(await A.evaluate(()=>!/Page-turn sound/.test($('#set').textContent)&&!!$('#s-oanim')&&/Opening animation/.test($('#set').textContent)),'Settings: no page-turn sound; an “Opening animation” option');
+  const op=async on=>{await A.evaluate(o=>{SET.oanim=o;saveSet();window._fl=0;const f0=flip;window.flip=function(...a){window._fl++;return f0.apply(this,a)};const b=data.find(x=>x.title==='Order');b.cs=3;showBrowse(b)},on);
+    const at0=await A.evaluate(()=>cs);await A.waitForTimeout(3500);return {at0,at:await A.evaluate(()=>cs),fl:await A.evaluate(()=>window._fl)}};
+  const off=await op(false);
+  ok(off.at0===3&&off.at===3&&off.fl===0,'Opening animation off: the notebook opens right at the page where you left off, nothing turns');
+  await A.evaluate(()=>{$('#bv').classList.add('hidden')});
+  const on=await op(true);
+  ok(on.at0===-1&&on.at===3&&on.fl>0,'Opening animation on (the default): the cover opens and the pages turn to it');
+  // the guided tour: just the buttons, no frame around them
+  await A.evaluate(()=>{tourShow(0)});await A.waitForTimeout(400);
+  ok(await A.evaluate(()=>{const c=getComputedStyle(document.querySelector('.tcard .trow'));return c.borderTopWidth==='0px'&&c.paddingTop==='0px'}),'the guided tour: Skip and Next without a frame around them');
+  await A.evaluate(()=>tourClose());
   ok(!A.errs.length,'computer: no errors '+A.errs.join(' | '));
 
   // ---------- a tablet and a phone: everything fits

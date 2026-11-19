@@ -310,6 +310,15 @@ img.ink2{position:absolute;left:0;top:0;width:100%;height:100%;display:block;poi
 .lkb{position:absolute;right:8%;top:6%;z-index:2;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.92);color:#23304a;box-shadow:0 2px 6px rgba(0,0,0,.25)}.lkb .ic{width:17px;height:17px}
 #npd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(460px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}#npd h2{margin:0 0 4px;font-size:1.3em}#npd p{margin:0 0 14px;opacity:.7}
 #npd .opts2{grid-template-columns:repeat(auto-fill,minmax(78px,1fr));margin-bottom:6px}
+#npd .card{max-height:calc(100dvh - 32px);overflow:auto}
+.npq{margin:2px 0 8px}#npn{margin:0}
+.npw{display:grid;gap:6px}
+.npw button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:8px 12px;border:2px solid var(--line);border-radius:14px;background:none;font:inherit;color:inherit}
+.npw button[aria-checked="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.npw b{display:block;font-weight:600}.npw small{display:block;opacity:.65;font-size:.85em}
+.spi{flex:none;display:flex;gap:1px;padding:3px;border-radius:5px;background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.spi i{width:13px;height:17px;border-radius:2px;background:var(--paper);box-shadow:0 0 0 1px var(--line)}
+.spi i.n{background:var(--accent);box-shadow:none}.spi i.g{opacity:.35}
 .tplrow{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;margin-bottom:8px;scroll-snap-type:x proximity}
 .tplrow button{flex:none;width:80px;display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 4px;border:2px solid var(--line);border-radius:12px;background:none;color:inherit;font:inherit;font-size:.74em;line-height:1.15;text-align:center;scroll-snap-align:start}
 .tplrow button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
@@ -498,7 +507,8 @@ html.viewing #bclose::before{content:'';display:inline-block;width:10px;height:1
 #set h2{margin:0 0 2px;font-size:1.3em}#set p{margin:0 0 14px;opacity:.7}
 a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .upl{margin:4px 0 10px;padding-left:20px;line-height:1.6}.upp{margin:0 0 6px}.upn{opacity:.7;font-size:.9em;margin:0 0 14px}
-.srow{display:flex;align-items:center;gap:12px;margin:10px 0}.srow>span{width:84px;flex:none;opacity:.8}
+.srow{display:flex;align-items:center;gap:12px;margin:10px 0}
+.chk.sopt{align-items:flex-start;margin:14px 0}.chk.sopt input{margin-top:3px}.chk.sopt b{display:block;font-weight:600}.chk.sopt small{display:block;opacity:.7;margin-top:2px}.srow>span{width:84px;flex:none;opacity:.8}
 #s-desk{gap:10px}#s-desk .sw{width:30px;height:30px}
 .txg{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
 .txg button{display:flex;flex-direction:column;align-items:center;gap:4px;border:2px solid var(--line);border-radius:12px;background:none;padding:6px 4px;font-size:.8em}
@@ -511,7 +521,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .tsp{position:absolute;border-radius:14px;box-shadow:0 0 0 9999px rgba(8,14,16,.62);transition:all .35s ease;pointer-events:none}
 .tcard{position:absolute;width:min(320px,calc(100% - 24px));background:var(--bar);color:var(--ink);border-radius:16px;padding:16px 16px 12px;box-shadow:0 14px 40px rgba(0,0,0,.45)}
 .tcard small{opacity:.6;display:block;margin-bottom:2px}.tcard b{font-size:1.1em}.tcard p{margin:6px 0 12px;opacity:.85}
-.trow{display:flex;justify-content:flex-end;gap:8px}
+.tcard .trow{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:0;border:0;border-radius:0;background:none;box-shadow:none;margin:0}
 #tpl{max-width:980px;margin:0 auto;padding:6px 0 30px;opacity:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px}
 .tcardx{display:flex;flex-direction:column;gap:8px;background:none;border:0;padding:0;text-align:left}
 .tcardx .pv{width:100%;aspect-ratio:3/4;border-radius:4px 8px 8px 4px;background:#fbfbf6 center/cover;box-shadow:inset 7px 0 0 rgba(0,0,0,.2),0 10px 20px var(--sh);border:1px solid var(--line)}
@@ -836,7 +846,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <h2 id="sett">Settings</h2><p>Make the app feel like yours.</p>
   <div class="srow"><span>Theme</span><div class="seg2" id="s-theme"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div></div>
   <div class="srow"><span>Desk color</span><div class="grp" id="s-desk"></div></div>
-  <label class="chk" style="margin:14px 0"><input type="checkbox" id="s-snd"> Page-turn sound</label>
+  <label class="chk sopt"><input type="checkbox" id="s-oanim"><span><b>Opening animation</b><small>A notebook opens its cover and turns to the page where you left off. Off: it opens right at that page.</small></span></label>
   <div class="srow"><span>Tour</span><button class="ib" id="s-tour">Show the tour again</button></div>
   <div class="srow"><span>Help</span><button class="ib" id="s-help">Shortcuts &amp; gestures</button></div>
   <div class="srow"><span>Updates</span><button class="ib" id="s-upd">What’s new<i class="ndot hidden" id="s-updd"></i></button></div>
@@ -872,7 +882,10 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </section>
 <div id="lockd" class="hidden" role="dialog" aria-modal="true"><div class="card" id="lockc"></div></div>
 <div id="npd" class="hidden" role="dialog" aria-modal="true" aria-labelledby="npt"><div class="card">
-  <h2 id="npt">New pages</h2><p id="npsub">How should the new pages look?</p>
+  <h2 id="npt">New pages</h2>
+  <div class="npq"><div class="sec">How many</div><div class="seg2" id="npn"><button data-n="1">1 page</button><button data-n="2">2 pages</button></div></div>
+  <div class="npq"><div class="sec">Where</div><div class="npw" id="npw" role="radiogroup" aria-label="Where to add them"></div></div>
+  <div class="sec" id="npsub">How should they look?</div>
   <div class="opts2" id="npats">
     <button data-p="same"><i class="mini" id="npsame"></i>Like the last page</button>
     <button data-p="blank"><i class="mini pt-blank"></i>Blank</button>
@@ -1207,11 +1220,12 @@ function setImg(el,i){
   if(s){const m=new Image();m.alt='';m.src=s;el.append(m)}
 }
 function showBrowse(b){
-  let tg=-1;if(b){cur=b;setDims(b);zs=0;cs=-1;tg=typeof b.cs==='number'?Math.max(-1,Math.min(b.cs,Math.max(0,(b.pages.length-1)>>1))):-1}
+  let tg=-1,still=false;if(b){cur=b;setDims(b);zs=0;cs=-1;tg=typeof b.cs==='number'?Math.max(-1,Math.min(b.cs,Math.max(0,(b.pages.length-1)>>1))):-1;
+    if(SET.oanim===false&&tg>=0){cs=tg;tg=-1;still=true}} // Settings → Opening animation off: straight to the page
   endFloat();$('#btitle').value=cur.title;
   $('#shelf').classList.add('hidden');$('#ed').classList.add('hidden');$('#bv').classList.remove('hidden');
   docTitle();syncLockBtn();const gst=!!cur._guest||!!cur._view;$('#block').classList.toggle('hidden',gst);$('#btitle').readOnly=gst;$('#bv').classList.toggle('guest',gst);renderBrowse();
-  if(b){const sp=$('#sp');sp.classList.remove('in');sp.offsetWidth;sp.classList.add('in');if(tg>=0)resume(b,tg);if(tIdx===0&&!cur._view)setTimeout(()=>{if(!$('#bv').classList.contains('hidden')&&!flipping)tourShow(0)},tg>0?2600:1100)}
+  if(b){const sp=$('#sp');sp.classList.remove('in');if(!still){sp.offsetWidth;sp.classList.add('in')}if(tg>=0)resume(b,tg);if(tIdx===0&&!cur._view)setTimeout(()=>{if(!$('#bv').classList.contains('hidden')&&!flipping)tourShow(0)},tg>0?2600:1100)}
 }
 /* The open book's size. It fills the free room exactly, counting the page edges and the tilt (the bottom of the book
    comes closer, so it looks bigger and lower), and it sits in the middle. A computer shows it a bit further back
@@ -1298,7 +1312,7 @@ function edgeFacets(sg,pw,ph,nx,LT,ec){
 }
 const NS=1;
 function prep(ts){
-  resetZoom();if(!auto)playTurn();
+  resetZoom();
   const nx=ts>cs,fl=$('#fl'),segs=[],pw=$('#sp').offsetWidth/2;fs={ts,nx,from:cs,segs};
   fl.innerHTML='';fl.style.left=nx?'50%':'0';
   const fr=nx?R(cs):L(cs),bk=nx?L(ts):R(ts),cov=cs<0||ts<0;
@@ -1422,40 +1436,73 @@ function applyZoom(){
 $('#bzoom').onclick=()=>{zs=cs<0?(zs?0:2):(zs+1)%3;$('#bzoom').setAttribute('aria-pressed',zs>0);applyZoom()};
 $('#bprev').onclick=()=>flip(cs-1);
 $('#bnext').onclick=()=>flip(cs+1);
-/* New pages: choose how they look (like the last page, blank, lined, grid or dots). The paper color stays. */
-function askPageStyle(last,add){
+/* New pages (Update 16): how many (1 or 2), where (on the left or right of the open pages, before or after them, or at the end)
+   and how they look (like the page before, blank, lined, grid, dots or a template). The paper color stays. */
+function npPlaces(n,n0){ // where the new pages can go, from the open spread: [{at, t (title), s (detail), ic (icon)}]
+  const L=cs<0?-1:2*cs,hasR=L+1<n0,nw=n>1?['n','n']:['n'],end={at:n0,k:'end',t:'At the end',s:'After page '+n0,ic:[0,0,...nw]},out=[];
+  const guest=cur._guest,pend=PEND.has(String(cur.id)); // a shared notebook you're a guest in, or pages still on their way: only at the end
+  if(!guest&&!pend){
+    if(L<0)out.push({at:0,k:'start',t:'At the beginning',s:'Before page 1',ic:[...nw,0,0]});
+    else if(n===1){
+      out.push({at:L,k:'left',t:'On the left',s:'Before page '+(L+1)+(hasR?', pages '+(L+1)+'–'+(L+2)+' move on':''),ic:['n',0]});
+      if(hasR)out.push({at:L+1,k:'right',t:'On the right',s:'Between pages '+(L+1)+' and '+(L+2),ic:[0,'n']});
+    }else{
+      out.push({at:L,k:'before',t:'Before these pages',s:'Before page '+(L+1),ic:['n','n',0,0]});
+      out.push({at:Math.min(n0,L+2),k:'after',t:'After these pages',s:'After page '+Math.min(n0,L+2),ic:[0,0,'n','n']});
+    }
+  }
+  if(!out.some(o=>o.at===n0))out.push(end);
+  return out;
+}
+function askNewPages(n0,room){
   return new Promise(async res=>{
-    const d=$('#npd');let v='same';
-    $('#npsub').textContent='Adding '+add+' page'+(add>1?'s':'')+'. How should '+(add>1?'they':'it')+' look?';
-    const sm=$('#npsame'),LT=isTplPg(last)&&tplById(last.t);
-    sm.className='mini '+(LT?'tm'+(cur.o==='l'?' l':''):'pt-'+((last&&last.p)||'blank'));sm.style.backgroundImage=LT?'url('+tplThumbO(LT,cur.o)+')':'';
+    const d=$('#npd');let v='same',n=Math.min(2,room),k=null;
+    const draw=()=>{
+      document.querySelectorAll('#npn button').forEach(b=>{b.setAttribute('aria-pressed',+b.dataset.n===n);b.disabled=+b.dataset.n>room});
+      const P=npPlaces(n,n0);if(!P.some(o=>o.k===k))k=(P.find(o=>o.k==='after'||o.k==='right')||P.find(o=>o.k==='end')||P[0]).k; // right after the open pages; a closed notebook: at the end
+      $('#npw').innerHTML='';
+      P.forEach(o=>{const b=document.createElement('button');b.type='button';b.dataset.k=o.k;b.setAttribute('role','radio');b.setAttribute('aria-checked',o.k===k);
+        b.innerHTML='<span class="spi">'+o.ic.map(x=>'<i class="'+(x==='n'?'n':'')+'"></i>').join('')+'</span><span><b></b><small></small></span>';
+        b.querySelector('b').textContent=o.t;b.querySelector('small').textContent=o.s;b.onclick=()=>{k=o.k;draw()};$('#npw').append(b)});
+      const at=P.find(o=>o.k===k).at,ref=cur.ps[Math.max(0,at-1)]; // “like the page before” the new ones
+      $('#npsub').textContent=(n>1?'How should they look?':'How should it look?');
+      d.querySelector('#npats [data-p="same"]').lastChild.textContent=at>=n0?'Like the last page':'Like page '+Math.max(1,at);
+      const sm=$('#npsame'),LT=isTplPg(ref)&&tplById(ref.t);
+      sm.className='mini '+(LT?'tm'+(cur.o==='l'?' l':''):'pt-'+((ref&&ref.p)||'blank'));sm.style.backgroundImage=LT?'url('+tplThumbO(LT,cur.o)+')':'';
+      return at;
+    };
     const all=()=>[...d.querySelectorAll('#npats button,#nptpl button')];
     const mark=()=>all().forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===v));
     d.querySelectorAll('#npats button').forEach(b=>b.onclick=()=>{v=b.dataset.p;mark()});
+    document.querySelectorAll('#npn button').forEach(b=>b.onclick=()=>{n=+b.dataset.n;draw()});
     const done=x=>{d.classList.add('hidden');res(x)};
-    $('#npyes').onclick=()=>done(v);$('#npno').onclick=()=>done(null);
+    $('#npyes').onclick=()=>{const at=draw();done({n,at,v})};$('#npno').onclick=()=>done(null);
     d.onclick=e=>{if(e.target===d)done(null)};
-    d.classList.remove('hidden');mark();
+    draw();d.classList.remove('hidden');mark();
     await tplRow($('#nptpl'),cur.o,()=>false,(t,b)=>{v=b.dataset.p;mark()});mark();
   });
 }
 $('#nppdf').onclick=()=>{$('#npno').click();if(plan!=='pro'){upsell('Adding pages from a PDF is included in Pro.');return}pdfTarget=cur;$('#pdff').click()};
 $('#badd').onclick=async()=>{
-  const n0=cur.pages.length,last0=cur.ps[n0-1],room=LIM().pg-n0;
+  const n0=cur.pages.length,room=LIM().pg-n0;
   if(room<=0){upsell('The free plan includes '+LIM().pg+' pages per notebook. Upgrade to Pro for unlimited pages.');return}
-  const add=Math.min(n0%2===0?2:3,room),pick=await askPageStyle(last0,add);if(!pick)return;
-  const tid=pick.startsWith('tpl:')?pick.slice(4):(pick==='same'&&isTplPg(last0)?last0.t:null),T=tid&&tplById(tid);
-  const c0=(last0&&last0.c)||PAPER;
-  for(let k=0;k<add;k++)cur.pages.push(null);
-  if(T){await tplFonts();tplPages(cur,T,n0,add,c0)} // template pages, numbered after the ones before
+  const q=await askNewPages(n0,room);if(!q)return;
+  const {n,at,v:pick}=q,ref=cur.ps[Math.max(0,at-1)];
+  const tid=pick.startsWith('tpl:')?pick.slice(4):(pick==='same'&&isTplPg(ref)?ref.t:null),T=tid&&tplById(tid);
+  const c0=(ref&&ref.c)||PAPER;
+  // make room: every list of pages gets n empty places at “at” (the pages after it move on)
+  await savesDone();cur._sv=(cur._sv||0)+1;
+  PA().forEach((a,j)=>a.splice(at,0,...Array(n).fill(j===0?null:undefined)));
+  if(T){await tplFonts();tplPages(cur,T,at,n,c0)} // template pages, numbered after the ones before
   else{
-    const base=isTplPg(last0)?{...DEF,c:c0}:last0;
-    const last=pick==='same'?base:(pick==='blank'&&c0===PAPER?null:{...DEF,c:c0,p:pick});
-    if(last&&styled(last))for(let k=n0;k<cur.pages.length;k++)cur.ps[k]={...last};
+    const base=isTplPg(ref)||isPdfPg(cur,Math.max(0,at-1))?{...DEF,c:c0}:ref; // like a template or a PDF page: its paper, no lines
+    const st=pick==='same'?base:(pick==='blank'&&c0===PAPER?null:{...DEF,c:c0,p:pick});
+    if(st&&styled(st))for(let j=at;j<at+n;j++)cur.ps[j]={...st};
   }
   persist();
-  if(T?c0!==PAPER:cur.ps[n0])await Promise.all([...Array(cur.pages.length-n0).keys()].map(k=>rebuildPv(n0+k)));
-  flip(SM());
+  if(T?c0!==PAPER:cur.ps[at])await Promise.all([...Array(n).keys()].map(j=>rebuildPv(at+j)));
+  toast(n>1?'2 new pages':'1 new page');
+  const s2=at>>1;if(s2!==cs)flip(s2);else renderBrowse();
 };
 document.addEventListener('keydown',e=>{if($('#bv').classList.contains('hidden')||e.target.id==='btitle')return;if(e.key==='ArrowRight')flip(cs+1);if(e.key==='ArrowLeft')flip(cs-1)});
 
@@ -1507,7 +1554,7 @@ function showEditor(i){
   if(cur&&cur._view)return;
   if(flipping)return;if(cur&&cur._guest&&i<0){toast('Only the owner can change the cover.');return}pi=i;
   $('#bv').classList.add('hidden');$('#ed').classList.remove('hidden');
-  setView(false);$('#pstyle').classList.toggle('hidden',pi<0);$('#psheet').classList.add('hidden');$('#cc').classList.toggle('hidden',pi>=0);$('#delp').classList.toggle('hidden',pi<0);resetDel();$('#etl').textContent=pi<0?'Cover':'Page '+(pi+1);
+  setView(false);$('#pstyle').classList.toggle('hidden',pi<0||isPdfPg(cur,pi));$('#psheet').classList.add('hidden');$('#cc').classList.toggle('hidden',pi>=0);$('#delp').classList.toggle('hidden',pi<0);resetDel();$('#etl').textContent=pi<0?'Cover':'Page '+(pi+1);
   loadPage();
   if(tIdx>=1&&tIdx<=2)setTimeout(()=>{if(!$('#ed').classList.contains('hidden'))tourShow(tIdx)},700);
 }
@@ -3200,7 +3247,7 @@ function syncCov(){
 }
 
 /* Settings: theme, desk, sound, tour */
-let SET={theme:'auto',desk:'sage',snd:false};
+let SET={theme:'auto',desk:'sage',oanim:true};
 try{Object.assign(SET,JSON.parse(localStorage.getItem('sb-set')||'{}'))}catch(e){}
 function saveSet(){try{localStorage.setItem('sb-set',JSON.stringify(SET))}catch(e){}}
 /* light / dark: the sun–moon buttons switch to the other look; matching the device again means "auto" */
@@ -3221,19 +3268,6 @@ function applySet(){
   syncThemeBtns();
 }
 applySet();
-let AC=null;
-function playTurn(){
-  if(!SET.snd)return;
-  try{
-    AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
-    const t=AC.currentTime,len=.42,buf=AC.createBuffer(1,Math.floor(AC.sampleRate*len),AC.sampleRate),d=buf.getChannelData(0);
-    for(let i=0;i<d.length;i++){const k=i/d.length;d[i]=(Math.random()*2-1)*Math.pow(Math.sin(Math.PI*Math.min(1,k*1.15)),1.6)*(1-k*.4)}
-    const src=AC.createBufferSource();src.buffer=buf;const f=AC.createBiquadFilter();f.type='bandpass';f.Q.value=.7;
-    f.frequency.setValueAtTime(3200,t);f.frequency.exponentialRampToValueAtTime(1100,t+len);
-    const g=AC.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.06);g.gain.exponentialRampToValueAtTime(.0001,t+len);
-    src.connect(f);f.connect(g);g.connect(AC.destination);src.start(t);
-  }catch(e){}
-}
 const DESKS=[['sage','#e4e9e6'],['warm','#efe7da'],['blue','#e1e8f3'],['rose','#f2e3e6']];
 /* ---------- Account + cloud sync (Firebase) ----------
    Firebase is loaded only when someone opens the account window or was signed in before,
@@ -4861,7 +4895,7 @@ function initSettings(){
   DESKS.forEach(([k,c])=>{const b=document.createElement('button');b.className='sw';b.style.background=c;b.dataset.k=k;b.setAttribute('aria-label',k+' desk');
     b.onclick=()=>{SET.desk=k;saveSet();applySet();syncSet()};box.append(b)});
   document.querySelectorAll('#s-theme button').forEach(b=>b.onclick=()=>{SET.theme=b.dataset.v;saveSet();applySet();syncSet()});
-  $('#s-snd').onchange=e=>{SET.snd=e.target.checked;saveSet();if(SET.snd)playTurn()};
+  $('#s-oanim').onchange=e=>{SET.oanim=e.target.checked;saveSet()};
   $('#s-tour').onclick=()=>{tourSave(0);d.classList.add('hidden');toast('Open a notebook to start the tour')};
   $('#setb').onclick=()=>{syncSet();storeInfo();d.classList.remove('hidden')};
   $('#s-bak').onclick=backupAll;
@@ -4872,7 +4906,7 @@ function initSettings(){
 function syncSet(){
   document.querySelectorAll('#s-theme button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===SET.theme));syncThemeBtns();
   document.querySelectorAll('#s-desk .sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===SET.desk));
-  $('#s-snd').checked=SET.snd;
+  $('#s-oanim').checked=SET.oanim!==false;
 }
 
 /* Guided tour */
@@ -5258,6 +5292,7 @@ async function addLabelTo(L,b){
    lines are drawn light). Page style switches a page to another template or back to blank / lined / grid / dots.
    Pages imported from a PDF keep their PDF. */
 const isTplPg=st=>!!st&&st.p==='tpl'&&!!st.t;
+const isPdfPg=(b,i)=>!!(b&&b.bg&&b.bg[i])&&!isTplPg(b.ps&&b.ps[i]); // a page from a PDF: its picture is the page
 const myTpls=()=>TPL.filter(ownsTpl);
 function tplBgURL(t,k,o,c){
   const cv=tplPage({...t,o},k,true);

@@ -168,7 +168,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(await A.evaluate(()=>!cur.lock&&!$('#bv').classList.contains('hidden')),'"Forgot the PIN?" + account password removes the lock and opens it');
   // ---- new pages with a chosen style
   const n0=await A.evaluate(()=>cur.pages.length);
-  await A.click('#badd');await A.waitForSelector('#npd:not(.hidden)');await A.click('#npats [data-p="grid"]');await A.click('#npyes');await A.waitForTimeout(800);
+  await A.click('#badd');await A.waitForSelector('#npd:not(.hidden)');await A.click('#npats [data-p="grid"]');await A.click('#npw [data-k="end"]');await A.click('#npyes');await A.waitForTimeout(800);
   ok(await A.evaluate(n0=>cur.pages.length>n0&&cur.ps.slice(n0).every(s=>s&&s.p==='grid'),n0),'"New pages" → Grid: the new pages are grid pages');
   for(const p of [A,B,C,D])p.errs.forEach(e=>console.log('  ERR',e));
   console.log(fails?fails+' FAILED':'ALL PASSED');await b.close();process.exit(fails?1:0);

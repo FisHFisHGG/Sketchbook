@@ -134,10 +134,10 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   ok(lb.f<lb.w*.2&&lb.h<lb.w,'the name on the cover keeps its size while the cover turns ('+JSON.stringify(lb)+')');
   await C.click('#badd');await C.waitForSelector('#npd:not(.hidden)');await C.waitForSelector('#nptpl button');
   ok(await C.evaluate(()=>document.querySelectorAll('#nptpl button').length===17),'"New pages" also offers her templates');
-  await C.click('#npyes');await C.waitForTimeout(1200);
-  ok(await C.evaluate(()=>cur.pages.length===4&&cur.ps.slice(1).every((s,i)=>s.p==='tpl'&&s.t==='comic'&&s.k===i+1)&&!!cur.bg[3]),'"Like the last page" adds more Comic book pages');
-  await C.click('#badd');await C.waitForSelector('#nptpl [data-p="tpl:music"]');await C.click('#nptpl [data-p="tpl:music"]');await C.click('#npyes');await C.waitForTimeout(1200);
-  ok(await C.evaluate(()=>cur.pages.length===6&&cur.ps[4].t==='music'&&cur.ps[5].t==='music'&&cur.ps[5].k===1),'… or pages of another template (Sheet music)');
+  await C.click('#npw [data-k="end"]');await C.click('#npyes');await C.waitForTimeout(1200);
+  ok(await C.evaluate(()=>cur.pages.length===3&&cur.ps.slice(1).every((s,i)=>s.p==='tpl'&&s.t==='comic'&&s.k===i+1)&&!!cur.bg[2]),'"Like the last page" adds 2 more Comic book pages (at the end)');
+  await C.click('#badd');await C.waitForSelector('#nptpl [data-p="tpl:music"]');await C.click('#nptpl [data-p="tpl:music"]');await C.click('#npw [data-k="end"]');await C.click('#npyes');await C.waitForTimeout(1200);
+  ok(await C.evaluate(()=>cur.pages.length===5&&cur.ps[3].t==='music'&&cur.ps[4].t==='music'&&cur.ps[4].k===1),'… or pages of another template (Sheet music)');
   await C.evaluate(()=>showEditor(1));await C.waitForTimeout(700);
   await C.click('#pstyle');await C.waitForSelector('#ptpl button');
   ok(await C.evaluate(()=>document.querySelector('#ptpl [data-p="tpl:comic"]').getAttribute('aria-pressed')==='true'),'Page style shows which template the page uses');
