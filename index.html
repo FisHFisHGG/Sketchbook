@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Foliet Sketchbook – a digital sketchbook that opens in your browser</title>
-<meta name="description" content="Foliet Sketchbook is a digital sketchbook and notebook in your browser. Draw, write and plan on paper-like pages you turn by hand, on your phone, tablet or laptop. Free to start.">
+<meta name="description" content="Foliet Sketchbook is a digital sketchbook and notebook in your browser. Draw, write, plan, keep class notes with photos and read and mark up books on paper-like pages you turn by hand, on your phone, tablet or laptop. Free to start.">
 <link rel="canonical" href="https://fishfishgg.github.io/Sketchbook/">
 <meta name="robots" content="index,follow">
 <meta name="application-name" content="Foliet Sketchbook">
@@ -12,14 +12,14 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Foliet Sketchbook – a digital sketchbook that opens in your browser">
-<meta property="og:description" content="Foliet Sketchbook is a digital sketchbook and notebook in your browser. Draw, write and plan on paper-like pages you turn by hand, on your phone, tablet or laptop. Free to start.">
+<meta property="og:description" content="Foliet Sketchbook is a digital sketchbook and notebook in your browser. Draw, write, plan, keep class notes with photos and read and mark up books on paper-like pages you turn by hand, on your phone, tablet or laptop. Free to start.">
 <meta property="og:image:alt" content="Foliet Sketchbook: an open notebook with a drawing, a star sticker and a pink sticky note">
 <meta property="og:url" content="https://fishfishgg.github.io/Sketchbook/">
 <meta property="og:image" content="https://fishfishgg.github.io/Sketchbook/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Foliet Sketchbook – a digital sketchbook that opens in your browser">
-<meta name="twitter:description" content="Foliet Sketchbook is a digital sketchbook and notebook in your browser. Draw, write and plan on paper-like pages you turn by hand, on your phone, tablet or laptop. Free to start.">
+<meta name="twitter:description" content="Foliet Sketchbook is a digital sketchbook and notebook in your browser. Draw, write, plan, keep class notes with photos and read and mark up books on paper-like pages you turn by hand, on your phone, tablet or laptop. Free to start.">
 <meta name="twitter:image" content="https://fishfishgg.github.io/Sketchbook/og.png">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
@@ -27,7 +27,7 @@
  {"@type":"WebApplication","name":"Foliet Sketchbook","alternateName":"Foliet","url":"https://fishfishgg.github.io/Sketchbook/app/","image":"https://fishfishgg.github.io/Sketchbook/og.png",
   "description":"A digital sketchbook and notebook in your browser: draw, write and plan on paper-like pages you turn by hand.",
   "applicationCategory":"DesignApplication","operatingSystem":"Any (web browser), Android, iOS, Windows, macOS","browserRequirements":"Requires a modern browser",
-  "featureList":["Pen, pencil, brush, marker, highlighter, shapes and fill","Text in 8 fonts, stickers and sticky notes","Blank, lined, grid and dot pages","Lock notebooks with a PIN or password","Fingerprint unlock on Android","Works offline","Light and dark theme","PDF import and export (Pro)","Live share links (Pro)","Cloud sync across devices (Pro)"],
+  "featureList":["Pen, pencil, brush, marker, highlighter, shapes and fill","Text in 8 fonts, stickers and sticky notes","Blank, lined, grid and dot pages","Lock notebooks with a PIN or password","Fingerprint unlock on Android","Works offline","Light and dark theme","PDF import and export (Pro)","Class notes with photos on the page","Read and annotate books and textbooks (PDF, Pro)","Live share links that open as a 3D book, no account needed (Pro)","Cloud sync across devices (Pro)"],
   "offers":[{"@type":"Offer","name":"Free","price":"0","priceCurrency":"EUR"},
             {"@type":"Offer","name":"Pro monthly","price":"5.99","priceCurrency":"EUR"},
             {"@type":"Offer","name":"Pro yearly","price":"44.99","priceCurrency":"EUR"}]}
@@ -285,6 +285,68 @@ h2{font-size:clamp(1.9rem,4vw,2.9rem);letter-spacing:-.03em;line-height:1.05;mar
 .soon{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent) 30%,transparent);font-size:.78rem;font-weight:700;vertical-align:middle}
 @media (max-width:700px){.steps{grid-template-columns:1fr}}
 
+/* What a notebook can be: cards with a small paper page each */
+.uses{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px}
+.use{display:flex;flex-direction:column;gap:6px;padding:20px 20px 22px;border-radius:22px;background:color-mix(in srgb,var(--ink) 4%,transparent);border:1px solid var(--line);transition:transform .25s,box-shadow .25s}
+.use:hover{transform:translateY(-3px);box-shadow:0 18px 40px -22px var(--sh)}
+.use h3{margin:14px 0 0;font-size:1.25rem;letter-spacing:-.01em}.use p{margin:0;color:var(--muted)}
+.ill{position:relative;height:170px;display:flex;align-items:center;justify-content:center;gap:0;perspective:900px}
+.mp{position:relative;width:112px;height:150px;background:#fbfbf6;border-radius:3px 9px 9px 3px;box-shadow:1px 1px 0 #fff,2px 2px 0 #d3d0c4,3px 3px 0 #fff,4px 4px 0 #d3d0c4,0 16px 26px -12px var(--sh);overflow:hidden;color:#24303a}
+.mp.l{border-radius:9px 3px 3px 9px;box-shadow:-1px 1px 0 #fff,-2px 2px 0 #d3d0c4,-3px 3px 0 #fff,-4px 4px 0 #d3d0c4,0 16px 26px -12px var(--sh)}
+.spr{display:flex;transform:rotateX(9deg)}.spr .mp+.mp{box-shadow:inset 7px 0 10px -8px rgba(0,0,0,.25),1px 1px 0 #fff,2px 2px 0 #d3d0c4,3px 3px 0 #fff,4px 4px 0 #d3d0c4,0 16px 26px -12px var(--sh)}
+.mp .ln{position:absolute;left:12px;right:12px;height:3px;border-radius:2px;background:#3a4650;opacity:.55}
+.mp.lined{background-image:linear-gradient(transparent 13px,rgba(60,90,140,.22) 14px);background-size:100% 14px}
+.mp.grid{background-image:linear-gradient(rgba(60,90,140,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(60,90,140,.16) 1px,transparent 1px);background-size:12px 12px}
+.mp svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.mp svg path{stroke-dasharray:1;stroke-dashoffset:0}
+.use.in .mp svg path.dr{animation:draw 1.6s ease forwards}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.hand{position:absolute;font:600 15px/1 Caveat,cursive;color:#2a52be;white-space:nowrap}
+.mhl{position:absolute;height:7px;border-radius:2px;background:rgba(255,214,64,.65)}
+.mnote{position:absolute;width:44px;height:40px;background:#ffe27a;box-shadow:0 4px 8px -4px rgba(0,0,0,.35);transform:rotate(5deg);font:600 11px/1.05 Caveat,cursive;color:#5a4300;padding:5px}
+.mphoto{position:absolute;background:#fff;padding:4px 4px 12px;box-shadow:0 4px 10px -4px rgba(0,0,0,.4);transform:rotate(-4deg)}
+.mphoto i{display:block;width:58px;height:40px;background:linear-gradient(160deg,#2f5a4a,#1f3d33)}
+.mphoto i.sky{background:linear-gradient(#8ec5ef,#cfe6f5 60%,#7bb36a 61%)}
+.mlock{position:absolute;right:10px;bottom:10px;width:26px;height:26px;border-radius:50%;background:#23407a;display:grid;place-items:center}
+.mlock svg{position:static;width:14px;height:14px;stroke:#fff;stroke-width:2.2}
+.mcol{position:absolute;top:22px;bottom:12px;width:1px;background:rgba(60,90,140,.25)}
+.mtit{position:absolute;left:12px;top:10px;font-weight:700;font-size:11px;letter-spacing:.02em}
+.use .soon{margin-left:8px}
+@media (prefers-reduced-motion:reduce){.use.in .mp svg path.dr{animation:none}.use{transition:none}}
+.chips2{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0;padding:0;list-style:none}
+.chips2 a{display:inline-block;padding:5px 12px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-weight:600;font-size:.88rem;text-decoration:none}
+.chips2 a:hover{color:var(--ink);border-color:var(--ink)}
+
+/* Share it live: a phone with the notebook open as a real book */
+.live{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:56px;align-items:center}
+.live ul{list-style:none;margin:22px 0 28px;padding:0;display:grid;gap:12px}
+.live li{display:flex;gap:12px;align-items:flex-start}.live li::before{content:"";flex:none;width:22px;height:22px;margin-top:2px;border-radius:50%;background:#2f9e5b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.live .lead{max-width:44ch;margin-bottom:0}
+.phone{position:relative;width:300px;height:560px;border-radius:44px;background:#1b2328;padding:12px;box-shadow:0 40px 70px -30px var(--sh),inset 0 0 0 2px #2c373e}
+.scr{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:#e4e9e6;display:flex;flex-direction:column}
+.scr .tb{display:flex;align-items:center;gap:8px;padding:30px 14px 10px;background:#f7f8f6;border-bottom:1px solid #d6ddda;font-size:12px;font-weight:700;color:#1c2428}
+.scr .tb i{width:9px;height:12px;background:#23407a;border-radius:1px 3px 3px 1px}
+.scr .tb span{font-weight:500;color:#5d6a70;border-bottom:1px dashed #c9d0cc}
+.scr .bd{flex:1;display:grid;place-items:center;perspective:700px}
+.scr .bk2{position:relative;display:flex;transform:rotateX(9deg);transform-style:preserve-3d}
+.scr .pg2{position:relative;width:118px;height:158px;background:#fbfbf6;overflow:hidden}
+.scr .pg2.a{border-radius:6px 1px 1px 6px;box-shadow:-1px 1px 0 #fff,-2px 2px 0 #d3d0c4,-3px 3px 0 #fff,-4px 4px 0 #d3d0c4,0 18px 22px -12px rgba(20,31,38,.4)}
+.scr .pg2.b{border-radius:1px 6px 6px 1px;box-shadow:inset 6px 0 8px -6px rgba(0,0,0,.25),1px 1px 0 #fff,2px 2px 0 #d3d0c4,3px 3px 0 #fff,4px 4px 0 #d3d0c4,0 18px 22px -12px rgba(20,31,38,.4)}
+.scr .ln{position:absolute;left:10px;right:10px;height:2.5px;border-radius:2px;background:#3a4650;opacity:.5}
+.scr .lf{position:absolute;left:118px;top:0;width:118px;height:158px;transform-origin:left center;transform-style:preserve-3d;animation:lfturn 6s cubic-bezier(.55,.05,.35,1) infinite}
+.scr .lf>div{position:absolute;inset:0;background:#fbfbf6;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:1px 6px 6px 1px}
+.scr .lf>div+div{transform:rotateY(180deg);border-radius:6px 1px 1px 6px}
+@keyframes lfturn{0%,45%{transform:rotateY(0)}75%,100%{transform:rotateY(-180deg)}}
+.scr .bb{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0 22px;background:#f7f8f6;border-top:1px solid #d6ddda;font-size:11px;color:#1c2428}
+.scr .bb b{font-weight:600}.scr .bb span{display:flex;align-items:center;gap:6px;color:#5d6a70}.scr .bb span::before{content:"";width:7px;height:7px;border-radius:50%;background:#2f9e5b;box-shadow:0 0 0 0 rgba(47,158,91,.6);animation:lpulse 2s infinite}
+@keyframes lpulse{70%{box-shadow:0 0 0 6px rgba(47,158,91,0)}100%{box-shadow:0 0 0 0 rgba(47,158,91,0)}}
+.linkchip{position:absolute;z-index:2;left:-46px;top:84px;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:14px;background:var(--paper);color:#1b2430;font-size:.82rem;font-weight:600;box-shadow:0 18px 30px -14px var(--sh);white-space:nowrap}
+.linkchip svg{width:16px;height:16px;fill:none;stroke:#2a52be;stroke-width:2.2;stroke-linecap:round}
+.linkchip em{font-style:normal;color:#5d6a70;font-weight:500}
+@media (max-width:860px){.live{grid-template-columns:1fr;gap:36px}.phone{justify-self:center}.linkchip{left:-10px;top:60px}}
+@media (max-width:380px){.phone{width:270px;height:520px}.scr .pg2,.scr .lf{width:104px;height:140px}.scr .lf{left:104px}}
+@media (prefers-reduced-motion:reduce){.scr .lf{animation:none}.scr .bb span::before{animation:none}}
+
 /* Pricing: a lined notebook page */
 .sheet{position:relative;background:var(--paper) linear-gradient(transparent 33px,rgba(60,90,140,.22) 34px) 0 0/100% 34px;color:#1b2430;border-radius:4px 14px 14px 4px;padding:34px 34px 34px 84px;box-shadow:1px 1px 0 #fff,3px 3px 0 #d3d0c4,5px 5px 0 #fff,7px 7px 0 #d3d0c4,0 40px 50px -20px var(--sh)}
 .sheet::before{content:"";position:absolute;left:58px;top:0;bottom:0;width:2px;background:rgba(200,70,70,.4)}
@@ -315,6 +377,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
 <header>
   <div class="wrap nav">
     <a class="logo" href="#top" aria-label="Foliet Sketchbook, home"><i></i>Foliet<small>Sketchbook</small></a>
+    <a class="l" href="#uses">Ideas</a>
     <a class="l" href="#inside">Features</a>
     <a class="l" href="#pricing">Pricing</a>
     <a class="l" href="#faq">FAQ</a>
@@ -328,19 +391,79 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
   <div class="wrap hero">
     <div>
       <h1>A sketchbook that opens in your browser.</h1>
-      <p class="lead">Draw, write and stick things down in notebooks that feel like paper. Nothing to install, nothing to carry.</p>
+      <p class="lead">Draw, write, read and study in notebooks that feel like paper. Import a book, keep your class notes, plan your week. Nothing to install, nothing to carry.</p>
       <div class="cta">
         <a class="btn pri" href="app/">Start free</a>
         <a class="btn sec" href="#inside">See what’s inside</a>
       </div>
       <p class="fine">Works on phones, tablets and laptops.</p>
+      <ul class="chips2" aria-label="What your notebook can be"><li><a href="#uses">Sketchbook</a></li><li><a href="#uses">Class notes</a></li><li><a href="#uses">Textbooks</a></li><li><a href="#uses">Books &amp; PDFs</a></li><li><a href="#uses">Planner</a></li><li><a href="#uses">Journal</a></li></ul>
     </div>
     <div class="stage" role="img" aria-label="An open notebook turning its pages: a photo album with white-framed photos on black pages, then sketches, then a weekly plan">
       <div class="hb closed" id="hb"><div class="hb-l"></div><div class="hb-r"></div><div class="hb-leaf"><div class="hb-front"></div><div class="hb-back"></div></div></div>
     </div>
   </div>
 
-  <a class="scrollcue" id="scue" href="#inside"><span>Scroll to see what’s inside</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+  <a class="scrollcue" id="scue" href="#uses"><span>Scroll to see what it can be</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+
+  <section id="uses">
+    <div class="wrap">
+      <h2>One notebook. Whatever you need.</h2>
+      <p class="sub">A sketchbook today, a study book tomorrow. Every notebook becomes what you make of it.</p>
+      <div class="uses">
+        <article class="use">
+          <div class="ill" aria-hidden="true"><div class="spr"><div class="mp l"><span class="ln" style="top:18px;width:60%"></span><span class="ln" style="top:30px"></span><span class="ln" style="top:42px;right:22px"></span><span class="ln" style="top:54px"></span><span class="ln" style="top:66px;right:30px"></span><span class="ln" style="top:78px"></span><span class="ln" style="top:90px;right:18px"></span><span class="ln" style="top:102px"></span><span class="ln" style="top:114px;right:40px"></span><span class="ln" style="top:126px"></span><span class="mhl" style="left:10px;top:52px;width:74px"></span></div><div class="mp"><span class="ln" style="top:18px;width:60%"></span><span class="ln" style="top:30px"></span><span class="ln" style="top:42px;right:22px"></span><span class="ln" style="top:54px"></span><span class="ln" style="top:66px;right:30px"></span><span class="ln" style="top:78px"></span><span class="ln" style="top:90px;right:18px"></span><span class="ln" style="top:102px"></span><span class="ln" style="top:114px;right:40px"></span><span class="ln" style="top:126px"></span>
+            <svg viewBox="0 0 112 150"><path class="dr" pathLength="1" d="M18 66c10-9 56-10 72-2 10 6-4 13-30 13-24 0-48-3-42-11z" stroke="#e0533d" stroke-width="2.4"/><path class="dr" pathLength="1" d="M14 133c20-3 46-3 70 0" stroke="#2a52be" stroke-width="2"/></svg>
+            <span class="mnote" style="right:6px;top:84px">key idea!</span></div></div></div>
+          <h3>Read and mark up books<span class="soon">Pro</span></h3>
+          <p>Import a book or any PDF, up to 500 pages, and read it like a real book. Underline, circle, write in the margins and stick notes right on the page.</p>
+        </article>
+        <article class="use">
+          <div class="ill" aria-hidden="true"><div class="spr"><div class="mp l"><span class="mtit">Chapter 4</span><span class="ln" style="top:24px;width:40%"></span><span class="ln" style="top:30px"></span><span class="ln" style="top:42px;right:22px"></span><span class="ln" style="top:54px"></span><span class="ln" style="top:66px;right:30px"></span><span class="ln" style="top:78px"></span><span class="ln" style="top:90px;right:18px"></span><span class="ln" style="top:102px"></span><span class="ln" style="top:114px;right:40px"></span><span class="ln" style="top:126px"></span></div><div class="mp grid">
+            <span class="hand" style="left:10px;top:12px">Practice</span><span class="hand" style="left:12px;top:42px">x² + 4x = 12</span><span class="hand" style="left:16px;top:66px">(x+6)(x−2) = 0</span><span class="hand" style="left:22px;top:92px;color:#2f9e5b">x = 2 ✓</span>
+            <svg viewBox="0 0 112 150"><path class="dr" pathLength="1" d="M18 108h46" stroke="#2f9e5b" stroke-width="2"/></svg></div></div></div>
+          <h3>Study from your textbooks<span class="soon">Pro</span></h3>
+          <p>Import your textbooks and add blank, lined or grid pages anywhere, right between chapters, to solve exercises and sum up what you learned.</p>
+        </article>
+        <article class="use">
+          <div class="ill" aria-hidden="true"><div class="mp lined" style="width:140px">
+            <span class="hand" style="left:10px;top:6px;font-size:17px">Biology · Lecture 3</span>
+            <span class="mphoto" style="left:14px;top:34px"><i></i></span>
+            <span class="hand" style="left:86px;top:40px;font-size:13px">mitosis</span><span class="hand" style="left:14px;top:96px;font-size:14px">4 phases: P, M, A, T</span><span class="hand" style="left:14px;top:118px;font-size:14px">exam on Friday!</span>
+            <svg viewBox="0 0 140 150"><path class="dr" pathLength="1" d="M84 52c-6 2-10 6-12 12" stroke="#2a52be" stroke-width="1.8"/><path class="dr" pathLength="1" d="M12 132c22-2 46-2 70 0" stroke="#e0533d" stroke-width="1.8"/></svg></div></div>
+          <h3>Class notes with photos</h3>
+          <p>Write your lecture notes and add photos of the board or the slides right on the page. Draw over them, highlight, and keep every course in its own notebook.</p>
+        </article>
+        <article class="use">
+          <div class="ill" aria-hidden="true"><div class="mp" style="width:140px">
+            <svg viewBox="0 0 140 150"><path class="dr" pathLength="1" d="M20 112c14-30 30-52 52-60 18-7 34 4 40 20" stroke="#24303a" stroke-width="2.2"/><path class="dr" pathLength="1" d="M48 112c4-18 14-30 28-34 12-3 20 4 22 14" stroke="#6b7a85" stroke-width="1.6"/><path class="dr" pathLength="1" d="M16 118h108" stroke="#24303a" stroke-width="1.4"/><path class="dr" pathLength="1" d="M98 30a10 10 0 1 0 .1 0" stroke="#e0a526" stroke-width="2.6"/><path class="dr" pathLength="1" d="M30 128c6-4 10 4 16 0s10 4 16 0 10 4 16 0" stroke="#2a52be" stroke-width="1.6"/></svg></div></div>
+          <h3>A sketchbook that goes everywhere</h3>
+          <p>Pencil, brush, marker and layers. Start a sketch on the bus and finish it at home, on paper that turns like the real thing.</p>
+        </article>
+        <article class="use">
+          <div class="ill" aria-hidden="true"><div class="mp" style="width:150px">
+            <span class="mtit">This week</span><span class="mcol" style="left:50px"></span><span class="mcol" style="left:100px"></span>
+            <span class="hand" style="left:8px;top:28px;font-size:12px">Mon</span><span class="hand" style="left:56px;top:28px;font-size:12px">Tue</span><span class="hand" style="left:106px;top:28px;font-size:12px">Wed</span>
+            <span class="hand" style="left:8px;top:50px;font-size:12px;color:#24303a">gym</span><span class="hand" style="left:56px;top:50px;font-size:12px;color:#24303a">lab 2pm</span><span class="hand" style="left:106px;top:50px;font-size:12px;color:#24303a">read ch.5</span>
+            <span class="mhl" style="left:54px;top:72px;width:40px"></span><span class="hand" style="left:56px;top:66px;font-size:12px;color:#24303a">exam!</span>
+            <svg viewBox="0 0 150 150"><path class="dr" pathLength="1" d="M10 104l5 5 9-11" stroke="#2f9e5b" stroke-width="2"/><path class="dr" pathLength="1" d="M10 124l5 5 9-11" stroke="#2f9e5b" stroke-width="2"/></svg>
+            <span class="hand" style="left:30px;top:98px;font-size:12px;color:#24303a">call mum</span><span class="hand" style="left:30px;top:118px;font-size:12px;color:#24303a">pay rent</span></div></div>
+          <h3>Plan your weeks</h3>
+          <p>Weekly planner, daily agenda, to-do lists and more, ready to fill in. Keep your plans next to your notes.</p>
+        </article>
+        <article class="use">
+          <div class="ill" aria-hidden="true"><div class="mp" style="width:140px;background:#f6efe2">
+            <span class="hand" style="left:12px;top:8px;font-size:17px;color:#7a4e2a">Dear diary,</span>
+            <span class="mphoto" style="left:62px;top:36px;transform:rotate(5deg)"><i class="sky"></i></span>
+            <span class="hand" style="left:12px;top:40px;font-size:13px;color:#7a4e2a">the sea</span><span class="hand" style="left:12px;top:56px;font-size:13px;color:#7a4e2a">today…</span>
+            <span class="hand" style="left:12px;top:104px;font-size:13px;color:#7a4e2a">best day ♥</span>
+            <span class="mlock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></span></div></div>
+          <h3>A journal just for you</h3>
+          <p>Write your diary, add photos and stickers, make a photo album of your trips. Lock it with a PIN, or your fingerprint on Android.</p>
+        </article>
+      </div>
+    </div>
+  </section>
 
   <section id="inside">
     <div class="wrap">
@@ -391,6 +514,31 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
     </div>
   </section>
 
+  <section id="share">
+    <div class="wrap live">
+      <div>
+        <h2>Share it live<span class="soon">Pro</span></h2>
+        <p class="lead">Send a link and your notebook opens for anyone as a real book that turns its pages, on any phone or computer, no account needed. As you write, it changes for them too.</p>
+        <ul>
+          <li>Opens as the same 3D book you see, with the cover, the pages and the zoom</li>
+          <li>Updates live while you draw and write</li>
+          <li>Big notebooks show their first pages right away, and the rest as they arrive</li>
+          <li>Let classmates with Pro write in it too, like a shared study book</li>
+          <li>Stop sharing whenever you want: it stops at once</li>
+        </ul>
+        <a class="btn pri" href="app/">Start free</a>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="linkchip"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></svg>foliet.app/<em>biology-notes/k3x9qa</em></div>
+        <div class="scr">
+          <div class="tb"><i></i>Foliet <span>Biology notes</span></div>
+          <div class="bd"><div class="bk2"><div class="pg2 a"><span class="ln" style="top:14px;width:50%"></span><span class="ln" style="top:26px"></span><span class="ln" style="top:36px;right:18px"></span><span class="ln" style="top:46px"></span><span class="ln" style="top:56px;right:26px"></span><span class="ln" style="top:66px"></span><span class="ln" style="top:76px;right:14px"></span><span class="ln" style="top:86px"></span><span class="ln" style="top:96px;right:30px"></span><span class="ln" style="top:106px"></span><span class="ln" style="top:116px;right:20px"></span><span class="ln" style="top:126px"></span></div><div class="pg2 b"><span class="ln" style="top:14px;width:50%"></span><span class="ln" style="top:26px"></span><span class="ln" style="top:36px;right:18px"></span><span class="ln" style="top:46px"></span><span class="ln" style="top:56px;right:26px"></span><span class="ln" style="top:66px"></span><span class="ln" style="top:76px;right:14px"></span><span class="ln" style="top:86px"></span><span class="ln" style="top:96px;right:30px"></span><span class="ln" style="top:106px"></span><span class="ln" style="top:116px;right:20px"></span><span class="ln" style="top:126px"></span></div><div class="lf"><div><span class="ln" style="top:14px;width:50%"></span><span class="ln" style="top:26px"></span><span class="ln" style="top:36px;right:18px"></span><span class="ln" style="top:46px"></span><span class="ln" style="top:56px;right:26px"></span><span class="ln" style="top:66px"></span><span class="ln" style="top:76px;right:14px"></span><span class="ln" style="top:86px"></span><span class="ln" style="top:96px;right:30px"></span><span class="ln" style="top:106px"></span><span class="ln" style="top:116px;right:20px"></span><span class="ln" style="top:126px"></span></div><div><span class="ln" style="top:14px;width:50%"></span><span class="ln" style="top:26px"></span><span class="ln" style="top:36px;right:18px"></span><span class="ln" style="top:46px"></span><span class="ln" style="top:56px;right:26px"></span><span class="ln" style="top:66px"></span><span class="ln" style="top:76px;right:14px"></span><span class="ln" style="top:86px"></span><span class="ln" style="top:96px;right:30px"></span><span class="ln" style="top:106px"></span><span class="ln" style="top:116px;right:20px"></span><span class="ln" style="top:126px"></span></div></div></div></div>
+          <div class="bb"><b>Pages 13–14 of 209</b><span>Live · view only · 209 pages</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section>
     <div class="wrap">
       <h2>Start in under a minute</h2>
@@ -420,8 +568,8 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
           <div class="plan">
             <h3>Pro</h3>
             <div class="price"><span id="pp">€44.99</span> <small id="pu">per year</small></div>
-            <p class="eq" id="pe">That’s €2.50 a month.</p>
-            <ul><li>Unlimited notebooks and pages</li><li>Your own categories, like Study or Travel</li><li>PDF import</li><li>A photo on the cover, to draw on</li><li>Deleted notebooks kept 30 days</li><li>Export to PDF and image</li><li>Live links: share a notebook, friends with Pro can draw in it too</li><li>Cloud sync across your devices</li></ul>
+            <p class="eq" id="pe">That’s €3.75 a month.</p>
+            <ul><li>Unlimited notebooks and pages</li><li>Your own categories, like Study or Travel</li><li>PDF import</li><li>A photo on the cover, to draw on</li><li>Deleted notebooks kept 30 days</li><li>Export to PDF and image</li><li>Live links: anyone opens your notebook as a real book, no account needed</li><li>Cloud sync across your devices</li></ul>
             <button class="btn pri" id="pbtn" disabled>Pro is coming soon</button>
           </div>
         </div>
@@ -441,7 +589,8 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
       <details><summary>Can I keep a notebook private?</summary><p>Yes, on every plan. Lock a notebook with a 4-digit PIN or a password, and on Android you can also unlock it with your fingerprint. Anyone using the app on your device needs the PIN to open it.</p></details>
       <details><summary>Does it work on my phone or tablet?</summary><p>Yes, in any modern browser. It works with touch and with a stylus, and it reads pen pressure when your device provides it.</p></details>
       <details><summary>What’s in the store?</summary><p>Templates, cover designs, name labels and sticker packs. Lots are free: 8 templates (weekly planner, daily agenda, to-do lists, math grid, Cornell notes, journal, storyboard, sheet music), 16 covers, 6 label shapes and 6 sticker packs (7 stickers each). The rest – like a habit tracker, budget, recipe book, a galaxy or art deco cover, a kraft tag or gold foil label, and packs of cute animals, space and sweet treats – cost €0.99 each on any plan. Buy once and use it as often as you like. Some items are only around for a few days, so look in now and then. Paid items go on sale together with Pro.</p></details>
-      <details><summary>Can I share a notebook?</summary><p>Yes. Share → “View-only file” works on every plan. With Pro you can also make a live link, like foliet.app/trip-to-rome/k3x9qa: anyone who has it can look, without an account, and it changes as you draw. If you allow it, people with Pro can sign in and draw and write in it too, and their changes come to your notebook. Stop sharing whenever you like.</p></details>
+      <details><summary>Can I share a notebook?</summary><p>Yes. Share → “View-only file” works on every plan. With Pro you can also make a live link, like foliet.app/trip-to-rome/k3x9qa: anyone who has it opens your notebook as a real book that turns its pages, without an account, and it changes as you draw. Big notebooks show their first pages right away. If you allow it, people with Pro can sign in and draw and write in it too, and their changes come to your notebook. Stop sharing whenever you like: the link stops at once.</p></details>
+      <details><summary>Can I use it for school or university?</summary><p>Yes, that’s one of the best uses. Write your lecture notes and add photos of the board or the slides right on the page. With Pro, import your textbooks or any book as a PDF, read it like a real book, write in the margins, and add blank, lined or grid pages between chapters to practise. Make a category for each course, and share a live link with your classmates.</p></details>
       <details><summary>Can I import a PDF?</summary><p>With Pro, up to 500 pages per PDF. The first page becomes the cover, and every other page is fitted onto a notebook page so you can write on top of it.</p></details>
       <details><summary>Can I cancel any time?</summary><p>Yes. Monthly plans can be cancelled whenever you like, and yearly plans simply don’t renew. Nobody is charged yet, because paid plans haven’t launched.</p></details>
       <details><summary>What happens if I go back to the free plan?</summary><p>Your notebooks stay. You just can’t add more pages or notebooks beyond the free limits.</p></details>
@@ -482,6 +631,8 @@ function setStep(i){
   sts.forEach((el,k)=>el.classList.toggle('on',k===i));
   $('#chips').innerHTML=CHIPS[i].map((t,k)=>'<span style="animation-delay:'+k*70+'ms">'+t+'</span>').join('');
 }
+// the small pages of “One notebook. Whatever you need.” draw their lines when they come into view
+if('IntersectionObserver' in window){const uo=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');uo.unobserve(e.target)}}),{rootMargin:'0px 0px -12% 0px'});document.querySelectorAll('.use').forEach(u=>uo.observe(u))}
 if('IntersectionObserver' in window){
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)setStep(+e.target.dataset.s)}),{rootMargin:'-42% 0px -48% 0px'});
   sts.forEach(el=>io.observe(el));
