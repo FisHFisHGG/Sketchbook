@@ -144,7 +144,8 @@ h1{font-size:clamp(22px,4vw,32px);font-weight:700;margin:0;letter-spacing:-.02em
 #btitle{flex:1;min-width:120px;max-width:340px;font:600 15px inherit;font-family:inherit;background:transparent;border:0;border-bottom:1px dashed var(--line);color:var(--ink);padding:6px}
 #bmain,#main{flex:1;min-height:0;container-type:size;display:grid;place-items:center;padding:4px}
 #bmain{perspective:1500px;background:radial-gradient(ellipse at 50% 45%,var(--bar),var(--desk) 72%)}
-#tilt{transform:rotateX(8deg);transform-origin:50% 50%;transition:transform .35s ease}
+#tilt{transform:rotateX(8deg);transform-origin:50% 50%;transition:transform .35s ease,translate .35s ease}
+@media (max-height:500px){#bv>.bar{padding-top:2px;padding-bottom:2px}} /* phones held sideways: a little more room for the book */
 #sp::before{content:"";position:absolute;left:4%;right:4%;bottom:-6%;height:11%;background:radial-gradient(ellipse at center,var(--sh),transparent 68%);z-index:-1;pointer-events:none}
 #sp{position:relative;perspective:1800px;display:grid;grid-template-columns:1fr 1fr;width:min(100cqw - 36px,(100cqh - 28px)*var(--spr,1.5));aspect-ratio:var(--sar,3/2);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 #sp.in{animation:enter .5s cubic-bezier(.2,.7,.2,1)}
@@ -1063,7 +1064,26 @@ function showBrowse(b){
   docTitle();syncLockBtn();const gst=!!cur._guest;$('#block').classList.toggle('hidden',gst);$('#btitle').readOnly=gst;$('#bv').classList.toggle('guest',gst);renderBrowse();
   if(b){const sp=$('#sp');sp.classList.remove('in');sp.offsetWidth;sp.classList.add('in');if(tg>=0)resume(b,tg);if(tIdx===0)setTimeout(()=>{if(!$('#bv').classList.contains('hidden')&&!flipping)tourShow(0)},tg>0?2600:1100)}
 }
-function fitSp(){const s=$('#sp');s.style.perspective=Math.round(s.offsetWidth*1.7)+'px'}
+/* The open book's size. It fills the free room exactly, counting the page edges and the tilt (the bottom of the book
+   comes closer, so it looks bigger and lower), and it sits in the middle. A computer shows it a bit further back
+   (88% of the height); phones and tablets show it as big as fits. */
+const TILT=8,PERSP=1500;let spDy=0;
+function tiltBox(h,eb,deg){ // how far a tilted box h tall reaches below (b) and above (t) its middle; eb = page edges under it
+  const r=deg*Math.PI/180,c=Math.cos(r),s=Math.sin(r),yb=h/2+eb,k=PERSP/(PERSP-yb*s);
+  return {b:yb*c*k,t:h/2*c*PERSP/(PERSP+h/2*s),k}; // k: how much bigger the bottom looks
+}
+function spFit(W,H,a,P,far){
+  const box=w=>{const pt=thick(w,P).pt,q=tiltBox(w/a,pt*.4,TILT);q.x=w/2*q.k+(far?pt:Math.min(pt,6));return q}; // x: half the width
+  // (on a phone or tablet held upright the side edges of the pages may go a little past the screen, so the pages are bigger)
+  const fh=far?H*.88:H-6,fw=far?W*.94:W;let lo=120,hi=8000;
+  for(let i=0;i<26;i++){const m=(lo+hi)/2,q=box(m);if(q.b+q.t<=fh&&2*q.x<=fw)lo=m;else hi=m}
+  const q=box(lo);return {w:Math.floor(lo),dy:(q.b-q.t)/2};
+}
+function fitSp(){
+  const s=$('#sp'),m=$('#bmain');if(!cur||m.clientWidth<40)return;
+  const f=spFit(m.clientWidth-8,m.clientHeight-8,cur.o==='l'?8/3:1.5,cur.pages.length,!matchMedia('(pointer:coarse)').matches);
+  s.style.width=f.w+'px';spDy=Math.round(f.dy);s.style.perspective=Math.round(f.w*1.7)+'px';
+}
 function renderDecks(){
   const sp=$('#sp');sp.querySelectorAll('.dk').forEach(e=>e.remove());
   if(cs<0)return;
@@ -1080,11 +1100,14 @@ function renderDecks(){
     });
   }
 }
-addEventListener('resize',()=>{if(cur&&!$('#bv').classList.contains('hidden'))fitSp()});
+// the free room changed (window, rotation, bars): fit the book again (after a page turn, never during one)
+let fitT=0;const refit=()=>{clearTimeout(fitT);fitT=setTimeout(()=>{if(!cur||$('#bv').classList.contains('hidden'))return;if(flipping)return refit();
+  fitSp();applyZoom();setEdges($('#pr'),1,cs);setEdges($('#pl'),-1,cs)},60)};
+if(window.ResizeObserver)new ResizeObserver(refit).observe($('#bmain'));else addEventListener('resize',refit);
 function shade(h,f){const n=parseInt(h.slice(1),16),k=1-f;return 'rgb('+Math.round((n>>16)*k)+','+Math.round((n>>8&255)*k)+','+Math.round((n&255)*k)+')'}
-function thick(){
-  const w=$('#sp').offsetWidth||600,P=cur.pages.length;
-  return {tc:Math.max(6,Math.min(16,Math.round(w*.022))),pt:Math.max(4,Math.min(Math.round(w*.04),Math.round(3+P*.5)))};
+function thick(w,P){
+  w=w||$('#sp').offsetWidth||600;P=P==null?cur.pages.length:P; // a small book (phone) has slightly thinner page edges
+  return {tc:Math.max(6,Math.min(16,Math.round(w*.022))),pt:Math.max(4,Math.min(Math.round(w*(w<640?.028:.04)),Math.round(3+P*.5)))};
 }
 function edgeSh(side,parts,dy){
   dy=dy==null?.4:dy;const out=[];let k=0;
@@ -1241,13 +1264,13 @@ let zs=0;
 function resetZoom(){if(!zs)return;zs=0;$('#bzoom').setAttribute('aria-pressed',false);const t=$('#tilt');t.style.transition='none';applyZoom();t.offsetWidth;t.style.transition=''}
 function applyZoom(){
   const t=$('#tilt'),m=$('#bmain'),sp=$('#sp');
-  if(!zs||cs<0&&zs===1&&false){t.style.transform='';return}
-  const pw=sp.offsetWidth/2,ph=sp.offsetHeight,k=Math.max(1,Math.min((m.clientWidth-12)/pw,(m.clientHeight-12)/ph,3));
-  const off=cs<0?0:(zs===1?-pw/2:pw/2);
-  t.style.transform='rotateX(6deg) scale('+k+') translateX('+(-off)+'px)';
+  if(!zs){t.style.transform='';t.style.translate=spDy?'0 '+(-spDy)+'px':'';return} // in the middle (see fitSp)
+  const pw=sp.offsetWidth/2,ph=sp.offsetHeight,W=m.clientWidth-12,H=m.clientHeight-12,eb=thick().pt*.4;let k=1,hi=3; // as big as fits, tilt included
+  for(let i=0;i<18;i++){const z=(k+hi)/2,q=tiltBox(ph*z,eb*z,6);if(q.b+q.t<=H&&pw*z*q.k<=W)k=z;else hi=z}
+  const off=cs<0?0:(zs===1?-pw/2:pw/2),q=tiltBox(ph*k,eb*k,6);
+  t.style.transform='rotateX(6deg) scale('+k+') translateX('+(-off)+'px)';t.style.translate='0 '+(-Math.round((q.b-q.t)/2))+'px';
 }
 $('#bzoom').onclick=()=>{zs=cs<0?(zs?0:2):(zs+1)%3;$('#bzoom').setAttribute('aria-pressed',zs>0);applyZoom()};
-addEventListener('resize',()=>{if(zs)applyZoom()});
 $('#bprev').onclick=()=>flip(cs-1);
 $('#bnext').onclick=()=>flip(cs+1);
 /* New pages: choose how they look (like the last page, blank, lined, grid or dots). The paper color stays. */

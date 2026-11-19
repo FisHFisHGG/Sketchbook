@@ -5,6 +5,8 @@
 // - a new device: pages still coming from the cloud show "Loading page…" (not a blank page) and appear when they arrive;
 //   such a page can't be opened for drawing; a blank page on a device never replaces a page in the cloud
 // - All pages: only the pictures near the screen are loaded
+// - the open book fits between the bars and sits in the middle: a computer shows it a bit further back, a phone as big as fits;
+//   zoom stays between the bars too
 // How to run (from this folder, with Java installed):
 //   npm i --no-save playwright firebase-tools
 //   npx firebase emulators:exec --only auth,firestore --project sketchbook-b1de1 "node update11-test.js"
@@ -22,7 +24,7 @@ const N=120,AT=40; // pages in the big notebook; it was left open at spread 40 (
     res.writeHead(404,{'Content-Type':'text/html'});res.end(fs.readFileSync(path.join(SITE,'404.html')))}).listen(5194,'127.0.0.1');
   const b=await chromium.launch();
   const URL0='http://127.0.0.1:5194/Sketchbook/app/?emu=127.0.0.1';
-  const dev=async name=>{const ctx=await b.newContext({viewport:{width:1100,height:800},...(process.env.VIDEO&&name==='A'?{recordVideo:{dir:process.env.VIDEO,size:{width:1100,height:800}}}:{})});await ctx.addInitScript(()=>{try{localStorage.setItem('sb-tour','99')}catch(e){}});await ctx.route(u=>u.hostname!=='127.0.0.1',r=>r.abort());
+  const dev=async(name,o={})=>{const ctx=await b.newContext({viewport:{width:1100,height:800},...o,...(process.env.VIDEO&&name==='A'?{recordVideo:{dir:process.env.VIDEO,size:{width:1100,height:800}}}:{})});await ctx.addInitScript(()=>{try{localStorage.setItem('sb-tour','99')}catch(e){}});await ctx.route(u=>u.hostname!=='127.0.0.1',r=>r.abort());
     const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(name+': '+e.message));await p.goto(URL0);return p};
   const ready=p=>p.waitForFunction(()=>ACC.libUid&&!ACC.gate&&data.length,null,{timeout:20000});
   const signIn=async(p,em,create)=>{await p.waitForSelector('#a-em',{timeout:15000});if(create)await p.click('.btn2');await p.fill('#a-em',em);await p.fill('#a-pw','secret123');await p.click('#acc-body button[type=submit]');await ready(p);await answerSurvey(p);await p.waitForTimeout(500)};
@@ -48,6 +50,15 @@ const N=120,AT=40; // pages in the big notebook; it was left open at spread 40 (
   ok(await A.evaluate(()=>!document.querySelector('#sp .rf')),'… and the riffling pages are gone afterwards');
   if(process.env.SHOT)await A.screenshot({path:process.env.SHOT+'/book.png'});
   ok(await A.evaluate(()=>$('#bpg').textContent==='Pages 81–82 of 120'),'… and it’s at pages 81–82');
+  // the open book fits between the bars and sits in the middle; a computer shows it a bit further back
+  const fitOf=p=>p.evaluate(()=>{const m=$('#bmain').getBoundingClientRect(),l=$('#pl').getBoundingClientRect(),r=$('#pr').getBoundingClientRect(),bb=$('#bv .bar.bot').getBoundingClientRect(),pt=thick().pt;
+    const top=Math.min(l.top,r.top),bot=Math.max(l.bottom,r.bottom)+pt*.42;return {gt:Math.round(top-m.top),gb:Math.round(m.bottom-bot),fill:Math.round((bot-top)/m.height*100),under:bot<=bb.top+1}});
+  const f1=await fitOf(A);
+  ok(f1.gt>8&&f1.gb>8&&Math.abs(f1.gt-f1.gb)<=4&&f1.fill>=80&&f1.fill<=90,'a computer: the open book is in the middle, a bit back from the bars (gap '+f1.gt+' / '+f1.gb+' px, '+f1.fill+'% of the height)');
+  await A.click('#bzoom');await A.waitForTimeout(500);
+  const z1=await A.evaluate(()=>{const bb=$('#bv .bar.bot').getBoundingClientRect(),t=$('#bv .bar').getBoundingClientRect(),l=$('#pl').getBoundingClientRect();return l.bottom<=bb.top&&l.top>=t.bottom&&l.height>$('#sp').offsetHeight});
+  await A.evaluate(()=>resetZoom());
+  ok(z1,'zoom: the page gets bigger and still stays between the bars');
   // lighter for tablets
   ok(await A.evaluate(()=>{const d=[...document.querySelectorAll('#sp .dk')];return d.length===8&&d.every(x=>!x.querySelector('img')&&!x.style.filter)}),'the pages stacked behind are plain paper: no pictures, no filters');
   ok(await A.evaluate(()=>getComputedStyle($('#sp'),'::before').filter==='none'),'the shadow under the book has no blur filter');
@@ -118,6 +129,12 @@ const N=120,AT=40; // pages in the big notebook; it was left open at spread 40 (
   const cloud=await A.evaluate(async n=>{await syncRun();const bk=data.find(x=>x.title==='Big book');return !!bk.bg[n]},N);
   ok(kept&&cloud,'A drew on a new page, B added blank pages there before syncing: A’s page wins on both devices (a blank page never replaces it)');
 
-  [...A.errs,...B.errs].forEach(e=>console.log('  ERR',e));
+  // a phone held sideways: the book is as big as fits, in the middle, and doesn't go under the bars
+  const C=await dev('C',{viewport:{width:915,height:412},hasTouch:true,isMobile:true});await signIn(C,'phone11@example.com',true);
+  await C.evaluate(()=>{const bk=mk('Phone book',data.length,'p');bk.pages=[null,null,null,null];bk.cs=0;data.push(bk);persist();showBrowse(bk)});
+  await C.waitForFunction(()=>cs===0&&!flipping,null,{timeout:15000});await C.waitForTimeout(600);
+  const f2=await fitOf(C);
+  ok(f2.under&&f2.gt>=0&&f2.gb>=0&&Math.abs(f2.gt-f2.gb)<=4&&f2.fill>=90,'a phone: the open book fills the room between the bars and sits in the middle (gap '+f2.gt+' / '+f2.gb+' px, '+f2.fill+'%)');
+  [...A.errs,...B.errs,...C.errs].forEach(e=>console.log('  ERR',e));
   console.log(fails?fails+' FAILED':'ALL PASSED');await b.close();process.exit(fails?1:0);
 })().catch(e=>{console.error(e);process.exit(1)});
