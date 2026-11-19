@@ -15,6 +15,7 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161d20;--ink:#e8eeec;--bar:#212b2f;--line:#35424a;--accent:#8fb0f0;--muted:#9fb0b6;--sh:rgba(0,0,0,.55)}}
 :root[data-theme="dark"]{--bg:#161d20;--ink:#e8eeec;--bar:#212b2f;--line:#35424a;--accent:#8fb0f0;--muted:#9fb0b6;--sh:rgba(0,0,0,.55)}
 *{box-sizing:border-box}html,body{margin:0}
+[hidden]{display:none!important} /* .btn and header set display, which would show hidden things (the Edit button on a view-only link) */
 body{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
 a{color:inherit}
 header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;background:color-mix(in srgb,var(--bar) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
@@ -30,14 +31,18 @@ main{max-width:760px;margin:0 auto;padding:20px 16px 40px;display:grid;gap:22px}
 .pg{position:relative;margin:0;background:#fdfdfa;border-radius:6px;box-shadow:0 10px 30px var(--sh);overflow:hidden}
 .pg img{display:block;width:100%;height:auto}.pg.cover{border-radius:6px 14px 14px 6px}
 .pg figcaption{position:absolute;right:10px;bottom:8px;font-size:.75em;font-weight:700;color:#1c2428;background:rgba(255,255,255,.75);padding:1px 8px;border-radius:999px}
-.pg.empty{aspect-ratio:3/4;display:grid;place-items:center;color:#9aa3a8}.pg.empty.l{aspect-ratio:4/3}
+.pg.empty{aspect-ratio:3/4;display:grid;place-items:center;align-content:center;gap:10px;color:#7d878c;font-size:.85em;font-weight:600}.pg.empty.l{aspect-ratio:4/3}
+.pg img.ink{position:absolute;left:0;top:0;width:100%;height:100%}
+/* a page on its way: a spinner while it loads, "Not online yet" while the owner's app is still putting it up */
+.pg.empty::before{content:"";width:24px;height:24px;border-radius:50%;border:3px solid #dfe4e1;border-top-color:#23407a;animation:sp 1s linear infinite}
+.pg.empty::after{content:"Loading page…"}.pg.empty.wait::before{display:none}.pg.empty.wait::after{content:"Not online yet"}
 .pg.fresh{animation:fresh 1.2s ease}@keyframes fresh{0%{box-shadow:0 0 0 4px #2f9e5b,0 10px 30px var(--sh)}100%{box-shadow:0 10px 30px var(--sh)}}
 .msg{max-width:440px;margin:12vh auto 0;padding:0 20px;text-align:center}.msg h1{font-size:1.6em;line-height:1.2;margin:0 0 10px}.msg p{color:var(--muted)}
 .msg .btn{margin-top:10px}
 footer{text-align:center;padding:10px 16px 40px;color:var(--muted);font-size:.9em}footer a{font-weight:700}
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:.88em;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none}#toast.on{opacity:1}
 .spin{width:28px;height:28px;margin:30vh auto 0;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.live::before,.spin,.pg.fresh{animation:none}}
+@media (prefers-reduced-motion:reduce){.live::before,.spin,.pg.fresh,.pg.empty::before{animation:none}}
 @media (max-width:520px){.logo small{display:none}.btn{padding:8px 12px;font-size:.9em}}
 </style>
 </head>
@@ -67,8 +72,10 @@ footer{text-align:center;padding:10px 16px 40px;color:var(--muted);font-size:.9e
     var db=F.initializeFirestore(app,{experimentalAutoDetectLongPolling:true});
     var emu=new URLSearchParams(location.search).get('emu');
     if(emu&&/^(localhost|127\.0\.0\.1)$/.test(emu)&&/^(localhost|127\.0\.0\.1)$/.test(location.hostname))F.connectFirestoreEmulator(db,emu,8080);
-    var shown={},nodes={},first=true,o='p';
-    function rec(k,r){ // a record's chunks → {r, v}
+    var shown={},nodes={},want={},vis={},busy={},first=true,o='p';
+    // pages load when they come near the screen (a big notebook opens fast, also on a phone)
+    var io='IntersectionObserver' in window?new IntersectionObserver(function(es){es.forEach(function(e){var k=e.target.dataset.k;if(e.isIntersecting){vis[k]=1;load(k)}else delete vis[k]})},{rootMargin:'1500px 0px'}):null;
+    function rec(k,r){ // a record's chunks → {r, v}; null while it's changing
       var ids=[];for(var i=0;i<(r.n||1);i++)ids.push(i?k+'~~'+i:k);
       return Promise.all(ids.map(function(id){return F.getDoc(F.doc(db,'shares',code,'r',id))})).then(function(ps){
         if(ps.some(function(p){return !p.exists()||p.data().h!==r.h}))return null;
@@ -76,18 +83,31 @@ footer{text-align:center;padding:10px 16px 40px;color:var(--muted);font-size:.9e
     }
     function node(k,i){
       if(nodes[k])return nodes[k];var f=document.createElement('figure');f.className='pg empty'+(k==='meta'?' cover':'')+(o==='l'?' l':'');f.dataset.k=k;
-      var c=document.createElement('figcaption');c.textContent=k==='meta'?'Cover':'Page '+(i+1);f.appendChild(c);nodes[k]=f;return f;
+      var c=document.createElement('figcaption');c.textContent=k==='meta'?'Cover':'Page '+(i+1);f.appendChild(c);nodes[k]=f;if(io)io.observe(f);else vis[k]=1;return f;
     }
     function lay(n){ // cover + n pages, in order
-      var main=$('#main'),want=['meta'];for(var i=0;i<n;i++)want.push('p~'+i);
-      Object.keys(nodes).forEach(function(k){if(want.indexOf(k)<0){nodes[k].remove();delete nodes[k];delete shown[k]}});
+      var main=$('#main'),keep=['meta'];for(var i=0;i<n;i++)keep.push('p~'+i);
+      Object.keys(nodes).forEach(function(k){if(keep.indexOf(k)<0){if(io)io.unobserve(nodes[k]);nodes[k].remove();delete nodes[k];delete shown[k];delete vis[k]}});
       if(first){main.innerHTML=''}
-      want.forEach(function(k,j){main.appendChild(node(k,j-1))});
+      keep.forEach(function(k,j){main.appendChild(node(k,j-1))});
+    }
+    function srcs(x){ // what a page shows: its picture for viewers – or, for a page that is already a picture (a PDF page), that picture + the writing on it
+      if(x.v)return [x.v];var r=x.r||{};if(r.pv)return [r.pv];if(r.bg)return r.pg?[r.bg,r.pg]:[r.bg];return r.pg?[r.pg]:[];
     }
     function show(k,x,fresh){
-      var f=nodes[k];if(!f||!x)return;var im=f.querySelector('img');
-      if(x.v){if(!im){im=new Image();im.alt=k==='meta'?'Cover':'Page '+(+k.slice(2)+1);f.insertBefore(im,f.firstChild)}im.src=x.v;f.classList.remove('empty')}
+      var f=nodes[k];if(!f||!x)return;var ss=srcs(x);if(!ss.length)return;var ims=f.querySelectorAll('img'),alt=k==='meta'?'Cover':'Page '+(+k.slice(2)+1);
+      for(var j=0;j<2;j++){var im=ims[j];
+        if(j<ss.length){if(!im){im=new Image();im.alt=j?'':alt;if(j)im.className='ink';f.insertBefore(im,f.querySelector('figcaption'))}if(im.getAttribute('src')!==ss[j])im.src=ss[j]}
+        else if(im)im.remove()}
+      f.classList.remove('empty','wait');
       if(fresh){f.classList.remove('fresh');void f.offsetWidth;f.classList.add('fresh')}
+    }
+    function load(k){
+      var r=want[k],f=nodes[k];if(f&&!shown[k])f.classList.toggle('wait',!r); // not online yet: the owner's app is still putting it up
+      if(!r||!vis[k]||busy[k]||shown[k]===r.h)return;busy[k]=1;var h=r.h;
+      rec(k,r).then(function(x){busy[k]=0;
+        if(x&&want[k]&&want[k].h===h){show(k,x,shown[k]!==undefined);shown[k]=h}
+        else if(want[k])setTimeout(function(){load(k)},x?0:1500)},function(){busy[k]=0;setTimeout(function(){load(k)},4000)});
     }
     F.onSnapshot(F.doc(db,'shares',code),function(snap){
       if(!snap.exists()||!snap.data().on){page('This notebook isn’t shared any more','The person who shared it stopped sharing, or the link isn’t complete.');return}
@@ -96,8 +116,9 @@ footer{text-align:center;padding:10px 16px 40px;color:var(--muted);font-size:.9e
       var ed=$('#edit');ed.hidden=!d.edit;ed.href=root+'app/?share='+code;ed.innerHTML='Edit <span class="pro">Pro</span>';ed.title='Foliet Pro members can sign in and edit it';
       $('#state').textContent=d.edit?'Live · Pro members can edit':'Live · view only';
       lay(d.n||0);
-      var changed=Object.keys(mf).filter(function(k){return nodes[k]&&shown[k]!==mf[k].h});
-      changed.forEach(function(k){var h=mf[k].h;rec(k,mf[k]).then(function(x){if(x&&(mf[k]||{}).h===h){show(k,x,!first&&shown[k]!==undefined);shown[k]=h}})});
+      var changed=Object.keys(mf).filter(function(k){return nodes[k]&&shown[k]!==undefined&&shown[k]!==mf[k].h});
+      want={};Object.keys(mf).forEach(function(k){want[k]=mf[k]});
+      Object.keys(nodes).forEach(load);
       if(!first&&changed.length)toast(changed.length===1?'A page just changed':changed.length+' pages just changed');
       first=false;
     },function(){page('This notebook isn’t shared any more','The person who shared it stopped sharing, or the link isn’t complete.')});

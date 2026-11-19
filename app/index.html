@@ -419,7 +419,7 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 .lyrow .ib{min-width:34px;padding:4px 6px}
 @media (min-width:700px){#tsheet,#lsheet{left:50%;right:auto;width:540px;transform:translateX(-50%)}}
 #shd,#hd{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}
-#sh-livep{display:grid;gap:8px;margin:10px 0 4px}#sh-livep .crow{display:flex;gap:8px}#sh-livep .lk-in{margin:0;text-align:left;letter-spacing:0;font-size:.85em;flex:1;min-width:0}.sh-chk{text-align:left}.sh-note{font-size:.85em;opacity:.75;margin:0}.sh-acts{display:flex;gap:8px;flex-wrap:wrap}.sh-acts a{text-decoration:none}#shd .card,#hd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#sh-livep{display:grid;gap:8px;margin:10px 0 4px}#sh-livep .crow{display:flex;gap:8px}#sh-livep .lk-in{margin:0;text-align:left;letter-spacing:0;font-size:.85em;flex:1;min-width:0}.sh-chk{text-align:left}.sh-note{font-size:.85em;opacity:.75;margin:0}.sh-prog{opacity:1;font-weight:600;color:var(--accent)}.sh-acts{display:flex;gap:8px;flex-wrap:wrap}.sh-acts a{text-decoration:none}#shd .card,#hd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #hd .card.wide{width:min(640px,100%);max-height:88vh;overflow:auto}
 #shd h2,#hd h2{margin:0 0 4px;font-size:1.3em}#shd p{margin:0 0 14px;opacity:.7}
 .xo.later{opacity:.55;pointer-events:none;border-style:dashed}
@@ -704,7 +704,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <button class="xo" id="sh-live"><svg class="ic" viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></svg><div><b>Live link <span class="soon" id="sh-pro">Pro</span></b><span>Anyone with the link can look, no account needed. It updates as you draw.</span></div></button>
   <div id="sh-livep" class="hidden"><label class="lk-lbl" for="sh-url">Live link</label><div class="crow"><input class="lk-in" id="sh-url" readonly><button class="ib" id="sh-copy" type="button">Copy</button></div>
     <label class="chk adm-chk sh-chk"><input type="checkbox" id="sh-edit"><span>People with Foliet Pro can edit it too (they sign in)</span></label>
-    <p class="sh-note" id="sh-note"></p><div class="sh-acts"><a class="ib" id="sh-open" target="_blank" rel="noopener">Open</a><button class="ib" id="sh-stop" type="button">Stop sharing</button></div></div>
+    <p class="sh-note" id="sh-note"></p><p class="sh-note sh-prog hidden" id="sh-prog" role="status"></p><div class="sh-acts"><a class="ib" id="sh-open" target="_blank" rel="noopener">Open</a><button class="ib" id="sh-stop" type="button">Stop sharing</button></div></div>
   <div class="acts2"><button class="ib" id="shno">Close</button></div>
 </div></div>
 <div id="hd" class="hidden" role="dialog" aria-modal="true" aria-labelledby="hdt"><div class="card wide">
@@ -5481,10 +5481,15 @@ function shApplyPage(b,i,r){
   while(b.pages.length<=i){b.pages.push(null)}
   b.pages[i]=r.pg??null;[['objs','o'],['pv','pv'],['bg','bg'],['ps','ps'],['lay','lay']].forEach(([a,f])=>{if(r[f]!=null)b[a][i]=r[f];else delete b[a][i]});
 }
-async function sharePic(b,i){ // a picture of the cover (i<0) or of page i, for people who only look
+async function sharePic(b,i,r){ // a picture of the cover (i<0) or of page i, for people who only look
+  if(i>=0&&r&&(r.pv||(r.bg&&!styled(r.ps))))return ''; // the page is already a picture (its composite, or a PDF page + writing): 404.html shows it as it is
   const W0=W,H0=H,c0=cur,mine=b===cur;if(!mine){W=b.o==='l'?1200:900;H=b.o==='l'?900:1200}
   try{const c=await renderExport(i<0?'c':i,b),k=Math.min(1,1000/Math.max(c.width,c.height)),q=document.createElement('canvas');q.width=Math.round(c.width*k);q.height=Math.round(c.height*k);q.getContext('2d').drawImage(c,0,0,q.width,q.height);return q.toDataURL('image/jpeg',.82)}
   finally{if(!mine&&cur===c0){W=W0;H=H0}} // (if a notebook was opened meanwhile, its own size stays)
+}
+function shareProg(b){ // “Putting the pages online… 12 of 209” in the Share window while a notebook goes up
+  const S=b.share&&SHS[b.share.code],d=$('#shd');if(!S||b!==cur||!d||d.classList.contains('hidden'))return;const p=S.prog,el2=$('#sh-prog');if(!el2)return;
+  el2.classList.toggle('hidden',!p||p.total<3);if(p)el2.textContent='Putting the pages online… '+p.done+' of '+p.total+'. Keep Foliet open until it’s done – people with the link see the pages as they arrive.';
 }
 function shareSoon(b,ms){const code=shareOf(b);if(!code||!ACC.user)return;const S=shState(code);clearTimeout(S.t);S.t=setTimeout(()=>shareSync(b),ms??2500)}
 async function shareSync(b){
@@ -5504,10 +5509,13 @@ async function shareOnce(b,code,S){
   await warmHashes([...vals].map(([k,v])=>['sh:'+code+':'+k,v])); // remembered, so a change on one page doesn't hash the whole notebook again
   for(const k of keys){
     const i=k==='meta'?-1:+k.slice(2),lv=vals.get(k);
-    const lh=lv===undefined?null:recHash('sh:'+code+':'+k,lv),r=S.man[k],rh=r?r.h:null,bh=S.h[k]??null;
+    const pd=S.pend&&S.pend[k],r=pd&&pd.h?pd:S.man[k]; // a page already up whose entry isn't in the list yet counts as there
+    const lh=lv===undefined?null:recHash('sh:'+code+':'+k,lv),rh=r?r.h:null,bh=S.h[k]??null;
     if(lh===rh){if(lh)S.h[k]=lh;continue}
     if(lv===undefined){if(bh&&!guest)drop.push(k);else if(rh)pull.push(k);continue}       // deleted here (owner) / new there
-    if(rh===null){if(bh&&guest){drop.push(k)}else push.push(k);continue}                    // deleted there (by the owner) / new here
+    if(rh===null){if(bh&&guest){drop.push(k)}else if(!(guest&&i>=0&&i<(S.n0||0)&&emptyPg(lv)))push.push(k);continue} // deleted there (by the owner) / new here
+    // (a guest never sends a page that hasn't come from the owner yet – a big notebook goes up page by page)
+    if(bh===null&&k!=='meta'&&emptyPg(lv)){if(i!==editing)pull.push(k);continue}          // a blank page that never came from the link: the link's page wins
     if(lh===bh){if(i!==editing)pull.push(k);continue}                                      // changed there only
     if(guest&&k==='meta')continue;                                                         // the cover and name stay the owner's
     push.push(k);
@@ -5516,19 +5524,35 @@ async function shareOnce(b,code,S){
     if(k==='meta'){for(const f in x.r)if(f!=='id')b[f]=x.r[f]}else shApplyPage(b,+k.slice(2),x.r);
     S.h[k]=S.man[k].h;changed=true}
   if(guest&&drop.length){const n=Math.min(...drop.map(k=>+k.slice(2)));PK.forEach(a=>{if(b[a].length>n)b[a].length=n});drop.forEach(k=>delete S.h[k]);changed=true}
-  const upd={};
-  for(const k of push){const i=k==='meta'?-1:+k.slice(2),raw=k==='meta'?shareMeta(b):pageOf(b,i);const h=await shPush(code,k,raw,await sharePic(b,i));S.h[k]=h;upd[k]={h,n:S.man[k].n}}
-  if(!guest)for(const k of drop){const r=S.man[k];if(r){const bt=F.writeBatch(ACC.db);for(let i=0;i<(r.n||1);i++)bt.delete(shRef(code,'r',chunkId(k,i)));await bt.commit()}delete S.man[k];delete S.h[k];upd[k]=F.deleteField()}
-  const n=b.pages.length;
-  if(Object.keys(upd).length||n!==S.n){await F.setDoc(shRef(code),{m:upd,n,upd:F.serverTimestamp(),...(guest?{}:{title:b.title||'Untitled'})},{merge:true});S.n=n}
-  try{await idbSet('share:'+code+':'+ACC.user.uid,S.h)}catch(e){}
   if(changed){if(!guest)persist();if(b===cur&&!$('#bv').classList.contains('hidden'))renderBrowse();else if(!cur&&!$('#shelf').classList.contains('hidden'))renderShelf()}
+  // pages already up but not yet in the link's list stay in S.pend until the list is written (also after an error)
+  const upd=S.pend||(S.pend={});let last=Date.now(),fail=0,stop=null;
+  const flush=async()=>{const n=b.pages.length;if(!Object.keys(upd).length&&n===S.n)return;const u={...upd};
+    await F.setDoc(shRef(code),{m:u,n,upd:F.serverTimestamp(),...(guest?{}:{title:b.title||'Untitled'})},{merge:true});
+    Object.keys(u).forEach(k=>{if(upd[k]===u[k])delete upd[k]});S.n=n;last=Date.now();
+    try{await idbSet('share:'+code+':'+ACC.user.uid,S.h)}catch(e){}};
+  S.prog={done:0,total:push.length};shareProg(b);
+  try{
+  for(const k of push){const i=k==='meta'?-1:+k.slice(2),raw=k==='meta'?shareMeta(b):pageOf(b,i);
+    try{const h=await shPush(code,k,raw,await sharePic(b,i,raw));S.h[k]=h;upd[k]={h,n:S.man[k].n}}
+    catch(e){fail++;console.warn('share',k,e);if(e&&e.code==='permission-denied'){stop=e;break}}
+    S.prog.done++;shareProg(b);
+    if(k==='meta'||Date.now()-last>1500)await flush(); // the cover first, then every 1.5 s: the link shows the pages as they arrive
+  }
+  if(!guest&&!stop)for(const k of drop){const r=S.man[k];if(r){const bt=F.writeBatch(ACC.db);for(let i=0;i<(r.n||1);i++)bt.delete(shRef(code,'r',chunkId(k,i)));await bt.commit()}delete S.man[k];delete S.h[k];upd[k]=F.deleteField()}
+  await flush();
+  }finally{S.prog=null;shareProg(b)}
+  if(stop)throw stop;
+  if(fail)shareSoon(b,30000); // some pages didn't go up (connection): try again later, the others are already there
 }
 // listen to a shared notebook: someone else changed it → bring it here
 function shareListen(b){
   const code=shareOf(b),S=shState(code);if(!code||S.un||!ACC.F)return;
+  let first=!b._guest;
   S.un=ACC.F.onSnapshot(shRef(code),s=>{if(!s.exists()){if(b._guest)toast('This notebook isn’t shared any more.');return}const d=s.data({serverTimestamps:'estimate'});S.man={...(d.m||{})};S.n=d.n||0;S.edit=!!d.edit;
-    if(b._guest)b._edit=S.edit;if(Object.keys(S.man).some(k=>S.h&&S.man[k].h!==S.h[k]))shareSoon(b,400)},()=>{});
+    if(b._guest)b._edit=S.edit;if(Object.keys(S.man).some(k=>S.h&&S.man[k].h!==S.h[k]))shareSoon(b,400);
+    else if(first)shareSoon(b,4000); // your own link, when the app starts: pages that didn't go up last time go up now
+    first=false},()=>{});
 }
 function shareStop(code){const S=SHS[code];if(S&&S.un){S.un();S.un=null}}
 function shareListenAll(){Object.keys(SHS).forEach(c=>{if(!GUEST||c!==GUEST._share)shareStop(c)});if(!ACC.user||!ACC.pro)return;data.filter(b=>b.share&&b.share.code).forEach(shareListen)}
@@ -5536,9 +5560,9 @@ async function shareStart(b){ // make a live link for this notebook
   if(!ACC.user||!ACC.pro){upsell('Live links are part of Pro: anyone can look, no account needed, and it updates as you draw.');return null}
   const F=ACC.F;let code='';for(let t=0;t<5&&!code;t++){const c=shareCode();try{if(!(await F.getDoc(shRef(c))).exists())code=c}catch(e){code=c}}
   const sl=shareSlug(b.title);
-  await F.setDoc(shRef(code),{owner:ACC.user.uid,slug:sl,title:b.title||'Untitled',o:b.o||'p',n:0,edit:false,on:true,m:{},at:F.serverTimestamp(),upd:F.serverTimestamp()});
-  const S=shState(code);S.man={};S.n=0;S.h={};
-  b.share={code,slug:sl,edit:false};persist();await shareSync(b);shareListen(b);return code;
+  const n=b.pages.length;await F.setDoc(shRef(code),{owner:ACC.user.uid,slug:sl,title:b.title||'Untitled',o:b.o||'p',n,edit:false,on:true,m:{},at:F.serverTimestamp(),upd:F.serverTimestamp()});
+  const S=shState(code);S.man={};S.n=n;S.h={};
+  b.share={code,slug:sl,edit:false};persist();shareSync(b);shareListen(b);return code; // the pages go up in the background, the link already works
 }
 async function shareSet(b,edit){await ACC.F.updateDoc(shRef(b.share.code),{edit:!!edit});b.share.edit=!!edit;persist()}
 async function shareEnd(b){ // stop sharing: the link stops working and the shared copy is removed
@@ -5570,7 +5594,7 @@ async function openShared(code){
   await proReady();
   if(!ACC.pro){const v=await shareProDlg(d.title);if(v==='look')goTo(view);else if(v==='pro')upsell('Editing notebooks that others share with you is part of Pro. Looking at them is free.');return}
   toast('Opening “'+(d.title||'Untitled')+'”…');
-  const S=shState(code);S.man={...(d.m||{})};S.n=d.n||0;S.edit=true;S.h={};
+  const S=shState(code);S.man={...(d.m||{})};S.n=S.n0=d.n||0;S.edit=true;S.h={};
   const meta=await shPull(code,'meta'),b=ens({...((meta&&meta.r)||{title:d.title,o:d.o}),id:'share-'+code,pages:[],objs:[],pv:[],bg:[],ps:[],lay:[]});
   b._share=code;b._guest=1;b._edit=true;b._title=d.title;if(meta)S.h.meta=S.man.meta.h;
   for(let i=0;i<S.n;i++){const x=await shPull(code,'p~'+i);if(x){shApplyPage(b,i,x.r);S.h['p~'+i]=S.man['p~'+i].h}else b.pages[i]=b.pages[i]??null}
@@ -5584,7 +5608,8 @@ function initShare(){
     if(g){const S=shState(b._share),u=shareURL(shareSlug(b._title||b.title),b._share);$('#sh-url').value=u;$('#sh-open').href=u;$('#sh-edit').closest('label').classList.add('hidden');$('#sh-stop').classList.add('hidden');$('#sh-note').textContent='Shared with you. Your changes show for everyone with the link.';return}
     $('#sh-edit').closest('label').classList.remove('hidden');$('#sh-stop').classList.remove('hidden');
     if(sh){const u=shareURL(sh.slug||shareSlug(b.title),sh.code);$('#sh-url').value=u;$('#sh-open').href=u;$('#sh-edit').checked=!!sh.edit;
-      $('#sh-note').textContent=sh.edit?'Anyone with the link can look. People with Pro can sign in and draw and write in it too – their changes come to your notebook.':'Anyone with the link can look, no account needed. It changes as you draw.'}};
+      $('#sh-note').textContent=sh.edit?'Anyone with the link can look. People with Pro can sign in and draw and write in it too – their changes come to your notebook.':'Anyone with the link can look, no account needed. It changes as you draw.'}
+    if(!sh)$('#sh-prog').classList.add('hidden');else shareProg(b)};
   $('#bshare').onclick=()=>{$('#shs').textContent='Share “'+(cur.title||'Untitled')+'”.';live();d.classList.remove('hidden')};
   $('#sh-live').onclick=async()=>{const b=cur,t=$('#sh-live');if(!ACC.pro){close();upsell('Live links are part of Pro: anyone can look, no account needed, and it updates as you draw.');return}
     t.disabled=true;$('#sh-live span:not(.soon)').textContent='Making the link…';try{await shareStart(b);live()}catch(e){console.warn(e);toast('Couldn’t make the link. Check your connection.')}

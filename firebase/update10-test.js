@@ -100,7 +100,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   const CV=await b.newContext({viewport:{width:900,height:1000}});await CV.route(u=>u.hostname!=='127.0.0.1',r=>r.abort());
   const V=await CV.newPage();V.errs=[];V.on('pageerror',e=>V.errs.push('V: '+e.message));await V.goto(link+'?emu=127.0.0.1');
   await V.waitForFunction(()=>document.querySelectorAll('figure.pg img').length===3,null,{timeout:20000});
-  ok(await V.evaluate(()=>document.querySelector('#title').textContent==='Trip to Rome'&&/view only/.test(document.querySelector('#state').textContent)&&document.querySelector('#edit').hidden&&document.title==='Trip to Rome – Foliet Sketchbook'),'no account: the link shows “Trip to Rome” – cover and 2 pages, live, view only');
+  ok(await V.evaluate(()=>document.querySelector('#title').textContent==='Trip to Rome'&&/view only/.test(document.querySelector('#state').textContent)&&document.querySelector('#edit').hidden&&getComputedStyle(document.querySelector('#edit')).display==='none'&&document.title==='Trip to Rome – Foliet Sketchbook'),'no account: the link shows “Trip to Rome” – cover and 2 pages, live, view only');
   const src1=await V.evaluate(()=>document.querySelector('figure[data-k="p~1"] img').src);
   // the owner draws: the viewer changes by itself
   await O.evaluate(async()=>{const k=document.createElement('canvas');k.width=900;k.height=1200;const x=k.getContext('2d');x.fillStyle='#2e9aa2';x.fillRect(200,600,500,400);cur.pages[1]=k.toDataURL('image/webp',.9);persist()});
@@ -152,6 +152,42 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(await U.evaluate(()=>!$('#sh-pro').classList.contains('hidden')),'free plan: “Live link” has a Pro badge');
   await U.click('#sh-live');await U.waitForTimeout(300);
   ok(await U.evaluate(()=>!$('#up').classList.contains('hidden')&&/Live links are part of Pro/.test($('#upm').textContent)),'… and opens the Pro window');
+  // ---- a big notebook (40 pages from a PDF, some with writing): the link works at once and the pages go up one by one
+  await O.click('#shno');
+  await O.evaluate(async()=>{const pg=i=>{const k=document.createElement('canvas');k.width=900;k.height=1200;const x=k.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,900,1200);x.fillStyle='#222';x.font='bold 90px sans-serif';x.fillText('Page '+(i+1),80,160);for(let y=260;y<1100;y+=40)x.fillRect(80,y,700-(y*7%300),14);return k.toDataURL('image/webp',.8)};
+    const ink=()=>{const k=document.createElement('canvas');k.width=900;k.height=1200;const x=k.getContext('2d');x.strokeStyle='#d33';x.lineWidth=12;x.beginPath();x.moveTo(100,900);x.lineTo(800,1000);x.stroke();return k.toDataURL('image/png')};
+    const b=mk('Study guide',data.length,'p');b.pages=[];for(let i=0;i<40;i++){b.pages.push(i%13===2?ink():null);b.bg[i]=pg(i)}data.push(b);persist();await saveNow();showBrowse(b)});
+  await O.waitForTimeout(800);
+  await O.evaluate(()=>{window._pt=[];const p0=shareProg;shareProg=function(b){p0(b);const e=$('#sh-prog');if(e&&!e.classList.contains('hidden'))window._pt.push(e.textContent)};
+    const f0=shPush;window._bad=true;shPush=function(c,k,...a){if(k==='p~5'&&window._bad)return Promise.reject(new Error('network'));return f0.call(this,c,k,...a)}}); // page 6 can't go up (a bad connection)
+  const t3=Date.now();await O.click('#bshare');await O.click('#sh-live');await O.waitForSelector('#sh-livep:not(.hidden)',{timeout:30000});const took3=Date.now()-t3;
+  const link3=await O.evaluate(()=>$('#sh-url').value),code3=link3.split('/').pop();
+  ok(took3<4000,'a 40-page notebook: the link is ready at once ('+(took3/1000).toFixed(1)+' s) – the pages go up in the background');
+  const V3=await CV.newPage();V3.errs=[];V3.on('pageerror',e=>V3.errs.push('V3: '+e.message));await V3.goto(link3+'?emu=127.0.0.1');
+  await V3.waitForFunction(()=>document.querySelectorAll('figure.pg').length===41&&document.querySelector('figure[data-k="meta"] img'),null,{timeout:20000});
+  ok(true,'the link shows the cover and a place for all 40 pages');
+  await O.waitForFunction(()=>{const S=SHS[cur.share.code];return S&&!S.prog&&!S.busy},null,{timeout:60000});
+  ok(await O.evaluate(()=>window._pt.some(t=>/Putting the pages online… \d+ of 41/.test(t))),'the Share window shows “Putting the pages online… N of 41” meanwhile');
+  const m3=(await (await admin('shares/'+code3,null,'GET')).json()).fields.m.mapValue.fields;
+  ok(Object.keys(m3).length===40&&!m3['p~5']&&m3['p~39']&&m3['meta'],'one page couldn’t go up (connection): the other 40 are in the link anyway ('+Object.keys(m3).length+' of 41)');
+  await V3.waitForTimeout(1500);
+  const lz=await V3.evaluate(()=>({n:document.querySelectorAll('figure.pg img:not(.ink)').length,wait:document.querySelector('figure[data-k="p~5"]').classList.contains('wait')}));
+  await V3.evaluate(()=>document.querySelector('figure[data-k="p~2"]').scrollIntoView());await V3.waitForFunction(()=>!!document.querySelector('figure[data-k="p~2"] img.ink'),null,{timeout:10000}).catch(()=>{});
+  lz.ink=await V3.evaluate(()=>!!document.querySelector('figure[data-k="p~2"] img.ink'));
+  ok(lz.n>=3&&lz.n<20,'the link loads only the pages near the screen ('+lz.n+' of 41 pictures)');
+  ok(lz.wait&&await V3.evaluate(()=>getComputedStyle(document.querySelector('figure[data-k="p~5"]'),'::after').content.includes('Not online yet')),'the page that didn’t go up says “Not online yet” (not a blank page)');
+  ok(lz.ink,'a PDF page with writing shows the page with the writing on top');
+  const r0=JSON.parse((await (await admin('shares/'+code3+'/r/p~0',null,'GET')).json()).fields.d.stringValue);
+  ok(r0.v===''&&/^data:image\/webp/.test(r0.r.bg),'a PDF page goes up once – no second picture for the link (lighter, faster)');
+  // Olga closes Foliet and opens it again: the page that didn't go up goes up now, by itself
+  await O.reload();await ready(O);
+  await V3.evaluate(()=>document.querySelector('figure[data-k="p~5"]').scrollIntoView());
+  await V3.waitForFunction(()=>!!document.querySelector('figure[data-k="p~5"] img'),null,{timeout:30000}).catch(()=>{});
+  ok(await V3.evaluate(()=>!!document.querySelector('figure[data-k="p~5"] img')),'Foliet opened again: page 6 goes up by itself and appears in the open link');
+  await V3.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));await V3.waitForFunction(()=>!!document.querySelector('figure[data-k="p~39"] img'),null,{timeout:15000}).catch(()=>{});
+  ok(await V3.evaluate(()=>!!document.querySelector('figure[data-k="p~39"] img')),'scrolling down loads the last pages');
+  await O.evaluate(async()=>{await shareEnd(data.find(b=>b.title==='Study guide'))});await V3.close();
+  await O.evaluate(()=>showBrowse(data.find(b=>b.title==='Trip to Rome')));await O.waitForTimeout(300);await O.click('#bshare');await O.waitForSelector('#shd:not(.hidden)');
   // your data (GDPR): the live links are in “Download my data” and go with “Delete my account”
   await O.click('#shno');await O.evaluate(()=>showBrowse(data.find(b=>b.title==='Trip to Rome')));await O.waitForTimeout(300);await O.click('#bshare');await O.click('#sh-live');await O.waitForSelector('#sh-url',{timeout:30000});
   await O.waitForFunction(()=>/\/trip-to-rome\//.test($('#sh-url').value),null,{timeout:30000});const code2=await O.evaluate(()=>$('#sh-url').value.split('/').pop());await O.click('#shno');await O.waitForTimeout(2500);
