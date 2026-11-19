@@ -104,9 +104,20 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
   ok(await A.evaluate(()=>!$('#lsheet').classList.contains('hidden')),'Layers opens from the top');
   await A.click('#lsx');
   await A.click('#eye');await A.waitForTimeout(200);
-  ok(await A.evaluate(()=>!$('#tools').offsetParent&&!!$('#plus').offsetParent&&!!$('#obar').offsetParent&&/Tap an object|Nothing here/.test($('#ohint').textContent)),'view and arrange: the drawing tools step aside, + stays, and a hint shows');
-  await A.click('#eye');await A.waitForTimeout(200);
-  ok(await A.evaluate(()=>!!$('#tools').offsetParent),'… and come back');
+  ok(await A.evaluate(()=>!!$('#tools').offsetParent&&!$('#tools [aria-pressed="true"]')&&!!$('#plus').offsetParent&&!!$('#o-done').offsetParent&&/Tap an object|Nothing here/.test($('#ohint').textContent)),'view and arrange: the tools stay on screen (none in use), with + and Done, and a hint');
+  await A.click('#o-done');await A.waitForTimeout(200);
+  ok(await A.evaluate(()=>!view&&!!$('#tools [aria-pressed="true"]')&&!$('#o-done').offsetParent),'… Done goes back to drawing');
+  // after adding a sticker (or a label, a photo…) the app arranges it: the tools are still there, and a tap on one goes back to drawing
+  await A.click('#plus');await A.click('#stabs [data-p="stick"]');await A.waitForTimeout(300);await A.click('#spane .eg.st button');await A.waitForTimeout(700);
+  ok(await A.evaluate(()=>view&&!!$('#tools').offsetParent&&!!$('#plus').offsetParent),'after adding a sticker: it can be moved, and the tools are still on screen');
+  await A.click('#tools [data-g="draw"]');await A.waitForTimeout(200);m=await menu(A);
+  ok(await A.evaluate(()=>!view&&DRAW.includes(tool)&&$('#tools [data-g="draw"]').getAttribute('aria-pressed')==='true')&&m.open&&/Pen|Pencil|Brush|Marker/.test(m.title),'… tap Draw: back to drawing, with its menu');
+  await A.evaluate(()=>closeTS());
+  await A.click('#plus');await A.click('#stabs [data-p="label"]');await A.waitForSelector('#spane [data-l]');await A.click('#spane [data-l]');await A.waitForTimeout(900);
+  ok(await A.evaluate(()=>view&&!!$('#tools').offsetParent&&!!$('#o-done').offsetParent),'after adding a label: the tools and Done are on screen');
+  await A.click('#tools [data-t="text"]');await A.waitForTimeout(200);
+  ok(await A.evaluate(()=>!view&&tool==='text'&&!$('#tsheet').classList.contains('hidden')),'… tap Text: back to writing, with its menu');
+  await A.evaluate(()=>{closeTS();selectTool('pen')});
   ok(!A.errs.length,'computer: no errors '+A.errs.join(' | '));
 
   // ---------- a tablet and a phone: everything fits

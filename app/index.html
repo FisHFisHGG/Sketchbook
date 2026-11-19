@@ -225,7 +225,6 @@ img.ink2{position:absolute;left:0;top:0;width:100%;height:100%;display:block;poi
 #paper{container-type:inline-size}
 #ol{position:absolute;inset:0;pointer-events:none}
 #ed.vm #ol,#ed.tm #ol{pointer-events:auto}
-#ed.vm #tools,#ed.vm #r2{display:none}
 #obar{display:none}
 #ed.vm #obar,#ed.tm #obar{display:flex}
 #ed.vm #undo,#ed.vm #redo{opacity:.35;pointer-events:none}
@@ -592,10 +591,11 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .dsep{width:1px;height:28px;background:var(--line);margin:0 4px;flex:none}
 @media (max-width:440px){.dock{padding:4px}.dock .ib.i,.ed .dock .ib.i{width:40px;height:40px}.dock .ic{width:20px;height:20px}.dsep{margin:0 2px}}
 @media (max-width:370px){.dock .ib.i,.ed .dock .ib.i{width:36px;height:36px}.dsep{display:none}}
-#ed.vm #dock #tools,#ed.vm #dock .dsep{display:none} /* view and arrange: the drawing tools step aside, + stays */
+#o-done{border-radius:999px;font-weight:600;padding:6px 14px} /* view and arrange: the tools stay; Done (or any tool) goes back to drawing */
 /* the rows that show up while you write, select or arrange: floating pills too */
 #ed .bar.bot.ed>#tbar,#ed .bar.bot.ed>#sbar,#ed .bar.bot.ed>#obar{width:auto;align-self:center;max-width:100%;padding:5px 8px;border-radius:22px;background:var(--fb);border:1px solid var(--fbl);box-shadow:0 10px 26px -12px var(--sh);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 #ed #obar{flex-wrap:wrap;justify-content:center}
+#ed .bar.bot.ed>#tbar,#ed .bar.bot.ed>#sbar,#ed .bar.bot.ed>#obar{order:-1} /* above the tools: the tools always stay in the same place, at the bottom */
 #t-col .csw{display:block;width:22px;height:22px;border-radius:50%;background:var(--c,#222);box-shadow:inset 0 0 0 2px rgba(255,255,255,.6),0 0 0 1px var(--line)}
 /* menus open upwards above the tools, as floating cards (in the middle; a tool's menu over its tool) */
 #ed #tsheet,#ed #sheet,#ed #psheet,#ed #lsheet,#ed #csheet{top:auto;bottom:calc(100% + 8px);left:50%;right:auto;transform:translateX(-50%);width:min(560px,calc(100vw - 16px));max-height:min(66vh,calc(var(--vvh,100dvh) - 150px));border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 60px -16px rgba(0,0,0,.55);animation:popup .16s ease-out}
@@ -714,6 +714,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       <button class="ib i" id="o-dup" aria-label="Duplicate" title="Duplicate"><svg class="ic" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg></button>
       <button class="ib i" id="o-front" aria-label="Bring to front" title="Bring to front"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="9" width="11" height="11" rx="2"/><rect x="9" y="4" width="11" height="11" rx="2" fill="currentColor" opacity=".25"/></svg></button>
       <button class="ib i" id="o-del" aria-label="Delete" title="Delete"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+      <button class="ib conf2" id="o-done" title="Back to drawing">Done</button>
     </div>
     <div id="psheet" class="hidden" role="dialog" aria-label="Page style">
       <div class="sh-top"><strong>Page style</strong><button class="ib i" id="psx" aria-label="Close">✕</button></div>
@@ -1673,12 +1674,13 @@ function syncBar(){
   const has=!!selO,note=has&&selO._o.k==='note';
   const hint=$('#ohint');hint.classList.toggle('hidden',has||!view);$('#obar').classList.toggle('hidden',!view&&!has);
   hint.textContent=objList().length?'Tap an object to select it. Drag to move, corner to resize, top dot to rotate.':'Nothing here yet. Add photos, stickers or notes with +';
-  ['o-dup','o-front','o-del'].forEach(i=>$('#'+i).classList.toggle('hidden',!has));
+  ['o-dup','o-front','o-del'].forEach(i=>$('#'+i).classList.toggle('hidden',!has));$('#o-done').classList.toggle('hidden',!view);
   $('#o-edit').classList.toggle('hidden',!note&&!(has&&selO._o.lb));$('#o-cols').classList.toggle('hidden',!note||selO._o.c==='transparent');syncText();
 }
 function setView(v){
   commitText();view=v;
   $('#ed').classList.toggle('vm',v);$('#eye').setAttribute('aria-pressed',v);
+  document.querySelectorAll('#tools button').forEach(x=>x.setAttribute('aria-pressed',!v&&x.dataset.t===tool)); // arranging: no tool is in use
   if(!v)selectObj(null);
   closeSheet();closeTS();syncText();syncBar();
 }
@@ -2050,6 +2052,7 @@ function initObar(){
   $('#o-del').onclick=()=>{if(!selO)return;const l=objList();l.splice(l.indexOf(selO._o),1);renderObjs();savePage()};
   $('#o-dup').onclick=()=>{if(!selO)return;const n={...selO._o,x:selO._o.x+30,y:selO._o.y+30};objList().push(n);renderObjs();selectObj(elOf(n));savePage()};
   $('#o-front').onclick=()=>{if(!selO)return;const o=selO._o,l=objList();l.splice(l.indexOf(o),1);l.push(o);renderObjs();selectObj(elOf(o));savePage()};
+  $('#o-done').onclick=()=>setView(false);
   $('#o-edit').onclick=()=>{if(!selO)return;if(selO._o.lb)editLabel(selO);else if(selO._o.k==='note')editNote(selO)};
   NC.forEach(c=>{const b=document.createElement('button');b.className='sw';b.style.background=c;b.setAttribute('aria-label','Note color');b.onclick=()=>{if(selO&&selO._o.k==='note'){selO._o.c=c;selO.style.background=c;savePage()}};$('#o-cols').append(b)});
   document.addEventListener('keydown',e=>{
@@ -2114,6 +2117,7 @@ function szPrev(){const d=$('#szp');d.style.width=d.style.height=Math.min(26,4+s
 // tap a tool: it's picked and its menu opens above it (tap it again to close the menu)
 document.querySelectorAll('#tools button').forEach(b=>b.onclick=()=>{
   const t=b.dataset.t,open=!$('#tsheet').classList.contains('hidden')&&TS.a===b&&!TS.m;
+  if(view){setView(false);selectTool(t);openTS(b);return} // arranging objects: a tool takes you back to drawing
   if(tool===t&&open){closeTS();return}
   if(tool!==t)selectTool(t);
   openTS(b);
