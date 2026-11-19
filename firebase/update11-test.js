@@ -104,7 +104,7 @@ const N=120,AT=40; // pages in the big notebook; it was left open at spread 40 (
   // ---- device B, new: pages still on their way show "Loading page…", then appear
   await setPro(uid,false);await A.waitForFunction(()=>!ACC.pro,null,{timeout:15000});
   const B=await dev('B');await signIn(B,'pia11@example.com',false);
-  await B.evaluate(()=>{const p0=pullRec;pullRec=async k=>{if(k.startsWith('p:'))await new Promise(r=>setTimeout(r,90));return p0(k)}}); // a slow connection
+  await B.evaluate(()=>{const p0=pullRec;pullRec=async k=>{if(k.startsWith('p:'))await new Promise(r=>setTimeout(r,1200));return p0(k)}}); // a slow connection (pages come 12 at a time)
   await setPro(uid,true);await B.waitForFunction(()=>ACC.pro,null,{timeout:15000});
   await B.waitForFunction(()=>data.some(x=>x.title==='Big book'),null,{timeout:30000});
   await B.evaluate(()=>{const bk=data.find(x=>x.title==='Big book');showStore(false);showBrowse(bk)});
