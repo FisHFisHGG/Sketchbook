@@ -11,6 +11,8 @@
 //   npx firebase emulators:exec --only auth,firestore --project sketchbook-b1de1 "node ui-test.js"
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
 const SITE=path.join(__dirname,'..');
+const DB='http://127.0.0.1:8080/v1/projects/sketchbook-b1de1/databases/(default)/documents';
+const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorization:'Bearer owner','Content-Type':'application/json'},body:body&&JSON.stringify(body)});
 const mime={'.html':'text/html','.js':'text/javascript','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json','.woff2':'font/woff2','.json':'application/json'};
 const answerSurvey=async(p,v='youtube')=>{try{await p.waitForSelector('#srv',{timeout:4000})}catch(e){return false}await p.click('#srv .srv-opt[data-v="'+v+'"]');await p.click('#srv .btn');await p.waitForSelector('#srv',{state:'detached'});return true};
 let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
@@ -178,6 +180,38 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
   await A.evaluate(()=>{tourShow(0)});await A.waitForTimeout(400);
   ok(await A.evaluate(()=>{const c=getComputedStyle(document.querySelector('.tcard .trow'));return c.borderTopWidth==='0px'&&c.paddingTop==='0px'}),'the guided tour: Skip and Next without a frame around them');
   await A.evaluate(()=>tourClose());
+
+  // ---- the admin panel's assistant: compares with before, says what to do next, in English or Romanian
+  {
+    const uid=await A.evaluate(()=>ACC.user.uid),N=Date.now(),d=new Date(N),ms=+new Date(d.getFullYear(),d.getMonth(),1),pms=+new Date(d.getFullYear(),d.getMonth()-1,1);
+    const off=Math.max(0,N-ms-3600e3),tNow=ms+off,tPrev=pms+off; // a moment this month, and the same moment last month
+    const ts=t=>({timestampValue:new Date(t).toISOString()}),ym=t=>{const x=new Date(t);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')};
+    await admin('admins/'+uid,{fields:{note:{stringValue:'test'}}});
+    await admin('config/costs',{fields:{items:{arrayValue:{values:[{mapValue:{fields:{n:{stringValue:'Firebase'},c:{integerValue:'2100'},per:{stringValue:'month'},at:{stringValue:ym(pms-40*864e5)}}}}]}}}});
+    for(let i=0;i<12;i++)await admin('profiles/pn'+i,{fields:{email:{stringValue:'n'+i+'@x.com'},created:ts(tNow-i*1000),seen:ts(tNow),os:{stringValue:i<9?'android':'windows'}}});
+    for(let i=0;i<5;i++)await admin('profiles/pp'+i,{fields:{email:{stringValue:'p'+i+'@x.com'},created:ts(tPrev-i*1000),seen:ts(tPrev),os:{stringValue:'ios'}}});
+    for(let i=0;i<6;i++)await admin('survey/pn'+i,{fields:{src:{stringValue:i<4?'youtube':'instagram'},other:{stringValue:''},at:ts(tNow)}});
+    await admin('feedback/f1',{fields:{uid:{stringValue:'pn1'},email:{stringValue:'n1@x.com'},type:{stringValue:'problem'},text:{stringValue:'It crashed'},reply:{booleanValue:false},at:ts(tNow)}});
+    await admin('customers/'+uid+'/payments/pa1',{fields:{status:{stringValue:'succeeded'},amount:{integerValue:'599'},amount_received:{integerValue:'599'},currency:{stringValue:'eur'},created:{integerValue:String(Math.floor(tNow/1000))},invoice:{stringValue:'in_a'}}});
+    await admin('customers/'+uid+'/payments/pa2',{fields:{status:{stringValue:'succeeded'},amount:{integerValue:'599'},amount_received:{integerValue:'599'},currency:{stringValue:'eur'},created:{integerValue:String(Math.floor(tNow/1000)+60)},invoice:{stringValue:'in_b'}}});
+    await admin('customers/'+uid+'/payments/pa0',{fields:{status:{stringValue:'succeeded'},amount:{integerValue:'599'},amount_received:{integerValue:'599'},currency:{stringValue:'eur'},created:{integerValue:String(Math.floor(tPrev/1000))},invoice:{stringValue:'in_c'}}});
+    await A.evaluate(()=>{try{localStorage.removeItem('sb-admlang')}catch(e){}ADM.lang='en';checkAdmin(ACC.user)});await A.waitForTimeout(600);
+    await A.evaluate(()=>openAdmin());await A.waitForSelector('#adm-body .adv',{timeout:20000});
+    const en=await A.evaluate(()=>{const b=$('.asec[data-s="ov"] .adv');return {t:b.textContent,secs:[...b.querySelectorAll('.adv-sec>b')].map(x=>x.textContent),up:[...b.querySelectorAll('.adv-ch.up')].length,todo:b.querySelectorAll('.adv-do li').length,top:b.querySelector('.adv-top').textContent}});
+    ok(/Foliet assistant/.test(en.t)&&['Money','People','Pro','Where people found','Feedback','Devices','What I’d do next'].every(k=>en.secs.some(x=>x.includes(k))),'admin assistant: money, people, Pro, where people found Foliet, feedback, devices and what to do next ('+en.secs.length+' parts)');
+    ok(/Income: €11\.98 \(this month so far, against the same days of [A-Z][a-z]{2}: €5\.99\)/.test(en.t)&&/1[23] new accounts/.test(en.t)&&en.up>=2&&/Good news: income is up 100%/.test(en.top),'… it compares with the same days of last month: income doubled, 12 new accounts against 5 (▲)');
+    ok(/Your running costs are about €21\.00 a month/.test(en.t)&&/Most came from YouTube \(\d+% of [67] answers\)/.test(en.t)&&/1 open message, 1 about a problem/.test(en.t)&&/\d+% use a phone or tablet/.test(en.t)&&/Profit after fees, refunds and costs: −€/.test(en.t),'… running costs, the top source (YouTube), open problems, phones, and a loss shown as −€');
+    ok(en.todo>=2&&/problem report/.test(en.t)&&/Payments are off/.test(en.t),'… and what to do next: answer the problem report, turn payments on…');
+    if(process.env.SHOT)await (await A.$('.asec[data-s="ov"] .adv')).screenshot({path:process.env.SHOT+'/adv-en.png'});
+    await A.click('.asec[data-s="ov"] .adv-l button:nth-child(2)');await A.waitForTimeout(200);
+    if(process.env.SHOT)await (await A.$('.asec[data-s="ov"] .adv')).screenshot({path:process.env.SHOT+'/adv-ro.png'});
+    const ro=await A.evaluate(()=>{const b=$('.asec[data-s="ov"] .adv');return {t:b.textContent,lang:localStorage.getItem('sb-admlang'),rest:$('#adm-body').textContent}});
+    ok(/Asistentul Foliet/.test(ro.t)&&/Ce aș face mai departe/.test(ro.t)&&/Venit: €11\.98/.test(ro.t)&&/1[23] conturi noi/.test(ro.t)&&/Vești bune: venitul a crescut cu 100%/.test(ro.t)&&ro.lang==='ro','RO: the assistant speaks Romanian (and remembers it)');
+    ok(/Money & profit/.test(ro.rest)&&/New sign-ups/.test(ro.rest),'… the rest of the admin panel stays in English');
+    await A.evaluate(()=>{ADM.tab='money';admShow()});await A.waitForTimeout(200);
+    ok(await A.evaluate(()=>/Asistentul Foliet/.test($('.asec[data-s="money"] .adv').textContent)&&!$('.asec[data-s="money"] .adv').textContent.includes('Oameni')),'Money & profit: the money part of the assistant');
+    await A.evaluate(()=>{localStorage.removeItem('sb-admlang');ADM.lang='en';$('#admin').classList.add('hidden')});
+  }
   ok(!A.errs.length,'computer: no errors '+A.errs.join(' | '));
 
   // ---------- a tablet and a phone: everything fits
