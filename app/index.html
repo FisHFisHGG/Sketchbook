@@ -556,6 +556,8 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .fgrp{display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:999px;flex:none}
 #bv>.bar .fgrp .ib,#ed>.bar .fgrp .ib{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;min-height:36px}
 #bv>.bar .fgrp .ib.i,#ed>.bar .fgrp .ib.i{width:38px;height:38px;min-width:38px}
+#bv>.bar .fgrp .ib[aria-pressed="true"],#ed>.bar .fgrp .ib[aria-pressed="true"]{background:var(--ink);color:var(--bar)} /* a pressed button in a group (Zoom on) stays visible */
+#badd{display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .pgnav #bpg{padding:0 6px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
 .pgnav .ib{width:38px;padding:0!important;font-size:1.15em}
 #btitle{border-radius:999px;padding:8px 16px;max-width:300px;min-height:40px;font-weight:600}
