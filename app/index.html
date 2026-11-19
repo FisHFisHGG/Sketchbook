@@ -869,7 +869,7 @@ async function saveNow(){
   if(!LIBST.ready)return;
   try{
     if(usingLS)throw new Error('no idb');
-    await flushSave();note('');svMsg('saved');askPersist();syncSoon(3000);
+    await flushSave();note('');svMsg('saved');askPersist();syncSoon(1500); // a change goes to the cloud a moment later
   }catch(e){
     if(!usingLS&&!(e&&/quota/i.test(e.name+' '+e.message))){try{dbp=null;await flushSave();note('');svMsg('saved');return}catch(e3){e=e3}}
     if(!usingLS&&e&&/quota/i.test(e.name+' '+e.message)){note('Browser storage is full. Back up your notebooks in Settings, then delete some pages.',1);svMsg('err');return}
@@ -3173,6 +3173,7 @@ async function bootCloud(since){
   while(BOOT.on&&Date.now()-t1<10000){
     if(!navigator.onLine||ACC.err==='offline'){bootStep('cloud','warn','Can’t reach the cloud');bootOffline();return}
     if(ACC.last>=since&&!ACC.busy){bootStep('cloud','ok','Synced with the cloud');bootDone();return}
+    if(ACC.listAt>=since){bootStep('cloud','ok','Your notebooks are here – the pages keep syncing');bootDone();return} // no waiting for every page: they come in the background
     await sleep(150);
   }
   if(!BOOT.on)return;
@@ -3263,16 +3264,31 @@ const isStarter=b=>(b.welcome&&b.u===b.wu)||b.pages.length===1&&!b.pages[0]&&!b.
 const openBookId=()=>cur&&$('#shelf').classList.contains('hidden')?String(cur.id):null;
 
 /* ----- cloud reads and writes ----- */
-async function pushRec(k,v){
-  const F=ACC.F,db=ACC.db,uid=ACC.user.uid,c=k2c(k),old=ACC.man[c],b=F.writeBatch(db),udoc=F.doc(db,'users',uid);
-  if(v===undefined){
-    for(let i=0;i<(old?old.n:1);i++)b.delete(F.doc(db,'users',uid,'r',chunkId(c,i)));
-    b.set(udoc,{m:{[c]:F.deleteField()},at:F.serverTimestamp()},{merge:true});await b.commit();delete ACC.man[c];return null;
+// run fn over the items, n at a time (the cloud answers several requests at once: much faster than one after another)
+async function pool(items,n,fn){let i=0;const run=async()=>{while(i<items.length)await fn(items[i++])};await Promise.all(Array.from({length:Math.min(n,items.length)},run))}
+/* Send many records: several records go in one write (their chunks + one change to the cloud's list), and up to 3 writes
+   go at the same time. Each write stays all-or-nothing, like before. At most 7 chunks per write: the rules check Pro for
+   each chunk, and a write may make at most 20 such checks. onDone(k, h) after each record (h = null: deleted). */
+async function pushMany(items,onDone){
+  const F=ACC.F,db=ACC.db,uid=ACC.user.uid,udoc=F.doc(db,'users',uid),groups=[];let g=null;
+  for(const it of items){
+    const c=k2c(it.k),old=ACC.man[c];let r;
+    if(it.v===undefined)r={k:it.k,c,old,del:1,w:0};
+    else{const j=canon(it.v),h=cyrb(j),n=Math.max(1,Math.ceil(j.length/CH));r={k:it.k,c,old,j,h,n,w:n}}
+    if(!g||(g.w+r.w>7&&g.recs.length)||g.recs.length>=60){g={w:0,recs:[]};groups.push(g)}
+    g.w+=r.w;g.recs.push(r);
   }
-  const j=canon(v),h=cyrb(j),n=Math.max(1,Math.ceil(j.length/CH));
-  for(let i=0;i<n;i++)b.set(F.doc(db,'users',uid,'r',chunkId(c,i)),{h,n,i,d:j.slice(i*CH,(i+1)*CH)});
-  for(let i=n;i<(old?old.n:0);i++)b.delete(F.doc(db,'users',uid,'r',chunkId(c,i)));
-  b.set(udoc,{m:{[c]:{h,n}},v:2,at:F.serverTimestamp()},{merge:true});await b.commit();ACC.man[c]={h,n};return h; // at: the cloud refuses changes from old versions of the app
+  await pool(groups,3,async g=>{
+    const b=F.writeBatch(db),m={};
+    for(const r of g.recs){
+      if(r.del){for(let i=0;i<(r.old?r.old.n:1);i++)b.delete(F.doc(db,'users',uid,'r',chunkId(r.c,i)));m[r.c]=F.deleteField();continue}
+      for(let i=0;i<r.n;i++)b.set(F.doc(db,'users',uid,'r',chunkId(r.c,i)),{h:r.h,n:r.n,i,d:r.j.slice(i*CH,(i+1)*CH)});
+      for(let i=r.n;i<(r.old?r.old.n:0);i++)b.delete(F.doc(db,'users',uid,'r',chunkId(r.c,i)));
+      m[r.c]={h:r.h,n:r.n};
+    }
+    b.set(udoc,{m,v:2,at:F.serverTimestamp()},{merge:true});await b.commit(); // at: the cloud refuses changes from old versions of the app
+    for(const r of g.recs){if(r.del)delete ACC.man[r.c];else ACC.man[r.c]={h:r.h,n:r.n};if(onDone)onDone(r.k,r.del?null:r.h)}
+  });
 }
 async function pullRec(k){
   const F=ACC.F,db=ACC.db,uid=ACC.user.uid,c=k2c(k),r=ACC.man[c];if(!r)return null;
@@ -3357,13 +3373,14 @@ async function syncOnce(){
   PEND.clear(); // pages on their way: an open notebook shows "Loading page…" for them, not a blank page
   for(const k of pull)if(k.startsWith('p:')&&(L.get(k)===undefined||emptyPg(L.get(k)))){const j=k.lastIndexOf(':'),id=k.slice(2,j);if(!PEND.has(id))PEND.set(id,new Set());PEND.get(id).add(+k.slice(j+1))}
   if(PEND.size)bvSoon();
-  for(const k of pull){
-    if(keepIds.has(nbOf(k))){tick(k);continue} // not confirmed as deleted: stays as it is
-    if(k.startsWith('p:')&&editingRec(k))continue; // the page open for drawing: next round
-    const v=await pullRec(k);if(k.startsWith('p:'))pendDone(k);if(v===undefined){tick(k);continue}
+  const pullOne=async k=>{
+    if(keepIds.has(nbOf(k))){tick(k);return} // not confirmed as deleted: stays as it is
+    if(k.startsWith('p:')&&editingRec(k))return; // the page open for drawing: next round
+    const v=await pullRec(k);if(k.startsWith('p:'))pendDone(k);if(v===undefined){tick(k);return}
     applyRec(k,v);changedHere=true;tick(k);
     const r=man[k2c(k)];if(r)base[k]=r.h;else delete base[k];
-  }
+  };
+  await pool(pull.filter(k=>k[0]==='b'),8,pullOne); // the notebooks (small) first, 8 at a time
   // 1b) your categories: both copies are merged (the newest change of each category wins); a missing cloud copy is sent again
   if(shk&&shk.rh!==null){const remote=await pullRec('shelf');if(remote&&Array.isArray(remote.cats)){const mg=shelfMerge(SHELF,remote);if(canon(mg)!==canon(SHELF)){SHELF=mg;changedHere=true}}}
   // 2) the notebook order (merged when both sides changed it)
@@ -3377,17 +3394,19 @@ async function syncOnce(){
     if(order){applyOrder(order);changedHere=true}
   }
   if(changedHere){await flushSave();if(!$('#shelf').classList.contains('hidden'))renderShelf()}
-  // 3) send this device's changes (fresh copy of the records, in case something changed meanwhile)
-  const L2=localRecs();
-  const todo=[...push.filter(k=>k!=='idx'),...(shk?['shelf']:[]),'idx'];
-  for(const k of todo){
-    const lv=L2.get(k),r=ACC.man[k2c(k)];
-    if(k==='idx'||k==='shelf'){const h=recHash(k,lv);if(r&&r.h===h){base[k]=h;if(k==='idx')st.idx=lv;continue}}
-    const h=await pushRec(k,lv);tick(k);
-    if(h===null)delete base[k];else base[k]=h;
-    if(k==='idx')st.idx=lv;
-  }
-  try{await idbSet('sync:'+ACC.user.uid,{h:base,idx:st.idx||null})}catch(e){}
+  ACC.listAt=Date.now(); // the list of notebooks is complete here (the start window waits only for this); the pages keep coming
+  // 1c) the pages, 12 at a time; what came is saved every few seconds (closing the app in the middle loses nothing)
+  const saveBase=()=>idbSet('sync:'+ACC.user.uid,{h:base,idx:st.idx||null}).catch(()=>{});
+  let cp=Date.now();
+  await pool(pull.filter(k=>k[0]!=='b'),12,async k=>{await pullOne(k);if(Date.now()-cp>4000){cp=Date.now();await flushSave();await saveBase()}});
+  if(changedHere){await flushSave();if(!$('#shelf').classList.contains('hidden'))renderShelf()}
+  // 3) send this device's changes (fresh copy of the records, in case something changed meanwhile): several records per
+  // write, 3 writes at a time; the order of notebooks last
+  const L2=localRecs(),done=(k,h)=>{tick(k);if(h===null)delete base[k];else base[k]=h;if(k==='idx')st.idx=L2.get(k)};
+  const last=[...(shk?['shelf']:[]),'idx'].filter(k=>{const lv=L2.get(k),r=ACC.man[k2c(k)],h=recHash(k,lv);if(r&&r.h===h){base[k]=h;if(k==='idx')st.idx=lv;return false}return true});
+  await pushMany(push.filter(k=>k!=='idx'&&k!=='shelf').map(k=>({k,v:L2.get(k)})),done);
+  if(last.length)await pushMany(last.map(k=>({k,v:L2.get(k)})),done);
+  await saveBase();
   ACC.last=Date.now();ACC.err='';
 }
 /* The sync pill at the top: a small spinner and "Syncing 1 of 3 notebooks" while notebooks are being sent or brought
@@ -3428,6 +3447,7 @@ async function syncStart(){
 function syncStop(){if(ACC.unMan){ACC.unMan();ACC.unMan=null}clearTimeout(ACC.timer);ACC.man=null;ACC.state=null}
 window.addEventListener('online',()=>{syncSoon(500);if(ACC.user&&ACC.F)checkSurvey(ACC.user)});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncSoon(800);else if(ACC.pro)syncRun()});
+addEventListener('pagehide',()=>{if(ACC.pro)syncRun()}); // closing the app: what's left goes up right away, while the browser still lets it
 
 /* ----- account window ----- */
 const GICON='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
@@ -5580,6 +5600,7 @@ function shApplyPage(b,i,r){
   while(b.pages.length<=i){b.pages.push(null)}
   b.pages[i]=r.pg??null;[['objs','o'],['pv','pv'],['bg','bg'],['ps','ps'],['lay','lay']].forEach(([a,f])=>{if(r[f]!=null)b[a][i]=r[f];else delete b[a][i]});
 }
+let picQ=Promise.resolve();const picLock=fn=>{const p=picQ.then(fn);picQ=p.catch(()=>{});return p}; // pictures are drawn one at a time (they share the drawing size)
 async function sharePic(b,i,r){ // a picture of the cover (i<0) or of page i, for people who only look
   if(i>=0&&r&&(r.pv||(r.bg&&!styled(r.ps))))return ''; // the page is already a picture (its composite, or a PDF page + writing): 404.html shows it as it is
   const W0=W,H0=H,c0=cur,mine=b===cur;if(!mine){W=b.o==='l'?1200:900;H=b.o==='l'?900:1200}
@@ -5645,19 +5666,23 @@ async function shareOnce(b,code,S){
   if(guest&&drop.length){const n=Math.min(...drop.map(k=>+k.slice(2)));PK.forEach(a=>{if(b[a].length>n)b[a].length=n});drop.forEach(k=>delete S.h[k]);changed=true}
   if(changed){if(!guest)persist();if(b===cur&&!$('#bv').classList.contains('hidden'))renderBrowse();else if(!cur&&!$('#shelf').classList.contains('hidden'))renderShelf()}
   // pages already up but not yet in the link's list stay in S.pend until the list is written (also after an error)
-  const upd=S.pend||(S.pend={});let last=Date.now(),fail=0,stop=null;
-  const flush=async()=>{const n=b.pages.length;if(!Object.keys(upd).length&&n===S.n)return;const u={...upd};
+  const upd=S.pend||(S.pend={});let last=Date.now(),fail=0,stop=null,fl=null;
+  const flush=async()=>{if(fl)return fl;fl=flush1();try{await fl}finally{fl=null}}; // one list write at a time
+  const flush1=async()=>{const n=b.pages.length;if(!Object.keys(upd).length&&n===S.n)return;const u={...upd};
     await F.setDoc(shRef(code),{m:u,n,upd:F.serverTimestamp(),...(guest?{}:{title:b.title||'Untitled'})},{merge:true});
     Object.keys(u).forEach(k=>{if(upd[k]===u[k])delete upd[k]});S.n=n;last=Date.now();shareProg(b);
     try{await idbSet('share:'+code+':'+ACC.user.uid,S.h)}catch(e){}};
   S.prog={done:0,total:push.length};shareProg(b);
   try{
-  for(const k of push){const i=k==='meta'?-1:+k.slice(2),raw=k==='meta'?shareMeta(b):pageOf(b,i);
-    try{const h=await shPush(code,k,raw,await sharePic(b,i,raw));S.h[k]=h;upd[k]={h,n:S.man[k].n}}
-    catch(e){fail++;console.warn('share',k,e);if(e&&e.code==='permission-denied'){stop=e;break}}
+  // the cover first; then the pages go up 4 at a time (their pictures are made one at a time)
+  const one=async k=>{if(stop)return;const i=k==='meta'?-1:+k.slice(2),raw=k==='meta'?shareMeta(b):pageOf(b,i);
+    try{const pic=await picLock(()=>sharePic(b,i,raw)),h=await shPush(code,k,raw,pic);S.h[k]=h;upd[k]={h,n:S.man[k].n}}
+    catch(e){fail++;console.warn('share',k,e);if(e&&e.code==='permission-denied')stop=e}
     S.prog.done++;shareProg(b);
     if(k==='meta'||Date.now()-last>1500)await flush(); // the cover first, then every 1.5 s: the link shows the pages as they arrive
-  }
+  };
+  if(push.includes('meta'))await one('meta');
+  await pool(push.filter(k=>k!=='meta'),4,one);
   if(!guest&&!stop)for(const k of drop){const r=S.man[k];if(r){const bt=F.writeBatch(ACC.db);for(let i=0;i<(r.n||1);i++)bt.delete(shRef(code,'r',chunkId(k,i)));await bt.commit()}delete S.man[k];delete S.h[k];upd[k]=F.deleteField()}
   await flush();
   }finally{S.prog=null;shareProg(b)}
