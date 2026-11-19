@@ -27,10 +27,10 @@
  {"@type":"WebApplication","name":"Foliet Sketchbook","alternateName":"Foliet","url":"https://fishfishgg.github.io/Sketchbook/app/","image":"https://fishfishgg.github.io/Sketchbook/og.png",
   "description":"A digital sketchbook and notebook in your browser: draw, write and plan on paper-like pages you turn by hand.",
   "applicationCategory":"DesignApplication","operatingSystem":"Any (web browser), Android, iOS, Windows, macOS","browserRequirements":"Requires a modern browser",
-  "featureList":["Pen, pencil, brush, marker, highlighter, shapes and fill","Text in 8 fonts, stickers and sticky notes","Blank, lined, grid and dot pages","Lock notebooks with a PIN or password","Fingerprint unlock on Android","Works offline","Light and dark theme","PDF import and export (Pro)","Cloud sync across devices (Pro)"],
+  "featureList":["Pen, pencil, brush, marker, highlighter, shapes and fill","Text in 8 fonts, stickers and sticky notes","Blank, lined, grid and dot pages","Lock notebooks with a PIN or password","Fingerprint unlock on Android","Works offline","Light and dark theme","PDF import and export (Pro)","Live share links (Pro)","Cloud sync across devices (Pro)"],
   "offers":[{"@type":"Offer","name":"Free","price":"0","priceCurrency":"EUR"},
-            {"@type":"Offer","name":"Pro monthly","price":"3.99","priceCurrency":"EUR"},
-            {"@type":"Offer","name":"Pro yearly","price":"29.99","priceCurrency":"EUR"}]}
+            {"@type":"Offer","name":"Pro monthly","price":"5.99","priceCurrency":"EUR"},
+            {"@type":"Offer","name":"Pro yearly","price":"44.99","priceCurrency":"EUR"}]}
 ]}
 </script>
 <meta name="theme-color" content="#e4e9e6">
@@ -171,10 +171,6 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .pc u:nth-child(1){background:#fff}.pc u:nth-child(2){background:#faf1d7}.pc u:nth-child(3){background:#e6eef7}.pc u:nth-child(4){background:#eaf3e7}.pc u:nth-child(5){background:#000}
 .pc em{margin-left:auto;font-style:normal;opacity:.65;font-size:.85em}
 
-.mi{display:inline-block;width:12px;height:15px;margin-right:6px;vertical-align:-2px;border-radius:2px;background:#fbfbf6;background-size:4px 4px}
-.mi.m1{background-image:linear-gradient(transparent 3px,rgba(60,90,140,.6) 0);background-size:100% 4px}
-.mi.m2{background-image:linear-gradient(rgba(60,90,140,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(60,90,140,.55) 1px,transparent 1px)}
-.mi.m3{background-image:radial-gradient(circle,rgba(60,90,140,.8) .8px,transparent 1.2px)}
 .sub{color:var(--muted);margin:-18px 0 30px;max-width:46ch}
 .tour{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:start}
 .st{min-height:78vh;display:flex;flex-direction:column;justify-content:center;opacity:.28;transition:opacity .4s}
@@ -195,8 +191,6 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .dpr>*{position:absolute}
 .pat{inset:0;border-radius:inherit}
 .pl-lines{background:linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.3) 0) 0 0/100% calc(var(--pw)/7)}
-.pl-grid{background:linear-gradient(rgba(60,90,140,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(60,90,140,.3) 1px,transparent 1px);background-size:calc(var(--pw)/7) calc(var(--pw)/7)}
-.pl-dots{background:radial-gradient(circle,rgba(60,90,140,.45) 1.2px,transparent 1.7px) 0 0/calc(var(--pw)/7) calc(var(--pw)/7)}
 @keyframes ls{0%{opacity:0}6%,30%{opacity:1}36%,100%{opacity:0}}
 .ink{inset:0;width:100%;height:100%;opacity:0;fill:none;stroke:#1d1d1b;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .ink path{stroke-dasharray:1;stroke-dashoffset:1}
@@ -243,12 +237,29 @@ h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.035em;fon
 .pdfp .pro{position:absolute;right:6%;top:12%;background:var(--accent);color:var(--onacc);font-weight:700;font-size:calc(var(--pw)*.08);padding:2% 6%;border-radius:999px}
 .ovl{position:absolute;inset:-6% -8%;display:grid;grid-template-columns:repeat(4,1fr);gap:7%;align-content:center;opacity:0;transform:scale(.94);transition:opacity .5s,transform .5s}
 .g7 .ovl{opacity:1;transform:none}
+.g8 .ovl{opacity:0;transform:scale(.94)}.g8 .dbook{opacity:0}
+/* step 8: a locked notebook and its PIN pad */
+.lkd{position:absolute;inset:-8% -14%;display:flex;align-items:center;justify-content:center;gap:9%;opacity:0;transform:scale(.94);transition:opacity .5s,transform .5s}
+.g8 .lkd{opacity:1;transform:none}
+.lkbk{width:calc(var(--pw)*.92);aspect-ratio:3/4;background:var(--cover);border-radius:3px 9px 9px 3px;position:relative;display:grid;place-items:center;
+  box-shadow:inset 6px 0 0 rgba(0,0,0,.22),1px 1px 0 #1d3566,2px 2px 0 #1b3262,3px 3px 0 #192f5e,4px 4px 0 #172c5a,0 22px 30px -12px var(--sh)}
+.lkbk span{position:absolute;top:22%;background:var(--paper);color:#23304a;font:700 calc(var(--pw)*.13) Caveat,cursive;padding:.15em .6em;border-radius:3px}
+.lkbk i{position:absolute;bottom:18%;width:34%;aspect-ratio:1;border-radius:50%;background:#e0a526;display:grid;place-items:center;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+.lkbk svg{width:58%;fill:none;stroke:#1a1405;stroke-width:2.2;stroke-linecap:round}
+.g8 .lkbk i{animation:pop .5s .2s both}
+.pinp{width:calc(var(--pw)*.95);background:var(--paper);border-radius:14px;padding:calc(var(--pw)*.09) calc(var(--pw)*.08);display:grid;justify-items:center;gap:calc(var(--pw)*.06);box-shadow:0 18px 30px -12px var(--sh);color:#1d2b4a}
+.pinp b{font:700 calc(var(--pw)*.1) "Bricolage Grotesque",system-ui,sans-serif}
+.pdots{display:flex;gap:calc(var(--pw)*.06)}.pdots u{width:calc(var(--pw)*.085);aspect-ratio:1;border-radius:50%;border:2px solid #1d2b4a}
+.g8 .pdots u{animation:pinf 3.2s infinite}.g8 .pdots u:nth-child(2){animation-delay:.25s}.g8 .pdots u:nth-child(3){animation-delay:.5s}.g8 .pdots u:nth-child(4){animation-delay:.75s}
+@keyframes pinf{0%,8%{background:transparent}14%,80%{background:#1d2b4a}90%,100%{background:transparent}}
+.pkeys{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--pw)*.035)}.pkeys s{text-decoration:none;width:calc(var(--pw)*.17);aspect-ratio:1;border-radius:50%;background:rgba(29,43,74,.08);display:grid;place-items:center;font:600 calc(var(--pw)*.08) "Bricolage Grotesque",system-ui,sans-serif}
+.fpr{width:calc(var(--pw)*.2);fill:none;stroke:#2e7d5b;stroke-width:1.6;stroke-linecap:round}
 .ovl span{aspect-ratio:3/4;background:var(--paper);border-radius:3px;box-shadow:0 5px 12px rgba(0,0,0,.3);background-image:linear-gradient(transparent calc(100% - 1px),rgba(60,90,140,.3) 0);background-size:100% 12%}
 .ovl span:nth-child(5){outline:3px solid var(--accent);outline-offset:2px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:calc(var(--pw)*2.4);min-height:34px}
 .chips span{padding:5px 12px;border-radius:999px;background:color-mix(in srgb,var(--ink) 10%,transparent);font-size:.85rem;font-weight:600;animation:chip .4s both}
 @keyframes chip{from{opacity:0;transform:translateY(6px)}}
-@media (prefers-reduced-motion:reduce){.dbook,.leaf,.cvr,.pdfp,.ovl{transition:none}.g3 .ink path,.g6 .pdfp svg path{animation:none;stroke-dashoffset:0}.g4 .txt,.g4 .stk,.g4 .snote{animation:none;opacity:1}.g5 .pat{animation:none}.g5 .pl-grid{opacity:1}.chips span{animation:none}}
+@media (prefers-reduced-motion:reduce){.dbook,.leaf,.cvr,.pdfp,.ovl{transition:none}.g3 .ink path,.g6 .pdfp svg path{animation:none;stroke-dashoffset:0}.g4 .txt,.g4 .stk,.g4 .snote{animation:none;opacity:1}.g5 .pat{animation:none}.chips span{animation:none}}
 /* FAQ */
 details{border-top:1px solid var(--line);padding:18px 0}
 details:last-of-type{border-bottom:1px solid var(--line)}
@@ -296,21 +307,6 @@ h2{font-size:clamp(1.9rem,4vw,2.9rem);letter-spacing:-.03em;line-height:1.05;mar
 .closing{text-align:left}
 footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:.92rem}
 
-/* Login dialog */
-dialog{border:0;border-radius:18px;padding:0;width:min(420px,calc(100% - 32px));background:var(--paper);color:#1b2430;box-shadow:0 30px 80px rgba(0,0,0,.5)}
-dialog::backdrop{background:rgba(8,12,14,.6)}
-.dg{padding:26px}
-.dg h2{font-size:1.7rem;margin:0 0 4px}
-.dg .sub{margin:0 0 18px;color:#56626c;font-size:.95rem}
-.tabs{display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid #d5d8d0}
-.tabs button{background:none;border:0;padding:8px 14px;font-weight:700;color:#56626c;border-bottom:3px solid transparent;margin-bottom:-1px}
-.tabs button[aria-selected="true"]{color:#1b2430;border-color:var(--cover)}
-label{display:block;font-weight:600;font-size:.92rem;margin-bottom:12px}
-input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px solid #b9c0bd;border-radius:10px;font:inherit;background:#fff;color:#1b2430}
-.dg .btn{width:100%;margin-top:6px}
-.dg .alt{display:block;text-align:center;margin-top:14px;color:#56626c;font-size:.92rem}
-.note-demo{margin:16px 0 0;padding:10px 12px;border-radius:10px;background:rgba(224,165,38,.22);font-size:.85rem;color:#4a3a08}
-.x{position:absolute;right:12px;top:10px;background:none;border:0;font-size:1.4rem;color:#56626c;padding:6px 10px}
 .btn:disabled{opacity:.6;cursor:default}
 </style>
 </head>
@@ -360,7 +356,7 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
           <article class="st" data-s="5"><h3>Pages set up your way</h3><p>Choose how each page looks: blank, lined, grid, dots or one of your templates, on paper from bright white and warm white (easier on the eyes) to black, or any color you like. Portrait or landscape. Apply it to one page or to all of them.</p></article>
           <article class="st" data-s="6"><h3>Your PDFs, ready to mark up<span class="soon">Pro</span></h3><p>Choose portrait or landscape and each PDF page fits a notebook page. Write, circle and annotate on top.</p></article>
           <article class="st" data-s="7"><h3>Every page at a glance</h3><p>See the whole notebook at once. Reorder pages, duplicate them, delete them, or jump straight to one.</p></article>
-          <article class="st" data-s="8"><h3>Private notebooks<span class="soon">Free</span></h3><p>Lock any notebook with a 4-digit PIN or a password. On Android you can also open it with your fingerprint.</p></article>
+          <article class="st" data-s="8"><h3>Private notebooks</h3><p>Lock any notebook with a 4-digit PIN or a password. On Android you can also open it with your fingerprint.</p></article>
         </div>
         <div class="tour-demo" aria-hidden="true">
           <div class="demo g0" id="demo" data-s="0">
@@ -384,6 +380,9 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
               </div>
               <div class="ps"><b>Page style</b><div class="pm"><span><i class="a"></i>Blank</span><span><i class="b"></i>Lined</span><span><i class="c"></i>Grid</span><span><i class="d"></i>Dots</span></div><div class="pc"><u></u><u></u><u></u><u></u><u></u><em>Paper color</em></div></div>
               <div class="ovl"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="lkd"><div class="lkbk"><span>Diary</span><i><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></i></div>
+                <div class="pinp"><b>Enter PIN</b><div class="pdots"><u></u><u></u><u></u><u></u></div><div class="pkeys"><s>1</s><s>2</s><s>3</s><s>4</s><s>5</s><s>6</s><s>7</s><s>8</s><s>9</s></div>
+                  <svg class="fpr" viewBox="0 0 24 24"><path d="M12 4a7 7 0 017 7v2M5 13v-2a7 7 0 013.5-6M8.5 19.5A9 9 0 009 12a3 3 0 016 0c0 2.5-.3 4.9-1 7M12 12c0 3-.5 5.8-1.6 8.3M16.2 20.5c.5-1.6.8-3.4.8-5.5"/></svg></div></div>
             </div>
             <div class="chips" id="chips"></div>
           </div>
@@ -415,14 +414,14 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
           <div class="plan">
             <h3>Free</h3>
             <div class="price">€0</div>
-            <ul><li>2 notebooks</li><li>Up to 20 pages each</li><li>Every drawing tool</li><li>Stickers, notes and text</li><li>Free templates, covers, labels and stickers</li><li>Lock notebooks with a PIN, password or fingerprint (Android)</li></ul>
+            <ul><li>2 notebooks</li><li>Up to 20 pages each</li><li>Every drawing tool</li><li>Stickers, notes and text</li><li>Free templates, covers, labels and stickers</li><li>Arrange your notebooks your way, with tags</li><li>No ads, ever</li><li>Lock notebooks with a PIN, password or fingerprint (Android)</li></ul>
             <a class="btn sec" href="app/">Start free</a>
           </div>
           <div class="plan">
             <h3>Pro</h3>
-            <div class="price"><span id="pp">€29.99</span> <small id="pu">per year</small></div>
+            <div class="price"><span id="pp">€44.99</span> <small id="pu">per year</small></div>
             <p class="eq" id="pe">That’s €2.50 a month.</p>
-            <ul><li>Unlimited notebooks and pages</li><li>PDF import</li><li>A photo on the cover, to draw on</li><li>Export to PDF and image</li><li>Cloud sync across your devices</li></ul>
+            <ul><li>Unlimited notebooks and pages</li><li>Your own categories, like Study or Travel</li><li>PDF import</li><li>A photo on the cover, to draw on</li><li>Deleted notebooks kept 30 days</li><li>Export to PDF and image</li><li>Live links: share a notebook, friends with Pro can draw in it too</li><li>Cloud sync across your devices</li></ul>
             <button class="btn pri" id="pbtn" disabled>Pro is coming soon</button>
           </div>
         </div>
@@ -435,11 +434,14 @@ input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px sol
     <div class="wrap faq">
       <h2>Questions</h2>
       <details><summary>What is Foliet Sketchbook?</summary><p>A digital sketchbook and notebook that opens in your browser. Draw, write, plan and stick things down on pages that look and turn like paper. Create a free account and start on your phone, tablet or laptop.</p></details>
-      <details><summary>Is it really free?</summary><p>Yes. The free plan gives you 2 notebooks with up to 20 pages each, every drawing tool, stickers, notes and text, and locked notebooks. Pro adds unlimited notebooks and pages, PDF import and export.</p></details>
-      <details><summary>Where are my notebooks saved?</summary><p>Always on the device you use, so they open even without internet. With Pro they’re also saved to the cloud, so the same notebooks open on your phone and your laptop. You can also download a backup from Settings at any time.</p></details>
+      <details><summary>Is it really free?</summary><p>Yes. The free plan gives you 2 notebooks with up to 20 pages each, every drawing tool, stickers, notes and text, and locked notebooks. Pro adds unlimited notebooks and pages, PDF import and export. There are no ads on any plan.</p></details>
+      <details><summary>Where are my notebooks saved?</summary><p>Always on the device you use, so they open even without internet. Each browser keeps its own copy, so use Foliet from the same browser and the same web address. With Pro they’re also saved to the cloud, so the same notebooks open on your phone and your laptop, and they come back if a device loses them. You can also download a backup from Settings at any time.</p></details>
+      <details><summary>What if I delete a notebook by mistake?</summary><p>It goes to Recently deleted, at the bottom of your shelf: for 30 days with Pro, or 2 days on the free plan. Tap Restore and it’s back with all its pages.</p></details>
+      <details><summary>Can I organise my notebooks?</summary><p>Yes. Drag them into the order you like (on a phone, hold a notebook for a moment, then drag), and give them tags to find them fast. Tap ⋯ on a notebook to rename it, tag it or move it. With Pro, you can also make your own categories, like Study or Travel: each one is a tab above your notebooks.</p></details>
       <details><summary>Can I keep a notebook private?</summary><p>Yes, on every plan. Lock a notebook with a 4-digit PIN or a password, and on Android you can also unlock it with your fingerprint. Anyone using the app on your device needs the PIN to open it.</p></details>
       <details><summary>Does it work on my phone or tablet?</summary><p>Yes, in any modern browser. It works with touch and with a stylus, and it reads pen pressure when your device provides it.</p></details>
-      <details><summary>What’s in the store?</summary><p>Templates, cover designs, name labels and sticker packs. Lots are free: 8 templates (weekly planner, daily agenda, to-do lists, math grid, Cornell notes, journal, storyboard, sheet music), 16 covers, 6 label shapes and 6 sticker packs (7 stickers each). The rest – like a habit tracker, budget, recipe book, a galaxy or art deco cover, a kraft tag or gold foil label, and packs of cute animals, space and sweet treats – cost €0.99 each on any plan. Buy once and use it as often as you like. Paid items go on sale together with Pro.</p></details>
+      <details><summary>What’s in the store?</summary><p>Templates, cover designs, name labels and sticker packs. Lots are free: 8 templates (weekly planner, daily agenda, to-do lists, math grid, Cornell notes, journal, storyboard, sheet music), 16 covers, 6 label shapes and 6 sticker packs (7 stickers each). The rest – like a habit tracker, budget, recipe book, a galaxy or art deco cover, a kraft tag or gold foil label, and packs of cute animals, space and sweet treats – cost €0.99 each on any plan. Buy once and use it as often as you like. Some items are only around for a few days, so look in now and then. Paid items go on sale together with Pro.</p></details>
+      <details><summary>Can I share a notebook?</summary><p>Yes. Share → “View-only file” works on every plan. With Pro you can also make a live link, like foliet.app/trip-to-rome/k3x9qa: anyone who has it can look, without an account, and it changes as you draw. If you allow it, people with Pro can sign in and draw and write in it too, and their changes come to your notebook. Stop sharing whenever you like.</p></details>
       <details><summary>Can I import a PDF?</summary><p>With Pro, up to 500 pages per PDF. The first page becomes the cover, and every other page is fitted onto a notebook page so you can write on top of it.</p></details>
       <details><summary>Can I cancel any time?</summary><p>Yes. Monthly plans can be cancelled whenever you like, and yearly plans simply don’t renew. Nobody is charged yet, because paid plans haven’t launched.</p></details>
       <details><summary>What happens if I go back to the free plan?</summary><p>Your notebooks stay. You just can’t add more pages or notebooks beyond the free limits.</p></details>
@@ -472,11 +474,11 @@ $('#themeb').onclick=()=>{const want=themeNow()==='dark'?'light':'dark',sys=mq&&
 if(mq&&mq.addEventListener)mq.addEventListener('change',paintTheme);
 paintTheme();
 const scue=$('#scue');if(scue)addEventListener('scroll',()=>scue.classList.toggle('gone',scrollY>60),{passive:true});
-const CHIPS=[['Thick cover','Pick a color','Draw on it'],['Cover opens','Thick pages','Stack on both sides'],['Drag to turn','Follows your finger','Real page edge'],['Pen','Pencil','Brush','Marker','Highlighter','Shapes','Fill'],['8 fonts','28 stickers','Sticky notes','Move and rotate'],['Blank','Lined','Grid','Dots','Paper colors'],['Portrait or landscape','Fits each page','Write on top'],['Reorder','Duplicate','Delete','Jump to a page'],['PIN or password','Fingerprint on Android','Included free']];
+const CHIPS=[['Thick cover','Pick a color','Draw on it'],['Cover opens','Thick pages','Stack on both sides'],['Drag to turn','Follows your finger','Real page edge'],['Pen','Pencil','Brush','Marker','Highlighter','Shapes','Fill'],['8 fonts','28 stickers','Sticky notes','Move and rotate'],['Blank','Lined','Grid','Dots','Paper colors'],['Portrait or landscape','Fits each page','Write on top'],['Reorder','Duplicate','Delete','Jump to a page'],['PIN or password','Fingerprint on Android','Locks again when you leave']];
 const demo=$('#demo'),sts=[...document.querySelectorAll('.st')];
 function setStep(i){
   demo.dataset.s=i;
-  for(let k=1;k<=7;k++)demo.classList.toggle('g'+k,i>=k);
+  for(let k=1;k<=8;k++)demo.classList.toggle('g'+k,i>=k);
   sts.forEach((el,k)=>el.classList.toggle('on',k===i));
   $('#chips').innerHTML=CHIPS[i].map((t,k)=>'<span style="animation-delay:'+k*70+'ms">'+t+'</span>').join('');
 }
@@ -485,7 +487,7 @@ if('IntersectionObserver' in window){
   sts.forEach(el=>io.observe(el));
 }
 setStep(0);
-const bill={y:['€29.99','per year','That’s €2.50 a month.','Pro is coming soon'],m:['€3.99','per month','Billed monthly. Cancel any time.','Pro is coming soon']};
+const bill={y:['€44.99','per year','That’s €3.75 a month.','Pro is coming soon'],m:['€5.99','per month','Billed monthly. Cancel any time.','Pro is coming soon']};
 function setBill(k){
   $('#b-year').setAttribute('aria-pressed',k==='y');$('#b-month').setAttribute('aria-pressed',k==='m');
   $('#pp').textContent=bill[k][0];$('#pu').textContent=bill[k][1];$('#pe').textContent=bill[k][2];$('#pbtn').textContent=bill[k][3];

@@ -6,15 +6,21 @@ rules_version = '2';
 // users/{uid}/r/{rec}    one notebook record (or a chunk of it): {h, n, i, d}
 // pro/{uid}              Pro for this user: {by, since, days, code?}. days 0 / missing = forever.
 //                        Made by you in the console, from the admin panel, or by redeeming a code.
-// codes/{CODE}           promo codes: {kind:'pro', days, …} or {kind:'tpl', tpl: template id | 'all', …},
+// codes/{CODE}           promo codes: {kind:'pro', days, card?, …} or {kind:'tpl', tpl: template id | 'all', …},
 //                        plus {max, used, active, note, created}
 // owned/{uid}            paid templates this person has: {t: [ids | 'all'], last: CODE | 'admin'}
+// offers/{uid}           a card offer from a code that asks for a card: {code, days, at}; 24 hours to add a card
+// shares/{code}         a live link: {owner, slug, title, o, n, edit, on, m}; shares/{code}/r/{rec} = its pages (+ pictures)
+// shop/{id}              banners and items added from the admin panel (sticker packs, covers), with from/until
+// config/public          payments (Stripe price IDs, on/off) and the welcome offer – read by every account, written by admins
 // redeem/{uid_CODE}      who used which code (one use per person per code)
 // profiles/{uid}         {email, name, via, os, lang, app, created, seen} – for the admin panel's statistics
 // act/{YYYY-MM_uid}      this account used Foliet in that month (one tiny record per month)
 // survey/{uid}           how this person found Foliet: {src, other, at} (asked once, after signing up)
-// feedback/{id}          messages sent from the app: {uid, email, type, text, reply, os, ver, w, at, done?}
+// feedback/{id}          messages sent from the app: {uid, email, type, text, reply, rto?, os, ver, w, at, done?} (rto = reply to)
 // admins/{uid}           exists = admin (made by hand in the console)
+// config/{id}            admin settings: config/costs = {items:[{n, c, per, at}]} (running costs)
+//                        codes/{CODE} can also be {kind:'off', pct, for, dur, …}: a discount typed at checkout (Stripe)
 // customers/{uid}/...    written by the "Run Payments with Stripe" extension (payments, subscriptions)
 //
 // Only the owner can read their notebooks. Only Pro users can write them (so free users can't create costs).
@@ -40,7 +46,21 @@ service cloud.firestore {
       return d.keys().hasOnly(['code', 'by', 'since', 'days'])
         && d.code is string && d.code.matches('^[A-Z0-9-]{4,24}$')
         && d.by == 'code' && d.since == request.time
-        && c.active == true && c.kind == 'pro' && c.used < c.max && d.days == c.days
+        && c.active == true && c.kind == 'pro' && c.get('card', false) != true && c.used < c.max && d.days == c.days
+        && getAfter(cp).data.used == c.used + 1
+        && !exists(/databases/$(database)/documents/redeem/$(uid + '_' + d.code))
+        && existsAfter(/databases/$(database)/documents/redeem/$(uid + '_' + d.code));
+    }
+    // a Pro code that asks for a card: it makes an offer (offers/{uid}), not Pro – Pro starts when they add a card (Stripe)
+    function validOfferRedeem(uid) {
+      let d = request.resource.data;
+      let cp = /databases/$(database)/documents/codes/$(d.code);
+      let c = get(cp).data;
+      return d.keys().hasOnly(['code', 'days', 'at'])
+        && d.code is string && d.code.matches('^[A-Z0-9-]{4,24}$')
+        && d.at == request.time
+        && c.active == true && c.kind == 'pro' && c.get('card', false) == true && c.used < c.max
+        && d.days == c.days && d.days is int && d.days > 0
         && getAfter(cp).data.used == c.used + 1
         && !exists(/databases/$(database)/documents/redeem/$(uid + '_' + d.code))
         && existsAfter(/databases/$(database)/documents/redeem/$(uid + '_' + d.code));
@@ -58,19 +78,35 @@ service cloud.firestore {
         && !exists(/databases/$(database)/documents/redeem/$(uid + '_' + d.last))
         && existsAfter(/databases/$(database)/documents/redeem/$(uid + '_' + d.last));
     }
+    // "Get it free": a free item from the admin panel, while it's in the store, added to what this person owns
+    function validFreeClaim(prev) {
+      let d = request.resource.data;
+      let id = d.t[d.t.size() - 1];
+      let it = get(/databases/$(database)/documents/shop/$(id)).data;
+      return d.keys().hasOnly(['t', 'last']) && d.last == 'free' && d.t == prev.concat([id])
+        && it.kind in ['stk', 'cov'] && it.p == 0 && it.on == true
+        && (!('from' in it) || it.from == null || it.from <= request.time)
+        && (!('until' in it) || it.until == null || it.until > request.time);
+    }
     // this code was really used in this same write: by the Pro record or by the templates record
     function redeemedHere(uid, code) {
       let pp = /databases/$(database)/documents/pro/$(uid);
       let op = /databases/$(database)/documents/owned/$(uid);
+      let fp = /databases/$(database)/documents/offers/$(uid);
       return (existsAfter(pp) && getAfter(pp).data.get('code', '') == code)
-        || (existsAfter(op) && getAfter(op).data.get('last', '') == code);
+        || (existsAfter(op) && getAfter(op).data.get('last', '') == code)
+        || (existsAfter(fp) && getAfter(fp).data.get('code', '') == code);
     }
 
     match /users/{uid} {
       allow read: if owner(uid);
+      // every change carries the server's time (at == request.time). Old versions of the app never set it, so they
+      // can't change the cloud copy any more – an old version deleted from the cloud the notebooks it didn't have.
+      // The pages (r/…) are always written in the same batch as this list, so an old version's whole batch is refused.
       allow create, update: if owner(uid) && isPro()
-        && request.resource.data.keys().hasOnly(['m', 'v'])
-        && request.resource.data.m is map;
+        && request.resource.data.keys().hasOnly(['m', 'v', 'at'])
+        && request.resource.data.m is map
+        && request.resource.data.at == request.time;
       allow delete: if owner(uid);
 
       match /r/{rec} {
@@ -90,6 +126,13 @@ service cloud.firestore {
       allow delete: if owner(uid); // deleting the account
       allow create: if owner(uid) && validRedeem(uid);
       allow update: if owner(uid) && validRedeem(uid) && !proActive(resource.data);
+    }
+
+    match /offers/{uid} { // a card offer waiting (24 hours) – see validOfferRedeem
+      allow get: if owner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow delete: if owner(uid) || isAdmin();
+      allow create, update: if owner(uid) && validOfferRedeem(uid);
     }
 
     match /codes/{code} {
@@ -118,8 +161,42 @@ service cloud.firestore {
       allow get: if owner(uid) || isAdmin();
       allow list, write: if isAdmin();
       allow delete: if owner(uid); // deleting the account
-      allow create: if owner(uid) && validTplRedeem(uid, []);
-      allow update: if owner(uid) && validTplRedeem(uid, resource.data.t);
+      allow create: if owner(uid) && (validTplRedeem(uid, []) || validFreeClaim([]));
+      allow update: if owner(uid) && (validTplRedeem(uid, resource.data.t) || validFreeClaim(resource.data.t));
+    }
+
+    // live links: anyone can look (no account), the owner (Pro) shares, Pro accounts edit when the owner allows it
+    function shareOwner(code) { return signedIn() && get(/databases/$(database)/documents/shares/$(code)).data.owner == request.auth.uid; }
+    function shareEditable(code) {
+      let s = get(/databases/$(database)/documents/shares/$(code)).data;
+      return signedIn() && s.on == true && (s.owner == request.auth.uid || (s.edit == true && isPro()));
+    }
+    match /shares/{code} {
+      allow get: if resource.data.on == true || (signedIn() && resource.data.owner == request.auth.uid);
+      allow list: if signedIn() && resource.data.owner == request.auth.uid; // only your own (for “Download my data” / “Delete my account”)
+      allow create: if signedIn() && isPro() && code.matches('^[a-z0-9]{6,10}$')
+        && request.resource.data.keys().hasOnly(['owner', 'slug', 'title', 'o', 'n', 'edit', 'on', 'm', 'at', 'upd'])
+        && request.resource.data.owner == request.auth.uid && request.resource.data.on == true
+        && request.resource.data.slug is string && request.resource.data.slug.size() <= 40
+        && request.resource.data.title is string && request.resource.data.title.size() <= 80;
+      allow update: if signedIn() && resource.data.on == true && (
+          (resource.data.owner == request.auth.uid && request.resource.data.owner == resource.data.owner
+            && request.resource.data.keys().hasOnly(['owner', 'slug', 'title', 'o', 'n', 'edit', 'on', 'm', 'at', 'upd']))
+          || (resource.data.edit == true && isPro() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['m', 'n', 'upd'])
+            && request.resource.data.n is int && request.resource.data.n <= 2000));
+      allow delete: if signedIn() && resource.data.owner == request.auth.uid;
+      match /r/{rec} {
+        allow get: if get(/databases/$(database)/documents/shares/$(code)).data.on == true || shareOwner(code);
+        allow create, update: if shareEditable(code)
+          && request.resource.data.keys().hasOnly(['h', 'n', 'i', 'd'])
+          && request.resource.data.d is string && request.resource.data.d.size() <= 400000;
+        allow delete: if shareEditable(code);
+      }
+    }
+
+    match /shop/{id} { // banners and items added from the admin panel
+      allow read: if signedIn();
+      allow write: if isAdmin();
     }
 
     function profileOk(d) {
@@ -181,7 +258,9 @@ service cloud.firestore {
       allow get, list, update, delete: if isAdmin();
       allow get, list, delete: if signedIn() && resource.data.uid == request.auth.uid; // your own messages
       allow create: if signedIn()
-        && request.resource.data.keys().hasOnly(['uid', 'email', 'type', 'text', 'reply', 'os', 'ver', 'w', 'at'])
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'type', 'text', 'reply', 'rto', 'os', 'ver', 'w', 'at'])
+        && (!('rto' in request.resource.data) || (request.resource.data.rto is string && request.resource.data.rto.size() <= 120
+            && request.resource.data.rto.matches('^[^@\\s]+@[^@\\s]+[.][^@\\s]+$'))) // the address to reply to
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.email == request.auth.token.get('email', '')
         && request.resource.data.type in ['idea', 'problem', 'other']
@@ -191,6 +270,11 @@ service cloud.firestore {
         && request.resource.data.ver is string && request.resource.data.ver.size() <= 20
         && request.resource.data.w is int
         && request.resource.data.at == request.time;
+    }
+
+    match /config/{id} { // admin settings: config/costs (running costs), config/public (payments + welcome offer, read by every account)
+      allow read: if isAdmin() || (id == 'public' && signedIn());
+      allow write: if isAdmin();
     }
 
     match /admins/{uid} {

@@ -26,3 +26,10 @@
   to = "/"
   status = 404
   force = true
+
+# Live links: foliet.app/<notebook-name>/<code> shows the shared notebook (404.html is the viewer).
+# Real files (like /app/sw.js) are served as they are; only addresses that aren't files come here.
+[[redirects]]
+  from = "/:slug/:code"
+  to = "/404.html"
+  status = 200

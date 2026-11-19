@@ -52,7 +52,8 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await A.click('#madm');await A.waitForSelector('.astats',{timeout:15000});
   const card=(p,label)=>p.evaluate(l=>{const c=[...document.querySelectorAll('#adm-body .acard')].find(x=>x.querySelector('span').textContent===l);return c?c.querySelector('b').textContent:null},label);
   ok(await card(A,'Accounts in total')==='1','admin overview counts accounts (1)');
-  await A.fill('.aform input[placeholder="CODE"]','TEST-30');await A.selectOption('#adm-days','30');await A.fill('.aform input[type=number]','2');
+  await A.click('.acats >> text=Codes & discounts');
+  await A.fill('.aform input[placeholder="CODE"]','TEST-30');await A.selectOption('#adm-days','30');await A.fill('#adm-max','2');
   await A.click('text=Create code');await A.waitForSelector('text=TEST-30',{timeout:10000});
   ok(await (await admin('codes/TEST-30',null,'GET')).json().then(j=>j.fields.days.integerValue==='30'&&j.fields.max.integerValue==='2'),'admin creates a code: Pro for 30 days, 2 people');
   await A.click('#adm-x');
@@ -84,7 +85,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   m=await redeem(D,'TEST-30');ok(/used up|expired/.test(m),'third person: code is used up ('+m+')');
   await D.click('#acc-x').catch(()=>{});
   // ---- admin gives Pro by email; expired Pro
-  await A.click('#menub');await A.click('#madm');await A.waitForSelector('.astats',{timeout:15000});
+  await A.click('#menub');await A.click('#madm');await A.waitForSelector('.acats',{timeout:15000});await A.click('.acats >> text=Pro members');
   await A.fill('#adm-pf input[type=email]','dan@example.com');await A.selectOption('#adm-pf select','365');await A.click('text=Give Pro');
   await D.waitForFunction(()=>ACC.pro,null,{timeout:15000}).catch(()=>{});
   ok(await D.evaluate(()=>ACC.pro),'admin gives Pro to dan@example.com by email → it turns on for Dan right away');
@@ -111,8 +112,9 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   ok(await card(A,'Revenue')==='€29.99'&&await card(A,'New accounts')==='0','a past year from the list: €29.99, no new accounts then');
   await A.click('#adm-body .aper >> text=This month');await A.waitForTimeout(200);
   ok(await card(A,'New accounts')==='4'&&await card(A,'Active accounts')==='4','This month: 4 new accounts, 4 active');
-  ok(await A.evaluate(()=>[...document.querySelectorAll('.achart')].length===2&&document.querySelectorAll('.achart .cbar').length>=56),'charts: new accounts and revenue, day by day for the month');
+  ok(await A.evaluate(()=>{const s=document.querySelector('.asec[data-s="acc"]'),c=s.querySelector('.achart');return s.querySelectorAll('.achart').length>=3&&c.querySelectorAll('rect.ach-bar').length===new Date().getDate()}),'charts: new accounts day by day for the month (up to today), accounts in total, free and Pro');
   ok(await A.evaluate(()=>/Email and password/.test(document.querySelector('.abrks').textContent)&&/Device/.test(document.querySelector('.abrks').textContent)),'breakdowns: sign-in method, device, installed app, language');
+  await A.click('.acats >> text=Find an account');
   await A.fill('#adm-body input[type=search]','carol');await A.waitForTimeout(200);
   ok(await A.evaluate(()=>{const r=document.querySelectorAll('#adm-acc .arow');return r.length===1&&/carol@example\.com/.test(r[0].textContent)}),'search finds an account by email');
   const [dl]=await Promise.all([A.waitForEvent('download'),A.click('text=Download all (CSV)')]);
