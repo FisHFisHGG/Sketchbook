@@ -541,6 +541,104 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   .hd{width:32px;height:32px}.hd.rs{right:-16px;bottom:-16px}.hd.ro{margin-left:-16px;top:-46px}
 }
 @media (pointer:coarse) and (max-width:520px){#sz,#op{width:76px}}
+/* ===== Update 16: no bars in a notebook – only floating buttons; a compact tool dock in the middle, with menus that open upwards ===== */
+:root{--fb:color-mix(in srgb,var(--bar) 88%,transparent);--fbl:color-mix(in srgb,var(--line) 75%,transparent)}
+#bv,#ed{background:radial-gradient(ellipse at 50% 45%,var(--bar),var(--desk) 72%) var(--desk)}
+#bmain{background:none}
+#bv>.bar,#ed>.bar{background:none;border:0;padding:8px 12px 4px;gap:8px;flex-wrap:nowrap}
+#bv>.bar.bot{padding:4px 12px 10px}
+#ed>.bar.bot.ed{background:none;border:0;padding:4px 10px 10px;gap:8px}
+/* the floating buttons */
+#bv>.bar .ib,#ed>.bar>.ib,#ed>.bar>.grp>.ib,#btitle,.fgrp,#etl{background:var(--fb);border:1px solid var(--fbl);box-shadow:0 6px 18px -10px var(--sh);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#bv>.bar .ib,#ed>.bar>.ib,#ed>.bar>.grp>.ib{border-radius:999px;min-height:40px;padding:6px 14px;font-weight:600}
+#bv>.bar .ib.i,#ed>.bar>.ib.i,#ed>.bar>.grp>.ib.i{width:40px;height:40px;min-width:40px;padding:0;border-radius:50%}
+#bv>.bar .ib:hover,#ed>.bar .ib:hover{background:color-mix(in srgb,var(--bar) 70%,var(--ink) 10%)}
+#bv>.bar .ib[aria-pressed="true"],#ed>.bar .ib[aria-pressed="true"]{background:var(--ink);color:var(--bar);border-color:var(--ink)}
+.fgrp{display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:999px;flex:none}
+#bv>.bar .fgrp .ib,#ed>.bar .fgrp .ib{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;min-height:36px}
+#bv>.bar .fgrp .ib.i,#ed>.bar .fgrp .ib.i{width:38px;height:38px;min-width:38px}
+.pgnav #bpg{padding:0 6px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pgnav .ib{width:38px;padding:0!important;font-size:1.15em}
+#btitle{border-radius:999px;padding:8px 16px;max-width:300px;min-height:40px;font-weight:600}
+#btitle:focus{outline:2px solid var(--accent);outline-offset:1px}
+#etl{border-radius:999px;padding:9px 14px;font-weight:600;white-space:nowrap}
+#etl:empty{display:none}
+#bv .hint{opacity:.55}
+#bv>.bar .vlive{background:var(--fb);border:1px solid var(--fbl);border-radius:999px;padding:8px 14px}
+@media (max-width:520px){#bv>.bar,#ed>.bar{gap:6px;padding-left:8px;padding-right:8px}#btitle{min-width:0;padding:8px 12px}#bv>.bar .ib:not(.i){padding:6px 11px}#etl{padding:9px 10px}}
+#badd .nb{display:none}
+@media (max-width:560px){#bv .wl,#ed .wl{display:none}#bclose,#back{width:40px;padding:0!important;font-size:1.2em}#badd{width:40px;padding:0!important}#badd .nb{display:block}}
+@media (max-width:420px){#bv>.bar .ib.i,#ed>.bar>.ib.i,#ed>.bar>.grp>.ib.i,#bclose,#back,#badd{width:36px;height:36px;min-width:36px;min-height:36px}#bv>.bar .fgrp .ib.i,#ed>.bar .fgrp .ib.i{width:34px;height:34px;min-width:34px;min-height:34px}.pgnav .ib{width:30px}.pgnav #bpg{padding:0 2px;font-size:.92em}#etl{padding:8px 10px}#bv>.bar,#ed>.bar{gap:5px;padding-left:6px;padding-right:6px}}
+@media (max-width:380px){#ed>.bar{gap:4px}#etl{padding:8px;font-size:.9em}}
+@media (max-height:500px){#bv>.bar,#ed>.bar{padding-top:4px;padding-bottom:2px}#bv>.bar.bot,#ed>.bar.bot.ed{padding-bottom:4px}}
+/* All pages: the same floating buttons */
+#ov{background:radial-gradient(ellipse at 50% 40%,var(--bar),var(--desk) 75%) var(--desk)}
+#ov>.bar{background:none;border:0;padding:8px 12px;gap:8px}
+#ov>.bar .ib,#ov>.bar strong{background:var(--fb);border:1px solid var(--fbl);box-shadow:0 6px 18px -10px var(--sh);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:999px;min-height:40px;padding:6px 14px;font-weight:600}
+#ov>.bar strong{display:inline-flex;align-items:center;padding:8px 16px}
+#ov>.bar .ib.i{width:40px;height:40px;min-width:40px;padding:0;border-radius:50%}
+#ov>.bar.bot{padding-bottom:10px}
+/* the tool dock: all tools in one pill, in the middle */
+#dockrow{justify-content:center}
+.dock{display:flex;align-items:center;gap:2px;padding:5px;border-radius:999px;background:var(--fb);border:1px solid var(--fbl);box-shadow:0 14px 36px -14px var(--sh);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);max-width:100%}
+#ed .dock #tools{flex:none;overflow:visible;gap:2px;min-width:0}
+.dock .ib.i,.ed .dock .ib.i{position:relative;width:46px;height:46px;min-width:0;min-height:0;padding:0;border:0;border-radius:50%;background:none}
+.dock .ib.i:hover{background:color-mix(in srgb,var(--ink) 9%,transparent)}
+.dock .ib.i[aria-pressed="true"]{background:var(--ink);color:var(--bar)}
+.dock .ic{width:22px;height:22px}
+.dock .cdot{position:absolute;left:50%;bottom:6px;width:14px;height:4px;margin-left:-7px;border-radius:2px;background:var(--c,#222);box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 25%,transparent)}
+.dock .ib[aria-pressed="true"] .cdot{box-shadow:0 0 0 1.5px var(--bar)}
+.dock .ib.i[data-t]:not([data-g]):not([data-t="hl"]) .cdot{display:none}
+.dsep{width:1px;height:28px;background:var(--line);margin:0 4px;flex:none}
+@media (max-width:440px){.dock{padding:4px}.dock .ib.i,.ed .dock .ib.i{width:40px;height:40px}.dock .ic{width:20px;height:20px}.dsep{margin:0 2px}}
+@media (max-width:370px){.dock .ib.i,.ed .dock .ib.i{width:36px;height:36px}.dsep{display:none}}
+#ed.vm #dock #tools,#ed.vm #dock .dsep{display:none} /* view and arrange: the drawing tools step aside, + stays */
+/* the rows that show up while you write, select or arrange: floating pills too */
+#ed .bar.bot.ed>#tbar,#ed .bar.bot.ed>#sbar,#ed .bar.bot.ed>#obar{width:auto;align-self:center;max-width:100%;padding:5px 8px;border-radius:22px;background:var(--fb);border:1px solid var(--fbl);box-shadow:0 10px 26px -12px var(--sh);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+#ed #obar{flex-wrap:wrap;justify-content:center}
+#t-col .csw{display:block;width:22px;height:22px;border-radius:50%;background:var(--c,#222);box-shadow:inset 0 0 0 2px rgba(255,255,255,.6),0 0 0 1px var(--line)}
+/* menus open upwards above the tools, as floating cards (in the middle; a tool's menu over its tool) */
+#ed #tsheet,#ed #sheet,#ed #psheet,#ed #lsheet,#ed #csheet{top:auto;bottom:calc(100% + 8px);left:50%;right:auto;transform:translateX(-50%);width:min(560px,calc(100vw - 16px));max-height:min(66vh,calc(var(--vvh,100dvh) - 150px));border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 60px -16px rgba(0,0,0,.55);animation:popup .16s ease-out}
+#ed #tsheet{width:min(372px,calc(100vw - 16px));overflow:auto;padding:12px 14px 14px;transform:none}
+@keyframes popup{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}
+@media (prefers-reduced-motion:reduce){#ed #tsheet,#ed #sheet,#ed #psheet,#ed #lsheet,#ed #csheet{animation:none}}
+#tsheet .sh-top{margin-bottom:6px}#tsheet .sh-top strong{font-size:1.08em}
+#tsheet .ib.i{min-width:36px;min-height:36px}
+.tsec{margin:4px 0 8px}
+.tsec>.sec,#ts-more summary{font-size:.74em;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.55;margin:10px 2px 6px}
+#ts-more{border-top:1px solid var(--line);padding-top:4px;margin-top:6px}
+#ts-more summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;margin:8px 2px 4px}
+#ts-more summary::-webkit-details-marker{display:none}
+#ts-more summary::after{content:"+";font-size:1.5em;font-weight:400;line-height:1;opacity:.8}#ts-more[open] summary::after{content:"–"}
+.kinds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.kinds button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px 6px;border:2px solid var(--line);border-radius:14px;background:none;font-size:.82em;font-weight:600}
+.kinds button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.kinds .ic{width:24px;height:24px}
+#tsheet #tpv{height:48px;margin:2px 0 4px}
+#tsheet #cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(30px,1fr));gap:8px;overflow:visible;flex-wrap:wrap;padding:2px}
+#tsheet #cols .sw,#tsheet #cols .cpk{width:30px;height:30px;justify-self:center}
+#tsheet .tr{margin:6px 0;min-height:36px}#tsheet .tr>span:first-child{width:92px}
+#tsheet #szl{flex:1;margin:0;gap:10px}#tsheet #sz,#tsheet #op{flex:1;width:auto;min-width:0}
+#tsheet #opl{flex:1;display:flex}
+.tval{min-width:42px;text-align:right;font-variant-numeric:tabular-nums;font-size:.9em}
+#ts-press .tr:first-child{flex-wrap:wrap;row-gap:0}#ts-press .tr:first-child>span:first-child{width:auto}
+.tsub{order:3;flex-basis:100%;opacity:.6;font-size:.8em;margin-top:-4px}
+.tgl{position:relative;flex:none;margin-left:auto;width:48px;height:28px;padding:0;border:0;border-radius:999px;background:var(--line);transition:background .2s}
+.tgl i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .2s}
+.tgl[aria-checked="true"]{background:var(--accent)}.tgl[aria-checked="true"] i{transform:translateX(20px)}
+.shrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.shrow #shapes{gap:4px}
+#sh-fill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;margin-left:auto}
+.fgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.fgrid button{border:2px solid var(--line);border-radius:12px;background:none;padding:8px 2px;font-size:.95em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fgrid button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+#tx-sz{min-width:30px;text-align:center}
+.tnote{margin:8px 2px 2px;font-size:.88em;opacity:.7}
+#stabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}#stabs::-webkit-scrollbar{display:none}
+#sheet .sh-top{justify-content:flex-start}#sheet #stabs{flex:1;min-width:0}#sheet .phb{display:inline-flex;align-items:center;gap:6px;flex:none;background:none;border:0;padding:6px 12px;font-weight:600;opacity:.85}
+#sheet .phb .ic{width:18px;height:18px}
+@media (pointer:coarse){.dock .ib.i,.ed .dock .ib.i{width:46px;height:46px}#tsheet #cols .sw,#tsheet #cols .cpk{width:34px;height:34px}}
+@media (pointer:coarse) and (max-width:440px){.dock .ib.i,.ed .dock .ib.i{width:40px;height:40px}}
+@media (pointer:coarse) and (max-width:370px){.dock .ib.i,.ed .dock .ib.i{width:36px;height:36px}}
 </style>
 </head>
 <body>
@@ -563,66 +661,52 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </section>
 
 <section id="bv" class="hidden">
-  <div class="bar"><button class="ib" id="bclose">‹ Notebooks</button><input id="btitle" aria-label="Notebook name" maxlength="40"><span class="hint" id="hint"></span><button class="ib i" id="block" aria-label="Lock this notebook"></button><button class="ib" id="bshare">Share</button><a class="ib vonly hidden" id="vedit" title="Foliet Pro members can sign in and edit it">Edit<span class="soon">Pro</span></a></div>
+  <div class="bar"><button class="ib" id="bclose" aria-label="Back to my notebooks">‹<span class="wl"> Notebooks</span></button><input id="btitle" aria-label="Notebook name" maxlength="40"><span class="hint" id="hint"></span><button class="ib i" id="block" aria-label="Lock this notebook"></button><button class="ib" id="bshare">Share</button><a class="ib vonly hidden" id="vedit" title="Foliet Pro members can sign in and edit it">Edit<span class="soon">Pro</span></a></div>
   <div id="bmain"><div id="tilt"><div id="sp">
     <div class="pg" id="pl"></div><div class="pg" id="pr"></div>
     <div class="fl" id="fl"></div>
   </div></div></div>
   <div class="bar bot">
-    <button class="ib" id="bprev" aria-label="Previous">‹</button><span id="bpg"></span><button class="ib" id="bnext" aria-label="Next">›</button>
-    <button class="ib i" id="bgrid" aria-label="All pages" title="All pages"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg></button>
+    <span class="fgrp pgnav"><button class="ib" id="bprev" aria-label="Previous">‹</button><span id="bpg"></span><button class="ib" id="bnext" aria-label="Next">›</button></span>
+    <span class="fgrp"><button class="ib i" id="bgrid" aria-label="All pages" title="All pages"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg></button>
     <button class="ib i" id="bzoom" aria-label="Zoom" title="Zoom in on a page"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M16 16l4 4M11 8v6M8 11h6"/></svg></button>
-    <button class="ib i" id="bexp" aria-label="Export" title="Export as PDF or image"><svg class="ic" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
-    <button class="ib" id="badd">New pages</button><span class="vlive vonly" id="vlive" role="status"></span>
+    <button class="ib i" id="bexp" aria-label="Export" title="Export as PDF or image"><svg class="ic" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button></span>
+    <button class="ib" id="badd" aria-label="New pages"><svg class="ic nb" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span class="wl">New pages</span></button><span class="vlive vonly" id="vlive" role="status"></span>
   </div>
 </section>
 
 <section id="ed" class="hidden">
   <div class="bar">
-    <button class="ib" id="back">‹ Book</button>
+    <button class="ib" id="back" aria-label="Back to the notebook">‹<span class="wl"> Book</span></button>
     <span id="etl"></span>
     <div class="grp hidden" id="cc"><button class="ib" id="cst">Cover style</button></div>
     <button class="ib i" id="pstyle" aria-label="Page style" title="Page style (lines, grid, dots, paper color)"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M4 15h16M10 4v16M15 4v16"/></svg></button>
+    <button class="ib i" id="lyb" aria-label="Layers" title="Layers"><svg class="ic" viewBox="0 0 24 24"><path d="M12 4l9 5-9 5-9-5z"/><path d="M3 14l9 5 9-5"/></svg></button>
     <button class="ib i" id="eye" style="margin-left:auto" aria-pressed="false" aria-label="View and arrange" title="View and arrange (move stickers, notes, photos)"><svg class="ic" viewBox="0 0 24 24"><path d="M4 3h9l4 4v4"/><path d="M4 3v18h7"/><path d="M11 17c1.4-2.2 3.2-3.5 6-3.5s4.6 1.3 6 3.5c-1.4 2.2-3.2 3.5-6 3.5s-4.6-1.3-6-3.5z"/><circle cx="17" cy="17" r="1.6"/></svg></button>
-    <button class="ib i" id="undo" aria-label="Undo" title="Undo"><svg class="ic" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg></button>
-    <button class="ib i" id="redo" aria-label="Redo" title="Redo"><svg class="ic" viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 000 12h3"/></svg></button>
+    <span class="fgrp"><button class="ib i" id="undo" aria-label="Undo" title="Undo"><svg class="ic" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg></button><button class="ib i" id="redo" aria-label="Redo" title="Redo"><svg class="ic" viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 000 12h3"/></svg></button></span>
     <button class="ib i" id="delp" aria-label="Delete page" title="Delete page"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span class="cl">Sure?</span></button>
   </div>
   <div id="main"><button class="ib" id="zrs" title="Reset zoom">100%</button><div class="paper" id="paper"><div id="pbg" class="pt-blank"></div><img id="bgimg" alt=""><canvas id="cv" width="900" height="1200"></canvas><div id="marq" class="hidden"></div><div id="ol"></div></div></div>
   <div class="bar bot ed">
-    <div class="row"><div class="grp" id="tools">
-      <button class="ib i" data-t="pen" aria-pressed="true" aria-label="Pen" title="Pen"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l5 6-3 8h-4L7 9z"/><circle cx="12" cy="12" r="1.2"/><path d="M12 17v4"/></svg></button>
-      <button class="ib i" data-t="pencil" aria-pressed="false" aria-label="Pencil" title="Pencil"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20l.8-3.6L15.6 5.6a1.6 1.6 0 012.3 0l.5.5a1.6 1.6 0 010 2.3L7.6 19.2z"/><path d="M13.5 7.5l3 3"/></svg></button>
-      <button class="ib i" data-t="brush" aria-pressed="false" aria-label="Brush" title="Brush (thins with speed)"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20c2-.8 3-2.5 3-4.5 0-1 .8-2 1.8-2L18 4.5a2 2 0 013 3l-9.2 9.2c0 1-1 1.8-2 1.8-2 0-3.7 1-6 1.5z"/></svg></button>
-      <button class="ib i" data-t="marker" aria-pressed="false" aria-label="Marker" title="Marker"><svg class="ic" viewBox="0 0 24 24"><path d="M9 20H5v-4l9-9 4 4z"/><path d="M13 8l4 4"/><path d="M13 20h7"/></svg></button>
-      <button class="ib i" data-t="hl" aria-pressed="false" aria-label="Highlighter" title="Highlighter"><svg class="ic" viewBox="0 0 24 24"><path d="M14 4l6 6-7 7H7v-6z"/><path d="M4 21h9" stroke-width="3.2" opacity=".45"/></svg></button>
+    <div class="row" id="dockrow"><div class="dock" id="dock"><div class="grp" id="tools">
+      <button class="ib i" data-t="pen" data-g="draw" aria-pressed="true" aria-label="Draw: Pen" title="Draw: pen, pencil, brush, marker"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l5 6-3 8h-4L7 9z"/><circle cx="12" cy="12" r="1.2"/><path d="M12 17v4"/></svg><i class="cdot" aria-hidden="true"></i></button>
+      <button class="ib i" data-t="hl" aria-pressed="false" aria-label="Highlighter" title="Highlighter"><svg class="ic" viewBox="0 0 24 24"><path d="M14 4l6 6-7 7H7v-6z"/><path d="M4 21h9" stroke-width="3.2" opacity=".45"/></svg><i class="cdot" aria-hidden="true"></i></button>
       <button class="ib i" data-t="eraser" aria-pressed="false" aria-label="Eraser" title="Eraser"><svg class="ic" viewBox="0 0 24 24"><path d="M20 20H9L4 15a2 2 0 010-2.8l8-8a2 2 0 012.8 0l5 5a2 2 0 010 2.8L13 20"/><path d="M8 11l6 6"/></svg></button>
-      <button class="ib i" data-t="shape" aria-pressed="false" aria-label="Shapes" title="Shapes"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="10" width="10" height="10" rx="1"/><circle cx="15" cy="9" r="5"/></svg></button>
-      <button class="ib i" data-t="fill" aria-pressed="false" aria-label="Fill" title="Fill"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12l6-7 8 8-7 7z"/><path d="M20 17c1 1.4 1.8 2.4 1.8 3.2a1.8 1.8 0 01-3.6 0c0-.8.8-1.8 1.8-3.2z"/></svg></button>
-      <button class="ib i" data-t="sel" aria-pressed="false" aria-label="Select and move" title="Select, move and copy an area"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1" stroke-dasharray="3 2.5"/><path d="M12 9v6M9 12h6"/></svg></button>
+      <button class="ib i" data-t="shape" aria-pressed="false" aria-label="Shapes" title="Shapes, lines and arrows"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="10" width="10" height="10" rx="1"/><circle cx="15" cy="9" r="5"/></svg></button>
+      <button class="ib i" data-t="fill" aria-pressed="false" aria-label="Fill" title="Fill an area with color"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12l6-7 8 8-7 7z"/><path d="M20 17c1 1.4 1.8 2.4 1.8 3.2a1.8 1.8 0 01-3.6 0c0-.8.8-1.8 1.8-3.2z"/></svg></button>
+      <button class="ib i" data-t="sel" aria-pressed="false" aria-label="Select" title="Select, move and copy an area"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1" stroke-dasharray="3 2.5"/><path d="M12 9v6M9 12h6"/></svg></button>
       <button class="ib i" data-t="text" aria-pressed="false" aria-label="Text" title="Text"><svg class="ic" viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg></button>
-    </div>
-    <div class="grp"><button class="ib i" id="plus" aria-label="Add emoji, stickers, notes" title="Emoji, stickers, notes"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><button class="ib i" id="photo" aria-label="Photo" title="Photo"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg></button><input type="file" id="file" accept="image/*" hidden></div></div>
+    </div><i class="dsep" aria-hidden="true"></i><button class="ib i" id="plus" aria-label="Add photos, stickers, emoji, notes and labels" title="Add: photo, stickers, emoji, notes, labels"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="file" accept="image/*" hidden></div></div>
     <div class="row hidden" id="sbar">
       <span class="hint2" id="sbh">Drag the box to move it</span>
       <button class="ib" id="s-copy">Copy</button><button class="ib" id="s-del">Delete</button><button class="ib conf2" id="s-done">Done</button>
-    </div>
-    <div class="row hidden" id="shbar">
-      <div class="grp" id="shapes">
-        <button class="ib i" data-s="line" aria-pressed="true" aria-label="Line" title="Line"><svg class="ic" viewBox="0 0 24 24"><path d="M5 19L19 5"/></svg></button>
-        <button class="ib i" data-s="arrow" aria-pressed="false" aria-label="Arrow" title="Arrow"><svg class="ic" viewBox="0 0 24 24"><path d="M5 19L19 5M10 5h9v9"/></svg></button>
-        <button class="ib i" data-s="rect" aria-pressed="false" aria-label="Rectangle" title="Rectangle"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1"/></svg></button>
-        <button class="ib i" data-s="ellipse" aria-pressed="false" aria-label="Ellipse" title="Ellipse"><svg class="ic" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8" ry="6"/></svg></button>
-        <button class="ib i" data-s="tri" aria-pressed="false" aria-label="Triangle" title="Triangle"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5l8 14H4z"/></svg></button>
-      </div>
-      <button class="ib i" id="sh-fill" aria-pressed="false" aria-label="Fill shape" title="Fill shape"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></svg></button>
     </div>
     <div class="row hidden" id="tbar">
       <select id="t-font" aria-label="Font"></select>
       <div class="grp"><button class="ib i" id="t-dec" aria-label="Smaller text" title="Smaller text">A−</button><span id="t-sz">25</span><button class="ib i" id="t-inc" aria-label="Larger text" title="Larger text">A+</button></div>
       <div class="grp"><button class="ib i" id="t-b" aria-pressed="false" aria-label="Bold" title="Bold"><b>B</b></button><button class="ib i" id="t-i" aria-pressed="false" aria-label="Italic" title="Italic"><i>I</i></button><button class="ib i" id="t-al" aria-label="Alignment" title="Alignment"></button></div>
+      <button class="ib i" id="t-col" aria-label="Text color" title="Text color"><i class="csw"></i></button>
     </div>
-    <div class="row" id="r2"><div class="grp" id="cols"></div><label class="grp" id="szl"><i id="szp"></i><input type="range" id="sz" min="2" max="24" value="5" aria-label="Size"></label><button class="ib i" id="topt" aria-label="Tool options" title="Tool options"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button><button class="ib i" id="lyb" aria-label="Layers" title="Layers"><svg class="ic" viewBox="0 0 24 24"><path d="M12 4l9 5-9 5-9-5z"/><path d="M3 14l9 5 9-5"/></svg></button></div>
     <div class="row" id="obar">
       <span id="ohint" class="hint2"></span>
       <button class="ib i" id="o-edit" aria-label="Edit text" title="Edit text"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20l.8-3.6L15.6 5.6a1.6 1.6 0 012.3 0l.5.5a1.6 1.6 0 010 2.3L7.6 19.2z"/><path d="M13.5 7.5l3 3"/></svg></button>
@@ -645,18 +729,36 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       <div class="grp" id="pcols"></div>
       <label class="chk"><input type="checkbox" id="pall"> Apply to all pages</label>
     </div>
-    <div id="tsheet" class="hidden" role="dialog" aria-label="Tool options">
-      <div class="sh-top"><strong id="tst">Pen options</strong><button class="ib i" id="tsx" aria-label="Close">✕</button></div>
+    <div id="tsheet" class="hidden" role="dialog" aria-labelledby="tst">
+      <div class="sh-top"><strong id="tst">Pen</strong><button class="ib i" id="tsx" aria-label="Close">✕</button></div>
+      <div class="tsec" id="ts-kind"><div class="kinds" id="dtypes"><button data-k="pen" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l5 6-3 8h-4L7 9z"/><circle cx="12" cy="12" r="1.2"/><path d="M12 17v4"/></svg><span>Pen</span></button><button data-k="pencil" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20l.8-3.6L15.6 5.6a1.6 1.6 0 012.3 0l.5.5a1.6 1.6 0 010 2.3L7.6 19.2z"/><path d="M13.5 7.5l3 3"/></svg><span>Pencil</span></button><button data-k="brush" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20c2-.8 3-2.5 3-4.5 0-1 .8-2 1.8-2L18 4.5a2 2 0 013 3l-9.2 9.2c0 1-1 1.8-2 1.8-2 0-3.7 1-6 1.5z"/></svg><span>Brush</span></button><button data-k="marker" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24"><path d="M9 20H5v-4l9-9 4 4z"/><path d="M13 8l4 4"/><path d="M13 20h7"/></svg><span>Marker</span></button></div></div>
       <canvas id="tpv" width="520" height="90"></canvas>
-      <div id="tbody">
-        <label class="tr"><span>Thickness</span><input type="range" id="sz2" min="2" max="24"></label>
-        <div class="tr" id="opw"><span>Opacity</span><label class="grp" id="opl" title="Opacity"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 010 16z" fill="currentColor"/></svg><input type="range" id="op" min="10" max="100" value="100" aria-label="Opacity"></label></div>
+      <div class="tsec" id="ts-shape"><div class="sec">Shape</div><div class="shrow"><div class="grp" id="shapes">
+        <button class="ib i" data-s="line" aria-pressed="true" aria-label="Line" title="Line"><svg class="ic" viewBox="0 0 24 24"><path d="M5 19L19 5"/></svg></button>
+        <button class="ib i" data-s="arrow" aria-pressed="false" aria-label="Arrow" title="Arrow"><svg class="ic" viewBox="0 0 24 24"><path d="M5 19L19 5M10 5h9v9"/></svg></button>
+        <button class="ib i" data-s="rect" aria-pressed="false" aria-label="Rectangle" title="Rectangle"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1"/></svg></button>
+        <button class="ib i" data-s="ellipse" aria-pressed="false" aria-label="Ellipse" title="Ellipse"><svg class="ic" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8" ry="6"/></svg></button>
+        <button class="ib i" data-s="tri" aria-pressed="false" aria-label="Triangle" title="Triangle"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5l8 14H4z"/></svg></button>
+      </div><button class="ib" id="sh-fill" aria-pressed="false" title="Fill the shape with the color"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></svg><span>Filled</span></button></div></div>
+      <div class="tsec" id="ts-font"><div class="sec">Font</div><div class="fgrid" id="tx-fonts"></div>
+        <div class="tr"><span>Size</span><div class="grp"><button class="ib i" id="tx-dec" aria-label="Smaller text">A−</button><b id="tx-sz">25</b><button class="ib i" id="tx-inc" aria-label="Larger text">A+</button></div></div>
+        <div class="tr"><span>Style</span><div class="grp"><button class="ib i" id="tx-b" aria-pressed="false" aria-label="Bold"><b>B</b></button><button class="ib i" id="tx-i" aria-pressed="false" aria-label="Italic"><i>I</i></button><button class="ib i" id="tx-al" aria-label="Alignment"></button></div></div></div>
+      <div class="tsec" id="ts-col"><div class="sec">Color</div><div class="grp" id="cols"></div></div>
+      <div class="tsec" id="ts-size">
+        <div class="tr"><span id="szlab">Size</span><label class="grp" id="szl"><i id="szp"></i><input type="range" id="sz" min="2" max="24" value="5" aria-label="Size"></label><b id="szv" class="tval">5</b></div>
+        <div class="tr" id="opw"><span>Opacity</span><label class="grp" id="opl" title="Opacity"><input type="range" id="op" min="10" max="100" value="100" aria-label="Opacity"></label><b id="opv" class="tval">100%</b></div>
+      </div>
+      <div class="tsec" id="ts-press">
+        <div class="tr"><span>Pen pressure</span><small class="tsub">Press harder with a stylus for a thicker line</small><button class="tgl" id="prsw" role="switch" aria-checked="true" aria-label="Pen pressure"><i></i></button></div>
+        <label class="tr" id="prr"><span>Strength</span><input type="range" id="prs" min="10" max="150"></label>
+      </div>
+      <details class="tsec" id="ts-more"><summary>More settings</summary>
         <div class="tr" id="tipr"><span>Tip</span><div class="seg2" id="tips"><button data-v="round">Round</button><button data-v="square">Square</button><button data-v="chisel">Chisel</button></div></div>
         <label class="tr" id="smr"><span>Smoothing</span><input type="range" id="smo" min="0" max="100"></label>
-        <label class="tr" id="prr"><span>Pen pressure</span><input type="range" id="prs" min="0" max="150"></label>
-        <label class="chk"><input type="checkbox" id="asst"> Hold still to straighten lines and fix shapes</label>
+        <label class="chk" id="asstr"><input type="checkbox" id="asst"> Hold still to straighten lines and fix shapes</label>
         <label class="chk"><input type="checkbox" id="fing"> Draw with fingers <small style="opacity:.6">(off: fingers only pan and zoom)</small></label>
-      </div>
+      </details>
+      <p class="tnote hidden" id="tsn"></p>
     </div>
     <div id="lsheet" class="hidden" role="dialog" aria-label="Layers">
       <div class="sh-top"><strong>Layers</strong><span style="display:flex;gap:8px"><button class="ib" id="ly-add">+ Add layer</button><button class="ib i" id="lsx" aria-label="Close">✕</button></span></div>
@@ -672,7 +774,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       <p class="hint2" style="margin-top:10px">Tip: draw on the cover, or add a label, stickers and notes with the + button.</p>
     </div>
     <div id="sheet" class="hidden" role="dialog" aria-label="Add">
-      <div class="sh-top"><nav class="tabs sm" id="stabs"><button data-p="emoji" aria-selected="true">Emoji</button><button data-p="stick" aria-selected="false">Stickers</button><button data-p="note" aria-selected="false">Notes</button><button data-p="label" aria-selected="false">Labels</button></nav><button class="ib i" id="shx" aria-label="Close">✕</button></div>
+      <div class="sh-top"><button id="photo" class="phb" aria-label="Add a photo" title="Add a photo"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg>Photo</button><nav class="tabs sm" id="stabs"><button data-p="emoji" aria-selected="true">Emoji</button><button data-p="stick" aria-selected="false">Stickers</button><button data-p="note" aria-selected="false">Notes</button><button data-p="label" aria-selected="false">Labels</button></nav><button class="ib i" id="shx" aria-label="Close">✕</button></div>
       <div id="spane"></div>
     </div>
   </div>
@@ -1478,7 +1580,7 @@ function pushHist(){histAdd();ctx.globalCompositeOperation='source-over';ctx.glo
    Photos on pages stay free (movable objects). */
 let photoCover=false;
 const coverPhotoPro=()=>{if(plan==='pro')return true;upsell('A photo on the cover is part of Pro. You can still draw on the cover and add a label, stickers and notes.');return false};
-$('#photo').onclick=()=>{if(pi<0&&!coverPhotoPro())return;photoCover=pi<0;$('#file').click()};
+$('#photo').onclick=()=>{closeSheet();if(pi<0&&!coverPhotoPro())return;photoCover=pi<0;$('#file').click()};
 $('#file').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>photoCover&&pi<0?setCoverPhoto(im):placePhoto(im);im.src=r.result};r.readAsDataURL(f)};
 function coverFill(im){ // the photo cropped to fill the cover
   const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),k=Math.max(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*k,h=im.naturalHeight*k;
@@ -1578,7 +1680,7 @@ function setView(v){
   commitText();view=v;
   $('#ed').classList.toggle('vm',v);$('#eye').setAttribute('aria-pressed',v);
   if(!v)selectObj(null);
-  closeSheet();syncText();
+  closeSheet();closeTS();syncText();syncBar();
 }
 function addObj(o,stay){
   commitText();objList().push(o);renderObjs();if(!stay)setView(true);
@@ -1979,13 +2081,17 @@ const ALIGN={
  center:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16M7 10h10M4 14h16M7 18h10"/></svg>',
  right:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16M10 10h10M4 14h16M10 18h10"/></svg>'};
 const selText=()=>selO&&selO._o.k==='note'&&selO._o.c==='transparent'?selO:null;
+const DRAW=['pen','pencil','brush','marker'];
 function selectTool(t){
   commitSel();cancelStroke();tool=t;size=sizes[t]||5;$('#sz').value=size;
   $('#ed').classList.toggle('tm',t==='text');if(cur&&!view&&t!=='text')selectObj(null);
+  if(DRAW.includes(t)){ // one button for pen, pencil, brush and marker: it shows the one in use
+    const d=$('#tools [data-g="draw"]'),k=$('#dtypes [data-k="'+t+'"] svg');d.dataset.t=t;d.setAttribute('aria-label','Draw: '+TNAME[t]);
+    if(k){d.querySelector('svg').replaceWith(k.cloneNode(true))}
+  }
   document.querySelectorAll('#tools button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.t===t));
   color=t==='hl'?cmem.h:cmem.i;buildCols();
-  $('#opl').classList.toggle('hidden',t==='eraser');
-  $('#ed').classList.toggle('ts',t==='sel');$('#topt').classList.toggle('hidden',t==='text'||t==='fill'||t==='sel');
+  $('#ed').classList.toggle('ts',t==='sel');
   if(!$('#tsheet').classList.contains('hidden'))fillTs();
   syncSel();syncText();
 }
@@ -2000,10 +2106,18 @@ function buildCols(){
   });
   const p=document.createElement('input');p.type='color';p.className='cpk';p.value=/^#[0-9a-f]{6}$/i.test(color)?color:'#000000';p.setAttribute('aria-label','Other color');
   p.oninput=e=>{color=e.target.value;cmem[hl?'h':'i']=color;box.querySelectorAll('.sw').forEach(x=>x.setAttribute('aria-pressed','false'));recolor(color);szPrev()};
-  box.append(p);szPrev();
+  box.append(p);szPrev();dotCols();
 }
-function szPrev(){const d=$('#szp');d.style.width=d.style.height=Math.min(26,4+size)+'px';d.style.background=tool==='eraser'?'transparent':color}
-document.querySelectorAll('#tools button').forEach(b=>b.onclick=()=>selectTool(b.dataset.t));
+// the small color line under Draw and Highlighter in the dock
+function dotCols(){const d=$('#tools [data-g="draw"]'),h=$('#tools [data-t="hl"]');if(d)d.style.setProperty('--c',cmem.i);if(h)h.style.setProperty('--c',cmem.h)}
+function szPrev(){const d=$('#szp');d.style.width=d.style.height=Math.min(26,4+size)+'px';d.style.background=tool==='eraser'?'transparent':color;const v=$('#szv');if(v)v.textContent=size;if(!$('#tsheet').classList.contains('hidden')&&tool!=='text')previewStroke()}
+// tap a tool: it's picked and its menu opens above it (tap it again to close the menu)
+document.querySelectorAll('#tools button').forEach(b=>b.onclick=()=>{
+  const t=b.dataset.t,open=!$('#tsheet').classList.contains('hidden')&&TS.a===b&&!TS.m;
+  if(tool===t&&open){closeTS();return}
+  if(tool!==t)selectTool(t);
+  openTS(b);
+});
 $('#sz').oninput=e=>{
   size=+e.target.value;szPrev();
   const d=selText();
@@ -2027,14 +2141,18 @@ function setTxt(patch){
 }
 function syncText(){
   const d=selText();
-  $('#tbar').classList.toggle('hidden',!((tool==='text'&&!view)||d));
-  $('#shbar').classList.toggle('hidden',!(tool==='shape'&&!view));
+  $('#tbar').classList.toggle('hidden',!d);
   let o=tdef;
   if(d){const q=d._o,e=rtEffNow(d);o={...q,fm:e.fm,b:e.b,i:e.i};size=clampN(Math.round((e.f-30)/4),2,24);$('#sz').value=size;if(e.c&&e.c!==color){color=e.c;cmem.i=color;buildCols()}}
   $('#t-font').value=o.fm||'sans';
   $('#t-b').setAttribute('aria-pressed',!!o.b);$('#t-i').setAttribute('aria-pressed',!!o.i);
   $('#t-al').innerHTML=ALIGN[o.al||'left'];
   $('#t-sz').textContent=Math.round((size*4+30)/2);
+  // the same choices in the Text menu
+  document.querySelectorAll('#tx-fonts button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===(o.fm||'sans')));
+  $('#tx-b').setAttribute('aria-pressed',!!o.b);$('#tx-i').setAttribute('aria-pressed',!!o.i);$('#tx-al').innerHTML=ALIGN[o.al||'left'];
+  $('#tx-sz').textContent=Math.round(((d||tool==='text'?size:sizes.text)*4+30)/2);
+  $('#t-col').style.setProperty('--c',color);
 }
 function initTools(){
   const sel=$('#t-font');
@@ -2048,14 +2166,20 @@ function initTools(){
   document.querySelector('.bar.bot.ed').addEventListener('mousedown',e=>{if(rtEditing()&&!e.target.closest('select,input'))e.preventDefault()});
   document.querySelector('.bar.bot.ed').addEventListener('pointerdown',e=>{if(rtEditing()&&!e.target.closest('select,input'))e.preventDefault()});
   $('#t-dec').onclick=()=>stepSize(-1);$('#t-inc').onclick=()=>stepSize(1);
+  // the Text menu: font, size, style (for the text you're writing, or the next one)
+  FONTS.forEach(f=>{const b=document.createElement('button');b.dataset.f=f.k;b.textContent=f.n;b.style.fontFamily=f.css;b.onclick=()=>{setTxt({fm:f.k});rtRefocus()};$('#tx-fonts').append(b)});
+  $('#tx-b').onclick=()=>setTxt({b:cur0().b?0:1});$('#tx-i').onclick=()=>setTxt({i:cur0().i?0:1});
+  $('#tx-al').onclick=()=>setTxt({al:{left:'center',center:'right',right:'left'}[cur0().al||'left']});
+  $('#tx-dec').onclick=()=>stepSize(-1);$('#tx-inc').onclick=()=>stepSize(1);
+  $('#t-col').onclick=()=>{const o=!$('#tsheet').classList.contains('hidden')&&TS.m==='color';if(o)closeTS();else openTS($('#t-col'),'color')};
   document.querySelectorAll('#shapes button').forEach(b=>b.onclick=()=>{shape=b.dataset.s;document.querySelectorAll('#shapes button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
   $('#sh-fill').onclick=()=>{shFill=!shFill;$('#sh-fill').setAttribute('aria-pressed',shFill)};
-  $('#op').oninput=e=>{opa=+e.target.value/100};
+  $('#op').oninput=e=>{opa=+e.target.value/100;$('#opv').textContent=e.target.value+'%'};
 }
 
 /* Drawing */
 const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
-function pos(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height,p:e.pointerType==='pen'&&e.pressure>0?clampN(.5+(e.pressure-.5)*ENV.sens,.05,1):.5}}
+function pos(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height,p:e.pointerType==='pen'&&e.pressure>0&&ENV.pr!==false?clampN(.5+(e.pressure-.5)*ENV.sens,.05,1):.5}}
 function wd(p){return tool==='eraser'?size*3:tool==='hl'?size*3:tool==='marker'?size*2.5:tool==='pencil'?size*(.5+p*.8):tool==='brush'?size*1.6*p:tool==='shape'?size*1.2:size*(.5+p)}
 function al(){return opa*(tool==='hl'?.5:tool==='marker'?.9:tool==='pencil'?.9:1)}
 let penPat={c:null,p:null};
@@ -2131,14 +2255,14 @@ function floodFill(px,py){
 
 /* Options, stylus, shape assist */
 const OPT0={pen:{tip:'round',sm:.25},pencil:{tip:'round',sm:.1},brush:{tip:'round',sm:.35},marker:{tip:'round',sm:.2},hl:{tip:'square',sm:.2},eraser:{tip:'round',sm:0}};
-let OPT={},ENV={sens:1,fingers:true,assist:true,manual:false,autoDone:false};
+let OPT={},ENV={sens:1,pr:true,fingers:true,assist:true,manual:false,autoDone:false};
 try{const q=JSON.parse(localStorage.getItem('sb-opt')||'{}');OPT=q.o||{};Object.assign(ENV,q.e||{})}catch(e){}
 const optOf=t=>Object.assign({tip:'round',sm:0},OPT0[t]||{},OPT[t]||{});
 function saveOpt(){try{localStorage.setItem('sb-opt',JSON.stringify({o:OPT,e:ENV}))}catch(e){}}
 let svT2=null;
 function toast(t){const e=$('#sv');if(!e)return;clearTimeout(svT);clearTimeout(svT2);window._tu=Date.now()+3200;e.className='on';e.textContent=t;svT2=setTimeout(()=>{e.className=''},3200)}
 let penSeen=false,penDown=false,asst=null,holdT=null,mq=null;
-function autoPen(){if(!ENV.manual&&!ENV.autoDone){ENV.autoDone=true;ENV.fingers=false;saveOpt();toast('Pen detected: fingers now pan and zoom. Change this in tool options.')}}
+function autoPen(){if(!ENV.manual&&!ENV.autoDone){ENV.autoDone=true;ENV.fingers=false;saveOpt();toast('Pen detected: fingers now pan and zoom. Change this in the pen’s menu → More settings.')}}
 function chiselPath(a,b,w){
   const d=w/2,dx=d*.7071,dy=-d*.7071,P=[[a.x+dx,a.y+dy],[b.x+dx,b.y+dy],[b.x-dx,b.y-dy],[a.x-dx,a.y-dy]];
   const cr=(b.x-a.x)*(-2*dy)-(b.y-a.y)*(-2*dx);if(cr<0)P.reverse();
@@ -2396,11 +2520,11 @@ function initLayers(){
   };
 }
 
-/* Tool options panel */
+/* The tool menu: opens above a tool in the dock (Update 16) */
 function previewStroke(){
   const c=$('#tpv'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);
   if(tool==='eraser'||tool==='fill'||tool==='text'||tool==='sel'){return}
-  const o=optOf(tool),w=wd(.5);x.save();x.globalAlpha=Math.min(1,al());
+  const o=optOf(tool),w=Math.min(wd(.5),c.height*.8);x.save();x.globalAlpha=Math.min(1,al());
   x.strokeStyle=x.fillStyle=tool==='pencil'?color:color;x.lineCap=o.tip==='round'?'round':'square';x.lineJoin=o.tip==='round'?'round':'miter';x.lineWidth=w;
   const pts2=[];for(let i=0;i<=60;i++){const t=i/60;pts2.push({x:30+t*(c.width-60),y:c.height/2+Math.sin(t*Math.PI*2)*c.height*.24})}
   if(o.tip==='chisel'){
@@ -2411,31 +2535,54 @@ function previewStroke(){
   }else{x.beginPath();pts2.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.stroke()}
   x.restore();
 }
-const TNAME={pen:'Pen',pencil:'Pencil',brush:'Brush',marker:'Marker',hl:'Highlighter',eraser:'Eraser',shape:'Shapes'};
+const TNAME={pen:'Pen',pencil:'Pencil',brush:'Brush',marker:'Marker',hl:'Highlighter',eraser:'Eraser',shape:'Shapes',fill:'Fill',sel:'Select',text:'Text'};
+const TNOTE={eraser:'Undo brings back anything you erase by mistake.',fill:'Tap a closed area on the page to fill it.',sel:'Draw a box around part of the page, then move, copy or delete it.',text:'Tap the page to add text. Select words to change just them.'};
+const TS={a:null,m:''}; // the tool menu: the button it opens from, and its mode ('' = the tool's menu, 'color' = colors only)
 function fillTs(){
-  $('#tst').textContent=(TNAME[tool]||'Tool')+' options';
-  const o=optOf(tool),stroke=tool!=='shape'&&tool!=='eraser';
-  $('#sz2').value=size;$('#opw').classList.toggle('hidden',tool==='eraser');
-  $('#tipr').classList.toggle('hidden',!stroke);$('#smr').classList.toggle('hidden',!stroke);
+  const t=tool,col=TS.m==='color',stroke=DRAW.includes(t)||t==='hl',show=(q,on)=>$(q).classList.toggle('hidden',!on);
+  $('#tst').textContent=col?'Text color':TNAME[t]||'Tool';
+  show('#ts-kind',!col&&DRAW.includes(t));show('#tpv',!col&&(stroke||t==='shape'));
+  show('#ts-shape',!col&&t==='shape');show('#ts-font',!col&&t==='text');
+  show('#ts-col',col||!['eraser','sel'].includes(t));
+  show('#ts-size',!col&&!['fill','sel','text'].includes(t));show('#opw',t!=='eraser');
+  $('#szlab').textContent=t==='shape'?'Line':t==='eraser'?'Size':'Size';
+  show('#ts-press',!col&&['pen','pencil','brush'].includes(t));
+  show('#ts-more',!col&&stroke);show('#tipr',stroke);show('#smr',stroke);
+  const n=col?'':TNOTE[t]||'';$('#tsn').textContent=n;show('#tsn',!!n);
+  document.querySelectorAll('#dtypes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===t));
+  const o=optOf(t);
   document.querySelectorAll('#tips button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===o.tip));
   $('#smo').value=Math.round(o.sm*100);$('#prs').value=Math.round(ENV.sens*100);
+  $('#prsw').setAttribute('aria-checked',ENV.pr!==false);show('#prr',ENV.pr!==false);
   $('#asst').checked=ENV.assist;$('#fing').checked=ENV.fingers;
-  const op=$('#opl');if(!$('#opw').contains(op))$('#opw').append(op);
-  previewStroke();
+  $('#opv').textContent=$('#op').value+'%';$('#szv').textContent=size;
+  syncText();previewStroke();
 }
+function placeTS(){ // over the button it opens from, kept inside the screen
+  const t=$('#tsheet'),a=TS.a;if(!a||t.classList.contains('hidden'))return;
+  const bar=t.parentElement.getBoundingClientRect(),r=a.getBoundingClientRect(),w=t.offsetWidth;
+  const x=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2));
+  t.style.left=Math.round(x-bar.left)+'px';
+}
+function openTS(a,m=''){
+  TS.a=a;TS.m=m;['#sheet','#psheet','#lsheet','#csheet'].forEach(q=>$(q).classList.add('hidden'));
+  const t=$('#tsheet');fillTs();t.classList.remove('hidden');placeTS();
+}
+function closeTS(){$('#tsheet').classList.add('hidden');TS.m=''}
 function initOpts(){
-  $('#topt').onclick=()=>{
-    const t=$('#tsheet');if(!t.classList.contains('hidden')){t.classList.add('hidden');return}
-    closeSheet();fillTs();t.classList.remove('hidden');
-  };
-  $('#tsx').onclick=()=>$('#tsheet').classList.add('hidden');
-  $('#sz2').oninput=e=>{$('#sz').value=e.target.value;$('#sz').dispatchEvent(new Event('input'));previewStroke()};
+  $('#tsx').onclick=closeTS;
   $('#op').addEventListener('input',previewStroke);
+  document.querySelectorAll('#dtypes button').forEach(b=>b.onclick=()=>{selectTool(b.dataset.k);TS.a=$('#tools [data-g="draw"]');fillTs();placeTS()});
   document.querySelectorAll('#tips button').forEach(b=>b.onclick=()=>{OPT[tool]=Object.assign({},OPT[tool]||{},{tip:b.dataset.v});saveOpt();fillTs()});
   $('#smo').oninput=e=>{OPT[tool]=Object.assign({},OPT[tool]||{},{sm:+e.target.value/100});saveOpt()};
   $('#prs').oninput=e=>{ENV.sens=+e.target.value/100;saveOpt()};
+  $('#prsw').onclick=()=>{ENV.pr=ENV.pr===false;saveOpt();fillTs()};
   $('#asst').onchange=e=>{ENV.assist=e.target.checked;saveOpt()};
   $('#fing').onchange=e=>{ENV.fingers=e.target.checked;ENV.manual=true;saveOpt()};
+  // the menu closes when you start drawing on the page, with Escape, or when the screen changes size
+  $('#main').addEventListener('pointerdown',()=>{if(!$('#tsheet').classList.contains('hidden'))closeTS()},true);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#tsheet').classList.contains('hidden')){closeTS();e.stopPropagation()}},true);
+  addEventListener('resize',placeTS);
 }
 
 
@@ -4580,7 +4727,7 @@ async function makeWelcome(){
       T('Pen',80,240,200,38,{b:1}),T('Pencil',80,390,200,38,{b:1}),T('Brush',80,540,200,38,{b:1}),T('Marker',80,690,200,38,{b:1}),
       T('Highlight what matters',340,808,420,38,{fm:'hand',c:'#1d2b4a'}),T('Highlighter',80,822,250,38,{b:1}),
       T('Shapes and fill',780,1030,120,30,{al:'left',extra:1}),
-      T('Each tool remembers its size. Pens feel pressure when your stylus has it.',80,900,760,30,{c:'#56627a'}),S(10,760,60,100,10)])}
+      T('Tap a tool for its menu: color, size, pressure.',80,895,760,30,{c:'#56627a'}),S(10,760,60,100,10)])}
   // 3 – write
   {const [c,x]=page();x.strokeStyle='#e5484d';x.lineWidth=5;wave(x,90,1010,330,6,22);ink.push(c);ps.push({p:'grid',c:PAPER});
     const fonts=[['sans','Sans'],['serif','Serif'],['mono','Mono'],['hand','Handwriting'],['marker','Marker'],['display','Elegant'],['script','Script'],['round','Rounded']];
@@ -4725,8 +4872,8 @@ function syncSet(){
 /* Guided tour */
 const TOUR=[
   {sel:'#sp',t:'Open your notebook',d:'Drag the cover to open it, then drag any page to turn it. Tap a page to draw or write on it.'},
-  {sel:'#tools',t:'Pick your tools',d:'Pen, pencil, brush, marker, highlighter and more. The sliders button holds size, tip and smoothing.'},
-  {sel:'#plus',t:'Make it yours',d:'Add emoji, stickers, notes and photos. Use layers to keep parts of a page separate.'}
+  {sel:'#dock',t:'Pick your tools',d:'Tap a tool to open its menu: color, size and more. The first one holds the pen, pencil, brush and marker.'},
+  {sel:'#plus',t:'Make it yours',d:'Add photos, stickers, emoji, notes and labels. Layers, at the top, keep parts of a page separate.'}
 ];
 let tIdx=0;try{tIdx=+(localStorage.getItem('sb-tour')||0)}catch(e){}
 function tourSave(n){tIdx=n;try{localStorage.setItem('sb-tour',n)}catch(e){}}
@@ -5902,7 +6049,7 @@ const SHORT=[
   ['View',[['+  −','Zoom in / out'],['0','Reset zoom'],['←  →','Turn the page (book)'],['Esc','Back to the shelf (book)']]],
   ['Shelf',[['/','Search notebooks'],['Ctrl/⌘ K','Search notebooks'],['N','New notebook'],['?','This help']]]
 ];
-const GEST=[['Two fingers','Pinch to zoom, drag to move around the page. Double-tap the zoom button to reset.'],['Hold at the end of a stroke','Straightens a line and tidies circles, rectangles and triangles.'],['Apple Pencil and stylus','Pressure changes line width. Palm touches are ignored while you draw with a pen.'],['Page corner','Drag the corner of a page in the book to turn it by hand.']];
+const GEST=[['Tap a tool','Its menu opens above it: color, size and more. The first tool holds the pen, pencil, brush and marker. Tap it again, or draw, to close the menu.'],['Two fingers','Pinch to zoom, drag to move around the page. Double-tap the zoom button to reset.'],['Hold at the end of a stroke','Straightens a line and tidies circles, rectangles and triangles.'],['Apple Pencil and stylus','Pressure changes line width – switch it off in the pen’s menu. Palm touches are ignored while you draw with a pen.'],['Page corner','Drag the corner of a page in the book to turn it by hand.']];
 function initHelp(){
   const d=$('#hd'),b=$('#hb');
   const coarse=matchMedia('(pointer:coarse)').matches;

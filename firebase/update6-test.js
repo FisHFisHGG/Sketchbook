@@ -183,7 +183,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   ok(await B.evaluate(()=>cur.cobjs.length===2&&cur.cobjs[1].lb.id==='lbl-strip'&&cur.cobjs[1].y>cur.cobjs[0].y&&!!selO&&selO._o===cur.cobjs[1]),'a Long strip label is added (below the first one) and selected');
   await B.click('#o-edit');await B.waitForSelector('#lb-t');await B.fill('#lb-t','Summer 2026');await B.press('#lb-t','Enter');await B.waitForTimeout(800);
   ok(await B.evaluate(()=>cur.cobjs[1].lb.t==='Summer 2026'&&/^data:image\/png/.test(cur.cobjs[1].src)),'✎ changes the words on the label');
-  await B.click('#photo');await B.waitForSelector('#up:not(.hidden)');
+  await B.click('#plus');await B.click('#photo');await B.waitForSelector('#up:not(.hidden)');
   ok(await B.evaluate(()=>/photo on the cover is part of Pro/.test($('#upm').textContent)),'free plan: a photo on the cover asks for Pro');
   await B.click('#upno');
   await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.waitForTimeout(300);
@@ -248,7 +248,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await P.evaluate(()=>showEditor(-1));await P.waitForTimeout(800);
   ok(await P.evaluate(()=>$('#bgimg').classList.contains('on')),'the PDF\'s first page shows as the cover photo in the editor');
   const sh=await b.newPage({viewport:{width:300,height:400}});await sh.setContent('<body style="margin:0;background:#2050d0"></body>');const phPath=path.join(require('os').tmpdir(),'u6-photo.png');await sh.screenshot({path:phPath});await sh.close();
-  const [fc]=await Promise.all([P.waitForEvent('filechooser'),P.click('#photo')]);await fc.setFiles(phPath);await P.waitForTimeout(1200);
+  await P.click('#plus');const [fc]=await Promise.all([P.waitForEvent('filechooser'),P.click('#photo')]);await fc.setFiles(phPath);await P.waitForTimeout(1200);
   const cp=await P.evaluate(async()=>{const im=new Image();im.src=cur.cbg;await im.decode();const c=document.createElement('canvas');c.width=c.height=1;c.getContext('2d').drawImage(im,im.width/2,im.height/2,1,1,0,0,1,1);return [...c.getContext('2d').getImageData(0,0,1,1).data].slice(0,3)});
   ok(cp[2]>180&&cp[0]<80&&!(await P.evaluate(()=>cur.cobjs.length)),'Pro: the photo button on the cover sets the cover photo (blue) – not a loose object ('+cp+')');
   const bx=await P.locator('#cv').boundingBox();await P.mouse.move(bx.x+bx.width*.3,bx.y+bx.height*.5);await P.mouse.down();await P.mouse.move(bx.x+bx.width*.7,bx.y+bx.height*.55,{steps:8});await P.mouse.up();await P.waitForTimeout(1200);
