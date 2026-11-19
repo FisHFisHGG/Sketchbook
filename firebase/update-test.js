@@ -12,6 +12,10 @@ const OLD=fs.mkdtempSync(path.join(os.tmpdir(),'foliet-old-'));
 cp.execSync('git archive '+REF+' app | tar -x -C '+JSON.stringify(OLD),{cwd:path.join(__dirname,'..')});
 const mime={'.html':'text/html','.js':'text/javascript','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json','.woff2':'font/woff2'};
 let ROOT=path.join(OLD,'app');
+// a function only the new version has: it tells which version is running (works for any old version)
+const fnames=f=>new Set([...fs.readFileSync(f,'utf8').matchAll(/function (\w+)\(/g)].map(m=>m[1]));
+const OLDF=fnames(path.join(OLD,'app','index.html')),MARK=[...fnames(path.join(NEW,'index.html'))].find(n=>!OLDF.has(n))||'';
+const isNew=p=>p.evaluate(m=>!!m&&typeof window[m]==='function',MARK);
 const answerSurvey=async(p,v='youtube')=>{try{await p.waitForSelector('#srv',{timeout:4000})}catch(e){return false}await p.click('#srv .srv-opt[data-v="'+v+'"]');await p.click('#srv .btn');await p.waitForSelector('#srv',{state:'detached'});return true};
 let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorization:'Bearer owner','Content-Type':'application/json'},body:body&&JSON.stringify(body)});
@@ -25,7 +29,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await p.goto('http://127.0.0.1:5194/app/?emu=127.0.0.1');await p.waitForSelector('#a-em',{timeout:15000});
   await p.click('.btn2');await p.fill('#a-em','keep@example.com');await p.fill('#a-pw','secret123');await p.click('#acc-body button[type=submit]');
   await p.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});await answerSurvey(p);
-  ok(await p.evaluate(()=>typeof LIBST==='undefined'),'the old version of the app is running ('+REF+')');
+  ok(!!MARK&&!(await isNew(p)),'the old version of the app is running ('+REF+'; the new one has '+MARK+'())');
   const uid=await p.evaluate(()=>ACC.user.uid);
   await admin('pro/'+uid,{fields:{by:{stringValue:'admin'},since:{timestampValue:new Date().toISOString()},days:{integerValue:'0'}}});
   await p.waitForFunction(()=>ACC.pro,null,{timeout:15000});
@@ -48,8 +52,8 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
 
   // ---- the update: the same address now serves the new version
   ROOT=NEW;
-  for(let i=0;i<3&&!(await p.evaluate(()=>typeof LIBST!=='undefined').catch(()=>false));i++){await p.reload();await p.waitForTimeout(1500)}
-  await p.waitForFunction(()=>typeof LIBST!=='undefined'&&ACC.libUid&&!ACC.gate&&data.length,null,{timeout:20000});
+  for(let i=0;i<3&&!(await isNew(p).catch(()=>false));i++){await p.reload();await p.waitForTimeout(1500)}
+  await p.waitForFunction(m=>typeof window[m]==='function'&&ACC.libUid&&!ACC.gate&&data.length,MARK,{timeout:20000});
   ok(true,'the new version of the app is running');
   await p.waitForFunction(()=>ACC.pro,null,{timeout:15000});await p.waitForTimeout(1500);
   const after=await sig();
