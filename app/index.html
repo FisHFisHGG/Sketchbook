@@ -3875,8 +3875,9 @@ function checkIntro(){
 }
 // wait until nothing else is open on the shelf
 function whenFree(fn,tries=0){
-  const busy=$('#shelf').classList.contains('hidden')||[...document.querySelectorAll('[aria-modal="true"],#menu')].some(d=>d.getClientRects().length&&!d.classList.contains('hidden'));
-  if(busy){if(tries<120)setTimeout(()=>whenFree(fn,tries+1),3000);return}fn();
+  const boot=!$('#boot').classList.contains('hidden'); // the start window: right after it closes (it's short)
+  const busy=boot||$('#shelf').classList.contains('hidden')||[...document.querySelectorAll('[aria-modal="true"],#menu')].some(d=>d.getClientRects().length&&!d.classList.contains('hidden'));
+  if(busy){if(tries<120)setTimeout(()=>whenFree(fn,tries+(boot?0:1)),boot?400:3000);return}fn();
 }
 async function myRecords(){
   const F=ACC.F,db=ACC.db,uid=ACC.user.uid,one=async(c)=>{try{const s=await F.getDoc(F.doc(db,c,uid));return s.exists()?s.data():null}catch(e){return null}};
