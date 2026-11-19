@@ -447,6 +447,14 @@ body:has(#shelf:not(.hidden)) #sv{top:auto;bottom:calc(env(safe-area-inset-botto
 .snip{display:block;font-weight:400;opacity:.8;font-size:.85em;margin-top:2px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .empty{grid-column:1/-1;text-align:center;opacity:.7;padding:40px 0}
 #set,#tour,#acct{position:fixed;inset:0}
+/* a live link opened by someone (app/?view=<code>): the same book, only to look at */
+.vonly{display:none}html.viewing .vonly:not(.hidden){display:inline-flex}
+html.viewing :is(#block,#bshare,#bexp,#badd,#ov-l,#ov-r,#ov-dup,#ov-del){display:none!important}
+.vlive{align-items:center;gap:6px;font-size:.82em;opacity:.8;white-space:nowrap}.vlive::before{content:'';width:8px;height:8px;border-radius:50%;background:#2f9e5b;flex:none}
+#vedit{text-decoration:none;align-items:center}
+.ld.wait::before{display:none}.ld.wait::after{content:"Not online yet"}.tp.ld.wait::after{content:""}
+html.viewing #bclose::before{content:'';display:inline-block;width:10px;height:14px;margin-right:7px;vertical-align:-2px;background:#23407a;border-radius:2px 4px 4px 2px;box-shadow:inset 2px 0 0 rgba(0,0,0,.28)}
+#boot.msg .b-run,#boot.msg .b-tip,#boot.msg #boff-bak,#boot.msg #boff-try,#boot.msg:not(.nonet) .b-offic{display:none}#boot.msg .b-off{display:grid;gap:10px;justify-items:center}
 /* the start window: the checks while Foliet starts, and "Continue offline" without internet */
 #boot{position:fixed;inset:0;z-index:96;background:var(--desk);display:grid;place-items:center;padding:20px;transition:opacity .3s}
 #boot.out{opacity:0;pointer-events:none}
@@ -555,7 +563,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </section>
 
 <section id="bv" class="hidden">
-  <div class="bar"><button class="ib" id="bclose">‹ Notebooks</button><input id="btitle" aria-label="Notebook name" maxlength="40"><span class="hint" id="hint"></span><button class="ib i" id="block" aria-label="Lock this notebook"></button><button class="ib" id="bshare">Share</button></div>
+  <div class="bar"><button class="ib" id="bclose">‹ Notebooks</button><input id="btitle" aria-label="Notebook name" maxlength="40"><span class="hint" id="hint"></span><button class="ib i" id="block" aria-label="Lock this notebook"></button><button class="ib" id="bshare">Share</button><a class="ib vonly hidden" id="vedit" title="Foliet Pro members can sign in and edit it">Edit<span class="soon">Pro</span></a></div>
   <div id="bmain"><div id="tilt"><div id="sp">
     <div class="pg" id="pl"></div><div class="pg" id="pr"></div>
     <div class="fl" id="fl"></div>
@@ -565,7 +573,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
     <button class="ib i" id="bgrid" aria-label="All pages" title="All pages"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg></button>
     <button class="ib i" id="bzoom" aria-label="Zoom" title="Zoom in on a page"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M16 16l4 4M11 8v6M8 11h6"/></svg></button>
     <button class="ib i" id="bexp" aria-label="Export" title="Export as PDF or image"><svg class="ic" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
-    <button class="ib" id="badd">New pages</button>
+    <button class="ib" id="badd">New pages</button><span class="vlive vonly" id="vlive" role="status"></span>
   </div>
 </section>
 
@@ -1077,7 +1085,7 @@ function decodeSrc(s){
 function setImg(el,i){
   const ld=typeof i==='number'&&pendPg(cur,i),parts=typeof i==='number'?pgParts(i):[],src0=parts.join('|');
   if(src0&&!ld&&el._i===i&&el._s===src0&&el.firstChild){el.classList.remove('ghost','ld');return} // the same picture: leave it (no flash)
-  el._i=i;el._s=src0;el.classList.toggle('ld',ld);
+  el._i=i;el._s=src0;el.classList.toggle('ld',ld);el.classList.toggle('wait',ld&&!!cur._view&&!viewHas(i));
   el.innerHTML='';el.style.backgroundImage='';el.style.backgroundColor='';el.style.backgroundSize='';el.style.backgroundRepeat='';el.style.boxShadow='';el.style.visibility=i==='x'?'hidden':'';
   el.classList.toggle('ghost',typeof i==='number'&&i>=cur.pages.length);
   el.classList.toggle('cv',i==='c');
@@ -1097,8 +1105,8 @@ function showBrowse(b){
   let tg=-1;if(b){cur=b;setDims(b);zs=0;cs=-1;tg=typeof b.cs==='number'?Math.max(-1,Math.min(b.cs,Math.max(0,(b.pages.length-1)>>1))):-1}
   endFloat();$('#btitle').value=cur.title;
   $('#shelf').classList.add('hidden');$('#ed').classList.add('hidden');$('#bv').classList.remove('hidden');
-  docTitle();syncLockBtn();const gst=!!cur._guest;$('#block').classList.toggle('hidden',gst);$('#btitle').readOnly=gst;$('#bv').classList.toggle('guest',gst);renderBrowse();
-  if(b){const sp=$('#sp');sp.classList.remove('in');sp.offsetWidth;sp.classList.add('in');if(tg>=0)resume(b,tg);if(tIdx===0)setTimeout(()=>{if(!$('#bv').classList.contains('hidden')&&!flipping)tourShow(0)},tg>0?2600:1100)}
+  docTitle();syncLockBtn();const gst=!!cur._guest||!!cur._view;$('#block').classList.toggle('hidden',gst);$('#btitle').readOnly=gst;$('#bv').classList.toggle('guest',gst);renderBrowse();
+  if(b){const sp=$('#sp');sp.classList.remove('in');sp.offsetWidth;sp.classList.add('in');if(tg>=0)resume(b,tg);if(tIdx===0&&!cur._view)setTimeout(()=>{if(!$('#bv').classList.contains('hidden')&&!flipping)tourShow(0)},tg>0?2600:1100)}
 }
 /* The open book's size. It fills the free room exactly, counting the page edges and the tilt (the bottom of the book
    comes closer, so it looks bigger and lower), and it sits in the middle. A computer shows it a bit further back
@@ -1168,7 +1176,7 @@ function renderBrowse(){
   $('#sp').style.transform=cs<0?'translateX(-25%)':'';
   const P=cur.pages.length,a=[L(cs),R(cs)].filter(i=>typeof i==='number'&&i>=0&&i<P).map(i=>i+1);
   $('#bpg').textContent=cs<0?'Cover':(a.length>1?'Pages ':'Page ')+a.join('–')+' of '+P;
-  $('#hint').textContent=cs<0?'Tap the cover to customize it · drag it to open':'Tap a page to draw on it · drag it to turn';
+  $('#hint').textContent=cur._view?(cs<0?'Tap the cover to open it':'Drag a page to turn it · tap it to zoom'):cs<0?'Tap the cover to customize it · drag it to open':'Tap a page to draw on it · drag it to turn';
 }
 function edgeFacets(sg,pw,ph,nx,LT,ec){
   const r=10,pts=[[0,0],[pw-r,0]];
@@ -1292,7 +1300,7 @@ function riffle(t2){
     cs=t2;renderBrowse();leaves.forEach(l=>l.remove());flipping=false;done();
   });
 }
-$('#bclose').onclick=()=>{if(!flipping)closeBook()};
+$('#bclose').onclick=()=>{if(cur&&cur._view){goTo(siteRoot());return}if(!flipping)closeBook()};
 let rnT=0,rnFrom=null;
 $('#btitle').oninput=e=>{if(rnFrom===null)rnFrom=cur.title;cur.title=e.target.value;docTitle();persist();
   clearTimeout(rnT);const b=cur;rnT=setTimeout(()=>{const f=rnFrom;rnFrom=null;if(f!==b.title)relabel(b,f,b.title||'Untitled')},700)};
@@ -1372,6 +1380,7 @@ function release(cancel){
   const d=dr;dr=null;if(!d)return;
   if(!d.on){
     if(cancel||d.moved||flipping)return;
+    if(cur._view){if(cs<0){if(d.right)flip(0)}else{zs=zs?0:(d.right?2:1);$('#bzoom').setAttribute('aria-pressed',zs>0);applyZoom()}return} // only to look: the cover opens, a page zooms
     if(cs<0){if(d.right)showEditor(-1);return}
     const i=d.right?2*cs+1:2*cs;if(i<0)return;
     if(pendPg(cur,i)){toast('This page is still loading from the cloud…');return}
@@ -1390,6 +1399,7 @@ $('#sp').addEventListener('pointercancel',()=>release(true));
 /* Editor (pi=-1 means the cover) */
 const cv=$('#cv'),ctx=cv.getContext('2d',{willReadFrequently:true}); // read for undo after every stroke
 function showEditor(i){
+  if(cur&&cur._view)return;
   if(flipping)return;if(cur&&cur._guest&&i<0){toast('Only the owner can change the cover.');return}pi=i;
   $('#bv').classList.add('hidden');$('#ed').classList.remove('hidden');
   setView(false);$('#pstyle').classList.toggle('hidden',pi<0);$('#psheet').classList.add('hidden');$('#cc').classList.toggle('hidden',pi>=0);$('#delp').classList.toggle('hidden',pi<0);resetDel();$('#etl').textContent=pi<0?'Cover':'Page '+(pi+1);
@@ -3181,6 +3191,7 @@ async function bootCloud(since){
   bootStep('cloud','warn','Still syncing – it goes on in the background');await sleep(700);bootDone();
 }
 async function startApp(){
+  if(VIEWC)return startViewer(VIEWC);
   showGate(); // under the start window
   try{await fbLoad();bootStep('app','ok');bootStep('acct','run')} // then accUser() goes on with the account and the notebooks
   catch(e){
@@ -3193,6 +3204,7 @@ async function startApp(){
 }
 window.addEventListener('online',()=>{if(!ACC.F){ACC.offline=false;fbLoad().then(renderAcc).catch(()=>{ACC.offline=true;renderAcc()})}});
 async function accUser(u){
+  if(VIEWC){ACC.user=u||null;return} // looking at a live link: no library, no sign-in window
   if(ACC.unPro){ACC.unPro();ACC.unPro=null}
   if(ACC.unOwn){ACC.unOwn();ACC.unOwn=null}
   if(ACC.unOff){ACC.unOff();ACC.unOff=null}OFFER=null;
@@ -3217,7 +3229,7 @@ async function accUser(u){
     ACC.unOwn=F.onSnapshot(F.doc(ACC.db,'owned',u.uid),s=>setOwned(s.exists()?s.data().t:[]),()=>{});
     let first=true; // a card offer waiting for this account (codes that ask for a card)
     ACC.unOff=F.onSnapshot(F.doc(ACC.db,'offers',u.uid),s=>{OFFER=s.exists()?s.data({serverTimestamps:'estimate'}):null;offerDone();if(first){first=false;showOffer()}},()=>{});
-    touchProfile(u);checkAdmin(u);checkSurvey(u);loadPublic().then(()=>{if(ACC.user===u)checkIntro()});
+    touchProfile(u);checkAdmin(u);checkSurvey(u);loadPublic().then(()=>{if(ACC.user===u)checkIntro()});setTimeout(shareGoneLater,3000); // stopped links not cleaned up yet
     loadShop(Date.now()-(+lsGet('sb-shopt')||0)>6*36e5); // things added to the store from the admin panel
   }
   setPro();
@@ -3445,7 +3457,7 @@ async function syncStart(){
     ACC.man={...((s.exists()&&s.data().m)||{})};syncSoon(400)},e=>{ACC.err='error';renderAcc();console.warn(e)});
 }
 function syncStop(){if(ACC.unMan){ACC.unMan();ACC.unMan=null}clearTimeout(ACC.timer);ACC.man=null;ACC.state=null}
-window.addEventListener('online',()=>{syncSoon(500);if(ACC.user&&ACC.F)checkSurvey(ACC.user)});
+window.addEventListener('online',()=>{syncSoon(500);if(ACC.user&&ACC.F){checkSurvey(ACC.user);shareGoneLater()}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncSoon(800);else if(ACC.pro)syncRun()});
 addEventListener('pagehide',()=>{if(ACC.pro)syncRun()}); // closing the app: what's left goes up right away, while the browser still lets it
 
@@ -3955,8 +3967,8 @@ function deleteAccount(){
         for(const c2 of ['act','feedback']){const q=await F.getDocs(F.query(F.collection(dbi,c2),F.where('uid','==',uid)));q.docs.forEach(d=>b2.delete(d.ref))}
         for(const c2 of ['profiles','survey','pro','offers','owned'])b2.delete(F.doc(dbi,c2,uid));
         for(const sh of await myShares()){ // live links: their pages, then the link
-          shareStop(sh.id);const man=sh.m||{};
-          for(const k in man){const bt=F.writeBatch(dbi);for(let i=0;i<(man[k].n||1);i++)bt.delete(F.doc(dbi,'shares',sh.id,'r',chunkId(k,i)));await bt.commit()}
+          const S=shState(sh.id);S.dead=true;shareStop(sh.id);const man=sh.m||{};
+          await shWipe(sh.id,Object.keys(man).map(k=>[k,man[k].n||1]));
           b2.delete(F.doc(dbi,'shares',sh.id));
         }
         await b2.commit();
@@ -5584,11 +5596,25 @@ const shareOf=b=>b&&(b._share||(b.share&&b.share.code))||'';
 const shState=code=>SHS[code]||(SHS[code]={h:null,man:null,n:0,busy:false,again:false,t:0,un:null});
 function shareMeta(b){const m=metaOf(b);['lock','cat','tags','share','cs','u','wu','welcome','lbl0','n'].forEach(k=>delete m[k]);return m}
 const shRef=(code,...p)=>p.length?ACC.F.doc(ACC.db,'shares',code,...p):ACC.F.doc(ACC.db,'shares',code);
-async function shPush(code,k,raw,v){
-  const F=ACC.F,S=shState(code),h=cyrb(canon(raw)),full=JSON.stringify({r:raw,v:v||''}),n=Math.max(1,Math.ceil(full.length/CH)),old=S.man[k],bt=F.writeBatch(ACC.db);
-  for(let i=0;i<n;i++)bt.set(shRef(code,'r',chunkId(k,i)),{h,n,i,d:full.slice(i*CH,(i+1)*CH)});
-  for(let i=n;i<(old?old.n:0);i++)bt.delete(shRef(code,'r',chunkId(k,i)));
-  await bt.commit();S.man[k]={h,n};return h;
+/* Send pages of a live link: several pages per write (the owner: up to 15 chunks – the rules read the link once for each
+   chunk, at most 20 reads per write; someone editing: 6, their Pro is checked too), 4 writes at a time.
+   done(k, h) for each page (h undefined + the error when its write failed). */
+async function shPushMany(code,items,guest,done){
+  const F=ACC.F,S=shState(code),lim=guest?6:15,groups=[];let g=null;
+  for(const it of items){const h=cyrb(canon(it.raw)),full=JSON.stringify({r:it.raw,v:''}),n=Math.max(1,Math.ceil(full.length/CH)),r={k:it.k,h,full,n,old:S.man[it.k]};
+    const w=n+Math.max(0,(r.old?r.old.n:0)-n);if(!g||(g.w+w>lim&&g.recs.length)){g={w:0,recs:[]};groups.push(g)}g.w+=w;g.recs.push(r)}
+  await pool(groups,4,async g=>{
+    if(S.dead){g.recs.forEach(r=>done(r.k,undefined,null));return}
+    const bt=F.writeBatch(ACC.db);
+    for(const r of g.recs){for(let i=0;i<r.n;i++)bt.set(shRef(code,'r',chunkId(r.k,i)),{h:r.h,n:r.n,i,d:r.full.slice(i*CH,(i+1)*CH)});for(let i=r.n;i<(r.old?r.old.n:0);i++)bt.delete(shRef(code,'r',chunkId(r.k,i)))}
+    try{await bt.commit();g.recs.forEach(r=>{S.man[r.k]={h:r.h,n:r.n};done(r.k,r.h)})}catch(e){console.warn('share',e);g.recs.forEach(r=>done(r.k,undefined,e))}
+  });
+}
+// delete a link's pages: [[record, chunks]…], 15 per write, 4 writes at a time
+async function shWipe(code,list){
+  const F=ACC.F,refs=[];list.forEach(([k,n])=>{for(let i=0;i<(n||1);i++)refs.push(shRef(code,'r',chunkId(k,i)))});
+  const groups=[];for(let i=0;i<refs.length;i+=15)groups.push(refs.slice(i,i+15));
+  await pool(groups,4,async g=>{const bt=F.writeBatch(ACC.db);g.forEach(r=>bt.delete(r));await bt.commit()});
 }
 async function shPull(code,k){
   const F=ACC.F,r=shState(code).man[k];if(!r)return null;
@@ -5599,13 +5625,6 @@ async function shPull(code,k){
 function shApplyPage(b,i,r){
   while(b.pages.length<=i){b.pages.push(null)}
   b.pages[i]=r.pg??null;[['objs','o'],['pv','pv'],['bg','bg'],['ps','ps'],['lay','lay']].forEach(([a,f])=>{if(r[f]!=null)b[a][i]=r[f];else delete b[a][i]});
-}
-let picQ=Promise.resolve();const picLock=fn=>{const p=picQ.then(fn);picQ=p.catch(()=>{});return p}; // pictures are drawn one at a time (they share the drawing size)
-async function sharePic(b,i,r){ // a picture of the cover (i<0) or of page i, for people who only look
-  if(i>=0&&r&&(r.pv||(r.bg&&!styled(r.ps))))return ''; // the page is already a picture (its composite, or a PDF page + writing): 404.html shows it as it is
-  const W0=W,H0=H,c0=cur,mine=b===cur;if(!mine){W=b.o==='l'?1200:900;H=b.o==='l'?900:1200}
-  try{const c=await renderExport(i<0?'c':i,b),k=Math.min(1,1000/Math.max(c.width,c.height)),q=document.createElement('canvas');q.width=Math.round(c.width*k);q.height=Math.round(c.height*k);q.getContext('2d').drawImage(c,0,0,q.width,q.height);return q.toDataURL('image/jpeg',.82)}
-  finally{if(!mine&&cur===c0){W=W0;H=H0}} // (if a notebook was opened meanwhile, its own size stays)
 }
 /* How many pages of a live link are online (in the link's list, or up and about to be listed). While a notebook goes up:
    the Share window shows a bar and “Putting the pages online… 12 of 209 pages”, and when it's closed a pill at the bottom
@@ -5633,7 +5652,7 @@ function shareProg(b){
 function shareSoon(b,ms){const code=shareOf(b);if(!code||!ACC.user)return;const S=shState(code);clearTimeout(S.t);S.t=setTimeout(()=>shareSync(b),ms??2500)}
 async function shareSync(b){
   const code=shareOf(b);if(!code||!ACC.user||!ACC.F)return;const S=shState(code);
-  if(!b._guest&&!ACC.pro)return; // live links are part of Pro: without Pro the link stops updating (it still shows what was there)
+  if(b._view||(!b._guest&&!ACC.pro))return; // live links are part of Pro: without Pro the link stops updating (it still shows what was there)
   if(cur&&cur!==b&&!$('#ed').classList.contains('hidden')){shareSoon(b,5000);return} // busy drawing in another notebook: later
   if(S.busy){S.again=true;return}S.busy=true;
   try{do{S.again=false;await shareOnce(b,code,S)}while(S.again)}catch(e){console.warn('share',e)}finally{S.busy=false}
@@ -5674,17 +5693,13 @@ async function shareOnce(b,code,S){
     try{await idbSet('share:'+code+':'+ACC.user.uid,S.h)}catch(e){}};
   S.prog={done:0,total:push.length};shareProg(b);
   try{
-  // the cover first; then the pages go up 4 at a time (their pictures are made one at a time)
-  const one=async k=>{if(stop)return;const i=k==='meta'?-1:+k.slice(2),raw=k==='meta'?shareMeta(b):pageOf(b,i);
-    try{const pic=await picLock(()=>sharePic(b,i,raw)),h=await shPush(code,k,raw,pic);S.h[k]=h;upd[k]={h,n:S.man[k].n}}
-    catch(e){fail++;console.warn('share',k,e);if(e&&e.code==='permission-denied')stop=e}
-    S.prog.done++;shareProg(b);
-    if(k==='meta'||Date.now()-last>1500)await flush(); // the cover first, then every 1.5 s: the link shows the pages as they arrive
-  };
-  if(push.includes('meta'))await one('meta');
-  await pool(push.filter(k=>k!=='meta'),4,one);
-  if(!guest&&!stop)for(const k of drop){const r=S.man[k];if(r){const bt=F.writeBatch(ACC.db);for(let i=0;i<(r.n||1);i++)bt.delete(shRef(code,'r',chunkId(k,i)));await bt.commit()}delete S.man[k];delete S.h[k];upd[k]=F.deleteField()}
-  await flush();
+  // the cover first, then the pages: several per write, 4 writes at a time; the link's list every 1.5 s
+  const rec=k=>({k,raw:k==='meta'?shareMeta(b):pageOf(b,+k.slice(2))});
+  const done=(k,h,e)=>{if(h){S.h[k]=h;upd[k]={h,n:S.man[k].n}}else{fail++;if(e&&e.code==='permission-denied')stop=e}S.prog.done++;shareProg(b);if(Date.now()-last>1500&&!fl)flush().catch(()=>{})};
+  if(push.includes('meta')){await shPushMany(code,[rec('meta')],guest,done);await flush()} // the cover shows first
+  if(!stop)await shPushMany(code,push.filter(k=>k!=='meta').map(rec),guest,done);
+  if(!guest&&!stop&&!S.dead&&drop.length){const gone=drop.filter(k=>S.man[k]);await shWipe(code,gone.map(k=>[k,S.man[k].n||1]));drop.forEach(k=>{delete S.man[k];delete S.h[k];upd[k]=F.deleteField()})}
+  if(!S.dead)await flush();
   }finally{S.prog=null;shareProg(b)}
   if(stop)throw stop;
   if(fail)shareSoon(b,30000); // some pages didn't go up (connection): try again later, the others are already there
@@ -5709,10 +5724,101 @@ async function shareStart(b){ // make a live link for this notebook
   b.share={code,slug:sl,edit:false};persist();shareSync(b);shareListen(b);return code; // the pages go up in the background, the link already works
 }
 async function shareSet(b,edit){await ACC.F.updateDoc(shRef(b.share.code),{edit:!!edit});b.share.edit=!!edit;persist()}
-async function shareEnd(b){ // stop sharing: the link stops working and the shared copy is removed
-  const code=b.share.code,F=ACC.F,S=shState(code);shareStop(code);
-  try{const man=S.man||((await F.getDoc(shRef(code))).data()||{}).m||{};for(const k in man){const bt=F.writeBatch(ACC.db);for(let i=0;i<(man[k].n||1);i++)bt.delete(shRef(code,'r',chunkId(k,i)));await bt.commit()}await F.deleteDoc(shRef(code))}catch(e){console.warn(e)}
-  delete SHS[code];delete b.share;persist();
+/* Stop sharing: at once. The upload stops, the link is switched off (one small write – people looking at it see
+   “This notebook isn't shared any more” right away), and its pages are removed in the background (15 per write,
+   4 writes at a time). If the app closes before that's done, it finishes at the next start (sb-shend:<uid>). */
+const shEndKey=()=>'sb-shend:'+(ACC.user?ACC.user.uid:'');
+function shEndList(){try{return JSON.parse(lsGet(shEndKey())||'[]')}catch(e){return []}}
+function shEndSet(code,on){const l=shEndList().filter(c=>c!==code);if(on)l.push(code);lsSet(shEndKey(),JSON.stringify(l))}
+function shareEnd(b){
+  const code=b.share.code,S=shState(code);S.dead=true;clearTimeout(S.t);shareStop(code);
+  delete b.share;persist();shEndSet(code,true);
+  shareGone(code,S).catch(e=>console.warn('share end',e)); // in the background: nothing to wait for
+}
+async function shareGone(code,S){
+  const F=ACC.F;S=S||shState(code);
+  await F.updateDoc(shRef(code),{on:false}).catch(e=>{if(e&&e.code!=='not-found')throw e}); // the link stops working now
+  let srv={};try{const d=await F.getDoc(shRef(code));srv=d.exists()?d.data():null}catch(e){}
+  if(srv){ // every page the link may have: its list, what this device sent, and all page numbers (so nothing is left behind)
+    const m={...(srv.m||{}),...(S.man||{})},n=Math.max(srv.n||0,...Object.keys(m).map(k=>k.startsWith('p~')?+k.slice(2)+1:0));
+    const keys=new Map([['meta',1]]);for(let i=0;i<n;i++)keys.set('p~'+i,1);for(const k in m)keys.set(k,Math.max(keys.get(k)||1,m[k].n||1));
+    await shWipe(code,[...keys]);await F.deleteDoc(shRef(code));
+  }
+  delete SHS[code];shEndSet(code,false);
+}
+function shareGoneLater(){if(!ACC.user||!ACC.F)return;shEndList().forEach(c=>shareGone(c).catch(()=>{}))} // stopped links not cleaned up yet
+/* A live link opened by anyone (<site>/<name>/<code> → 404.html → app/?view=<code>): the same 3D book as in Foliet,
+   only to look at – no account, nothing saved on the device. The pages come from shares/<code> 8 at a time, the ones
+   near the open pages first; a page still coming says "Loading page…", one the owner's app hasn't put up yet "Not
+   online yet". It changes by itself when the owner draws. At the bottom: "Live · view only · 120 of 209 pages online". */
+const VIEWC=(()=>{const c=new URLSearchParams(location.search).get('view');return c&&/^[a-z0-9]{6,10}$/.test(c)?c:''})();
+let VQ={busy:new Set(),run:0,first:true,chT:0,ch:0};
+const viewHas=i=>{const S=cur&&cur._share&&SHS[cur._share];return !!(S&&S.man&&S.man['p~'+i])};
+function viewMsg(h,t,btn,fn,net){ // a message in the start window (the link doesn't work, no internet)
+  const b=$('#boot');BOOT.on=true;b.classList.remove('hidden','out','offline');b.classList.add('msg');b.classList.toggle('nonet',!!net);
+  $('#boot .b-off h2').textContent=h;$('#boff-t').textContent=t;const g=$('#boff-go');g.textContent=btn;g.onclick=fn;
+}
+async function startViewer(code){
+  document.documentElement.classList.add('viewing');$('#boott').textContent='Opening the notebook';
+  const bc=$('#bclose');bc.textContent='Foliet';bc.title='Foliet Sketchbook – make your own notebooks, free';
+  ['acct','store'].forEach(k=>$('#boot [data-s="'+k+'"]').classList.add('hidden'));
+  try{await fbLoad();bootStep('app','ok')}
+  catch(e){viewMsg('Can’t open this notebook','Check your internet connection and try again.','Try again',()=>location.reload(),1);return}
+  bootStep('lib','run','Loading the notebook');
+  const F=ACC.F,S=shState(code);let d=null,err=null;
+  try{const sn=await F.getDoc(shRef(code));d=sn.exists()?sn.data():null}catch(e){err=e}
+  if(err&&!navigator.onLine){viewMsg('Can’t open this notebook','Check your internet connection and try again.','Try again',()=>location.reload(),1);return}
+  if(!d||!d.on){viewGone();return}
+  S.man={...(d.m||{})};S.n=d.n||0;S.edit=!!d.edit;S.h={};
+  const meta=S.man.meta?await shPull(code,'meta'):null;
+  const b=ens({...((meta&&meta.r)||{title:d.title,o:d.o}),id:'view-'+code,pages:[],objs:[],pv:[],bg:[],ps:[],lay:[]});
+  ['lock','cs','share','cat','tags'].forEach(f=>delete b[f]);b._view=1;b._share=code;b._title=d.title;
+  if(meta)S.h.meta=S.man.meta.h;
+  viewSize(b,S.n);showBrowse(b);viewInfo(d);
+  bootStep('lib','ok');bootStep('cloud','run','Getting the first pages ready');
+  viewListen(b);viewKick(b);
+  const t=Date.now(); // the cover and the first pages, then the book (at most 8 s – the owner's app may still be putting them up)
+  while(BOOT.on&&Date.now()-t<8000){const ks=[0,1,2].filter(i=>i<b.pages.length&&viewHas(i));if(ks.every(i=>!pendPg(b,i)))break;await sleep(150)}
+  bootStep('cloud','ok');bootDone();VQ.first=false;
+}
+function viewSize(b,n){ // pages added or removed by the owner
+  n=Math.max(1,n);const id=String(b.id),p=PEND.get(id)||new Set();
+  while(b.pages.length<n){p.add(b.pages.length);b.pages.push(null)}
+  if(b.pages.length>n){PK.forEach(a=>{if(b[a].length>n)b[a].length=n});[...p].forEach(i=>{if(i>=n)p.delete(i)})}
+  if(p.size)PEND.set(id,p);else PEND.delete(id);
+}
+function viewInfo(d){
+  const n=d.n||0,S=SHS[VIEWC];let on=0;for(let i=0;i<n;i++)if(S.man['p~'+i])on++;
+  $('#vlive').textContent=(d.edit?'Live · Pro members can edit':'Live · view only')+' · '+(on<n?on+' of '+n+' pages online':n+' page'+(n===1?'':'s'));
+  const e=$('#vedit');e.classList.toggle('hidden',!d.edit);e.href='?share='+VIEWC+(new URLSearchParams(location.search).get('emu')?'&emu='+new URLSearchParams(location.search).get('emu'):'');
+}
+function viewGone(){ // the owner stopped sharing (or the link isn't complete)
+  const S=SHS[VIEWC];if(S&&S.un){S.un();S.un=null}
+  viewMsg('This notebook isn’t shared any more','The person who shared it stopped sharing, or the link isn’t complete.','Go to Foliet',()=>goTo(siteRoot()));
+}
+function viewListen(b){
+  const S=SHS[VIEWC];
+  S.un=ACC.F.onSnapshot(shRef(VIEWC),sn=>{
+    if(!sn.exists()||!sn.data().on){viewGone();return}
+    const d=sn.data();S.man={...(d.m||{})};S.n=d.n||0;S.edit=!!d.edit;
+    if(d.title&&d.title!==b._title){b._title=d.title}
+    viewSize(b,S.n);viewInfo(d);viewKick(b);bvSoon();
+  },()=>viewGone());
+}
+function viewKick(b){ // load what's missing or changed, 8 at a time, the pages near the open ones first
+  const S=SHS[VIEWC],need=()=>{const out=[];if(S.man.meta&&S.h.meta!==S.man.meta.h)out.push('meta');
+    for(let i=0;i<b.pages.length;i++){const k='p~'+i,r=S.man[k];if(r&&S.h[k]!==r.h)out.push(k)}return out.filter(k=>!VQ.busy.has(k))};
+  const next=()=>{const ks=need();if(!ks.length)return null;const at=Math.max(0,cs);
+    ks.sort((x,y)=>(x==='meta'?-1:Math.abs((+x.slice(2)>>1)-at))-(y==='meta'?-1:Math.abs((+y.slice(2)>>1)-at)));return ks[0]};
+  const work=async()=>{VQ.run++;try{for(let k=next();k;k=next()){VQ.busy.add(k);const r=S.man[k],h=r&&r.h;let x;
+      try{x=await shPull(VIEWC,k)}catch(e){x=undefined}VQ.busy.delete(k);
+      if(!x||!S.man[k]||S.man[k].h!==h){if(x===undefined)await sleep(1200);continue} // changing right now: again in a moment
+      const again=S.h[k]!==undefined;S.h[k]=h;
+      if(k==='meta'){for(const f in x.r)if(!['id','lock','cs','share','cat','tags'].includes(f))b[f]=x.r[f];$('#btitle').value=b.title||'';docTitle()}
+      else{const i=+k.slice(2);shApplyPage(b,i,x.r);pendDone('p:'+b.id+':'+i)}
+      bvSoon();if(again&&!VQ.first){clearTimeout(VQ.chT);VQ.ch++;VQ.chT=setTimeout(()=>{toast(VQ.ch===1?'A page just changed':VQ.ch+' pages just changed');VQ.ch=0},600)}
+    }}finally{VQ.run--}};
+  while(VQ.run<8&&need().length>VQ.run)work();
 }
 // app/?share=CODE: open a notebook someone shared with you, to edit it (Pro; others can only look)
 async function proReady(){ // wait until we know if this account has Pro (the first answer from pro/{uid}, and the fresh token)
@@ -5761,7 +5867,7 @@ function initShare(){
   $('#sh-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('#sh-url').value);toast('Link copied')}catch(e){$('#sh-url').select();toast('Select the link and copy it')}};
   $('#sh-edit').onchange=async e=>{try{await shareSet(cur,e.target.checked);live()}catch(x){e.target.checked=!e.target.checked;toast('Couldn’t change it. Check your connection.')}};
   $('#sh-stop').onclick=async()=>{const s2=$('#sh-stop');if(!s2.dataset.s){s2.dataset.s=1;s2.textContent='Sure? The link stops working';setTimeout(()=>{delete s2.dataset.s;s2.textContent='Stop sharing'},3000);return}
-    delete s2.dataset.s;s2.textContent='Stop sharing';await shareEnd(cur);live();toast('The link doesn’t work any more.')};
+    delete s2.dataset.s;s2.textContent='Stop sharing';shareEnd(cur);live();toast('The link doesn’t work any more.')};
   $('#shno').onclick=close;d.addEventListener('click',e=>{if(e.target===d)close()});
   $('#sh-file').onclick=async()=>{
     const b=$('#sh-file');b.disabled=true;const sp=b.querySelector('span'),t0=sp.textContent;
@@ -5813,7 +5919,7 @@ function initKeys(){
       if(lk==='n'&&!mod&&!$('#grid').classList.contains('hidden')){e.preventDefault();newNotebook()}
       return;
     }
-    if(bv){if(k==='Escape')$('#bclose').click();return}
+    if(bv){if(k==='Escape'){if(cur&&cur._view){if(zs)resetZoom()}else $('#bclose').click()}return} // a live link: Escape never leaves it
     if(ed&&!mod&&!e.altKey&&typeof view!=='undefined'&&!view){
       if(KEYT[lk]){selectTool(KEYT[lk]);e.preventDefault();return}
       if(k==='['||k===']'){const r=$('#sz');r.value=Math.max(+r.min,Math.min(+r.max,+r.value+(k===']'?1:-1)));r.dispatchEvent(new Event('input',{bubbles:true}));e.preventDefault();return}

@@ -1,5 +1,5 @@
 // Update 10: the Store's banner and items added from the admin panel (permanent or for a while), and live links
-// (anyone can look without an account, people you allow edit after signing in; <site>/<notebook-name>/<code>).
+// (anyone can look without an account – in Foliet's own 3D book –, people you allow edit after signing in; <site>/<notebook-name>/<code>).
 // The test serves the site under /Sketchbook/ with 404.html for addresses that aren't files – like GitHub Pages.
 // How to run (from this folder, with Java installed):
 //   npm i --no-save playwright firebase-tools
@@ -20,6 +20,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   const BASE='http://127.0.0.1:5193/Sketchbook/',URL0=BASE+'app/?emu=127.0.0.1';
   const ctxOf=async()=>{const ctx=await b.newContext({viewport:{width:1100,height:850}});await ctx.addInitScript(()=>{try{localStorage.setItem('sb-tour','99')}catch(e){}});await ctx.route(u=>u.hostname!=='127.0.0.1',r=>r.abort());return ctx};
   const open=async(ctx,name,url)=>{const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(name+': '+e.message));await p.goto(url||URL0);return p};
+  const vReady=p=>p.waitForFunction(()=>VIEWC&&cur&&cur._view&&$('#boot').classList.contains('hidden'),null,{timeout:30000}); // a live link open in Foliet's book
   const ready=p=>p.waitForFunction(()=>ACC.libUid&&!ACC.gate&&data.length,null,{timeout:20000});
   const signUp=async(p,em)=>{await p.waitForSelector('#a-em',{timeout:15000});await p.click('.btn2');await p.fill('#a-em',em);await p.fill('#a-pw','secret123');await p.click('#acc-body button[type=submit]');await ready(p);await answerSurvey(p);await p.waitForTimeout(500)};
   const signIn=async(p,em)=>{await p.waitForSelector('#a-em',{timeout:15000});await p.fill('#a-em',em);await p.fill('#a-pw','secret123');await p.click('#acc-body button[type=submit]');await ready(p);await answerSurvey(p);await p.waitForTimeout(500)};
@@ -99,24 +100,29 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   // someone without an account opens the link
   const CV=await b.newContext({viewport:{width:900,height:1000}});await CV.route(u=>u.hostname!=='127.0.0.1',r=>r.abort());
   const V=await CV.newPage();V.errs=[];V.on('pageerror',e=>V.errs.push('V: '+e.message));await V.goto(link+'?emu=127.0.0.1');
-  await V.waitForFunction(()=>document.querySelectorAll('figure.pg img').length===3,null,{timeout:20000});
-  ok(await V.evaluate(()=>document.querySelector('#title').textContent==='Trip to Rome'&&/view only/.test(document.querySelector('#state').textContent)&&document.querySelector('#edit').hidden&&getComputedStyle(document.querySelector('#edit')).display==='none'&&document.title==='Trip to Rome – Foliet Sketchbook'),'no account: the link shows “Trip to Rome” – cover and 2 pages, live, view only');
-  const src1=await V.evaluate(()=>document.querySelector('figure[data-k="p~1"] img').src);
+  await V.waitForURL(/app\/\?view=/,{timeout:15000});await vReady(V);await V.waitForFunction(()=>!PEND.size,null,{timeout:20000});
+  ok(await V.evaluate(()=>cur.title==='Trip to Rome'&&cur.pages.length===2&&/view only/.test($('#vlive').textContent)&&$('#vedit').classList.contains('hidden')&&document.title==='Trip to Rome – Foliet Sketchbook'&&!ACC.user&&$('#acct').classList.contains('hidden')),'no account: the link opens “Trip to Rome” in Foliet’s own 3D book – cover and 2 pages, live, view only');
+  ok(await V.evaluate(()=>['#bshare','#badd','#bexp','#block'].every(q=>getComputedStyle($(q)).display==='none')&&$('#btitle').readOnly&&$('#bclose').textContent==='Foliet'),'… only to look: no Share, New pages, Export or lock, the name can’t be changed');
+  await V.evaluate(()=>flip(0));await V.waitForFunction(()=>cs===0&&!flipping,null,{timeout:10000});
+  const tp=await V.evaluate(()=>{const q=$('#pr').getBoundingClientRect();return [q.left+q.width/2,q.top+q.height/2]});await V.mouse.click(tp[0],tp[1]);await V.waitForTimeout(500);
+  ok(await V.evaluate(()=>zs===2&&$('#ed').classList.contains('hidden')),'pages 1–2 open like in the app; tapping a page zooms in (no drawing)');
+  await V.mouse.click(tp[0],tp[1]);await V.waitForTimeout(400);
+  const src1=await V.evaluate(()=>$('#pr').innerHTML);
   // the owner draws: the viewer changes by itself
   await O.evaluate(async()=>{const k=document.createElement('canvas');k.width=900;k.height=1200;const x=k.getContext('2d');x.fillStyle='#2e9aa2';x.fillRect(200,600,500,400);cur.pages[1]=k.toDataURL('image/webp',.9);persist()});
-  await V.waitForFunction(s=>document.querySelector('figure[data-k="p~1"] img').src!==s,src1,{timeout:20000});
+  await V.waitForFunction(s=>$('#pr').innerHTML!==s,src1,{timeout:20000});
   ok(true,'Olga draws on page 2: the open link shows it a moment later, without reloading');
   // edit off: someone signed in is sent to the view
   const CG=await ctxOf(),G=await open(CG,'G');await signUp(G,'gabi10@example.com');
   const wr=await G.evaluate(c=>{const F=ACC.F;return F.setDoc(F.doc(ACC.db,'shares',c,'r','p~0'),{h:'x',n:1,i:0,d:'{}'}).then(()=>'ok',e=>e.code)},code);
   ok(wr==='permission-denied','view only: nobody else can change it (the rules)');
-  await G.goto(URL0+'&share='+code);await G.waitForURL(/trip-to-rome/,{timeout:20000}).catch(()=>{});
-  ok(/\/Sketchbook\/trip-to-rome\//.test(G.url()),'opening it in the app while it’s view only shows the view');
+  await G.goto(URL0+'&share='+code);await G.waitForURL(/view=/,{timeout:20000}).catch(()=>{});
+  ok(/app\/\?view=/.test(G.url()),'opening it in the app while it’s view only shows the view');
   // the owner allows editing
   await O.check('#sh-edit');await O.waitForTimeout(800);
   ok((await (await admin('shares/'+code,null,'GET')).json()).fields.edit.booleanValue===true&&await O.evaluate(()=>/People with Pro can sign in and draw and write/.test($('#sh-note').textContent)),'Olga ticks “People with Foliet Pro can edit it too”');
-  await V.waitForFunction(()=>!document.querySelector('#edit').hidden,null,{timeout:10000});
-  ok(await V.evaluate(()=>/app\/\?share=/.test(document.querySelector('#edit').href)&&/Pro/.test(document.querySelector('#edit .pro').textContent)&&/Pro members can edit/.test(document.querySelector('#state').textContent)),'the link now has an “Edit” button with a Pro badge (it opens Foliet, which asks to sign in)');
+  await V.waitForFunction(()=>!$('#vedit').classList.contains('hidden'),null,{timeout:10000});
+  ok(await V.evaluate(()=>/app\/\?share=/.test($('#vedit').href)&&/Pro/.test($('#vedit .soon').textContent)&&/Pro members can edit/.test($('#vlive').textContent)),'the link now has an “Edit” button with a Pro badge (it opens Foliet, which asks to sign in)');
   // Gabi has the free plan: she can only look
   await G.goto(URL0);await ready(G);
   const wr2=await G.evaluate(c=>{const F=ACC.F;return F.setDoc(F.doc(ACC.db,'shares',c,'r','p~0'),{h:'x',n:1,i:0,d:'{}'}).then(()=>'ok',e=>e.code)},code);
@@ -127,8 +133,8 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await G.click('#shp-pro');await G.waitForTimeout(300);
   ok(await G.evaluate(()=>!$('#up').classList.contains('hidden')&&/part of Pro/.test($('#upm').textContent)),'“See Pro” opens the Pro window');
   await G.goto(URL0+'&share='+code);await ready(G);await G.waitForSelector('#shp-look',{timeout:20000});await G.click('#shp-look');
-  await G.waitForURL(/\/Sketchbook\/trip-to-rome\//,{timeout:20000}).catch(()=>{});
-  ok(/\/Sketchbook\/trip-to-rome\//.test(G.url()),'“Just look” shows the notebook (view only)');
+  await G.waitForURL(/view=/,{timeout:20000}).catch(()=>{});
+  ok(/app\/\?view=/.test(G.url()),'“Just look” shows the notebook (view only)');
   // with Pro she can edit
   await G.goto(URL0);await ready(G);await givePro(G);
   await G.goto(URL0+'&share='+code);await ready(G);await G.waitForFunction(()=>cur&&cur._guest,null,{timeout:20000});
@@ -139,14 +145,16 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await G.evaluate(async()=>{const k=document.createElement('canvas');k.width=900;k.height=1200;const x=k.getContext('2d');x.fillStyle='#8a66d6';x.fillRect(150,150,600,600);cur.pages[0]=k.toDataURL('image/webp',.9);PK.forEach(a=>{if(a==='pages')cur.pages.push(null)});persist()});
   await O.waitForFunction(()=>{const b=data.find(x=>x.title==='Trip to Rome');return b&&b.pages.length===3},null,{timeout:25000});
   ok(await O.evaluate(g=>data.find(x=>x.title==='Trip to Rome').pages[0]===g,await G.evaluate(()=>cur.pages[0])),'her drawing and her new page come into Olga’s notebook');
-  await V.waitForFunction(()=>document.querySelectorAll('figure.pg').length===4,null,{timeout:20000});
+  await V.waitForFunction(()=>cur.pages.length===3&&/· 3 pages/.test($('#vlive').textContent),null,{timeout:20000});
   ok(true,'… and the open link shows 3 pages now');
   // stop sharing
   await O.click('#shno');await O.evaluate(()=>showBrowse(data.find(b=>b.title==='Trip to Rome')));await O.waitForTimeout(300);await O.click('#bshare');await O.waitForSelector('#sh-livep:not(.hidden)');
-  await O.click('#sh-stop');await O.click('#sh-stop');await O.waitForTimeout(2000);
-  ok((await admin('shares/'+code,null,'GET')).status===404&&await O.evaluate(()=>!data.find(b=>b.title==='Trip to Rome').share),'“Stop sharing” removes the shared copy');
-  await V.waitForFunction(()=>/isn’t shared any more/.test(document.body.textContent),null,{timeout:15000});
-  ok(true,'the link says “This notebook isn’t shared any more”');
+  await O.click('#sh-stop');const ts=Date.now();await O.click('#sh-stop');
+  const fast=await O.evaluate(()=>!data.find(b=>b.title==='Trip to Rome').share&&!$('#sh-live').classList.contains('hidden'))&&Date.now()-ts<1000;
+  await V.waitForFunction(()=>$('#boot').classList.contains('msg')&&/isn’t shared any more/.test($('#boot').textContent),null,{timeout:15000}).catch(()=>{});const tv=Date.now()-ts;
+  ok(fast&&tv<5000,'“Stop sharing” answers at once, and the open link says “This notebook isn’t shared any more” '+(tv/1000).toFixed(1)+' s later');
+  let gone0=0;for(let i=0;i<50&&!gone0;i++){if((await admin('shares/'+code,null,'GET')).status===404&&(await admin('shares/'+code+'/r/p~0',null,'GET')).status===404)gone0=1;else await new Promise(r=>setTimeout(r,200))}
+  ok(gone0,'… and its pages are removed from the cloud in the background');
   // a free account can't make a live link
   await U.evaluate(()=>showBrowse(data[0]));await U.click('#bshare');await U.waitForSelector('#shd:not(.hidden)');
   ok(await U.evaluate(()=>!$('#sh-pro').classList.contains('hidden')),'free plan: “Live link” has a Pro badge');
@@ -159,45 +167,44 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
     const b=mk('Study guide',data.length,'p');b.pages=[];for(let i=0;i<40;i++){b.pages.push(i%13===2?ink():null);b.bg[i]=pg(i)}data.push(b);persist();await saveNow();showBrowse(b)});
   await O.waitForTimeout(800);
   await O.evaluate(()=>{window._pt=[];const p0=shareProg;shareProg=function(b){p0(b);const e=$('#sh-prog');if(e&&!e.classList.contains('hidden'))window._pt.push(e.textContent)};
-    const f0=shPush;window._bad=true;shPush=function(c,k,...a){if(k==='p~5'&&window._bad)return Promise.reject(new Error('network'));return f0.call(this,c,k,...a)}}); // page 6 can't go up (a bad connection)
+    const f0=shPushMany;window._bad=true;shPushMany=function(c,items,guest,done){ // page 6 can't go up (a bad connection)
+      if(!window._bad)return f0.call(this,c,items,guest,done);const bad=items.filter(it=>it.k==='p~5');bad.forEach(it=>done(it.k,undefined,{code:'unavailable'}));return f0.call(this,c,items.filter(it=>it.k!=='p~5'),guest,done)}});
   const t3=Date.now();await O.click('#bshare');await O.click('#sh-live');await O.waitForSelector('#sh-livep:not(.hidden)',{timeout:30000});const took3=Date.now()-t3;
   const link3=await O.evaluate(()=>$('#sh-url').value),code3=link3.split('/').pop();
   ok(took3<4000,'a 40-page notebook: the link is ready at once ('+(took3/1000).toFixed(1)+' s) – the pages go up in the background');
-  const V3=await CV.newPage();V3.errs=[];V3.on('pageerror',e=>V3.errs.push('V3: '+e.message));await V3.goto(link3+'?emu=127.0.0.1',{waitUntil:'commit'});
-  await V3.waitForSelector('#ldv',{timeout:10000});
-  ok(await V3.evaluate(()=>/Loading/.test(document.querySelector('#ldv').textContent)&&document.querySelector('#main').classList.contains('ld')),'opening the link: a loading screen first (“Loading the notebook…”)');
-  await V3.waitForFunction(()=>!document.querySelector('#ldv'),null,{timeout:20000});
-  ok(await V3.evaluate(()=>!!document.querySelector('figure[data-k="meta"] img')&&!!document.querySelector('figure[data-k="p~0"] img')),'… it goes away once the cover and the first pages are there');
-  await V3.waitForFunction(()=>document.querySelectorAll('figure.pg').length===41,null,{timeout:20000});
-  ok(true,'the link shows the cover and a place for all 40 pages');
+  const V3=await CV.newPage();V3.errs=[];V3.on('pageerror',e=>V3.errs.push('V3: '+e.message));await V3.goto(link3+'?emu=127.0.0.1');
+  await V3.waitForURL(/view=/,{timeout:15000});await vReady(V3);
+  ok(await V3.evaluate(()=>/Opening the notebook/.test($('#boott').textContent)&&['app','lib','cloud'].every(k=>$('#boot [data-s="'+k+'"]').dataset.st==='ok')),'opening the link: Foliet’s start window first (“Opening the notebook” – the notebook, then the first pages)');
+  ok(await V3.evaluate(()=>!!SHS[VIEWC].h.meta&&[0,1].every(i=>!pendPg(cur,i))),'… it closes once the cover and the first pages are there');
+  await V3.waitForFunction(()=>cur.pages.length===40,null,{timeout:20000});
+  ok(true,'the book has a place for all 40 pages');
   await O.waitForFunction(()=>{const S=SHS[cur.share.code];return S&&!S.prog&&!S.busy},null,{timeout:60000});
   ok(await O.evaluate(()=>window._pt.some(t=>/Putting the pages online… \d+ of 40 pages/.test(t))&&!!$('#sh-prog .shp-bar i')),'the Share window shows a bar and “Putting the pages online… N of 40 pages” meanwhile');
   ok(await O.evaluate(()=>/39 of 40 pages are online\. The others go up/.test($('#sh-prog').textContent)),'… then how many are online: “39 of 40 pages are online. The others go up…”');
-  await V3.waitForFunction(()=>/39 of 40 pages online/.test(document.querySelector('#cnt').textContent),null,{timeout:10000}).catch(()=>{});
-  ok(await V3.evaluate(()=>/39 of 40 pages online/.test(document.querySelector('#cnt').textContent)&&!document.querySelector('#hbar').hidden),'the link says at the top how many pages are there: “39 of 40 pages online”, with a bar');
+  await V3.waitForFunction(()=>/39 of 40 pages online/.test($('#vlive').textContent),null,{timeout:10000}).catch(()=>{});
+  ok(await V3.evaluate(()=>/39 of 40 pages online/.test($('#vlive').textContent)),'the link says how many pages are there: “39 of 40 pages online”');
   await O.click('#shno');
   const pl=await O.evaluate(()=>{const S=SHS[cur.share.code];S.prog={done:0,total:9};shareProg(cur);const a=!$('#shpill').classList.contains('hidden')&&$('#shpill').textContent;S.prog=null;shareProg(cur);const b2=$('#shpill').textContent;return [a,b2]});
   ok(/Live link · 39 of 40 pages online/.test(pl[0])&&/39 of 40 pages online – the others go up later/.test(pl[1]),'with the Share window closed, a pill shows it: “'+pl[0]+'”');
   const m3=(await (await admin('shares/'+code3,null,'GET')).json()).fields.m.mapValue.fields;
   ok(Object.keys(m3).length===40&&!m3['p~5']&&m3['p~39']&&m3['meta'],'one page couldn’t go up (connection): the other 40 are in the link anyway ('+Object.keys(m3).length+' of 41)');
-  await V3.waitForTimeout(1500);
-  const lz=await V3.evaluate(()=>({n:document.querySelectorAll('figure.pg img:not(.ink)').length,wait:document.querySelector('figure[data-k="p~5"]').classList.contains('wait')}));
-  await V3.evaluate(()=>document.querySelector('figure[data-k="p~2"]').scrollIntoView());await V3.waitForFunction(()=>!!document.querySelector('figure[data-k="p~2"] img.ink'),null,{timeout:10000}).catch(()=>{});
-  lz.ink=await V3.evaluate(()=>!!document.querySelector('figure[data-k="p~2"] img.ink'));
-  ok(lz.n>=3&&lz.n<20,'the link loads only the pages near the screen ('+lz.n+' of 41 pictures)');
-  ok(lz.wait&&await V3.evaluate(()=>getComputedStyle(document.querySelector('figure[data-k="p~5"]'),'::after').content.includes('Not online yet')),'the page that didn’t go up says “Not online yet” (not a blank page)');
-  ok(lz.ink,'a PDF page with writing shows the page with the writing on top');
+  await V3.waitForFunction(()=>{const p=PEND.get(String(cur.id));return p&&p.size===1&&p.has(5)},null,{timeout:20000}).catch(()=>{});
+  ok(await V3.evaluate(()=>{const p=PEND.get(String(cur.id));return p&&p.size===1&&p.has(5)}),'the other 39 pages all came to the link (8 at a time, the ones near the open pages first)');
+  await V3.evaluate(()=>flip(2));await V3.waitForFunction(()=>cs===2&&!flipping,null,{timeout:15000});await V3.waitForTimeout(300);
+  ok(await V3.evaluate(()=>$('#pr').classList.contains('ld')&&$('#pr').classList.contains('wait')&&getComputedStyle($('#pr'),'::after').content.includes('Not online yet')),'the page that didn’t go up says “Not online yet” (not a blank page)');
+  await V3.evaluate(()=>flip(1));await V3.waitForFunction(()=>cs===1&&!flipping,null,{timeout:15000});await V3.waitForTimeout(300);
+  ok(await V3.evaluate(()=>!!$('#pl img.ink2')),'a PDF page with writing shows the page with the writing on top, like in the app');
+  await V3.evaluate(()=>flip(2));await V3.waitForFunction(()=>cs===2&&!flipping,null,{timeout:15000});
   const r0=JSON.parse((await (await admin('shares/'+code3+'/r/p~0',null,'GET')).json()).fields.d.stringValue);
   ok(r0.v===''&&/^data:image\/webp/.test(r0.r.bg),'a PDF page goes up once – no second picture for the link (lighter, faster)');
   // Olga closes Foliet and opens it again: the page that didn't go up goes up now, by itself
   await O.reload();await ready(O);
-  await V3.evaluate(()=>document.querySelector('figure[data-k="p~5"]').scrollIntoView());
-  await V3.waitForFunction(()=>!!document.querySelector('figure[data-k="p~5"] img'),null,{timeout:30000}).catch(()=>{});
-  ok(await V3.evaluate(()=>!!document.querySelector('figure[data-k="p~5"] img')),'Foliet opened again: page 6 goes up by itself and appears in the open link');
-  ok(await V3.evaluate(()=>/^40 pages$/.test(document.querySelector('#cnt').textContent)&&document.querySelector('#hbar').hidden),'… and the top says “40 pages” (all there)');
-  await V3.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));await V3.waitForFunction(()=>!!document.querySelector('figure[data-k="p~39"] img'),null,{timeout:15000}).catch(()=>{});
-  ok(await V3.evaluate(()=>!!document.querySelector('figure[data-k="p~39"] img')),'scrolling down loads the last pages');
-  await O.evaluate(async()=>{await shareEnd(data.find(b=>b.title==='Study guide'))});await V3.close();
+  await V3.waitForFunction(()=>!$('#pr').classList.contains('ld')&&!!$('#pr img'),null,{timeout:30000}).catch(()=>{});
+  ok(await V3.evaluate(()=>!$('#pr').classList.contains('ld')&&!!$('#pr img')),'Foliet opened again: page 6 goes up by itself and appears in the open link');
+  ok(await V3.evaluate(()=>/· 40 pages$/.test($('#vlive').textContent)),'… and it says “40 pages” (all there)');
+  await V3.evaluate(()=>flip(19));await V3.waitForFunction(()=>cs===19&&!flipping,null,{timeout:20000});
+  ok(await V3.evaluate(()=>!!$('#pr img')&&!!$('#pl img')),'the last pages are there too');
+  await O.evaluate(()=>shareEnd(data.find(b=>b.title==='Study guide')));await V3.close();await O.waitForTimeout(1500);
   await O.evaluate(()=>showBrowse(data.find(b=>b.title==='Trip to Rome')));await O.waitForTimeout(300);await O.click('#bshare');await O.waitForSelector('#shd:not(.hidden)');
   // your data (GDPR): the live links are in “Download my data” and go with “Delete my account”
   await O.click('#shno');await O.evaluate(()=>showBrowse(data.find(b=>b.title==='Trip to Rome')));await O.waitForTimeout(300);await O.click('#bshare');await O.click('#sh-live');await O.waitForSelector('#sh-url',{timeout:30000});

@@ -190,7 +190,8 @@ service cloud.firestore {
         allow create, update: if shareEditable(code)
           && request.resource.data.keys().hasOnly(['h', 'n', 'i', 'd'])
           && request.resource.data.d is string && request.resource.data.d.size() <= 400000;
-        allow delete: if shareEditable(code);
+        // the owner can remove the pages of a link that was stopped (Stop sharing switches it off first, so it stops at once)
+        allow delete: if shareOwner(code) || shareEditable(code);
       }
     }
 
