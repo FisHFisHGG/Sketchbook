@@ -1,5 +1,5 @@
 /* Foliet service worker: the app and its fonts open offline; other files (like the PDF library) are cached on first use. */
-const V = 'sb-v36';
+const V = 'sb-v37';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'vendor/firebase.js', 'favicon.svg',
   'fonts/baloo-2-latin-4a324d.woff2',
   'fonts/baloo-2-latin-ext-0d1ee7.woff2',
