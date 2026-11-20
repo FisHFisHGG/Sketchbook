@@ -21,7 +21,8 @@ let fails=0,steps=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fa
     if(f.startsWith(SITE)&&!/^(firebase|\.git)\b|CLAUDE/.test(path.relative(SITE,f))&&fs.existsSync(f)&&fs.statSync(f).isFile()){res.writeHead(200,{'Content-Type':mime[path.extname(f)]||'application/octet-stream'});return res.end(fs.readFileSync(f))}
     res.writeHead(404,{'Content-Type':'text/html'});res.end(fs.readFileSync(path.join(SITE,'404.html')))}).listen(5197,'127.0.0.1');
   const b=await chromium.launch();
-  const ctx=await b.newContext({viewport:{width:1366,height:900},acceptDownloads:true});await ctx.addInitScript(()=>{try{localStorage.setItem('sb-tour','99')}catch(e){}});
+  const PHONE=!!process.env.PHONE; // PHONE=1: the same walk on a phone (390 × 844, touch)
+  const ctx=await b.newContext({...(PHONE?{viewport:{width:390,height:844},hasTouch:true,isMobile:true}:{viewport:{width:1366,height:900}}),acceptDownloads:true});await ctx.addInitScript(()=>{try{localStorage.setItem('sb-tour','99')}catch(e){}});
   const A=await ctx.newPage();const errs=[],cons=[];
   A.on('pageerror',e=>errs.push(e.message));
   A.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|net::|favicon|emulator|WebChannelConnection|Firestore \(|@firebase/i.test(m.text()))cons.push(m.text().slice(0,200))});
@@ -61,10 +62,8 @@ let fails=0,steps=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fa
     for(const v of ['own','rec','name','pages','new'])await A.selectOption('#sortb',v);
     await A.click('#vw [data-v="list"]');await W(200);await A.click('#vw [data-v="grid"]');await W(200);return f>=1});
   await step('tags: a tag with its colour on the new notebook, then the filter',async()=>{
-    await E(()=>tagDlg(data.find(x=>x.title==='Walk book')));await A.waitForSelector('#lockd:not(.hidden) input');
-    await A.fill('#lockd input','school');await A.press('#lockd input','Enter');await W(200);
-    const btn=await A.$('#lockd .btn');if(btn)await btn.click();await W(400);
-    if(!(await E(()=>$('#lockd').classList.contains('hidden'))))await A.keyboard.press('Escape');await W(200);
+    await E(()=>{tagDlg(data.find(x=>x.title==='Walk book'))}); // the window stays open until you chooseawait A.waitForSelector('#tg-in');
+    await A.fill('#tg-in','school');await A.press('#tg-in','Enter');await W(200);await A.click('#lockd .tgacts .btn');await W(400);
     return E(()=>(data.find(x=>x.title==='Walk book').tags||[]).includes('school'))});
   await step('a category (Pro): made, the notebook moved into it, renamed, deleted (the notebook comes back to Notebooks)',async()=>{
     E(()=>addCat());await askName('Study');const cid=await E(()=>LIB.cat);
@@ -85,11 +84,11 @@ let fails=0,steps=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fa
     await A.click('#menub');await A.click('#hlpb');await W(300);await A.click('#hx');
     return fb&&await E(()=>SET.oanim!==false)});
   await step('Recently deleted: a notebook goes there and comes back',async()=>{
-    const id=await E(()=>{const b=mk('Throwaway',data.length,'p');data.push(b);persist();renderShelf();return b.id});
-    await E(id=>{trashBook(data.find(x=>x.id===id))},id);await W(400);
-    const gone=await E(id=>!data.some(x=>x.id===id)&&TRASH.some(t=>(t.b||t).id===id||t.id===id),id);
-    await E(id=>{const t=TRASH.find(t=>(t.b||t).id===id||t.id===id);restoreTrash(t)},id);await W(400);
-    return gone&&await E(id=>data.some(x=>x.id===id),id)});
+    const id=await E(async()=>{const b=mk('Throwaway',data.length,'p');data.push(b);persist();await saveNow();renderShelf();return String(b.id)});
+    await E(id=>{trashBook(data.find(x=>String(x.id)===id))},id);await W(400);
+    const gone=await E(id=>!data.some(x=>String(x.id)===id)&&TRASH.some(t=>t.id===id),id);
+    const back=await E(id=>restoreTrash(TRASH.find(t=>t.id===id)),id);await W(300);
+    return gone&&back&&await E(id=>data.some(x=>String(x.id)===id),id)});
 
   // ---------- the open book
   await step('open the notebook; New pages until there are 8',async()=>{
@@ -97,8 +96,10 @@ let fails=0,steps=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fa
     for(let i=0;i<4;i++){await A.click('#badd');await A.waitForSelector('#npd:not(.hidden)');await A.click('#npw [data-k="end"]');await A.click('#npyes');await W(900)}
     return E(()=>cur.pages.length>=8)});
   await step('turning pages: buttons and arrow keys',async()=>{
-    await E(()=>{cs=0;renderBrowse()});await A.click('#bnext');await W(1300);await A.click('#bnext');await W(1300);const a=await E(()=>cs);
-    await A.keyboard.press('ArrowLeft');await W(1300);const b2=await E(()=>cs);return a===2&&b2===1});
+    const still=()=>A.waitForFunction(()=>!flipping,null,{timeout:10000}).then(()=>W(150));
+    await still(); // a page still turning from New pages
+    await E(()=>{cs=0;renderBrowse()});await A.click('#bnext');await W(100);await still();await A.click('#bnext');await W(100);await still();const a=await E(()=>cs);
+    await A.keyboard.press('ArrowLeft');await W(100);await still();const b2=await E(()=>cs);if(!(a===2&&b2===1))console.log('   turning: after 2× next cs='+a+', after ← cs='+b2+', pages='+await E(()=>cur.pages.length));return a===2&&b2===1});
   await step('zoom: in, more, back',async()=>{for(let i=0;i<3;i++){await A.click('#bzoom');await W(450)}return E(()=>!zs)});
   await step('New pages in every place: left, right, before, after',async()=>{
     const n0=await E(()=>cur.pages.length);
@@ -122,18 +123,19 @@ let fails=0,steps=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fa
       await A.click('#tools [data-g="draw"]');await W(150);await A.click('#dtypes [data-k="'+t+'"]');await A.click('#cols .sw:nth-child(4)');
       await E(()=>{const r=$('#sz');r.value=9;r.dispatchEvent(new Event('input',{bubbles:true}))});
       if(!(await E(()=>$('#ts-press').classList.contains('hidden')))){await A.click('#prsw');await A.click('#prsw')}
-      const h0=await hist();await stroke(.2,.2,.6,.3);await E(()=>{ENV.pr=false});await stroke(.2,.35,.6,.45);await E(()=>{ENV.pr=true});
+      await A.keyboard.press('Escape');const h0=await hist();await stroke(.2,.2,.6,.3);await E(()=>{ENV.pr=false});await stroke(.2,.35,.6,.45);await E(()=>{ENV.pr=true});
       return E(([h,t])=>hist.length>=h+2&&tool===t,[h0,t])});
   }
-  await step('Highlighter and its colours',async()=>{await A.click('#tools [data-t="hl"]');await A.click('#cols .sw:nth-child(2)');const h0=await hist();await stroke(.2,.5,.7,.5);return E(h=>hist.length>h&&color===HL[1],h0)});
-  await step('Eraser',async()=>{await A.click('#tools [data-t="eraser"]');await W(100);const h0=await hist();await stroke(.2,.2,.5,.5);return E(h=>hist.length>h,h0)});
+  await step('Highlighter and its colours',async()=>{await A.click('#tools [data-t="hl"]');await A.click('#cols .sw:nth-child(2)');await A.keyboard.press('Escape');const h0=await hist();await stroke(.2,.5,.7,.5);return E(h=>hist.length>h&&color===HL[1],h0)});
+  await step('Eraser',async()=>{await A.click('#tools [data-t="eraser"]');await W(100);await A.keyboard.press('Escape');const h0=await hist();await stroke(.2,.2,.5,.5);return E(h=>hist.length>h,h0)});
   for(const sh of ['line','arrow','rect','ellipse','tri']){
     await step('Shapes → '+sh+(sh==='rect'||sh==='tri'?' (filled)':''),async()=>{
-      await A.click('#tools [data-t="shape"]');await W(100);await A.click('#shapes [data-s="'+sh+'"]');
+      await A.click('#tools [data-t="shape"]');await W(100);if(await E(()=>$('#tsheet').classList.contains('hidden')))await A.click('#tools [data-t="shape"]');
+      await A.click('#shapes [data-s="'+sh+'"]');
       const want=sh==='rect'||sh==='tri',is=await E(()=>shFill);if(is!==want)await A.click('#sh-fill');
-      const h0=await hist();await stroke(.3,.6,.55,.8);return E(h=>hist.length>h,h0)});
+      await A.keyboard.press('Escape');const h0=await hist();await stroke(.3,.6,.55,.8);return E(([h,s])=>hist.length>h&&shape===s,[h0,sh])});
   }
-  await step('Fill an area',async()=>{await A.click('#tools [data-t="fill"]');await A.click('#cols .sw:nth-child(6)');const h0=await hist();await tap(.9,.95);return E(h=>hist.length>h,h0)});
+  await step('Fill an area',async()=>{await A.click('#tools [data-t="fill"]');await A.click('#cols .sw:nth-child(6)');await A.keyboard.press('Escape');const h0=await hist();await tap(.9,.95);return E(h=>hist.length>h,h0)});
   await step('Select an area: copy it, then delete it, Done',async()=>{
     await A.click('#tools [data-t="sel"]');await W(100);await A.keyboard.press('Escape');await stroke(.15,.15,.65,.5);await W(200);
     const s1=await E(()=>!$('#sbar').classList.contains('hidden'));if(!s1)return false;
@@ -148,9 +150,13 @@ let fails=0,steps=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fa
   await step('Layers: open, add one, hide it, show it, delete it',async()=>{
     await A.click('#lyb');await W(400);const n0=await E(()=>document.querySelectorAll('#lylist .lyrow').length);await A.click('#ly-add');await W(400);
     const n1=await E(()=>document.querySelectorAll('#lylist .lyrow').length);
-    const eye=await A.$('#lylist .lyrow:first-child button[aria-label*="ide"],#lylist .lyrow:first-child button[title*="ide"]');if(eye){await eye.click();await W(200);await eye.click();await W(200)}
-    const del=await A.$('#lylist .lyrow:first-child button:last-child');if(del&&n1>1){await del.click();await del.click().catch(()=>{});await W(300)}
-    await A.click('#lsx');return n1===n0+1});
+    // the layer below (not the one you draw on): hide it, show it again
+    await A.click('#lylist .lyrow:nth-child(2) button[title="Show or hide"]');const hid=await A.waitForFunction(()=>cur.lay[pi].L[0].v===0,null,{timeout:8000}).then(()=>true,()=>false);await W(200);
+    await A.click('#lylist .lyrow:nth-child(2) button[title="Show or hide"]');const shown=await A.waitForFunction(()=>cur.lay[pi].L[0].v===1,null,{timeout:8000}).then(()=>true,()=>false);await W(200);
+    await A.click('#lylist .lyrow:first-child [aria-label="Delete layer"]');await A.click('#lylist .lyrow:first-child [aria-label="Delete layer"]');await W(400);
+    await A.waitForFunction(n=>document.querySelectorAll('#lylist .lyrow').length===n,n0,{timeout:8000}).catch(()=>{});const n2=await E(()=>document.querySelectorAll('#lylist .lyrow').length);
+    if(!(n1===n0+1&&hid&&shown&&n2===n0))console.log('   layers:',JSON.stringify({n0,n1,hid,shown,n2,L:await E(()=>cur.lay[pi]&&cur.lay[pi].L.map(l=>l.v))}));
+    await A.click('#lsx');return n1===n0+1&&hid&&shown&&n2===n0});
   await step('+ → emoji, a sticker, a note, a label; then arrange: duplicate, to the front, delete, Done',async()=>{
     const o0=await E(()=>objList().length);
     await A.click('#plus');await A.click('#stabs [data-p="emoji"]');await W(200);await A.click('#spane .eg button');await W(500);
@@ -175,7 +181,7 @@ let fails=0,steps=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fa
     if(await E(()=>!!$('#zrs').offsetParent))await A.click('#zrs');await W(200);return true});
   await step('the cover: draw on it, Cover style (colour, design, texture)',async()=>{
     await A.click('#back');await W(700);await E(()=>showEditor(-1));await W(700);
-    await A.click('#tools [data-g="draw"]');await stroke(.3,.3,.6,.6);await E(()=>closeTS());
+    await A.click('#tools [data-g="draw"]');await A.keyboard.press('Escape');await stroke(.3,.3,.6,.6);
     await A.click('#cst');await A.waitForSelector('#csheet:not(.hidden)');await A.click('#ccols .sw:nth-child(3)');
     const d=await A.$('#cdes button:nth-child(2)');if(d)await d.click();const tx=await A.$('#ctex button:nth-child(2)');if(tx)await tx.click();await W(300);await A.click('#csx');
     return E(()=>pi<0)});
