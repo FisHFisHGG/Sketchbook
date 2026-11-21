@@ -304,7 +304,6 @@ img.ink2{position:absolute;left:0;top:0;width:100%;height:100%;display:block;poi
 .lk-ic{display:grid;place-items:center;width:52px;height:52px;margin:0 auto;border-radius:50%;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}.lk-ic .ic{width:26px;height:26px}
 .lk-in{display:block;width:100%;margin:0 0 10px;font:inherit;color:var(--ink);background:var(--desk);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-height:46px;text-align:center}
 .lk-in.pin{font-size:28px;letter-spacing:.6em;padding-left:.6em;width:min(220px,100%);margin-left:auto;margin-right:auto}
-.pdfprog{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border-radius:999px;background:var(--ink);color:var(--desk);box-shadow:0 8px 24px var(--sh)}.pdfprog .ib{color:var(--desk);border-color:color-mix(in srgb,var(--desk) 40%,transparent)}
 .lk-lab{display:block}.lk-lab span{display:block;font-size:.85em;opacity:.75;margin:0 0 4px}
 .lk-err{color:#c2473a;font-weight:600;min-height:1.2em;margin:4px 0 8px}
 #lockd .seg2{margin:0 0 12px}#lockd .chk{justify-content:center;margin:4px 0 6px}#lockd .acts2{justify-content:center;flex-wrap:wrap}#lockd .alink{margin-top:12px}
@@ -336,16 +335,25 @@ img.ink2{position:absolute;left:0;top:0;width:100%;height:100%;display:block;poi
 #npd .card,#dlg .card,#up .card{min-width:0;max-width:100%}.tplrow{max-width:100%}
 .fb-rto{margin:-2px 0 8px}.fb-rto .lk-in{text-align:left;margin:0 0 4px}.fb-rto small{display:block}
 #offer{position:fixed;inset:0;z-index:76;background:rgba(8,14,18,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:grid;place-items:center;padding:16px;animation:fbnf .25s ease}#offer .off-sq{position:relative;box-sizing:border-box;width:min(460px,100%);max-height:calc(100dvh - 32px);overflow:auto;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:30px 26px 22px;border-radius:26px;background:var(--bar);color:var(--ink);box-shadow:0 26px 80px rgba(0,0,0,.5);animation:fbnp .3s cubic-bezier(.2,.9,.3,1.2)}.off-ic{font-size:3.2em;line-height:1.1}#offer h2{margin:2px 0 4px;font-size:1.45em;line-height:1.2}.off-p{margin:0;opacity:.85;line-height:1.45;max-width:36ch}.off-left{margin:8px 0 4px;padding:6px 14px;border-radius:999px;background:color-mix(in srgb,#e0a526 22%,transparent);font-weight:700;font-size:.9em}#offer .btn{width:min(280px,100%);padding:12px 18px;font-size:1.05em}#offer .btn:disabled{opacity:.5}#offer .fbn-no{border:0;background:none;box-shadow:none;opacity:.75;text-decoration:underline;text-underline-offset:3px}.off-msg{margin:4px 0 0;min-height:1.2em;font-size:.88em}.off-note{opacity:.6;font-size:.78em;max-width:34ch}@media (prefers-reduced-motion:reduce){#offer,#offer .off-sq{animation:none}}#upbuy{display:grid;gap:8px;margin:10px 0 4px}.upb{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%}.upb small{font-weight:400;opacity:.8;font-size:.8em}.adm-chk{display:flex;align-items:center;gap:8px;font-size:.9em;margin:2px 0}.adm-cardw{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%}.adm-cardw .anote{width:100%;margin:0}#adm-intro,#adm-pay{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end}#adm-intro>b,#adm-intro>small,#adm-pay>b,#adm-pay>small,#adm-intro .cmsg,#adm-pay .cmsg{width:100%}#fbnudge{position:fixed;inset:0;z-index:64;background:rgba(8,14,18,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:grid;place-items:center;padding:16px;animation:fbnf .25s ease}#fbnudge .fbn-sq{position:relative;box-sizing:border-box;width:min(480px,100%);min-height:min(480px,calc(100vw - 32px),calc(100dvh - 32px));max-height:calc(100dvh - 32px);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:30px 26px 22px;border-radius:26px;background:var(--bar);color:var(--ink);box-shadow:0 26px 80px rgba(0,0,0,.5);animation:fbnp .3s cubic-bezier(.2,.9,.3,1.2)}.fbn-x{position:absolute;top:12px;right:12px}.fbn-art svg{display:block;width:min(200px,50vw);height:auto;margin:0 auto 4px}#fbnudge h2{margin:4px 0 0;font-size:1.5em;line-height:1.2}.fbn-big{margin:2px 0 0;font-size:1.15em;font-weight:700;color:var(--accent)}.fbn-sub{margin:0 0 10px;opacity:.75;max-width:34ch;line-height:1.45}#fbnudge .btn{width:min(280px,100%);padding:12px 18px;font-size:1.05em}#fbnudge .fbn-no{border:0;background:none;box-shadow:none;opacity:.75;text-decoration:underline;text-underline-offset:3px}@media (max-width:440px){#fbnudge h2{font-size:1.3em}#fbnudge .fbn-sq{padding:26px 20px 18px}}@keyframes fbnf{from{opacity:0}}@keyframes fbnp{from{opacity:0;transform:scale(.92)}}@media (prefers-reduced-motion:reduce){#fbnudge,#fbnudge .fbn-sq{animation:none}}#nppdf{display:block;margin:2px 0 14px}
-#pdfd{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding:20px}
-#pdfd .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(560px,100%);min-width:0;max-height:calc(100vh - 40px);overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-#pdfd h2{margin:0 0 2px;font-size:1.3em}.pd-sub{margin:0 0 14px;opacity:.7;overflow-wrap:anywhere}#pdfd .alab{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}#pdfd .alab span{font-size:.85em;opacity:.7}#pdfd .lk-in{text-align:left;margin:0}
-.pd-o{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:12px}.pd-o .pd-l,.pd-wl{font-size:.85em;opacity:.7;width:100%}.pd-wl{display:block;margin-bottom:4px}.pd-o small{width:100%}
-#pdfd .seg2{margin:0}.pd-which{margin-bottom:10px!important}
-.pd-tools{display:flex;gap:14px;align-items:center;margin:6px 0 8px}.alink2{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer}.pd-cnt{margin-left:auto;font-size:.85em;opacity:.75}
-.pd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px;max-height:46vh;overflow-y:auto;padding:4px}
-.pd-pg{position:relative;padding:4px;border:2px solid var(--line);border-radius:10px;background:none;color:inherit}.pd-pg i{display:block;aspect-ratio:3/4;background:#fff center/contain no-repeat;border-radius:3px}
-.pd-pg b{display:block;font-size:.75em;margin-top:3px;opacity:.75}.pd-pg[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
-.pd-pg[aria-pressed="true"]::after{content:"✓";position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--bar);font-size:12px;font-weight:700;display:grid;place-items:center}#npd .card{max-height:calc(100vh - 40px);overflow-y:auto}
+#pdfd{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding:16px}
+#pdfd .card{display:flex;flex-direction:column;background:var(--bar);color:var(--ink);border-radius:18px;padding:16px 20px 14px;width:min(600px,100%);min-width:0;max-height:calc(100dvh - 32px);box-shadow:0 20px 60px rgba(0,0,0,.5);outline:0}
+.pd-head{display:flex;align-items:center;gap:10px}.pd-head h2{margin:0;font-size:1.3em;flex:1}.pd-x{flex:none}.pd-sub{margin:2px 0 12px;opacity:.7;overflow-wrap:anywhere}
+.pd-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:0 -6px;padding:2px 6px 8px}.pd-body.pd-mid{display:grid;place-items:center;min-height:220px}
+.pd-foot{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+.pd-load{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;max-width:380px;padding:12px}.pd-load b{font-weight:600}.pd-bad small{overflow-wrap:anywhere;font-size:.78em}
+.pd-spin{width:34px;height:34px;border-radius:50%;border:3px solid color-mix(in srgb,var(--accent) 22%,transparent);border-top-color:var(--accent);animation:spin .8s linear infinite}
+.pd-bar{width:240px;max-width:100%;height:6px;border-radius:3px;background:color-mix(in srgb,var(--ink) 12%,transparent);overflow:hidden}.pd-bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .25s}
+.pd-ic{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:color-mix(in srgb,#e5484d 14%,transparent);color:#e5484d;font-style:normal;font-weight:800;font-size:22px}.pd-lock{background:color-mix(in srgb,var(--accent) 14%,transparent);font-size:20px}.pd-pw{width:100%}
+#pdfd .alab{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}#pdfd .alab span,.pd-l{font-size:.85em;opacity:.7}#pdfd .lk-in{text-align:left;margin:0;width:100%}
+.pd-o{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:12px}.pd-o .pd-l{width:100%}.pd-o .chk{margin-top:4px}#pdfd .seg2{margin:0}.pd-w{margin-bottom:12px}.pd-w .pd-l{display:block;margin-bottom:4px}#pi-where{grid-template-columns:repeat(2,minmax(0,1fr))}#pi-where button{gap:8px;padding:7px 10px;border-radius:12px}#pi-where small{font-size:.78em}#pi-where .spi i{width:10px;height:14px}
+.pd-tools{display:flex;gap:14px;align-items:center;margin:4px 0 6px}.alink2{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer}.pd-cnt{margin-right:auto;font-size:.85em;opacity:.75}
+.pd-err{margin:6px 0 0}.pd-err:empty{display:none}
+.pd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px;padding:10px 0 4px}
+.pd-pg{position:relative;padding:4px;border:2px solid var(--line);border-radius:10px;background:none;color:inherit;cursor:pointer}.pd-pg i{display:block;aspect-ratio:3/4;background:#fff center/contain no-repeat;border-radius:3px;box-shadow:0 0 0 1px var(--line);transition:opacity .15s}
+.pd-pg:not(.ok) i{background-image:linear-gradient(100deg,#f3f3f3 30%,#e1e1e1 50%,#f3f3f3 70%);background-size:300% 100%;animation:pdsh 1.2s linear infinite}@keyframes pdsh{from{background-position:100% 0}to{background-position:-50% 0}}
+.pd-pg b{display:block;font-size:.75em;margin-top:3px;opacity:.75}.pd-pg[aria-pressed="false"] i{opacity:.4}.pd-pg[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.pd-pg[aria-pressed="true"]::after{content:"✓";position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--bar);font-size:12px;font-weight:700;display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){.pd-pg:not(.ok) i{animation:none}.pd-spin{animation-duration:2.4s}}
 #dlg .card,#up .card{background:var(--bar);color:var(--ink);border-radius:18px;padding:22px;width:min(420px,100%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #dlg h2,#up h2{margin:0 0 4px;font-size:1.3em}
 #dlg p,#up p{margin:0 0 16px;opacity:.7}
@@ -2721,9 +2729,9 @@ function askOrient(title,pre,sub,yes,pages){ // pages: also ask how the pages lo
   });
 }
 const PDFJS='vendor/pdfjs/'; // pdf.js 3.11.174 (Mozilla, Apache-2.0), kept in the project so it works offline
-const loadScript=u=>new Promise((r,j)=>{const e=document.createElement('script');e.src=u;e.onload=r;e.onerror=()=>j(new Error('Could not load '+u));document.head.append(e)});
-async function pdfLib(){
-  if(!window.pdfjsLib){await loadScript(PDFJS+'pdf.min.js');await loadScript(PDFJS+'pdf.worker.min.js')}
+const loadScript=u=>new Promise((r,j)=>{const e=document.createElement('script');e.src=u;e.onload=r;e.onerror=()=>{e.remove();j(new Error('Could not load '+u))};document.head.append(e)});
+async function pdfLib(){ // the PDF reader; it reads the file in its own worker, so the screen stays smooth (and a big PDF doesn't fill the page's memory)
+  if(!window.pdfjsLib)await loadScript(PDFJS+'pdf.min.js');
   pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+'pdf.worker.min.js';
   return pdfjsLib;
 }
@@ -2745,97 +2753,177 @@ async function renderPdfPage(doc,i,w0,h0){ // → an image of PDF page i (tries 
   try{pg.cleanup()}catch(e){}
   throw err||new Error('page '+i);
 }
-function pdfProgress(onCancel){
-  const w=el('div','pdfprog');w.setAttribute('role','status');const t=el('span','','Importing…');const c=el('button','ib','Cancel');c.onclick=onCancel;w.append(t,c);document.body.append(w);
-  return {set:x=>t.textContent=x,done:()=>w.remove()};
-}
 const PDF_MAX=500; // pages per PDF (Pro). About 200 KB a page on the device and in the cloud.
-let pdfTarget=null; // a notebook to add the PDF's pages to (from New pages), or null = choose in the import window
+let pdfTarget=null; // the notebook “Add pages from a PDF” was opened from, or null (Import PDF on the shelf)
 $('#pdfb').onclick=()=>{if(plan!=='pro'){upsell('PDF import is included in Pro.');return}pdfTarget=null;$('#pdff').click()};
-$('#pdff').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)pdfImport(f,pdfTarget);pdfTarget=null};
+$('#pdff').onchange=e=>{const f=e.target.files[0],t=pdfTarget;e.target.value='';pdfTarget=null;if(f)pdfImport(f,t)};
 async function pdfThumb(doc,i){ // a small picture of PDF page i for the page chooser
-  const pg=await doc.getPage(i),v=pg.getViewport({scale:1}),k=110/v.width,vp=pg.getViewport({scale:k}),c=document.createElement('canvas');
+  const pg=await doc.getPage(i),v=pg.getViewport({scale:1}),k=160/v.width,vp=pg.getViewport({scale:k}),c=document.createElement('canvas');
   c.width=Math.round(vp.width);c.height=Math.round(vp.height);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
-  try{await pg.render({canvasContext:x,viewport:vp}).promise;return c.toDataURL('image/jpeg',.7)}finally{c.width=c.height=0;try{pg.cleanup()}catch(e){}}
+  try{await pg.render({canvasContext:x,viewport:vp}).promise;return c.toDataURL('image/jpeg',.72)}finally{c.width=c.height=0;try{pg.cleanup()}catch(e){}}
 }
-/* Import window: where the pages go (a new notebook or one you have) and which pages (all, or the ones you tick). */
-function pdfChoose(doc,name,target,land){
-  return new Promise(res=>{
-    const N=doc.numPages,ov=el('div','');ov.id='pdfd';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');
-    const c=el('div','card');ov.append(c);
-    c.append(el('h2','','Import PDF'),el('p','pd-sub',name+' · '+N+(N===1?' page':' pages')));
-    const books=myBooks();let to=target?String(target.id):'new',o=land?'l':'p',all=true;const pick=new Set();
-    const lt=el('label','alab');lt.append(el('span','','Add to'));const sel=el('select','lk-in');sel.id='pi-to';
-    sel.append(new Option('A new notebook','new'));books.forEach(b=>sel.append(new Option((b.lock?'🔒 ':'')+(b.title||'Untitled')+' · '+b.pages.length+(b.pages.length===1?' page':' pages'),String(b.id))));
-    sel.value=to;lt.append(sel);c.append(lt);
-    const ob=el('div','pd-o');const oseg=el('div','seg2');[['p','Portrait'],['l','Landscape']].forEach(([k,n])=>{const b=el('button','',n);b.type='button';b.dataset.o=k;b.onclick=()=>{o=k;sync()};oseg.append(b)});
-    ob.append(el('span','pd-l','Orientation'),oseg,el('small','muted','The first page you import becomes the cover.'));c.append(ob);
-    const pseg=el('div','seg2 pd-which');const bAll=el('button','','All '+N+' pages');bAll.type='button';bAll.id='pi-all';const bPick=el('button','','Choose pages');bPick.type='button';bPick.id='pi-pick';pseg.append(bAll,bPick);c.append(el('span','pd-l pd-wl','Which pages'),pseg);
-    const tools=el('div','pd-tools');const sa=el('button','alink2','Select all');sa.type='button';const sn=el('button','alink2','Select none');sn.type='button';const cnt=el('span','pd-cnt','');tools.append(sa,sn,cnt);
-    const grid=el('div','pd-grid');grid.id='pi-grid';c.append(tools,grid);
-    const err=el('p','lk-err');err.setAttribute('role','alert');c.append(err);
-    const acts=el('div','acts2');const no=el('button','ib','Cancel');no.type='button';const go=el('button','btn','Import');go.type='button';go.id='pi-go';acts.append(no,go);c.append(acts);
-    const sel2=()=>all?[...Array(N).keys()].map(i=>i+1):[...pick].sort((a,b)=>a-b);
-    const sync=()=>{
-      to=sel.value;ob.classList.toggle('hidden',to!=='new');oseg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.o===o));
-      bAll.setAttribute('aria-pressed',all);bPick.setAttribute('aria-pressed',!all);tools.classList.toggle('hidden',all);grid.classList.toggle('hidden',all);
-      grid.querySelectorAll('.pd-pg').forEach(t=>t.setAttribute('aria-pressed',pick.has(+t.dataset.i)));
-      const n=sel2().length;cnt.textContent=n+' of '+N+' selected';
-      go.textContent=n?'Import '+n+(n===1?' page':' pages'):'Import';go.disabled=!n||n>PDF_MAX;
-      err.textContent=n>PDF_MAX?'You can import up to '+PDF_MAX+' pages at a time.':'';
-    };
-    let io=null,built=false;
-    const build=()=>{if(built)return;built=true;
-      io='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(en=>{if(!en.isIntersecting)return;const t=en.target;io.unobserve(t);
-        pdfThumb(doc,+t.dataset.i).then(u=>{t.querySelector('i').style.backgroundImage='url('+u+')'}).catch(()=>{})}),{root:grid,rootMargin:'200px'}):null;
-      for(let i=1;i<=N;i++){const t=el('button','pd-pg');t.type='button';t.dataset.i=i;t.append(el('i',''),el('b','',String(i)));
-        t.onclick=()=>{pick.has(i)?pick.delete(i):pick.add(i);sync()};grid.append(t);if(io)io.observe(t);else pdfThumb(doc,i).then(u=>t.querySelector('i').style.backgroundImage='url('+u+')')}};
-    sel.onchange=sync;
-    bAll.onclick=()=>{all=true;sync()};bPick.onclick=()=>{all=false;build();sync()};
-    sa.onclick=()=>{for(let i=1;i<=N;i++)pick.add(i);sync()};sn.onclick=()=>{pick.clear();sync()};
-    const done=v=>{if(io)io.disconnect();ov.remove();res(v)};
-    no.onclick=()=>done(null);ov.onclick=e=>{if(e.target===ov)done(null)};ov.addEventListener('keydown',e=>{if(e.key==='Escape')done(null)});
-    go.onclick=()=>{const pages=sel2();if(!pages.length||pages.length>PDF_MAX)return;done({to:sel.value==='new'?null:books.find(b=>String(b.id)===sel.value),o,pages})};
-    document.body.append(ov);sync();
-  });
+function readFile(f,onp){ // the whole file, with progress (big PDFs take a moment on a phone)
+  return new Promise((res,rej)=>{const r=new FileReader();r.onprogress=e=>{if(e.lengthComputable)onp(e.loaded/e.total)};r.onload=()=>res(r.result);r.onerror=()=>rej(r.error||new Error('read'));r.readAsArrayBuffer(f)});
 }
+function pdfErr(e){ // why a PDF can't be opened, in plain words
+  const n=(e&&e.name)||'',m=String((e&&e.message)||e||'');
+  if(n==='InvalidPDFException'||/invalid pdf|no pdf header/i.test(m))return 'This file isn’t a PDF, or it’s damaged. Try saving it again as a PDF.';
+  if(n==='NotReadableError'||n==='NotFoundError'||n==='SecurityError')return 'This device couldn’t read the file. If it’s in Google Drive or another cloud app, download it to the device first, then try again.';
+  if(n==='RangeError'||/out of memory|allocation failed/i.test(m))return 'This PDF is too big to open on this device. Try a smaller file, or split it into parts.';
+  if(/Could not load/.test(m))return 'The PDF reader couldn’t load. Check your internet connection and try again.';
+  return 'This PDF couldn’t be opened. Try another file, or save it again as a PDF.';
+}
+const mbs=n=>n>=1048576?(n/1048576).toFixed(n>=10485760?0:1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
+const pgRanges=s=>{const a=[...s].sort((x,y)=>x-y),out=[];for(let i=0;i<a.length;i++){let j=i;while(j+1<a.length&&a[j+1]===a[j]+1)j++;out.push(j>i?a[i]+'–'+a[j]:''+a[i]);i=j}return out.join(', ')};
+function pgParse(t,N){ // “1-5, 8, 11–20” → the set of pages (or null if it can't be read)
+  const s=new Set(),parts=t.split(/[,;\s]+/).filter(Boolean);if(!parts.length)return s;
+  for(const p of parts){const m=p.match(/^(\d+)(?:[-–—](\d+))?$/);if(!m)return null;let a=+m[1],b=m[2]?+m[2]:a;if(a>b)[a,b]=[b,a];
+    for(let i=Math.max(1,a);i<=Math.min(N,b);i++)s.add(i)}
+  return s;
+}
+function pdfPlaces(b){ // where the PDF's pages can go in notebook b: around the open pages, at the beginning or at the end
+  const n0=b.pages.length,open=b===cur&&!$('#bv').classList.contains('hidden')&&cs>=0,L=2*cs,out=[];
+  const add=o=>{if(!out.some(x=>x.at===o.at))out.push(o)};
+  if(!b._guest&&!PEND.has(String(b.id))){ // a shared notebook you're a guest in, or pages still on their way: only at the end
+    if(open){add({at:L,k:'before',t:'Before these pages',s:'Before page '+(L+1),ic:['n',0,0]});
+      const a=Math.min(n0,L+2);if(a<n0)add({at:a,k:'after',t:'After these pages',s:'After page '+a,ic:[0,0,'n']})}
+    add({at:0,k:'start',t:'At the beginning',s:'Before page 1',ic:['n','g','g']});
+  }
+  add({at:n0,k:'end',t:'At the end',s:'After page '+n0,ic:['g','g','n']});
+  return out;
+}
+/* Import a PDF (Pro). A window opens at once: it reads the file and opens it (asks for the password if it has one),
+   then shows every page (all ticked – tap one to leave it out, or type pages like 1-5, 8), where the pages go
+   (a new notebook, or a notebook you have: before or after the open pages, at the beginning or at the end) and,
+   in the same window, the import with its progress. target = the notebook it was opened from, or null. */
 async function pdfImport(f,target){
+  let prog=0,p0=null;const rd=readFile(f,x=>{prog=x;if(p0)p0(x)});rd.catch(()=>{}); // read it now: some phones stop letting a page read a picked file after a while
+  const ov=el('div','');ov.id='pdfd';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-labelledby','pd-h');
+  const c=el('div','card');ov.append(c);
+  const head=el('div','pd-head'),h=el('h2','','Import PDF');h.id='pd-h';const x=el('button','ib i pd-x','✕');x.type='button';x.setAttribute('aria-label','Close');head.append(h,x);
+  const sub=el('p','pd-sub',f.name+' · '+mbs(f.size));const body=el('div','pd-body'),foot=el('div','pd-foot');c.append(head,sub,body,foot);
+  document.body.append(ov);c.tabIndex=-1;c.focus();
+  let task=null,doc=null,v1=null,shut=false,busy=false,stop=false,kill=()=>{};
+  const close=()=>{if(busy){stop=true;return}if(shut)return;shut=true;kill();ov.remove();try{task&&task.destroy()}catch(e){}};
+  x.onclick=close;ov.addEventListener('keydown',e=>{if(e.key==='Escape')close()});ov.onclick=e=>{if(e.target===ov&&!busy)close()};
+  const btn=(t,cls,fn,id)=>{const b=el('button',cls,t);b.type='button';if(id)b.id=id;b.onclick=fn;return b};
+  const loading=(t,pct)=>{ // a spinner, what is happening and (when known) how far it is
+    body.className='pd-body pd-mid';body.innerHTML='';const w=el('div','pd-load');w.setAttribute('role','status');
+    const bar=el('div','pd-bar');bar.append(el('i',''));w.append(el('i','pd-spin'),el('b','',t),bar);body.append(w);
+    const set=p=>{bar.classList.toggle('hidden',p==null);bar.firstChild.style.width=Math.round((p||0)*100)+'%'};set(pct);
+    foot.innerHTML='';foot.append(btn(busy?'Stop':'Cancel','ib',close,'pi-no'));return {set,text:s=>w.children[1].textContent=s};
+  };
+  const fail=(msg,e)=>{
+    if(shut)return;busy=false;body.className='pd-body pd-mid';body.innerHTML='';const w=el('div','pd-load pd-bad');w.setAttribute('role','alert');
+    w.append(el('i','pd-ic','!'),el('b','',msg));if(e)w.append(el('small','muted',((e.name||'Error')+': '+(e.message||e)).slice(0,160)));body.append(w);
+    foot.innerHTML='';foot.append(btn('Close','ib',close),btn('Choose another file','btn',()=>{close();pdfTarget=target;$('#pdff').click()},'pi-again'));
+  };
   try{
-    note('Reading PDF…');
-    const lib=await pdfLib(),doc=await lib.getDocument({data:await f.arrayBuffer(),isEvalSupported:false}).promise;
-    const v=(await doc.getPage(1)).getViewport({scale:1});note('');
-    const ch=await pdfChoose(doc,f.name,target,v.width>v.height);
-    if(!ch){try{doc.destroy()}catch(e){}return}
-    let b=ch.to,isNew=!b,sel=ch.pages;
-    if(!isNew&&!(await unlockBook(b))){try{doc.destroy()}catch(e){}return}
-    let stop=false,bad=0;const pr=pdfProgress(()=>stop=true);
-    if(isNew){b=mk(f.name.replace(/\.pdf$/i,'').slice(0,40)||'PDF',data.length,ch.o);b.pages=[]}
-    const PW=b.o==='l'?1200:900,PH=b.o==='l'?900:1200; // this notebook's page size (even if another notebook is opened meanwhile)
-    const n0=b.pages.length;b._imp=1; // hidden on the shelf until the import is done
-    if(isNew){
-      pr.set('Importing the cover…');
-      // the first chosen page is the cover's photo (you can draw on it); the others become the pages
-      const W0=W,H0=H;setDims(b);
-      try{const cov=await renderPdfPage(doc,sel[0],PW,PH);b.cbg=cov;b.cpv=await compose(null,[],cov,null);b.color=PAPER;b.cc=2}catch(e){bad++}
-      if(cur&&cur!==b)setDims(cur);else{W=W0;H=H0}
-      if(sel.length>1)sel=sel.slice(1);
-      catNew(b);data.push(b);
-    }
-    for(let k=0;k<sel.length&&!stop;k++){
-      pr.set('Importing page '+(k+1)+' of '+sel.length+'…');
-      let u=null;try{u=await renderPdfPage(doc,sel[k],PW,PH)}catch(e){bad++} // a page that can't be read stays blank; the others still come in
-      b.pages.push(null);if(u)b.bg[b.pages.length-1]=u;
-      if((k+1)%25===0){persist();await new Promise(r=>setTimeout(r,0))} // saved as it goes
-    }
-    pr.done();try{doc.destroy()}catch(e){}
+    const L=loading('Reading the file…',prog);p0=L.set;
+    const [lib,buf]=await Promise.all([pdfLib(),rd]);p0=null;if(shut)return;
+    L.text('Opening the PDF…');L.set(null);
+    task=lib.getDocument({data:new Uint8Array(buf),isEvalSupported:false});
+    task.onPassword=(update,why)=>{ // a PDF locked with a password: ask for it here
+      if(shut)return;body.className='pd-body pd-mid';body.innerHTML='';const w=el('div','pd-load');
+      const fm=el('form','pd-pw');const inp=el('input','lk-in');inp.type='password';inp.placeholder='Password';inp.id='pi-pw';inp.autocomplete='off';inp.setAttribute('aria-label','PDF password');fm.append(inp);
+      w.append(el('i','pd-ic pd-lock','🔒'),el('b','',why===lib.PasswordResponses.INCORRECT_PASSWORD?'That password isn’t right. Try again.':'This PDF is locked with a password.'),fm);body.append(w);
+      const ok=btn('Open','btn',()=>{if(!inp.value)return inp.focus();loading('Opening the PDF…');update(inp.value)},'pi-pwgo');fm.onsubmit=e=>{e.preventDefault();ok.click()};
+      foot.innerHTML='';foot.append(btn('Cancel','ib',close),ok);setTimeout(()=>inp.focus(),50);
+    };
+    doc=await task.promise;if(shut)return;
+    v1=(await doc.getPage(1)).getViewport({scale:1});
+  }catch(e){if(!shut){console.error(e);fail(pdfErr(e),e)}return}
+  const N=doc.numPages;sub.textContent=f.name+' · '+N+(N===1?' page':' pages');
+  // ---- the chooser
+  const books=myBooks();if(target&&!books.includes(target))books.unshift(target); // the notebook it was opened from is always there (the welcome notebook too)
+  let to=target?String(target.id):'new',o=v1.width>v1.height?'l':'p',cov=true,k=null;
+  const pick=new Set([...Array(Math.min(N,PDF_MAX)).keys()].map(i=>i+1)); // every page is ticked to begin with (up to 500)
+  body.className='pd-body';body.innerHTML='';
+  const lt=el('label','alab');lt.append(el('span','','Add to'));const sel=el('select','lk-in');sel.id='pi-to';
+  sel.append(new Option('A new notebook','new'));books.forEach(b=>sel.append(new Option((b.lock?'🔒 ':'')+(b.title||'Untitled')+' · '+b.pages.length+(b.pages.length===1?' page':' pages'),String(b.id))));
+  sel.value=to;lt.append(sel);body.append(lt);
+  const nb=el('div','pd-o');const oseg=el('div','seg2');[['p','Portrait'],['l','Landscape']].forEach(([kk,n])=>oseg.append(btn(n,'',()=>{o=kk;sync()})));
+  oseg.querySelectorAll('button').forEach((b,i)=>b.dataset.o=i?'l':'p');
+  const cl=el('label','chk');const cb=document.createElement('input');cb.type='checkbox';cb.checked=true;cb.id='pi-cov';cb.onchange=()=>{cov=cb.checked;sync()};cl.append(cb,el('span','','Use the first page as the cover'));
+  nb.append(el('span','pd-l','Orientation'),oseg,cl);body.append(nb);
+  const wb=el('div','pd-w');const wl=el('div','npw');wl.id='pi-where';wl.setAttribute('role','radiogroup');wl.setAttribute('aria-label','Where the pages go');wb.append(el('span','pd-l','Where'),wl);body.append(wb);
+  const tools=el('div','pd-tools');const cnt=el('span','pd-cnt','');cnt.id='pi-cnt';
+  tools.append(el('span','pd-l','Pages'),cnt,btn('All','alink2',()=>{pick.clear();for(let i=1;i<=Math.min(N,PDF_MAX);i++)pick.add(i);sync(1)},'pi-all'),btn('None','alink2',()=>{pick.clear();sync(1)},'pi-none'));
+  const rg=el('input','lk-in pd-rg');rg.id='pi-range';rg.placeholder='Pages, e.g. 1-5, 8';rg.autocomplete='off';rg.setAttribute('aria-label','Pages to import, e.g. 1-5, 8');
+  const err=el('p','lk-err pd-err');err.setAttribute('role','alert');
+  const grid=el('div','pd-grid');grid.id='pi-grid';body.append(tools,rg,err,grid);
+  const go=btn('Import','btn',()=>run(),'pi-go');foot.innerHTML='';foot.append(btn('Cancel','ib',close,'pi-no'),go);
+  let wTo=null;const mark=()=>wl.querySelectorAll('button').forEach(z=>z.setAttribute('aria-checked',z.dataset.k===k));
+  const where=()=>{ // built once per notebook (rebuilding it on every change could swallow a tap)
+    wTo=to;wl.innerHTML='';const b=books.find(x=>String(x.id)===to);if(!b)return;
+    const P=pdfPlaces(b);if(!P.some(p=>p.k===k))k=(P.find(p=>p.k==='after')||P.find(p=>p.k==='end')).k; // right after the open pages, or at the end
+    P.forEach(p=>{const bt=btn('','',()=>{k=p.k;mark()});bt.dataset.k=p.k;bt.setAttribute('role','radio');bt.setAttribute('aria-checked',p.k===k);
+      bt.innerHTML='<span class="spi">'+p.ic.map(z=>'<i class="'+(z||'')+'"></i>').join('')+'</span><span><b></b><small></small></span>';
+      bt.querySelector('b').textContent=p.t;bt.querySelector('small').textContent=p.s;wl.append(bt)});
+  };
+  const sync=typed=>{
+    to=sel.value;const isNew=to==='new';nb.classList.toggle('hidden',!isNew);wb.classList.toggle('hidden',isNew);if(!isNew&&wTo!==to)where();
+    oseg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.o===o));
+    grid.querySelectorAll('.pd-pg').forEach(t=>t.setAttribute('aria-pressed',pick.has(+t.dataset.i)));
+    const n=pick.size;cnt.textContent=n+' of '+N+' selected';if(typed!==2)rg.value=n===N?'':pgRanges(pick);
+    const pages=isNew&&cov&&n>1?n-1:n;
+    go.textContent=!n?'Import':isNew&&cov?(n===1?'Import the cover':'Import the cover + '+pages+(pages===1?' page':' pages')):'Import '+n+(n===1?' page':' pages');
+    go.disabled=!n||n>PDF_MAX;
+    err.textContent=n>PDF_MAX?'You can import up to '+PDF_MAX+' pages at a time.':N>PDF_MAX&&typed!==2&&n===PDF_MAX?'This PDF has '+N+' pages. You can import up to '+PDF_MAX+' at a time – pages 1–'+PDF_MAX+' are selected, or type the ones you want.':'';
+  };
+  rg.oninput=()=>{const s=pgParse(rg.value,N);if(!s){err.textContent='Type pages like 1-5, 8, 12-20.';return}if(!rg.value.trim()){for(let i=1;i<=Math.min(N,PDF_MAX);i++)s.add(i)}pick.clear();s.forEach(i=>pick.add(i));sync(2)};
+  rg.onblur=()=>sync();
+  sel.onchange=()=>sync();
+  // every page as a small picture, drawn when it comes into view (2 at a time, the ones you can see first)
+  const TH={},Q=[];let run2=0;
+  const pump=()=>{while(run2<2&&Q.length&&!shut){const t=Q.shift();t._q=0;if(!t._vis||TH[t.dataset.i])continue;run2++;const i=+t.dataset.i;
+    pdfThumb(doc,i).then(u=>{TH[i]=u;t.firstChild.style.backgroundImage='url('+u+')';t.classList.add('ok')}).catch(()=>t.classList.add('ok')).finally(()=>{run2--;pump()})}};
+  const io='IntersectionObserver' in window?new IntersectionObserver(es=>{es.forEach(en=>{const t=en.target;t._vis=en.isIntersecting;if(t._vis&&!TH[t.dataset.i]&&!t._q){t._q=1;Q.push(t)}});pump()},{root:body,rootMargin:'300px 0px'}):null;
+  kill=()=>{if(io)io.disconnect();Q.length=0};
+  let last=0;
+  for(let i=1;i<=N;i++){const t=el('button','pd-pg');t.type='button';t.dataset.i=i;t.setAttribute('aria-label','Page '+i);t.append(el('i',''),el('b','',String(i)));
+    t.onclick=e=>{const on=!pick.has(i);if(e.shiftKey&&last){const [a,z]=last<i?[last,i]:[i,last];for(let j=a;j<=z;j++)on?pick.add(j):pick.delete(j)}else on?pick.add(i):pick.delete(i);last=i;sync()};
+    grid.append(t);if(io)io.observe(t);else{t._vis=1;Q.push(t)}}
+  pump();sync();
+  // ---- the import, in the same window
+  async function run(){
+    const sel2=[...pick].sort((a,b)=>a-b);if(!sel2.length||sel2.length>PDF_MAX)return;
+    let b=to==='new'?null:books.find(z=>String(z.id)===to);const isNew=!b;
+    if(b&&!(await unlockBook(b)))return;
+    kill();busy=true;let bad=0,got=[],cover=false;
+    const L=loading('Getting ready…',0);
+    let pages=sel2,at=0;
+    if(isNew){b=mk(f.name.replace(/\.pdf$/i,'').slice(0,40)||'PDF',data.length,o);b.pages=[]}
+    else{const P=pdfPlaces(b);at=(P.find(p=>p.k===k)||P[P.length-1]).at;await savesDone();b._sv=(b._sv||0)+1}
+    const PW=b.o==='l'?1200:900,PH=b.o==='l'?900:1200; // this notebook's page size
+    const n0=b.pages.length,mid=at<n0;b._imp=1; // hidden on the shelf until the import is done
+    const lists=()=>[b.pages,b.objs,b.pv,b.bg,b.ps,b.lay];
+    const put=(i,us)=>{const len=b.pages.length;lists().forEach((a,j)=>{if(a.length<len)a.length=len;a.splice(i,0,...us.map(u=>j===0?null:j===3?(u||undefined):undefined))})};
+    try{
+      if(isNew&&cov){ // the first chosen page is the cover's photo (you can draw on it)
+        L.text('Importing the cover…');const W0=W,H0=H;setDims(b);
+        try{const u=await renderPdfPage(doc,pages[0],PW,PH);b.cbg=u;b.cpv=await compose(null,[],u,null);b.color=PAPER;b.cc=2;cover=true}catch(e){bad++}
+        if(cur&&cur!==b)setDims(cur);else{W=W0;H=H0}
+        if(pages.length>1)pages=pages.slice(1);else pages=[];
+      }
+      if(isNew){catNew(b);data.push(b)}
+      for(let j=0;j<pages.length&&!stop;j++){
+        L.text('Importing page '+(j+1)+' of '+pages.length+'…');L.set(j/pages.length);
+        let u=null;try{u=await renderPdfPage(doc,pages[j],PW,PH)}catch(e){bad++} // a page that can't be read stays blank; the others still come in
+        if(mid)got.push(u);else{put(b.pages.length,[u]);if((j+1)%25===0){persist();await new Promise(r=>setTimeout(r,0))}} // at the end: saved as it goes
+      }
+      if(mid&&got.length)put(at,got); // between pages: put in all at once, so the pages after them move only once
+    }catch(e){console.error(e)}
+    busy=false;close();try{doc.destroy()}catch(e){}
+    const added=b.bg.slice(at,at+b.pages.length-n0).filter(Boolean).length;
     if(!b.pages.length)b.pages=[null];
     delete b._imp;b.u=Date.now();
-    const added=b.pages.slice(n0).filter((_,i)=>b.bg[n0+i]).length;
-    if(!isNew&&b.pages.length>n0)b.cs=n0>>1; // open where the new pages start
+    if(!isNew&&b.pages.length>n0)b.cs=at>>1; // open where the new pages start
     persist();renderShelf();
-    if($('#ed').classList.contains('hidden'))showBrowse(b);
-    toast((stop?'Import stopped – ':'Imported ')+added+(added===1?' page':' pages')+(isNew&&b.cbg?(stop?' were kept.':' and the cover.'):(stop?' were kept.':' into '+(b.title||'Untitled')+'.'))+(bad?' '+bad+(bad===1?' page':' pages')+' couldn’t be read and '+(bad===1?'was':'were')+' left blank.':''));
-  }catch(err){note('Could not import this PDF.',1);console.error(err);toast('Could not import this PDF. Try another file, or save it again as a PDF and retry.')}
+    if(b===cur&&!$('#bv').classList.contains('hidden')){const s2=at>>1;if(s2!==cs)flip(s2);else renderBrowse()}
+    else if($('#ed').classList.contains('hidden'))showBrowse(b);
+    toast((stop?'Import stopped – ':'Imported ')+added+(added===1?' page':' pages')+(stop?' were kept.':isNew?(cover?' and the cover.':'.'):' into '+(b.title||'Untitled')+'.')+(bad?' '+bad+(bad===1?' page':' pages')+' couldn’t be read and '+(bad===1?'was':'were')+' left blank.':''));
+  }
 }
 
 /* Page style (background) */

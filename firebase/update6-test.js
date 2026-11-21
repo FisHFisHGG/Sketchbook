@@ -236,8 +236,8 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   const mk=await b.newPage();
   await mk.setContent('<style>@page{size:600px 800px;margin:0}body{margin:0}div{width:600px;height:800px;page-break-after:always}</style><div style="background:#d33"></div><div style="background:#3a3"></div><div style="background:#33d"></div><div style="background:#dd3"></div>');
   const pdfPath=path.join(require('os').tmpdir(),'u6-test.pdf');fs.writeFileSync(pdfPath,await mk.pdf({width:'600px',height:'800px',printBackground:true}));await mk.close();
-  await P.setInputFiles('#pdff',pdfPath);await P.waitForSelector('#pdfd',{timeout:15000});
-  ok(/4 pages/.test(await P.evaluate(()=>$('#pdfd .pd-sub').textContent))&&/first page you import becomes the cover/.test(await P.evaluate(()=>$('#pdfd').textContent)),'PDF import says: 4 pages, the first becomes the cover');
+  await P.setInputFiles('#pdff',pdfPath);await P.waitForSelector('#pdfd',{timeout:15000});await P.waitForSelector('#pi-go',{timeout:15000});
+  ok(/4 pages/.test(await P.evaluate(()=>$('#pdfd .pd-sub').textContent))&&await P.evaluate(()=>$('#pi-cov').checked&&/Use the first page as the cover/.test($('#pdfd').textContent)&&$('#pi-go').textContent==='Import the cover + 3 pages'),'PDF import says: 4 pages, the first becomes the cover (“Import the cover + 3 pages”)');
   await P.click('#pi-go');await P.waitForSelector('#bv:not(.hidden)',{timeout:30000});
   const pd=await P.evaluate(async()=>{const px=async u=>{const im=new Image();im.src=u;await im.decode();const c=document.createElement('canvas');c.width=c.height=1;const x=c.getContext('2d');x.drawImage(im,im.width/2,im.height/2,1,1,0,0,1,1);return [...x.getImageData(0,0,1,1).data].slice(0,3)};
     return {n:cur.pages.length,cov:await px(cur.cbg),obj:cur.cobjs.length,p1:await px(cur.bg[0]),p3:await px(cur.bg[2])}});
