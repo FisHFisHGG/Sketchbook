@@ -278,6 +278,20 @@ img.ink2{position:absolute;left:0;top:0;width:100%;height:100%;display:block;poi
 .alist{display:flex;flex-direction:column;gap:6px;margin-top:10px}
 .arow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bar);border:1px solid var(--line);border-radius:12px;padding:8px 10px}.arow>div{flex:1 1 200px;min-width:0;overflow-wrap:anywhere}.arow small{opacity:.7}.arow.off{opacity:.55}
 #adm-body .muted{opacity:.7;font-size:.9em}#adm-body .amsg{color:#c2473a;font-weight:600}
+#prow{position:fixed;inset:0;z-index:72;background:rgba(8,14,18,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);display:grid;place-items:center;padding:16px;animation:fbnf .2s ease}
+.pw-card{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;width:min(440px,100%);max-height:calc(100dvh - 32px);overflow:hidden;background:var(--bar);color:var(--ink);border-radius:22px;padding:26px 22px 20px;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+.pw-x{position:absolute;top:12px;right:12px}.pw-ic{font-size:40px;line-height:1}.pw-card h2{margin:0;font-size:1.35em}.pw-sub{margin:0;opacity:.75;line-height:1.45}
+.pw-st{width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px;border-radius:16px;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.pw-st.off{background:color-mix(in srgb,#e0a526 12%,transparent);border-color:color-mix(in srgb,#e0a526 40%,transparent)}
+.pw-lab{font-size:.85em;opacity:.75}.pw-day{font-size:1.9em;letter-spacing:.02em}.pw-left{font-weight:700;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);border-radius:999px;padding:3px 12px;font-size:.9em}.pw-st.off .pw-left{color:#b97a00;background:color-mix(in srgb,#e0a526 18%,transparent)}
+.pw-note{opacity:.7;margin-top:4px}.pw-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;width:100%}.pw-msg{margin:0;font-weight:600;color:var(--accent)}.pw-msg:empty{display:none}
+.pw-cancel{background:none;border:0;color:#c2473a;font:inherit;font-weight:600;padding:10px 12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.pw-lose{padding-bottom:12px}.pw-hint{margin:0;font-size:.85em;opacity:.65}
+.pw-list{width:100%;flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;text-align:left;padding:2px 2px 4px;margin:0 -2px}
+.pw-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:14px;background:color-mix(in srgb,var(--ink) 5%,transparent)}.pw-iic{font-size:24px;line-height:1.1;flex:none}
+.pw-item b{display:block}.pw-item small{display:block;opacity:.72;line-height:1.4;margin-top:2px}
+.pw-end{display:flex;flex-direction:column;gap:10px;padding:14px 4px 4px;border-top:1px solid var(--line);margin-top:6px;text-align:center}.pw-type{display:flex;flex-direction:column;gap:6px;font-weight:600}.pw-type .lk-in{text-align:center;letter-spacing:.12em;margin:0;width:100%}
+.acc-pro{display:block;margin:2px 0 8px}
 .alaunch{display:flex;flex-direction:column;gap:6px;margin-top:10px;background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px 14px}.alaunch>b{font-size:1.05em}.alsince{font-weight:600;color:var(--accent)}
 .alaunch-f{display:flex;flex-wrap:wrap;gap:8px}.alaunch-f .lk-in{max-width:160px;margin:0;text-align:left}.alaunch .amsg:empty{display:none}.alaunch-ok p{margin:4px 0 8px}
 .codebox .crow{display:flex;gap:8px}.codebox .lk-in{margin:0;text-align:left;text-transform:uppercase}.codebox .btn{flex:none;min-height:46px}.cmsg{min-height:1.2em;font-size:.9em;margin:6px 0 0}
@@ -3104,9 +3118,134 @@ function renderUpBuy(){ // once payments are on: buy buttons (and the welcome of
 }
 function setPlanBtn(){document.querySelectorAll('#pdfb .soon,#nppdf .soon').forEach(e=>e.classList.toggle('hidden',plan==='pro')); // Pro: just “Import PDF”
   const b=$('#plan');if(!b)return;b.textContent=ACC.pro?'Pro':plan==='pro'?'Pro (demo)':'Free plan';b.title=plan==='pro'?'Pro demo for testing. Open the app with ?demo=free to turn it off.':'See what Pro adds'}
+/* ----- Your Pro (Update 18): the Pro button opens it ------------------------------------------------------------
+   When Pro ends or renews (dd.mm.yyyy) and how many days are left; a Stripe subscription can be cancelled from here
+   in three steps: “Are you sure?” → what you would lose (scroll to the end) → type CONFIRM. Cancelling stops the
+   renewal only: Pro stays until the end of the period already paid, then the account goes back to the free plan.
+   The last step happens on Stripe's own page (the extension's createPortalLink, flow “subscription_cancel”): the card
+   and the subscription live at Stripe. Pro from a code or from the admin has nothing to cancel – nothing is charged.
+   ?demo=pro shows a sample monthly subscription, so the whole flow can be tried without paying. */
+const MYSUB={sub:null,at:0,busy:null},DEMO={end:0,cancel:false};
+async function loadMySub(force){ // this account's Stripe subscription (written by the extension), read when the window opens
+  if(!ACC.user||!ACC.F)return null;if(!force&&Date.now()-MYSUB.at<15000)return MYSUB.sub;
+  if(MYSUB.busy)return MYSUB.busy;
+  const F=ACC.F,uid=ACC.user.uid;
+  MYSUB.busy=F.getDocs(F.collection(ACC.db,'customers',uid,'subscriptions')).then(s=>{
+    const L=s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>['active','trialing','past_due'].includes(x.status));
+    const ms=t=>tsMs(t)||(typeof t==='number'?t*1000:null);
+    L.sort((a,b)=>(ms(b.created)||0)-(ms(a.created)||0));const x=L[0];
+    MYSUB.sub=x?{id:x.id,status:x.status,...subOf(x),end:ms(x.current_period_end)||ms(x.cancel_at),cancel:!!x.cancel_at_period_end||!!ms(x.cancel_at)}:null;
+    MYSUB.at=Date.now();return MYSUB.sub}).catch(()=>MYSUB.sub).finally(()=>{MYSUB.busy=null});
+  return MYSUB.busy;
+}
+function proInfo(){ // what kind of Pro this account has: a subscription, a code (until a day), forever – or the demo
+  if(ACC.pro){
+    const s=MYSUB.sub;if(s)return {k:'sub',end:s.end,renew:!s.cancel,trial:s.status==='trialing',iv:s.iv,amt:s.amt,id:s.id};
+    if(ACC.claimPro)return {k:'sub',end:null,renew:true,iv:'month',amt:0,id:null};
+    const u=proUntil(ACC.proDoc);return u?{k:'code',end:+u}:{k:'forever'};
+  }
+  if(plan==='pro'){if(!DEMO.end){const t=new Date();DEMO.end=+new Date(t.getFullYear(),t.getMonth(),t.getDate()+30)}return {k:'demo',end:DEMO.end,renew:!DEMO.cancel,iv:'month',amt:PRICE.month,id:'demo'}}
+  return null;
+}
+const daysLeft=end=>Math.max(0,Math.ceil((end-Date.now())/DAY)),dLeft=end=>{const n=daysLeft(end);return n===1?'1 day left':n+' days left'};
+function proWin(){ // the window, made once and filled again for every step
+  let w=$('#prow');if(w)return w;
+  w=el('div','');w.id='prow';w.setAttribute('role','dialog');w.setAttribute('aria-modal','true');w.setAttribute('aria-labelledby','pw-h');
+  const c=el('div','pw-card');w.append(c);document.body.append(w);
+  w.onclick=e=>{if(e.target===w)proClose()};w.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();proClose()}});
+  return w;
+}
+function proClose(){const w=$('#prow');if(w)w.remove()}
+function pwHead(c,icon,title,sub){const x=el('button','ib i pw-x','✕');x.type='button';x.setAttribute('aria-label','Close');x.onclick=proClose;
+  const h=el('h2','',title);h.id='pw-h';c.append(x,el('div','pw-ic',icon),h);if(sub)c.append(el('p','pw-sub',sub))}
+async function openPro(after){
+  const w=proWin(),c=w.firstChild;c.className='pw-card';c.innerHTML='';
+  if(ACC.pro&&!MYSUB.at){pwHead(c,'⭐','Foliet Pro');c.append(el('p','pw-sub','One moment…'))}
+  if(ACC.pro)await loadMySub(after==='cancelled');
+  if(!$('#prow'))return;c.innerHTML='';
+  const P=proInfo();if(!P){proClose();upsell('');return}
+  pwHead(c,'⭐','Foliet Pro',P.k==='demo'?'Demo – nothing is charged. Open the app with ?demo=free to turn it off.':null);
+  const st=el('div','pw-st'+(P.k==='sub'||P.k==='demo'?(P.renew?' on':' off'):''));st.id='pw-status';
+  const big=(lab,day,note)=>{st.append(el('span','pw-lab',lab));if(day){st.append(el('b','pw-day',dmy(new Date(day))));st.append(el('span','pw-left',dLeft(day)))}if(note)st.append(el('small','pw-note',note))};
+  const price=P.amt?euro(P.amt)+(P.iv==='year'?' a year':' a month'):'';
+  if(P.k==='forever')big('Pro, for good',null,'No end date and nothing to pay.');
+  else if(P.k==='code')big('Pro until',P.end,'From a code – it doesn’t renew and nothing is charged.');
+  else if(!P.end)big('Pro is on',null,'Your subscription with Stripe.');
+  else if(P.renew)big(P.trial?'Free trial until':'Renews automatically on',P.end,(P.trial?'Then ':'')+(price||'Your subscription')+(P.trial?'':' · cancel any time'));
+  else big('Pro until',P.end,'Cancelled – it won’t renew and you won’t be charged again.');
+  c.append(st);
+  const acts=el('div','pw-acts');
+  if((P.k==='sub'&&P.id||P.k==='demo')&&P.renew){const cb=el('button','pw-cancel','Cancel subscription');cb.type='button';cb.id='pw-cancel';cb.onclick=()=>proCancel1(P);acts.append(cb)}
+  if(P.k==='sub'&&!P.renew&&P.id){const kb=el('button','btn','Keep Pro');kb.type='button';kb.id='pw-keep';kb.onclick=()=>proPortal(null,kb);acts.append(kb)}
+  if(P.k==='demo'&&!P.renew){const kb=el('button','btn','Keep Pro');kb.type='button';kb.id='pw-keep';kb.onclick=()=>{DEMO.cancel=false;openPro()};acts.append(kb)}
+  if(ACC.user){const ab=el('button','ib','Account & sync');ab.type='button';ab.onclick=()=>{proClose();openAcc()};acts.append(ab)}
+  c.append(acts);const msg=el('p','pw-msg');msg.id='pw-msg';msg.setAttribute('role','status');c.append(msg);
+  if(after==='cancelled'&&P.k==='sub'&&P.renew){msg.textContent='Stripe is confirming the cancellation…';let n=0;const poll=async()=>{if(!$('#prow')||n++>8)return;await loadMySub(true);const Q=proInfo();if(Q&&!Q.renew)openPro();else setTimeout(poll,2000)};setTimeout(poll,1500)}
+  setTimeout(()=>{const b=c.querySelector('.pw-x');if(b&&$('#prow'))b.focus()},50);
+}
+function proCancel1(P){ // 1 – are you sure?
+  const c=$('#prow').firstChild;c.className='pw-card';c.innerHTML='';
+  pwHead(c,'🤔','Cancel your subscription?','Pro stays on until '+dmy(new Date(P.end))+' ('+dLeft(P.end)+'). After that your account goes back to the free plan, and you won’t be charged again.');
+  const acts=el('div','pw-acts');const k=el('button','btn','Keep Pro'),y=el('button','ib','Yes, cancel');k.type=y.type='button';y.id='pw-yes';
+  k.onclick=()=>openPro();y.onclick=()=>proCancel2(P);acts.append(k,y);c.append(acts);setTimeout(()=>k.focus(),50);
+}
+function proLose(){ // what goes away with Pro, with this account's own numbers where they help
+  const n=ownBooks(),sh=data.filter(b=>b.share).length,cats=(SHELF.cats||[]).filter(x=>!x.x).length,big=data.filter(b=>!b.welcome&&b.pages.length>20).length;
+  return [
+    ['📚','Unlimited notebooks','The free plan has room for 2.'+(n>2?' You have '+n+': they all stay, but you can’t add new ones.':'')],
+    ['📄','Unlimited pages','Free notebooks hold up to 20 pages.'+(big?' '+big+(big===1?' of your notebooks has':' of your notebooks have')+' more – no new pages can go in them.':'')],
+    ['☁️','Sync on all your devices','Your notebooks stop syncing. Each phone, tablet or computer keeps what it has.'],
+    ['📕','Import PDF','Books, textbooks, your Bible – up to 500 pages, ready to mark up.'],
+    ['🔗','Live links','Share a notebook that changes as you draw.'+(sh?' Your '+(sh===1?'live link stops':sh+' live links stop')+' updating.':'')],
+    ['🗂️','8 layers on a page','The free plan has 2.'],
+    ['🏷️','Your own categories',cats?'The '+(cats===1?'one':cats)+' you made stay'+(cats===1?'s':'')+', but you can’t add new ones.':'Tabs like Study or Travel for your shelf.'],
+    ['🖼️','A photo on the cover','Draw on top of your own picture.'],
+    ['⬇️','Export to PDF and PNG','Print or send your pages.'],
+    ['🗑️','Recently deleted for 30 days','The free plan keeps deleted notebooks for 2 days.']
+  ];
+}
+function proCancel2(P){ // 2 – what you lose; scroll to the end and type CONFIRM
+  const c=$('#prow').firstChild;c.className='pw-card pw-lose';c.innerHTML='';
+  pwHead(c,'💔','Before you go…','On '+dmy(new Date(P.end))+' you lose:');
+  const list=el('div','pw-list');list.id='pw-list';
+  proLose().forEach(([ic,t,d])=>{const r=el('div','pw-item');r.append(el('span','pw-iic',ic));const tx=el('div','');tx.append(el('b','',t),el('small','',d));r.append(tx);list.append(r)});
+  const end=el('div','pw-end');end.id='pw-end';
+  const lab=el('label','pw-type');lab.append(el('span','','Type CONFIRM to cancel your subscription'));
+  const inp=el('input','lk-in');inp.id='pw-confirm';inp.autocomplete='off';inp.autocapitalize='characters';inp.spellcheck=false;inp.placeholder='CONFIRM';lab.append(inp);
+  const go=el('button','btn danger','Cancel subscription');go.type='button';go.id='pw-go';go.disabled=true;
+  const keep=el('button','ib','Keep Pro');keep.type='button';keep.onclick=()=>openPro();
+  const msg=el('p','pw-msg');msg.setAttribute('role','status');
+  inp.oninput=()=>{go.disabled=inp.value.trim().toUpperCase()!=='CONFIRM'};
+  inp.onkeydown=e=>{if(e.key==='Enter'&&!go.disabled)go.click()};
+  go.onclick=async()=>{go.disabled=true;keep.disabled=true;
+    if(P.k==='demo'){DEMO.cancel=true;proDone(P);return}
+    msg.textContent='Opening Stripe to finish…';
+    try{await proPortal(P.id)}catch(e){msg.textContent='Couldn’t reach Stripe ('+(e.message||e)+'). Nothing was changed – try again in a minute.';go.disabled=false;keep.disabled=false}};
+  const acts=el('div','pw-acts');acts.append(keep,go);end.append(lab,acts,msg,el('small','pw-note','Nothing changes before '+dmy(new Date(P.end))+': Pro and your notebooks stay as they are until then.'));
+  list.append(end);c.append(el('p','pw-hint','Scroll to the end to confirm ↓'),list);
+}
+function proDone(P){ // 3 – done (the demo; a real subscription comes back from Stripe and shows the same)
+  const c=$('#prow').firstChild;c.className='pw-card';c.innerHTML='';
+  pwHead(c,'✓','Your subscription is cancelled','Pro stays on until '+dmy(new Date(P.end))+' ('+dLeft(P.end)+'). You won’t be charged again.');
+  const acts=el('div','pw-acts');const ok=el('button','btn','OK');ok.type='button';ok.onclick=()=>openPro();acts.append(ok);c.append(acts);
+}
+async function proPortal(subId,btn){ // Stripe's own page: cancel this subscription (subId), or manage billing (null)
+  if(btn)btn.disabled=true;
+  try{
+    const reg=PUB.pay.region||'europe-west3',fn='ext-firestore-stripe-payments-createPortalLink';
+    const url=(ACC.emu?'http://'+ACC.emu+':5001/'+FB_CFG.projectId+'/'+reg:'https://'+reg+'-'+FB_CFG.projectId+'.cloudfunctions.net')+'/'+fn;
+    const back=new URL(location.href);back.hash='';back.searchParams.set('pro',subId?'cancelled':'back');
+    const d={returnUrl:back.href,locale:'auto'};
+    if(subId)d.flow_data={type:'subscription_cancel',subscription_cancel:{subscription:subId},after_completion:{type:'redirect',redirect:{return_url:back.href}}};
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+await ACC.user.getIdToken()},body:JSON.stringify({data:d})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.result||!j.result.url)throw new Error((j.error&&j.error.message)||'no answer');
+    goTo(j.result.url);
+  }catch(e){if(btn){btn.disabled=false;const m=$('#pw-msg');if(m)m.textContent='Couldn’t reach Stripe. Try again in a minute.'}if(subId)throw e}
+}
 function initPlan(){
   setPlanBtn();
-  $('#plan').onclick=()=>{if(ACC.pro){openAcc();return}if(plan==='pro')toast('Pro demo is on. Open the app with ?demo=free to turn it off.');else upsell('')};
+  $('#plan').onclick=()=>{if(ACC.pro||plan==='pro'){openPro();return}upsell('')}; // Pro (or the demo): when it renews or ends, cancel
   $('#upno').onclick=()=>$('#up').classList.add('hidden');$('#upcode').onclick=openCode;
 }
 
@@ -3559,9 +3698,10 @@ async function accUser(u){
   if(ACC.unOff){ACC.unOff();ACC.unOff=null}OFFER=null;
   syncStop();
   const had=ACC.user;ACC.user=u||null;ACC.owned=new Set();ACC.claimPro=false;ACC.docPro=false;ACC.proDoc=null;ACC.proSeen=false;ACC.tokP=null;
-  ACC.proSrv=false;ACC.tokOk=false;ACC.proOff=u?proLocal(u.uid):false; // offline: the last answer from the server about ProACC.admin=false;ACC.err='';ACC.offline=false;clearTimeout(ACC.proT);
+  ACC.proSrv=false;ACC.tokOk=false;ACC.proOff=u?proLocal(u.uid):false;ACC.admin=false;ACC.err='';ACC.offline=false;clearTimeout(ACC.proT);MYSUB.sub=null;MYSUB.at=0; // proOff: offline, the last answer from the server about Pro
   const boot=BOOT.on&&!BOOT.acct;BOOT.acct=true;
   if(u){if(boot)bootStep('lib','run');await openLibrary(u.uid);hideGate();if(boot)setTimeout(bootLib,0);
+    const pq=new URLSearchParams(location.search).get('pro');if(pq){try{history.replaceState(null,'',location.pathname+location.search.replace(/[?&]pro=[^&]*/,'').replace(/^&/,'?'))}catch(e){}proReady().then(()=>{if(ACC.user===u&&ACC.pro)openPro(pq==='cancelled'?'cancelled':'')})}
     const sc=new URLSearchParams(location.search).get('share');if(sc){try{history.replaceState(null,'',location.pathname+location.search.replace(/[?&]share=[^&]*/,'').replace(/^&/,'?'))}catch(e){}setTimeout(()=>openShared(sc),600)}}
   else{lsSet('sb-last-uid','');if(had)ACC.mode='in';await closeLibrary();showGate();if(boot)bootDone()} // after signing out, show "Sign in" again
   if(u){
@@ -3846,6 +3986,7 @@ function renderAcc(){
   const row=(k,v)=>{const d=document.createElement('div');d.className='srow';const a=document.createElement('span');a.textContent=k;const b2=document.createElement('b');b2.style.fontWeight='600';b2.textContent=v;d.append(a,b2);box.append(d)};
   const pu=ACC.claimPro?null:proUntil(ACC.proDoc);
   row('Plan',ACC.pro?'Pro'+(pu?' until '+fmtDay(pu):''):'Free');
+  if(ACC.pro){const mb=el('button','alink2 acc-pro','Manage your Pro ›');mb.type='button';mb.onclick=()=>{$('#acct').classList.add('hidden');openPro()};box.append(mb)}
   row('Cloud sync',!ACC.pro?'Off (part of Pro)':ACC.busy?'Syncing…':ACC.err==='offline'?'Waiting for internet':ACC.err?'Couldn’t sync, will retry':'On · '+ago2(ACC.last));
   if(!ACC.pro){p('Pro isn’t on sale yet. Your notebooks are saved on this device.','muted');codeBox(box)}
   const acts=document.createElement('div');acts.className='acts2';
@@ -4179,7 +4320,7 @@ const tsJSON=(k,v)=>v&&typeof v==='object'&&typeof v.toDate==='function'?v.toDat
       Only while payments are on – no point offering what can't be bought. */
 const PRICE={month:599,year:4499}; // € cents – also on the landing page, in the Pro window and in the terms
 const OFFER_H=24,PAGE_T=Date.now();
-const PUB={pay:{on:false,month:'',year:''},intro:{on:true,pct:10,hours:3,last:48,promo:''}};
+const PUB={pay:{on:false,month:'',year:'',region:''},intro:{on:true,pct:10,hours:3,last:48,promo:''}};
 const payOn=()=>!!(PUB.pay.on&&PUB.pay.month&&PUB.pay.year);
 async function loadPublic(){
   try{const s=await ACC.F.getDoc(ACC.F.doc(ACC.db,'config','public'));if(s.exists()){const d=s.data();Object.assign(PUB.pay,d.pay||{});Object.assign(PUB.intro,d.intro||{})}}catch(e){}
@@ -4740,10 +4881,12 @@ function adminRender(){
   const pf=el('form','acosts aform');pf.id='adm-pay';const Pp=PUB.pay;
   const pon=el('input');pon.type='checkbox';pon.checked=!!Pp.on;pon.id='adm-pon';const lpon=el('label','chk adm-chk');lpon.append(pon,el('span','','Payments are on'));
   const pm=el('input','lk-in');pm.placeholder='price_…';pm.value=Pp.month||'';pm.id='adm-pm';const py=el('input','lk-in');py.placeholder='price_…';py.value=Pp.year||'';py.id='adm-py';
+  const prg=el('input','lk-in');prg.placeholder='europe-west3';prg.value=Pp.region||'';prg.id='adm-preg';
   const psv=el('button','btn','Save');psv.type='submit';const pmm=el('p','cmsg');
   pf.append(el('b','','Payments (Stripe)'+(payOn()?' · on':' · off')),el('small','muted','When Stripe is set up, paste the price IDs of Pro monthly ('+euro(PRICE.month)+') and Pro yearly ('+euro(PRICE.year)+') and turn payments on. Then the Pro window can sell Pro, codes can ask for a card, and the welcome offer shows.'),
-    lpon,l('Price ID – Pro monthly',pm),l('Price ID – Pro yearly',py),psv,pmm);
-  pf.onsubmit=e=>{e.preventDefault();if(pon.checked&&(!/^price_/.test(pm.value.trim())||!/^price_/.test(py.value.trim()))){pmm.textContent='Both price IDs start with “price_”.';return}save('pay',{on:pon.checked,month:pm.value.trim(),year:py.value.trim()},pmm)};
+    lpon,l('Price ID – Pro monthly',pm),l('Price ID – Pro yearly',py),l('Region of the Stripe extension',prg),psv,pmm,
+    el('small','muted','“Cancel subscription” opens Stripe’s customer portal. In Stripe → Settings → Billing → Customer portal, allow cancelling “at the end of the billing period”.'));
+  pf.onsubmit=e=>{e.preventDefault();if(pon.checked&&(!/^price_/.test(pm.value.trim())||!/^price_/.test(py.value.trim()))){pmm.textContent='Both price IDs start with “price_”.';return}const rg=prg.value.trim()||'europe-west3';if(!/^[a-z]+-[a-z]+[0-9]+$/.test(rg)){pmm.textContent='A region looks like europe-west3.';return}save('pay',{on:pon.checked,month:pm.value.trim(),year:py.value.trim(),region:rg},pmm)};
   B.append(pf);
   // pro members
   sec('Pro members','pro');

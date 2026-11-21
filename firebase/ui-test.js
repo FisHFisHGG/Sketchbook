@@ -262,6 +262,46 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
     ok(await A.evaluate(()=>/Launched on 16\.09\.2025/.test($('#adm-launch').textContent)&&!$('#adm-launch-in')),'after Refresh it is still there');
     await A.evaluate(()=>{localStorage.removeItem('sb-admlang');ADM.lang='en';$('#admin').classList.add('hidden')});
   }
+  // ---- Your Pro (Update 18): the Pro button shows when it renews or ends, and cancelling goes through 3 steps
+  {
+    const uid=await A.evaluate(()=>ACC.user.uid),DAYms=864e5,day0=new Date();day0.setHours(12,0,0,0);
+    const dmyT=t=>{const d=new Date(t);return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()};
+    await A.evaluate(()=>{$('#admin').classList.add('hidden');proClose();$('#ed').classList.add('hidden');if(!$('#bv').classList.contains('hidden'))closeBook()});await A.waitForSelector('#plan',{state:'visible'});
+    // Pro from a code: until a day, how many days are left, nothing to cancel
+    await admin('pro/'+uid,{fields:{by:{stringValue:'code'},since:{timestampValue:new Date(Date.now()-8*DAYms).toISOString()},days:{integerValue:'100'}}});
+    await A.waitForFunction(()=>ACC.pro,null,{timeout:10000});await A.click('#plan');await A.waitForSelector('#pw-status');
+    const pc=await A.evaluate(()=>({t:$('#pw-status').textContent,cancel:!!$('#pw-cancel')}));
+    ok(/Pro until/.test(pc.t)&&pc.t.includes(dmyT(Date.now()+92*DAYms))&&/9[12] days left/.test(pc.t)&&/From a code – it doesn’t renew and nothing is charged/.test(pc.t)&&!pc.cancel,'Pro from a code: “Pro until '+dmyT(Date.now()+92*DAYms)+'”, the days left, nothing to cancel ('+pc.t+')');
+    await A.evaluate(()=>proClose());
+    // a Stripe subscription: renews on a day, with the price; Cancel subscription
+    const end=Date.now()+30*DAYms;
+    await admin('customers/'+uid+'/subscriptions/sub_test',{fields:{status:{stringValue:'active'},cancel_at_period_end:{booleanValue:false},current_period_end:{timestampValue:new Date(end).toISOString()},created:{timestampValue:new Date(Date.now()-DAYms).toISOString()},
+      items:{arrayValue:{values:[{mapValue:{fields:{price:{mapValue:{fields:{unit_amount:{integerValue:'599'},recurring:{mapValue:{fields:{interval:{stringValue:'month'}}}}}}}}}}]}}}});
+    await A.evaluate(()=>{MYSUB.at=0});await A.click('#plan');await A.waitForSelector('#pw-cancel');
+    const ps=await A.evaluate(()=>$('#pw-status').textContent);
+    ok(/Renews automatically on/.test(ps)&&ps.includes(dmyT(end))&&/30 days left/.test(ps)&&/€5\.99 a month/.test(ps),'a subscription: “Renews automatically on '+dmyT(end)+'”, 30 days left, €5.99 a month ('+ps+')');
+    await A.click('#pw-cancel');await A.waitForSelector('#pw-yes');
+    ok(await A.evaluate(()=>/Cancel your subscription\?/.test($('#prow').textContent)&&/stays on until/.test($('#prow').textContent)),'Cancel subscription → “Are you sure?”, saying Pro stays on until the end');
+    await A.click('#pw-yes');await A.waitForSelector('#pw-list');
+    const ls=await A.evaluate(()=>({n:document.querySelectorAll('#pw-list .pw-item').length,t:$('#pw-list').textContent,dis:$('#pw-go').disabled,last:$('#pw-list').lastElementChild.id,scroll:$('#pw-list').scrollHeight>$('#pw-list').clientHeight}));
+    ok(ls.n===10&&/Unlimited notebooks/.test(ls.t)&&/Sync on all your devices/.test(ls.t)&&/Import PDF/.test(ls.t)&&ls.dis&&ls.last==='pw-end'&&ls.scroll,'“Yes, cancel” → what you lose (10 Pro things), scrolling, with CONFIRM at the very end; the button is off until then');
+    await A.fill('#pw-confirm','confirm please');ok(await A.evaluate(()=>$('#pw-go').disabled),'anything but CONFIRM keeps it off');
+    await A.fill('#pw-confirm','confirm');ok(await A.evaluate(()=>!$('#pw-go').disabled),'typing confirm (any case) turns it on');
+    let sent=null;const back=await A.evaluate(()=>{const u=new URL(location.href);u.searchParams.set('pro','cancelled');return u.href});
+    await A.route(/createPortalLink/,async r=>{if(r.request().method()==='POST')sent=JSON.parse(r.request().postData()||'{}');await r.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify({result:{url:back}})})});
+    await A.click('#pw-go');await A.waitForFunction(()=>/confirming|won’t renew/.test(document.body.textContent)&&!$('#pw-list'),null,{timeout:20000}).catch(()=>{});
+    ok(sent&&sent.data&&sent.data.flow_data&&sent.data.flow_data.type==='subscription_cancel'&&sent.data.flow_data.subscription_cancel.subscription==='sub_test'&&/pro=cancelled/.test(sent.data.returnUrl),'CONFIRM → Stripe’s page to cancel exactly this subscription, coming back to the app ('+JSON.stringify(sent&&sent.data&&sent.data.flow_data)+')');
+    // back from Stripe: the window opens by itself and waits for Stripe's answer
+    await A.waitForSelector('#pw-status',{timeout:30000});
+    await admin('customers/'+uid+'/subscriptions/sub_test?updateMask.fieldPaths=cancel_at_period_end',{fields:{cancel_at_period_end:{booleanValue:true}}});
+    await A.waitForFunction(()=>/Cancelled – it won’t renew/.test(($('#pw-status')||{}).textContent||''),null,{timeout:20000}).catch(()=>{});
+    const pa=await A.evaluate(()=>({t:$('#pw-status').textContent,keep:!!$('#pw-keep'),cancel:!!$('#pw-cancel'),url:location.search}));
+    ok(/Pro until/.test(pa.t)&&pa.t.includes(dmyT(end))&&/Cancelled – it won’t renew and you won’t be charged again/.test(pa.t)&&pa.keep&&!pa.cancel&&!/pro=/.test(pa.url),'back in the app: “Pro until '+dmyT(end)+' · Cancelled – it won’t renew”, with Keep Pro ('+pa.t+')');
+    await A.evaluate(()=>proClose());await A.waitForTimeout(300);
+    await A.evaluate(()=>openAcc());await A.waitForSelector('.acc-pro');await A.click('.acc-pro');await A.waitForSelector('#pw-status');
+    ok(await A.evaluate(()=>$('#acct').classList.contains('hidden')&&!!$('#pw-status')),'the account window has “Manage your Pro ›”, which opens the same window');
+    await A.evaluate(()=>proClose());
+  }
   ok(!A.errs.length,'computer: no errors '+A.errs.join(' | '));
 
   // ---------- a tablet and a phone: everything fits
@@ -281,6 +321,17 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
     ok(await inside(P,'#tsheet'),nm+': the Draw menu fits on the screen');
     await P.tap('#tools [data-t="text"]');await P.waitForTimeout(250);
     ok((await menu(P)).title==='Text'&&await inside(P,'#tsheet'),nm+': the Text menu fits too');
+    if(nm!=='tablet'){ // ?demo=pro: a sample subscription, the whole cancel flow on a phone
+      await P.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse();localStorage.setItem('sb-plan','pro')});await P.reload();await P.waitForFunction(()=>ACC.libUid&&!ACC.gate,null,{timeout:20000});await P.waitForTimeout(500);
+      await P.tap('#plan');await P.waitForSelector('#pw-cancel');
+      ok(await inside(P,'#prow .pw-card')&&/Demo – nothing is charged/.test(await P.evaluate(()=>$('#prow').textContent)),nm+': the demo Pro window fits, and says it’s a demo');
+      await P.tap('#pw-cancel');await P.tap('#pw-yes');await P.waitForSelector('#pw-list');
+      ok(await inside(P,'#prow .pw-card'),nm+': the list of what you lose fits (it scrolls inside)');
+      await P.evaluate(()=>$('#pw-end').scrollIntoView());await P.fill('#pw-confirm','CONFIRM');await P.tap('#pw-go');
+      await P.waitForFunction(()=>/Your subscription is cancelled/.test($('#prow').textContent));await P.tap('#prow .btn');await P.waitForSelector('#pw-keep');
+      ok(/Cancelled – it won’t renew/.test(await P.evaluate(()=>$('#pw-status').textContent)),nm+': demo: cancelled → “Pro until … it won’t renew”, Keep Pro');
+      await P.evaluate(()=>{proClose();localStorage.setItem('sb-plan','free')});
+    }
     ok(await P.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),nm+': no sideways scroll');
     ok(!P.errs.length,nm+': no errors '+P.errs.join(' | '));
     await P.context().close();
