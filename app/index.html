@@ -813,7 +813,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 <div id="up" class="hidden" role="dialog" aria-modal="true" aria-labelledby="upt"><div class="card">
   <h2 id="upt">Foliet Pro</h2><p id="upm"></p>
   <ul class="upl"><li>Unlimited notebooks and pages</li><li>Your own categories, like Study</li><li>Up to 8 layers per page</li><li>PDF import</li><li>A photo on the cover</li><li>Deleted notebooks kept 30 days</li><li>Export to PDF and image</li></ul>
-  <p class="upp"><b>€5.99</b> a month or <b>€44.99</b> a year</p>
+  <p class="upp"><b>€4.99</b> a month or <b>€29.99</b> a year</p>
   <div id="upbuy" class="hidden"></div>
   <p class="upn">Pro isn’t on sale yet. Payments open together with accounts and cloud sync. Everything you make on the free plan stays yours.</p>
   <div class="acts2"><button class="ib" id="upno">OK</button><a class="btn" id="upgo" href="../#pricing" target="_blank" rel="noopener">Compare plans</a></div>
@@ -3114,7 +3114,7 @@ function renderUpBuy(){ // once payments are on: buy buttons (and the welcome of
   const iv=introValid(),msg=el('p','off-msg');msg.setAttribute('role','status');
   const btn=(t,sub,fn)=>{const x=el('button','btn upb');x.type='button';x.append(el('b','',t),el('small','',sub));x.onclick=async()=>{x.disabled=true;msg.textContent='One moment…';const r=await fn();x.disabled=false;msg.textContent=r.err||(r.url?'Opening the secure payment page…':'')};return x};
   b.append(btn(euro(PRICE.month)+' a month','Cancel any time',()=>startCheckout({plan:'month'})),
-    btn(iv?euro(introPrice())+' your first year':euro(PRICE.year)+' a year',iv?introPct()+'% welcome offer · ends in '+leftTxt(iv-Date.now()):'Save 37%',()=>startCheckout({plan:'year',promo:iv?PUB.intro.promo:''})),msg);
+    btn(iv?euro(introPrice())+' your first year':euro(PRICE.year)+' a year',iv?introPct()+'% welcome offer · ends in '+leftTxt(iv-Date.now()):'Save '+savePct()+'%',()=>startCheckout({plan:'year',promo:iv?PUB.intro.promo:''})),msg);
 }
 function setPlanBtn(){document.querySelectorAll('#pdfb .soon,#nppdf .soon').forEach(e=>e.classList.toggle('hidden',plan==='pro')); // Pro: just “Import PDF”
   const b=$('#plan');if(!b)return;b.textContent=ACC.pro?'Pro':plan==='pro'?'Pro (demo)':'Free plan';b.title=plan==='pro'?'Pro demo for testing. Open the app with ?demo=free to turn it off.':'See what Pro adds'}
@@ -4318,7 +4318,8 @@ const tsJSON=(k,v)=>v&&typeof v==='object'&&typeof v.toDate==='function'?v.toDat
    2) Welcome offer: a free account created in the last 30 days, `hours` after it started, on a later visit (not the
       one it was made in), gets once `pct`% off Pro yearly (Stripe promotion code intro.promo) for `last` hours.
       Only while payments are on – no point offering what can't be bought. */
-const PRICE={month:599,year:4499}; // € cents – also on the landing page, in the Pro window and in the terms
+const PRICE={month:499,year:2999}; // € cents – also on the landing page, in the Pro window and in the terms
+const savePct=()=>Math.round((1-PRICE.year/(12*PRICE.month))*100); // what yearly saves against 12 months (50%)
 const OFFER_H=24,PAGE_T=Date.now();
 const PUB={pay:{on:false,month:'',year:'',region:''},intro:{on:true,pct:10,hours:3,last:48,promo:''}};
 const payOn=()=>!!(PUB.pay.on&&PUB.pay.month&&PUB.pay.year);

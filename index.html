@@ -29,8 +29,8 @@
   "applicationCategory":"DesignApplication","operatingSystem":"Any (web browser), Android, iOS, Windows, macOS","browserRequirements":"Requires a modern browser",
   "featureList":["Pen, pencil, brush, marker, highlighter, shapes and fill","Text in 8 fonts, stickers and sticky notes","Blank, lined, grid and dot pages","Lock notebooks with a PIN or password","Fingerprint unlock on Android","Works offline","Light and dark theme","PDF import and export (Pro)","Class notes with photos on the page","Read and annotate books and textbooks (PDF, Pro)","Live share links that open as a 3D book, no account needed (Pro)","Cloud sync across devices (Pro)"],
   "offers":[{"@type":"Offer","name":"Free","price":"0","priceCurrency":"EUR"},
-            {"@type":"Offer","name":"Pro monthly","price":"5.99","priceCurrency":"EUR"},
-            {"@type":"Offer","name":"Pro yearly","price":"44.99","priceCurrency":"EUR"}]}
+            {"@type":"Offer","name":"Pro monthly","price":"4.99","priceCurrency":"EUR"},
+            {"@type":"Offer","name":"Pro yearly","price":"29.99","priceCurrency":"EUR"}]}
 ]}
 </script>
 <meta name="theme-color" content="#e4e9e6">
@@ -692,7 +692,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
       <h2>Simple pricing</h2>
       <div class="sheet">
         <div class="bill" role="group" aria-label="Billing period">
-          <button id="b-year" aria-pressed="true">Yearly<span class="save">Save 37%</span></button>
+          <button id="b-year" aria-pressed="true">Yearly<span class="save">Save 50%</span></button>
           <button id="b-month" aria-pressed="false">Monthly</button>
         </div>
         <div class="plans">
@@ -704,8 +704,8 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
           </div>
           <div class="plan">
             <h3>Pro</h3>
-            <div class="price"><span id="pp">€44.99</span> <small id="pu">per year</small></div>
-            <p class="eq" id="pe">That’s €3.75 a month.</p>
+            <div class="price"><span id="pp">€29.99</span> <small id="pu">per year</small></div>
+            <p class="eq" id="pe">That’s €2.50 a month.</p>
             <ul><li>Unlimited notebooks and pages</li><li>Your own categories, like Study or Travel</li><li>PDF import</li><li>A photo on the cover, to draw on</li><li>Deleted notebooks kept 30 days</li><li>Export to PDF and image</li><li>Live links: anyone opens your notebook as a real book, no account needed</li><li>Cloud sync across your devices</li></ul>
             <button class="btn pri" id="pbtn" disabled>Pro is coming soon</button>
           </div>
@@ -807,7 +807,7 @@ sts.forEach((el,k)=>el.addEventListener('click',()=>{if(k!==tcur)goStep(k)}));
 // the small pages of “One notebook. Whatever you need.” draw their lines when they come into view
 if('IntersectionObserver' in window){const uo=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');uo.unobserve(e.target)}}),{rootMargin:'0px 0px -12% 0px'});document.querySelectorAll('.use').forEach(u=>uo.observe(u))}
 setStep(0);tourTop();tourPick();
-const bill={y:['€44.99','per year','That’s €3.75 a month.','Pro is coming soon'],m:['€5.99','per month','Billed monthly. Cancel any time.','Pro is coming soon']};
+const bill={y:['€29.99','per year','That’s €2.50 a month.','Pro is coming soon'],m:['€4.99','per month','Billed monthly. Cancel any time.','Pro is coming soon']};
 function setBill(k){
   $('#b-year').setAttribute('aria-pressed',k==='y');$('#b-month').setAttribute('aria-pressed',k==='m');
   $('#pp').textContent=bill[k][0];$('#pu').textContent=bill[k][1];$('#pe').textContent=bill[k][2];$('#pbtn').textContent=bill[k][3];

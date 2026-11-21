@@ -276,10 +276,10 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
     // a Stripe subscription: renews on a day, with the price; Cancel subscription
     const end=Date.now()+30*DAYms;
     await admin('customers/'+uid+'/subscriptions/sub_test',{fields:{status:{stringValue:'active'},cancel_at_period_end:{booleanValue:false},current_period_end:{timestampValue:new Date(end).toISOString()},created:{timestampValue:new Date(Date.now()-DAYms).toISOString()},
-      items:{arrayValue:{values:[{mapValue:{fields:{price:{mapValue:{fields:{unit_amount:{integerValue:'599'},recurring:{mapValue:{fields:{interval:{stringValue:'month'}}}}}}}}}}]}}}});
+      items:{arrayValue:{values:[{mapValue:{fields:{price:{mapValue:{fields:{unit_amount:{integerValue:'499'},recurring:{mapValue:{fields:{interval:{stringValue:'month'}}}}}}}}}}]}}}});
     await A.evaluate(()=>{MYSUB.at=0});await A.click('#plan');await A.waitForSelector('#pw-cancel');
     const ps=await A.evaluate(()=>$('#pw-status').textContent);
-    ok(/Renews automatically on/.test(ps)&&ps.includes(dmyT(end))&&/30 days left/.test(ps)&&/€5\.99 a month/.test(ps),'a subscription: “Renews automatically on '+dmyT(end)+'”, 30 days left, €5.99 a month ('+ps+')');
+    ok(/Renews automatically on/.test(ps)&&ps.includes(dmyT(end))&&/30 days left/.test(ps)&&/€4\.99 a month/.test(ps),'a subscription: “Renews automatically on '+dmyT(end)+'”, 30 days left, €4.99 a month ('+ps+')');
     await A.click('#pw-cancel');await A.waitForSelector('#pw-yes');
     ok(await A.evaluate(()=>/Cancel your subscription\?/.test($('#prow').textContent)&&/stays on until/.test($('#prow').textContent)),'Cancel subscription → “Are you sure?”, saying Pro stays on until the end');
     await A.click('#pw-yes');await A.waitForSelector('#pw-list');
