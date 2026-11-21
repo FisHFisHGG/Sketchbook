@@ -278,6 +278,8 @@ img.ink2{position:absolute;left:0;top:0;width:100%;height:100%;display:block;poi
 .alist{display:flex;flex-direction:column;gap:6px;margin-top:10px}
 .arow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bar);border:1px solid var(--line);border-radius:12px;padding:8px 10px}.arow>div{flex:1 1 200px;min-width:0;overflow-wrap:anywhere}.arow small{opacity:.7}.arow.off{opacity:.55}
 #adm-body .muted{opacity:.7;font-size:.9em}#adm-body .amsg{color:#c2473a;font-weight:600}
+.alaunch{display:flex;flex-direction:column;gap:6px;margin-top:10px;background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:12px 14px}.alaunch>b{font-size:1.05em}.alsince{font-weight:600;color:var(--accent)}
+.alaunch-f{display:flex;flex-wrap:wrap;gap:8px}.alaunch-f .lk-in{max-width:160px;margin:0;text-align:left}.alaunch .amsg:empty{display:none}.alaunch-ok p{margin:4px 0 8px}
 .codebox .crow{display:flex;gap:8px}.codebox .lk-in{margin:0;text-align:left;text-transform:uppercase}.codebox .btn{flex:none;min-height:46px}.cmsg{min-height:1.2em;font-size:.9em;margin:6px 0 0}
 #up .alink{display:block;margin:12px auto 0;background:none;border:0;color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 #srv{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:20px}
@@ -631,7 +633,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 #tsheet #szl{flex:1;margin:0;gap:10px}#tsheet #sz,#tsheet #op{flex:1;width:auto;min-width:0}
 #tsheet #opl{flex:1;display:flex}
 .tval{min-width:42px;text-align:right;font-variant-numeric:tabular-nums;font-size:.9em}
-#ts-press .tr:first-child{flex-wrap:wrap;row-gap:0}#ts-press .tr:first-child>span:first-child{width:auto}
+#ts-press .tr:first-child,#ts-hold .tr{flex-wrap:wrap;row-gap:0}#ts-press .tr:first-child>span:first-child,#ts-hold .tr>span:first-child{width:auto}
 .tsub{order:3;flex-basis:100%;opacity:.6;font-size:.8em;margin-top:-4px}
 .tgl{position:relative;flex:none;margin-left:auto;width:48px;height:28px;padding:0;border:0;border-radius:999px;background:var(--line);transition:background .2s}
 .tgl i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .2s}
@@ -762,6 +764,9 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       <div class="tsec" id="ts-press">
         <div class="tr"><span>Pen pressure</span><small class="tsub">Press harder with a stylus for a thicker line</small><button class="tgl" id="prsw" role="switch" aria-checked="true" aria-label="Pen pressure"><i></i></button></div>
         <label class="tr" id="prr"><span>Strength</span><input type="range" id="prs" min="10" max="150"></label>
+      </div>
+      <div class="tsec" id="ts-hold">
+        <div class="tr"><span id="hlab">Straight line</span><small class="tsub">Keep still at the end of a line and it becomes perfectly straight</small><button class="tgl" id="hsw" role="switch" aria-checked="true" aria-label="Straight line"><i></i></button></div>
       </div>
       <details class="tsec" id="ts-more"><summary>More settings</summary>
         <div class="tr" id="tipr"><span>Tip</span><div class="seg2" id="tips"><button data-v="round">Round</button><button data-v="square">Square</button><button data-v="chisel">Chisel</button></div></div>
@@ -2231,8 +2236,8 @@ function initTools(){
 /* Drawing */
 const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
 function pos(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height,p:e.pointerType==='pen'&&e.pressure>0&&ENV.pr!==false?clampN(.5+(e.pressure-.5)*ENV.sens,.05,1):.5}}
-function wd(p){return tool==='eraser'?size*3:tool==='hl'?size*3:tool==='marker'?size*2.5:tool==='pencil'?size*(.5+p*.8):tool==='brush'?size*1.6*p:tool==='shape'?size*1.2:size*(.5+p)}
-function al(){return opa*(tool==='hl'?.5:tool==='marker'?.9:tool==='pencil'?.9:1)}
+function wd(p){return tool==='eraser'?size*3:tool==='hl'?size*5:tool==='marker'?size*2.5:tool==='pencil'?size*(.5+p*.8):tool==='brush'?size*1.6*p:tool==='shape'?size*1.2:size*(.5+p)}
+function al(){return opa*(tool==='hl'?.6:tool==='marker'?.9:tool==='pencil'?.9:1)}
 let penPat={c:null,p:null};
 function pencilPat(c){
   if(penPat.c===c)return penPat.p;
@@ -2241,11 +2246,19 @@ function pencilPat(c){
   for(let i=0;i<d.length;i+=4){d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=Math.random()<.78?160+Math.random()*95:0}
   x.putImageData(im,0,0);penPat={c,p:ctx.createPattern(n,'repeat')};return penPat.p;
 }
-function style(){
-  const tp0=optOf(tool).tip;ctx.lineCap=tp0==='round'?'round':'square';ctx.lineJoin=tp0==='round'?'round':'miter';
-  ctx.globalCompositeOperation=tool==='eraser'?'destination-out':tool==='hl'?'multiply':'source-over';
-  ctx.strokeStyle=ctx.fillStyle=tool==='eraser'?'#000':tool==='pencil'?pencilPat(color):color;
+function style(g=ctx){
+  const tp0=optOf(tool).tip;g.lineCap=tp0==='round'?'round':'square';g.lineJoin=tp0==='round'?'round':'miter';
+  g.globalCompositeOperation=tool==='eraser'?'destination-out':tool==='hl'?'multiply':'source-over';
+  g.strokeStyle=g.fillStyle=tool==='eraser'?'#000':tool==='pencil'?pencilPat(color):color;
 }
+/* A see-through line (marker, pencil, or any pen below 100% opacity) is drawn at full strength on its own layer, which is
+   then laid on the page at the line's opacity: the bits of the line overlap without leaving darker dots along it. */
+let sl=null,slx=null,slC=null;
+function slStart(){
+  if(!slC||slC.width!==W||slC.height!==H){slC=document.createElement('canvas');slC.width=W;slC.height=H}
+  sl=slC;slx=sl.getContext('2d');slx.globalCompositeOperation='source-over';slx.globalAlpha=1;slx.clearRect(0,0,W,H);
+}
+function slFlush(){if(!sl||!snap)return;ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.clearRect(0,0,W,H);ctx.drawImage(snap,0,0);ctx.globalAlpha=al();ctx.drawImage(sl,0,0);ctx.globalAlpha=1}
 function drawShape(){
   const a=pts[0],b=pts[pts.length-1];
   ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.clearRect(0,0,W,H);ctx.drawImage(snap,0,0);
@@ -2268,23 +2281,43 @@ function drawShape(){
 function draw(){
   const n=pts.length;style();
   if(tool==='shape'){drawShape();return}
-  if(tool==='hl'){
-    ctx.globalAlpha=1;ctx.clearRect(0,0,W,H);ctx.drawImage(snap,0,0);
-    ctx.globalAlpha=al();ctx.lineWidth=wd(.5);ctx.beginPath();
-    if(optOf(tool).tip==='chisel'){for(let i=1;i<n;i++)chiselPath(pts[i-1],pts[i],wd(.5));if(n===1)chiselPath(pts[0],pts[0],wd(.5));ctx.fill();ctx.globalAlpha=1;return}
-    ctx.moveTo(pts[0].x,pts[0].y);
-    for(let i=1;i<n-1;i++){const m=mid(pts[i],pts[i+1]);ctx.quadraticCurveTo(pts[i].x,pts[i].y,m.x,m.y)}
-    ctx.lineTo(pts[n-1].x,pts[n-1].y);ctx.stroke();ctx.globalAlpha=1;return;
-  }
-  if(optOf(tool).tip==='chisel'&&tool!=='eraser'){if(n>=2){ctx.globalAlpha=al();ctx.beginPath();chiselPath(pts[n-2],pts[n-1],wd(pts[n-1].p));ctx.fill();ctx.globalAlpha=1}return}
+  if(tool==='hl'){hlPaint(pts);return}
+  const g=sl?slx:ctx,A=sl?1:al();if(sl)style(g);
+  if(optOf(tool).tip==='chisel'&&tool!=='eraser'){if(n>=2){g.globalAlpha=A;g.beginPath();chiselPath(pts[n-2],pts[n-1],wd(pts[n-1].p),g);g.fill();g.globalAlpha=1}return}
   if(n<3)return;
   const a=mid(pts[n-3],pts[n-2]),b=mid(pts[n-2],pts[n-1]);
-  ctx.globalAlpha=al();ctx.lineWidth=wd(pts[n-2].p);
-  ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.quadraticCurveTo(pts[n-2].x,pts[n-2].y,b.x,b.y);ctx.stroke();ctx.globalAlpha=1;
+  g.globalAlpha=A;g.lineWidth=wd(pts[n-2].p);
+  g.beginPath();g.moveTo(a.x,a.y);g.quadraticCurveTo(pts[n-2].x,pts[n-2].y,b.x,b.y);g.stroke();g.globalAlpha=1;
+}
+function smoothPts(P,k){ // a calmer line: every point is averaged with its neighbours (k on each side, nearer ones count more)
+  const n=P.length;if(n<3||k<1)return P;const out=[];
+  for(let i=0;i<n;i++){const r=Math.min(k,i,n-1-i);let sx=0,sy=0,sw=0;for(let j=-r;j<=r;j++){const w=r+1-Math.abs(j);sx+=P[i+j].x*w;sy+=P[i+j].y*w;sw+=w}out.push({x:sx/sw,y:sy/sw,p:P[i].p})}
+  return out;
+}
+function hlPaint(P){ // the highlighter: one even, see-through band – a calm line with flat ends, drawn again in full as it grows
+  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.clearRect(0,0,W,H);ctx.drawImage(snap,0,0);
+  style();const w=wd(.5),o=optOf('hl');ctx.globalAlpha=al();ctx.beginPath();
+  if(o.tip==='chisel'){for(let i=1;i<P.length;i++)chiselPath(P[i-1],P[i],w);if(P.length===1)chiselPath(P[0],P[0],w);ctx.fill();ctx.globalAlpha=1;return}
+  let Q=smoothPts(P,Math.round(3+o.sm*12)),len=0;for(let i=1;i<Q.length;i++)len+=Math.hypot(Q[i].x-Q[i-1].x,Q[i].y-Q[i-1].y);
+  if(len<w*.4){const p=Q[0];ctx.rect(p.x-w*.3,p.y-w/2,w*.6,w);ctx.fill();ctx.globalAlpha=1;return} // a dab
+  // the flat ends follow the line's direction over the last bit, not the last wobble of the finger
+  const trim=(A)=>{const e=A[A.length-1];let j=A.length-2;while(j>0&&Math.hypot(A[j].x-e.x,A[j].y-e.y)<w*.6)j--;return A.slice(0,j+1).concat([e])};
+  Q=trim(trim(Q).reverse()).reverse();
+  ctx.lineWidth=w;ctx.lineCap=o.tip==='round'?'round':'butt';ctx.lineJoin='round';
+  ctx.moveTo(Q[0].x,Q[0].y);for(let i=1;i<Q.length-1;i++){const m=mid(Q[i],Q[i+1]);ctx.quadraticCurveTo(Q[i].x,Q[i].y,m.x,m.y)}ctx.lineTo(Q[Q.length-1].x,Q[Q.length-1].y);
+  ctx.stroke();ctx.globalAlpha=1;
+}
+function fillRef(){ // what you see on the page, for finding the edges: the page's picture (a PDF page, a template), every visible layer and your drawing
+  const bg=$('#bgimg'),lys=[...document.querySelectorAll('#paper .lyr')].filter(e=>e.style.display!=='none');
+  if(!(bg.classList.contains('on')&&bg.complete&&bg.naturalWidth)&&!lys.length)return ctx.getImageData(0,0,W,H); // only your drawing, as before
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d',{willReadFrequently:true});x.fillStyle='#fff';x.fillRect(0,0,W,H);
+  if(bg.classList.contains('on')&&bg.complete&&bg.naturalWidth)try{x.drawImage(bg,0,0,W,H)}catch(e){}
+  [...lys,cv].forEach(e=>{try{x.drawImage(e,0,0,W,H)}catch(e2){}});
+  const d=x.getImageData(0,0,W,H);c.width=c.height=0;return d;
 }
 function floodFill(px,py){
   const sx=clampN(Math.round(px),0,W-1),sy=clampN(Math.round(py),0,H-1);
-  const img=ctx.getImageData(0,0,W,H),d=img.data,i0=(sy*W+sx)*4,r0=d[i0],g0=d[i0+1],b0=d[i0+2],a0=d[i0+3];
+  const img=fillRef(),d=img.data,i0=(sy*W+sx)*4,r0=d[i0],g0=d[i0+1],b0=d[i0+2],a0=d[i0+3];
   const mask=new Uint8Array(W*H);
   const ok=(x,y)=>{const k=y*W+x;if(mask[k])return false;const i=k*4;return Math.abs(d[i]-r0)+Math.abs(d[i+1]-g0)+Math.abs(d[i+2]-b0)+Math.abs(d[i+3]-a0)<=70};
   const st=[[sx,sy]];
@@ -2306,7 +2339,7 @@ function floodFill(px,py){
 
 /* Options, stylus, shape assist */
 const OPT0={pen:{tip:'round',sm:.25},pencil:{tip:'round',sm:.1},brush:{tip:'round',sm:.35},marker:{tip:'round',sm:.2},hl:{tip:'square',sm:.2},eraser:{tip:'round',sm:0}};
-let OPT={},ENV={sens:1,pr:true,fingers:true,assist:true,manual:false,autoDone:false};
+let OPT={},ENV={sens:1,pr:true,fingers:true,assist:true,hlh:true,manual:false,autoDone:false};
 try{const q=JSON.parse(localStorage.getItem('sb-opt')||'{}');OPT=q.o||{};Object.assign(ENV,q.e||{})}catch(e){}
 const optOf=t=>Object.assign({tip:'round',sm:0},OPT0[t]||{},OPT[t]||{});
 function saveOpt(){try{localStorage.setItem('sb-opt',JSON.stringify({o:OPT,e:ENV}))}catch(e){}}
@@ -2314,10 +2347,10 @@ let svT2=null;
 function toast(t){const e=$('#sv');if(!e)return;clearTimeout(svT);clearTimeout(svT2);window._tu=Date.now()+3200;e.className='on';e.textContent=t;svT2=setTimeout(()=>{e.className=''},3200)}
 let penSeen=false,penDown=false,asst=null,holdT=null,mq=null;
 function autoPen(){if(!ENV.manual&&!ENV.autoDone){ENV.autoDone=true;ENV.fingers=false;saveOpt();toast('Pen detected: fingers now pan and zoom. Change this in the pen’s menu → More settings.')}}
-function chiselPath(a,b,w){
+function chiselPath(a,b,w,g=ctx){
   const d=w/2,dx=d*.7071,dy=-d*.7071,P=[[a.x+dx,a.y+dy],[b.x+dx,b.y+dy],[b.x-dx,b.y-dy],[a.x-dx,a.y-dy]];
   const cr=(b.x-a.x)*(-2*dy)-(b.y-a.y)*(-2*dx);if(cr<0)P.reverse();
-  ctx.moveTo(P[0][0],P[0][1]);for(let i=1;i<4;i++)ctx.lineTo(P[i][0],P[i][1]);ctx.closePath();
+  g.moveTo(P[0][0],P[0][1]);for(let i=1;i<4;i++)g.lineTo(P[i][0],P[i][1]);g.closePath();
 }
 function snapAng(a,b){
   const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy),t=Math.atan2(dy,dx),st=Math.PI/12;
@@ -2362,6 +2395,7 @@ function recognize(P){
   return null;
 }
 function paintAsst(){
+  if(asst&&tool==='hl'&&snap){hlPaint([asst.a,asst.b]);return}
   if(!asst||!hist.length)return;
   ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.putImageData(hist[hist.length-1],0,0);
   style();ctx.globalAlpha=al();ctx.lineWidth=wd(.5);ctx.beginPath();
@@ -2370,16 +2404,22 @@ function paintAsst(){
   else{asst.P.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath()}
   ctx.stroke();ctx.globalAlpha=1;
 }
-function armHold(){
-  clearTimeout(holdT);
-  if(drawing&&ENV.assist&&tool!=='eraser'&&tool!=='shape'&&tool!=='fill'&&!asst)holdT=setTimeout(()=>{
-    if(!drawing||asst||pts.length<6)return;const r=recognize(pts);if(!r)return;
-    asst=r;paintAsst();toast(r.t==='line'?'Straight line':'Shape corrected');
-  },620);
+let holdP=null,holdTol=3;
+function armHold(q){ // hold still at the end of a stroke: it straightens (the highlighter: always a straight line)
+  const on=drawing&&!asst&&!['eraser','shape','fill'].includes(tool)&&(tool==='hl'?ENV.hlh!==false:ENV.assist);
+  if(!on){clearTimeout(holdT);holdT=null;return}
+  if(holdT&&q&&holdP&&Math.hypot(q.x-holdP.x,q.y-holdP.y)<holdTol)return; // a finger held still still trembles a little: keep counting
+  clearTimeout(holdT);holdP=q||pts[pts.length-1];
+  holdT=setTimeout(()=>{holdT=null;
+    if(!drawing||asst)return;let r=null;
+    if(tool==='hl'){const a=pts[0],e=pts[pts.length-1];if(Math.hypot(e.x-a.x,e.y-a.y)<wd(.5))return;r={t:'line',a:{x:a.x,y:a.y},b:snapAng(a,e)}}
+    else{if(pts.length<6)return;r=recognize(pts);if(!r)return}
+    asst=r;sl=null;paintAsst();toast(r.t==='line'?'Straight line':'Shape corrected');try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
+  },600);
 }
 function cancelStroke(){
-  clearTimeout(holdT);
-  if(drawing){drawing=false;if(hist.length)ctx.putImageData(hist.pop(),0,0);snap=null;asst=null}
+  clearTimeout(holdT);holdT=null;
+  if(drawing){drawing=false;if(hist.length)ctx.putImageData(hist.pop(),0,0);snap=null;sl=null;asst=null}
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
   if(mq){mq=null;$('#marq').classList.add('hidden')}
 }
@@ -2393,14 +2433,17 @@ cv.addEventListener('pointerdown',e=>{
   if(tool==='sel'){selDown(p);return}
   histAdd();
   if(tool==='fill'){floodFill(p.x,p.y);savePage();return}
-  drawing=true;asst=null;pts=[p];bw=.7;if(tool==='brush')p.p=bw;
-  if(tool==='hl'||tool==='shape'){snap=document.createElement('canvas');snap.width=W;snap.height=H;snap.getContext('2d').drawImage(cv,0,0)}
-  else{
-    style();ctx.globalAlpha=al();const tp=optOf(tool).tip,w=wd(p.p);
-    if(tp==='chisel'&&tool!=='eraser'){ctx.beginPath();chiselPath(p,p,w);ctx.fill()}
-    else if(tp==='square'&&tool!=='eraser')ctx.fillRect(p.x-w/2,p.y-w/2,w,w);
-    else{ctx.beginPath();ctx.arc(p.x,p.y,w/2,0,Math.PI*2);ctx.fill()}
-    ctx.globalAlpha=1;
+  drawing=true;asst=null;pts=[p];bw=.7;if(tool==='brush')p.p=bw;holdT=null;{const r=cv.getBoundingClientRect();holdTol=(e.pointerType==='touch'?8:e.pointerType==='pen'?3:4)*W/Math.max(1,r.width)} // how still “still” is: a finger trembles more than a stylus
+  sl=null;const see=tool!=='eraser'&&tool!=='hl'&&tool!=='shape'&&al()<1;
+  if(tool==='hl'||tool==='shape'||see){snap=document.createElement('canvas');snap.width=W;snap.height=H;snap.getContext('2d').drawImage(cv,0,0)}
+  if(see)slStart();
+  if(tool==='hl')hlPaint(pts); // a tap leaves a small dab
+  if(tool!=='hl'&&tool!=='shape'){
+    const g=sl?slx:ctx;style(g);g.globalAlpha=sl?1:al();const tp=optOf(tool).tip,w=wd(p.p);
+    if(tp==='chisel'&&tool!=='eraser'){g.beginPath();chiselPath(p,p,w,g);g.fill()}
+    else if(tp==='square'&&tool!=='eraser')g.fillRect(p.x-w/2,p.y-w/2,w,w);
+    else{g.beginPath();g.arc(p.x,p.y,w/2,0,Math.PI*2);g.fill()}
+    g.globalAlpha=1;slFlush();
   }
   armHold();
 });
@@ -2416,16 +2459,18 @@ cv.addEventListener('pointermove',e=>{
     if(Math.hypot(q.x-last.x,q.y-last.y)<1.2)return;
     if(tool==='brush'){const dd=Math.hypot(q.x-last.x,q.y-last.y);bw=bw*.8+clampN(1.5-dd/24,.3,1.3)*.2;q.p=bw*(c.pointerType==='pen'?q.p*2:1)}
     if(tool!=='shape'){const k=1-optOf(tool).sm*.8;if(k<1){q.x=last.x+(q.x-last.x)*k;q.y=last.y+(q.y-last.y)*k}if(c.pointerType==='pen')q.p=last.p+(q.p-last.p)*.5}
-    pts.push(q);draw();armHold();
+    pts.push(q);draw();armHold(q);
   });
+  slFlush(); // once per move, after all its points
 });
 function end(e){
   if(e&&e.pointerType==='pen')penDown=false;
   if(mq){liftSel();return}
-  if(!drawing)return;drawing=false;clearTimeout(holdT);
+  if(!drawing)return;drawing=false;clearTimeout(holdT);holdT=null;
   const n=pts.length;
-  if(!asst&&tool!=='hl'&&tool!=='shape'&&n>=2&&optOf(tool).tip!=='chisel'){style();ctx.globalAlpha=al();ctx.lineWidth=wd(pts[n-1].p);const a=mid(pts[n-2],pts[n-1]);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(pts[n-1].x,pts[n-1].y);ctx.stroke()}
-  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';snap=null;asst=null;savePage();
+  if(!asst&&tool!=='hl'&&tool!=='shape'&&n>=2&&optOf(tool).tip!=='chisel'){const g=sl?slx:ctx;style(g);g.globalAlpha=sl?1:al();g.lineWidth=wd(pts[n-1].p);const a=mid(pts[n-2],pts[n-1]);g.beginPath();g.moveTo(a.x,a.y);g.lineTo(pts[n-1].x,pts[n-1].y);g.stroke();g.globalAlpha=1}
+  if(!asst)slFlush();
+  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';snap=null;sl=null;asst=null;savePage();
 }
 cv.addEventListener('pointerup',end);
 cv.addEventListener('pointercancel',end);
@@ -2576,7 +2621,7 @@ function previewStroke(){
   const c=$('#tpv'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);
   if(tool==='eraser'||tool==='fill'||tool==='text'||tool==='sel'){return}
   const o=optOf(tool),w=Math.min(wd(.5),c.height*.8);x.save();x.globalAlpha=Math.min(1,al());
-  x.strokeStyle=x.fillStyle=tool==='pencil'?color:color;x.lineCap=o.tip==='round'?'round':'square';x.lineJoin=o.tip==='round'?'round':'miter';x.lineWidth=w;
+  x.strokeStyle=x.fillStyle=tool==='pencil'?color:color;x.lineCap=o.tip==='round'?'round':tool==='hl'?'butt':'square';x.lineJoin=o.tip==='round'||tool==='hl'?'round':'miter';x.lineWidth=w;
   const pts2=[];for(let i=0;i<=60;i++){const t=i/60;pts2.push({x:30+t*(c.width-60),y:c.height/2+Math.sin(t*Math.PI*2)*c.height*.24})}
   if(o.tip==='chisel'){
     x.beginPath();const d=w/2,dx=d*.7071,dy=-d*.7071;
@@ -2597,7 +2642,7 @@ function fillTs(){
   show('#ts-col',col||!['eraser','sel'].includes(t));
   show('#ts-size',!col&&!['fill','sel','text'].includes(t));show('#opw',t!=='eraser');
   $('#szlab').textContent=t==='shape'?'Line':t==='eraser'?'Size':'Size';
-  show('#ts-press',!col&&['pen','pencil','brush'].includes(t));
+  show('#ts-press',!col&&['pen','pencil','brush'].includes(t));show('#ts-hold',!col&&t==='hl');$('#hsw').setAttribute('aria-checked',ENV.hlh!==false);show('#asstr',t!=='hl');
   show('#ts-more',!col&&stroke);show('#tipr',stroke);show('#smr',stroke);
   const n=col?'':TNOTE[t]||'';$('#tsn').textContent=n;show('#tsn',!!n);
   document.querySelectorAll('#dtypes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===t));
@@ -2628,6 +2673,7 @@ function initOpts(){
   $('#smo').oninput=e=>{OPT[tool]=Object.assign({},OPT[tool]||{},{sm:+e.target.value/100});saveOpt()};
   $('#prs').oninput=e=>{ENV.sens=+e.target.value/100;saveOpt()};
   $('#prsw').onclick=()=>{ENV.pr=ENV.pr===false;saveOpt();fillTs()};
+  $('#hsw').onclick=()=>{ENV.hlh=ENV.hlh===false;saveOpt();fillTs()};
   $('#asst').onchange=e=>{ENV.assist=e.target.checked;saveOpt()};
   $('#fing').onchange=e=>{ENV.fingers=e.target.checked;ENV.manual=true;saveOpt()};
   // the menu closes when you start drawing on the page, with Escape, or when the screen changes size
@@ -4316,15 +4362,60 @@ async function adminFetch(){
   const costs=await F.getDoc(F.doc(db,'config','costs')).then(s=>s.exists()&&Array.isArray(s.data().items)?s.data().items:[]).catch(()=>[]);
   const pub=await F.getDoc(F.doc(db,'config','public')).then(s=>s.exists()?s.data():{}).catch(()=>({}));
   const offers=await safe(all('offers'));
+  const launch=await F.getDoc(F.doc(db,'config','launch')).then(s=>s.exists()?s.data():null).catch(()=>null);
   const shop=await safe(all('shop')).then(L=>L.map(x=>({...x,from:tsN(x.from),until:tsN(x.until),created:tsN(x.created)})));applyShop(shop);
   if(pub.pay)Object.assign(PUB.pay,pub.pay);if(pub.intro)Object.assign(PUB.intro,pub.intro);
-  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,feedback,owned,costs,offers,shop,at:Date.now()};
+  ADM.data={profiles,act,pro,codes,redeem,payments,subs,survey,feedback,owned,costs,offers,shop,launch,at:Date.now()};
 }
 function openAdmin(){$('#acct').classList.add('hidden');const A=$('#admin');A.classList.remove('hidden');A.style.setProperty('--abh',($('#admin .bar').offsetHeight||48)+'px');adminLoad()}
 async function adminLoad(){
   const B=$('#adm-body');B.innerHTML='';B.append(el('p','muted','Loading…'));
   try{await adminFetch();adminRender()}
   catch(e){B.innerHTML='';B.append(el('p','amsg','Couldn’t load the admin data ('+(e.code||e.message)+'). Check that the latest Firestore rules are published.'))}
+}
+/* The day Foliet was launched (Update 17): the admin writes it once, as dd.mm.yyyy; after that it stays for good
+   (config/launch = {d:'YYYY-MM-DD', at, by} – the rules allow it to be created once, never changed or deleted).
+   Next to it: how long ago, in years, months and days, and the days in all. */
+const dmy=t=>String(t.getDate()).padStart(2,'0')+'.'+String(t.getMonth()+1).padStart(2,'0')+'.'+t.getFullYear();
+function ymdDiff(a,b){ // calendar years, months and days from day a to day b (b after a), plus the days in all
+  a=new Date(a.getFullYear(),a.getMonth(),a.getDate());b=new Date(b.getFullYear(),b.getMonth(),b.getDate());
+  let y=b.getFullYear()-a.getFullYear(),m=b.getMonth()-a.getMonth(),d=b.getDate()-a.getDate();
+  if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate()} // borrow the days of the month before
+  if(m<0){y--;m+=12}
+  return {y,m,d,days:Math.round((b-a)/864e5)};
+}
+function launchAgo(t){
+  const now=new Date(),pl=(n,w)=>n+' '+w+(n===1?'':'s');
+  if(new Date(t.getFullYear(),t.getMonth(),t.getDate())>now){const e=ymdDiff(now,t);return 'in '+pl(e.days,'day')}
+  const e=ymdDiff(t,now);if(!e.days)return 'today';
+  return pl(e.y,'year')+', '+pl(e.m,'month')+', '+pl(e.d,'day')+' since launch · '+pl(e.days,'day');
+}
+function launchBox(D){
+  const w=el('div','alaunch');w.id='adm-launch';
+  if(D.launch&&/^\d{4}-\d{2}-\d{2}$/.test(D.launch.d||'')){
+    const [y,m,d]=D.launch.d.split('-').map(Number),t=new Date(y,m-1,d);
+    const b=el('b','','🚀 Launched on '+dmy(t)+' ');b.append(el('span','alsince','('+launchAgo(t)+')'));
+    w.append(b,el('small','muted','Set for good – it can’t be changed or deleted.'));return w;
+  }
+  w.append(el('b','','🚀 Launch date'),el('small','muted','Write the day you launched Foliet. You can set it only once: after that it stays for good.'));
+  const f=el('form','alaunch-f'),i=el('input','lk-in');i.id='adm-launch-in';i.placeholder='dd.mm.yyyy';i.inputMode='numeric';i.maxLength=10;i.autocomplete='off';i.setAttribute('aria-label','Launch date, day.month.year');
+  const go=el('button','btn','Save');go.type='submit';f.append(i,go);const msg=el('p','amsg');msg.setAttribute('role','alert');w.append(f,msg);
+  i.oninput=()=>{const v=i.value.replace(/\D/g,'').slice(0,8);i.value=v.slice(0,2)+(v.length>2?'.'+v.slice(2,4):'')+(v.length>4?'.'+v.slice(4):'');msg.textContent=''}; // 21112026 → 21.11.2026
+  f.onsubmit=e=>{e.preventDefault();
+    const q=i.value.trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/),t=q&&new Date(+q[3],+q[2]-1,+q[1]),now=new Date();
+    if(!q||t.getDate()!==+q[1]||t.getMonth()!==+q[2]-1){msg.textContent='Write a real date as day.month.year, like 21.11.2026.';return}
+    if(+q[3]<2020||t-now>365*864e5){msg.textContent='That date looks wrong. Check the year.';return}
+    // one more look before it is set for good
+    f.classList.add('hidden');const ask=el('div','alaunch-ok');
+    ask.append(el('p','','Set the launch date to '+dmy(t)+' ('+launchAgo(t)+')? It can’t be changed or deleted later.'));
+    const no=el('button','ib','Cancel'),yes=el('button','btn','Yes, set it for good');no.type=yes.type='button';yes.id='adm-launch-yes';
+    no.onclick=()=>{ask.remove();f.classList.remove('hidden')};
+    yes.onclick=async()=>{yes.disabled=no.disabled=true;
+      const d=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+      try{await ACC.F.setDoc(ACC.F.doc(ACC.db,'config','launch'),{d,at:ACC.F.serverTimestamp(),by:ACC.user.uid});D.launch={d};adminRender()}
+      catch(e2){ask.remove();f.classList.remove('hidden');msg.textContent='Couldn’t save it ('+(e2.code||e2.message)+'). It may already be set – press Refresh.'}};
+    const acts=el('div','acts2');acts.append(no,yes);ask.append(acts);w.append(ask)};
+  return w;
 }
 function adminRender(){
   const F=ACC.F,db=ACC.db,B=$('#adm-body'),D=ADM.data,R=perRange(ADM.per),now=Date.now();B.innerHTML='';
@@ -4345,7 +4436,7 @@ function adminRender(){
   if(/^[ym]\d/.test(ADM.per))sel.value=ADM.per;
   sel.onchange=()=>{if(sel.value){ADM.per=sel.value;adminRender()}};
   const rf=el('small','muted','Updated '+new Date(D.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-  bar.append(seg,sel,rf);B.append(bar,el('p','aplabel','Showing: '+R.label));
+  bar.append(seg,sel,rf);B.append(launchBox(D),bar,el('p','aplabel','Showing: '+R.label));
   // categories: jump to a part of the panel
   const nav=el('nav','acats');nav.setAttribute('aria-label','Admin sections');
   [['ov','Overview'],['money','Money & profit'],['acc','Accounts'],['who','Who uses it'],['found','Found us'],['fb','Feedback'],['codes','Codes & discounts'],['pro','Pro members'],['store','Store'],['search','Find an account']]
@@ -4977,14 +5068,14 @@ async function makeWelcome(){
     y+=150;x.strokeStyle='#7a3f66';for(let k=0;k<500;k+=6){const t=k/500,w=2+16*Math.sin(t*Math.PI);x.lineWidth=w;x.beginPath();x.moveTo(320+k,y+Math.sin(k/40)*22);x.lineTo(326+k,y+Math.sin((k+6)/40)*22);x.stroke()} // brush
     y+=150;x.globalAlpha=.85;x.strokeStyle='#4da3ff';x.lineWidth=26;wave(x,320,y,500,14,55);x.globalAlpha=1;     // marker
     y+=150;x.globalAlpha=.5;x.fillStyle='#ffe14d';x.fillRect(330,y-36,420,62);x.globalAlpha=1;                 // highlighter
-    x.strokeStyle='#2e7d5b';x.lineWidth=5;x.strokeRect(90,1010,150,110);x.beginPath();x.ellipse(380,1065,80,55,0,0,Math.PI*2);x.stroke();
-    x.fillStyle='#ffc9de';x.beginPath();x.moveTo(580,1120);x.lineTo(650,1005);x.lineTo(720,1120);x.closePath();x.fill();x.stroke();
+    x.strokeStyle='#2e7d5b';x.lineWidth=5;x.strokeRect(90,1045,150,110);x.beginPath();x.ellipse(380,1100,80,55,0,0,Math.PI*2);x.stroke();
+    x.fillStyle='#ffc9de';x.beginPath();x.moveTo(580,1155);x.lineTo(650,1040);x.lineTo(720,1155);x.closePath();x.fill();x.stroke();
     ink.push(c);ps.push({p:'lines',c:PAPER});
     objs.push([T('Draw',80,60,500,96,{fm:'marker',c:'#1d2b4a'}),
       T('Pen',80,240,200,38,{b:1}),T('Pencil',80,390,200,38,{b:1}),T('Brush',80,540,200,38,{b:1}),T('Marker',80,690,200,38,{b:1}),
       T('Highlight what matters',340,808,420,38,{fm:'hand',c:'#1d2b4a'}),T('Highlighter',80,822,250,38,{b:1}),
-      T('Shapes and fill',780,1030,120,30,{al:'left',extra:1}),
-      T('Tap a tool for its menu: color, size, pressure.',80,895,760,30,{c:'#56627a'}),S(10,760,60,100,10)])}
+      T('Shapes and fill',780,1065,120,30,{al:'left',extra:1}),
+      T('Tap a tool for its menu. Hold still at the end of a line and it turns straight.',80,890,760,30,{c:'#56627a',extra:1}),S(10,760,60,100,10)])}
   // 3 – write
   {const [c,x]=page();x.strokeStyle='#e5484d';x.lineWidth=5;wave(x,90,1010,330,6,22);ink.push(c);ps.push({p:'grid',c:PAPER});
     const fonts=[['sans','Sans'],['serif','Serif'],['mono','Mono'],['hand','Handwriting'],['marker','Marker'],['display','Elegant'],['script','Script'],['round','Rounded']];

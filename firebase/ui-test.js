@@ -126,6 +126,37 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
   ok(await A.evaluate(()=>!view&&tool==='text'&&!$('#tsheet').classList.contains('hidden')),'… tap Text: back to writing, with its menu');
   await A.evaluate(()=>{closeTS();selectTool('pen')});
 
+  // ---- the highlighter and the other tools draw well (Update 17)
+  await A.evaluate(async()=>{const b=mk('Tools',data.length,'p');const c=document.createElement('canvas');c.width=900;c.height=1200;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,900,1200);x.lineWidth=6;x.beginPath();x.arc(450,950,140,0,7);x.stroke();
+    b.bg[0]=c.toDataURL('image/png');data.push(b);persist();showBrowse(b);showEditor(0)});await A.waitForTimeout(1200);
+  const R=await A.evaluate(()=>{const q=cv.getBoundingClientRect();return {l:q.left,t:q.top,w:q.width,h:q.height}}),C=(x,y)=>[R.l+x*R.w/900,R.t+y*R.h/1200];
+  let sd=3;const rn=()=>(sd=(sd*9301+49297)%233280)/233280-.5;
+  const shaky=async(t,y,hold)=>{await A.evaluate(t=>{selectTool(t);opa=1},t);let [x,yy]=C(100,y);await A.mouse.move(x,yy);await A.mouse.down();
+    for(let k=100;k<=700;k+=6){[x,yy]=C(k,y+Math.sin(k/40)*9+rn()*6);await A.mouse.move(x,yy)}
+    if(hold)for(let k=0;k<9;k++){await A.mouse.move(x+rn()*3,yy+rn()*3);await A.waitForTimeout(90)} // a still finger trembles a little
+    await A.mouse.up();await A.waitForTimeout(250)};
+  await shaky('hl',120,true);
+  const hl=await A.evaluate(()=>{const row=y=>{const d=ctx.getImageData(130,y,540,1).data;let n=0;for(let i=3;i<d.length;i+=4)if(d[i]>0)n++;return n};return {toast:$('#sv').textContent,mid:row(120),off:row(150)}});
+  ok(/Straight line/.test(hl.toast)&&hl.mid>=530&&hl.off<5,'highlighter: hold still at the end (even with a trembling finger) → a perfectly straight band ('+JSON.stringify(hl)+')');
+  await shaky('hl',250,false);
+  const band=await A.evaluate(()=>{const d=ctx.getImageData(400,190,1,120).data;const a=[];for(let i=3;i<d.length;i+=4)if(d[i]>0)a.push(d[i]);const m=a.slice(2,-2);return {h:a.length,even:m.length?Math.max(...m)-Math.min(...m):-1}});
+  ok(band.h>=20&&band.even<=2,'highlighter: one even, see-through band (no darker overlaps), as tall as a line of writing ('+JSON.stringify(band)+')');
+  await A.evaluate(()=>{selectTool('hl')});await A.click('#tools [data-t="hl"]');await A.waitForTimeout(200);
+  ok(await A.evaluate(()=>!$('#ts-hold').classList.contains('hidden')&&$('#hlab').textContent==='Straight line'&&$('#hsw').getAttribute('aria-checked')==='true'),'the highlighter menu has the “Straight line” switch, on');
+  await A.click('#hsw');await A.evaluate(()=>closeTS());const t0=await A.evaluate(()=>hist.length);await shaky('hl',400,true);
+  ok(await A.evaluate(()=>ENV.hlh===false&&!/Straight line/.test($('#sv').textContent)&&JSON.parse(localStorage.getItem('sb-opt')).e.hlh===false),'switched off: holding still leaves the line as drawn (and it’s remembered)');
+  await A.evaluate(()=>{ENV.hlh=true;saveOpt()});
+  await shaky('pen',520,true);
+  ok(/Straight line/.test(await A.evaluate(()=>$('#sv').textContent)),'the pen too: hold still at the end of a line → straight, with a trembling finger');
+  // see-through lines are even: a marker, and a pen at 50%
+  const slow=async(t,y,o)=>{await A.evaluate(([t,o])=>{selectTool(t);size=10;opa=o},[t,o]);let [x,yy]=C(100,y);await A.mouse.move(x,yy);await A.mouse.down();for(let k=100;k<=700;k+=3){[x,yy]=C(k,y);await A.mouse.move(x,yy)}await A.mouse.up();await A.waitForTimeout(200)};
+  await slow('marker',620,1);await slow('pen',680,.5);
+  const ev=await A.evaluate(()=>[620,680].map(y=>{const d=ctx.getImageData(150,y,500,1).data;let mn=255,mx=0;for(let i=3;i<d.length;i+=4){mn=Math.min(mn,d[i]);mx=Math.max(mx,d[i])}return [mn,mx]}));
+  ok(ev[0][0]===ev[0][1]&&ev[0][0]>200&&ev[0][0]<245&&Math.abs(ev[1][0]-128)<=2&&ev[1][0]===ev[1][1],'marker and a 50% pen: the same strength all along the line, no darker dots ('+JSON.stringify(ev)+')');
+  await A.evaluate(()=>{opa=1;selectTool('fill');color='#4da3ff'});{const [x,y]=C(450,950);await A.mouse.click(x,y)}await A.waitForTimeout(400);
+  ok(await A.evaluate(()=>ctx.getImageData(450,950,1,1).data[3]===255&&ctx.getImageData(450,760,1,1).data[3]===0&&ctx.getImageData(40,1160,1,1).data[3]===0),'Fill stays inside a circle printed on the page (a PDF page, a template), instead of covering the page');
+  await A.evaluate(()=>{selectTool('pen');$('#ed').classList.add('hidden');showBrowse(data.find(b=>b.title!=='Tools'))});await A.waitForTimeout(600);
+
   // ---- Page style: not on a page from a PDF
   await A.evaluate(async()=>{const b=mk('Pdf book',data.length,'p');const k=document.createElement('canvas');k.width=k.height=8;k.getContext('2d').fillRect(0,0,8,8);
     b.pages=[null,null,null,null];b.bg[1]=k.toDataURL();data.push(b);persist();await saveNow();showBrowse(b)});await A.waitForTimeout(400);
@@ -210,6 +241,25 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
     ok(/Money & profit/.test(ro.rest)&&/New sign-ups/.test(ro.rest),'… the rest of the admin panel stays in English');
     await A.evaluate(()=>{ADM.tab='money';admShow()});await A.waitForTimeout(200);
     ok(await A.evaluate(()=>/Asistentul Foliet/.test($('.asec[data-s="money"] .adv').textContent)&&!$('.asec[data-s="money"] .adv').textContent.includes('Oameni')),'Money & profit: the money part of the assistant');
+    // ---- the launch date: written once as day.month.year, then it stays for good, with how long ago
+    ok(await A.evaluate(()=>{const f=(a,b)=>{const e=ymdDiff(new Date(a),new Date(b));return [e.y,e.m,e.d,e.days].join()};
+      return f('2025-09-16T12:00','2026-11-21T12:00')==='1,2,5,431'&&f('2024-12-29T12:00','2026-03-03T12:00')==='1,2,2,429'&&f('2024-02-29T12:00','2025-02-28T12:00')==='0,11,30,365'}),'how long ago: calendar years, months and days (16.09.2025 → 21.11.2026 = 1 year, 2 months, 5 days; 431 days)');
+    await A.evaluate(()=>{ADM.tab='ov';admShow()});
+    ok(await A.evaluate(()=>!!$('#adm-launch-in')&&!/Launched on/.test($('#adm-launch').textContent)&&/only once/.test($('#adm-launch').textContent)),'the admin panel asks for the launch date (it can be set only once)');
+    await A.fill('#adm-launch-in','31.02.2025');await A.click('#adm-launch button[type=submit]');
+    ok(/real date/.test(await A.evaluate(()=>$('#adm-launch .amsg').textContent)),'31.02.2025 isn’t a real date: it says so');
+    await A.fill('#adm-launch-in','');await A.type('#adm-launch-in','16092025');
+    ok(await A.evaluate(()=>$('#adm-launch-in').value==='16.09.2025'),'typing 16092025 writes 16.09.2025 (the dots go in by themselves)');
+    await A.click('#adm-launch button[type=submit]');
+    ok(await A.evaluate(()=>/Set the launch date to 16\.09\.2025/.test($('#adm-launch').textContent)&&/can’t be changed or deleted later/.test($('#adm-launch').textContent)),'before saving it asks once more, with the date and that it is for good');
+    await A.click('#adm-launch-yes');await A.waitForFunction(()=>/Launched on/.test(($('#adm-launch')||{}).textContent||''),null,{timeout:10000});
+    const lt=await A.evaluate(()=>{const e=ymdDiff(new Date(2025,8,16),new Date()),pl=(n,w)=>n+' '+w+(n===1?'':'s');return {t:$('#adm-launch').textContent,want:'(' +pl(e.y,'year')+', '+pl(e.m,'month')+', '+pl(e.d,'day')+' since launch · '+pl(e.days,'day')+')'}});
+    ok(lt.t.includes('Launched on 16.09.2025 '+lt.want)&&!(await A.$('#adm-launch-in')),'it shows “Launched on 16.09.2025 '+lt.want+'”, and the box to write it is gone');
+    const ch=await A.evaluate(async()=>{const F=ACC.F,r=F.doc(ACC.db,'config','launch');const a=await F.setDoc(r,{d:'2024-01-01',at:F.serverTimestamp(),by:ACC.user.uid}).then(()=>'changed',e=>e.code);
+      const b=await F.deleteDoc(r).then(()=>'deleted',e=>e.code);const c=await F.getDoc(r).then(x=>x.data().d);return {a,b,c}});
+    ok(/permission/.test(ch.a)&&/permission/.test(ch.b)&&ch.c==='2025-09-16','the rules keep it for good: it can’t be changed or deleted, even by the admin ('+JSON.stringify(ch)+')');
+    await A.evaluate(()=>adminLoad());await A.waitForSelector('#adm-launch');
+    ok(await A.evaluate(()=>/Launched on 16\.09\.2025/.test($('#adm-launch').textContent)&&!$('#adm-launch-in')),'after Refresh it is still there');
     await A.evaluate(()=>{localStorage.removeItem('sb-admlang');ADM.lang='en';$('#admin').classList.add('hidden')});
   }
   ok(!A.errs.length,'computer: no errors '+A.errs.join(' | '));

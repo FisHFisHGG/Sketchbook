@@ -273,9 +273,14 @@ service cloud.firestore {
         && request.resource.data.at == request.time;
     }
 
-    match /config/{id} { // admin settings: config/costs (running costs), config/public (payments + welcome offer, read by every account)
+    match /config/{id} { // admin settings: config/costs (running costs), config/public (payments + welcome offer, read by every account),
+                         // config/launch (the day Foliet was launched: set once by an admin, then never changed or deleted)
       allow read: if isAdmin() || (id == 'public' && signedIn());
-      allow write: if isAdmin();
+      allow write: if isAdmin() && id != 'launch';
+      allow create: if isAdmin() && id == 'launch'
+        && request.resource.data.keys().hasOnly(['d', 'at', 'by'])
+        && request.resource.data.d is string && request.resource.data.d.matches('^20[2-9][0-9]-[01][0-9]-[0-3][0-9]$')
+        && request.resource.data.at == request.time && request.resource.data.by == request.auth.uid;
     }
 
     match /admins/{uid} {
