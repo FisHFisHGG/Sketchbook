@@ -148,12 +148,15 @@ let fails=0,steps=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fa
     return E(()=>objList().some(o=>o.k==='note'&&/Hello walk/.test(o.t||'')))});
   await step('Undo 3 times, redo 2 times',async()=>{await E(()=>selectTool('pen'));const h=await hist();for(let i=0;i<3;i++)await A.click('#undo');for(let i=0;i<2;i++)await A.click('#redo');await W(200);return h>0});
   await step('Layers: open, add one, hide it, show it, delete it',async()=>{
-    await A.click('#lyb');await W(400);const n0=await E(()=>document.querySelectorAll('#lylist .lyrow').length);await A.click('#ly-add');await W(400);
+    await A.click('#lyb');await W(400);const n0=await E(()=>document.querySelectorAll('#lylist .lyrow').length);await A.click('#ly-add');
+    await A.waitForFunction(n=>document.querySelectorAll('#lylist .lyrow').length===n+1,n0,{timeout:8000}).catch(()=>{}); // the list is drawn again a moment later
     const n1=await E(()=>document.querySelectorAll('#lylist .lyrow').length);
     // the layer below (not the one you draw on): hide it, show it again
     await A.click('#lylist .lyrow:nth-child(2) button[title="Show or hide"]');const hid=await A.waitForFunction(()=>cur.lay[pi].L[0].v===0,null,{timeout:8000}).then(()=>true,()=>false);await W(200);
     await A.click('#lylist .lyrow:nth-child(2) button[title="Show or hide"]');const shown=await A.waitForFunction(()=>cur.lay[pi].L[0].v===1,null,{timeout:8000}).then(()=>true,()=>false);await W(200);
-    await A.click('#lylist .lyrow:first-child [aria-label="Delete layer"]');await A.click('#lylist .lyrow:first-child [aria-label="Delete layer"]');await W(400);
+    await A.waitForFunction(()=>{const e=document.querySelector('#lylist .lyrow:nth-child(2) button[title="Show or hide"]');return e&&e.getAttribute('aria-pressed')==='false'},null,{timeout:8000}).catch(()=>{}); // the list is drawn again after “show”
+    await A.click('#lylist .lyrow:first-child [aria-label="Delete layer"]');await A.waitForFunction(()=>/Sure/.test(document.querySelector('#lylist .lyrow:first-child [aria-label="Delete layer"]').textContent),null,{timeout:4000}).catch(()=>{});
+    await A.click('#lylist .lyrow:first-child [aria-label="Delete layer"]');await W(400);
     await A.waitForFunction(n=>document.querySelectorAll('#lylist .lyrow').length===n,n0,{timeout:8000}).catch(()=>{});const n2=await E(()=>document.querySelectorAll('#lylist .lyrow').length);
     if(!(n1===n0+1&&hid&&shown&&n2===n0))console.log('   layers:',JSON.stringify({n0,n1,hid,shown,n2,L:await E(()=>cur.lay[pi]&&cur.lay[pi].L.map(l=>l.v))}));
     await A.click('#lsx');return n1===n0+1&&hid&&shown&&n2===n0});
