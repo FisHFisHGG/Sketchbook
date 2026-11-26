@@ -41,15 +41,15 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   await A.setInputFiles('#itm-files',[{name:'a.png',mimeType:'image/png',buffer:await png(A,'#ee8a2f','🎃')},{name:'b.png',mimeType:'image/png',buffer:await png(A,'#8a66d6','👻')},{name:'c.png',mimeType:'image/png',buffer:await png(A,'#2e9aa2','🦇')}]);
   await A.waitForFunction(()=>document.querySelectorAll('.aitm-pv img').length===3,null,{timeout:10000});await A.selectOption('#itm-for','7');
   await A.click('#adm-item button[type=submit]');await A.waitForFunction(()=>/Stickers · Spooky/.test(($('#adm-shop')||{}).textContent||''),null,{timeout:10000});
-  // a cover, €0.99, permanent
-  await A.selectOption('#itm-kind','cov');await A.fill('#itm-n','Night sky');await A.selectOption('#itm-p','99');
+  // a cover, €1.99, permanent
+  await A.selectOption('#itm-kind','cov');await A.fill('#itm-n','Night sky');await A.selectOption('#itm-p','199');
   await A.setInputFiles('#itm-files',[{name:'n.png',mimeType:'image/png',buffer:await png(A,'#141c45','🌙')}]);await A.waitForFunction(()=>document.querySelectorAll('.aitm-pv img').length===1,null,{timeout:10000});
   await A.selectOption('#itm-for','0');await A.click('#adm-item button[type=submit]');await A.waitForFunction(()=>/Cover · Night sky/.test(($('#adm-shop')||{}).textContent||''),null,{timeout:10000});
   const shop=(await (await admin('shop',null,'GET')).json()).documents||[];const byN=n=>shop.find(d=>d.fields.n&&d.fields.n.stringValue===n);
   const spk=byN('Spooky'),nsky=byN('Night sky'),bnr=byN('Spooky week'),sid=spk.name.split('/').pop(),cid=nsky.name.split('/').pop();
   const days=t=>Math.round((Date.parse(t)-Date.now())/864e5);
   ok(spk.fields.items.arrayValue.values.length===3&&spk.fields.p.integerValue==='0'&&days(spk.fields.until.timestampValue)===7,'the sticker pack is saved: 3 pictures, free, for 1 week');
-  ok(!nsky.fields.until&&nsky.fields.p.integerValue==='99'&&/^data:image\/jpeg/.test(nsky.fields.img.stringValue),'the cover is saved: €0.99, permanent');
+  ok(!nsky.fields.until&&nsky.fields.p.integerValue==='199'&&/^data:image\/jpeg/.test(nsky.fields.img.stringValue),'the cover is saved: €1.99, permanent');
   ok(bnr.fields.act.stringValue==='kind'&&bnr.fields.av.stringValue==='stk'&&days(bnr.fields.until.timestampValue)===7,'the banner is saved: for 1 week, its button opens Stickers');
   ok(await A.evaluate(()=>/Live · ends .*7 days left/.test($('#adm-shop').textContent)&&/Live · permanent/.test($('#adm-shop').textContent)),'the list says what’s live and until when');
 
@@ -65,7 +65,7 @@ const admin=(p,body,method='PATCH')=>fetch(DB+'/'+p,{method,headers:{Authorizati
   const own=await (await admin('owned/'+await U.evaluate(()=>ACC.user.uid),null,'GET')).json();
   ok(own.fields.t.arrayValue.values.some(v=>v.stringValue===sid)&&own.fields.last.stringValue==='free','… saved in her account (owned)');
   await U.click('.skinds [data-k="cov"]');await U.waitForTimeout(300);
-  ok(await U.evaluate(id=>{const c=document.querySelector('#tpl .tcardx[data-t="'+id+'"]');return c&&/€0\.99/.test(c.textContent)&&/Unlock for €0\.99/.test(c.textContent)},cid),'the cover is in Covers for €0.99');
+  ok(await U.evaluate(id=>{const c=document.querySelector('#tpl .tcardx[data-t="'+id+'"]');return c&&/€1\.99/.test(c.textContent)&&/Unlock for €1\.99/.test(c.textContent)},cid),'the cover is in Covers for €1.99');
   // the admin gives the cover with a store code
   await A.click('#adm-r');await A.waitForSelector('.acats');await A.click('.acats >> text=Codes & discounts');
   await A.fill('#adm-cf input[placeholder="CODE"]','NIGHT-1');await A.selectOption('#adm-kind','tpl');await A.selectOption('#adm-ctpl',cid);await A.click('#adm-cf >> text=Create code');await A.waitForSelector('#adm-codes >> text=NIGHT-1',{timeout:10000});

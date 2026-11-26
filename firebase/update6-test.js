@@ -55,8 +55,8 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
 
   // ---- template store
   await B.click('#storeb');await B.waitForSelector('.tstore',{timeout:10000});
-  const cards=await B.evaluate(()=>({all:document.querySelectorAll('#tpl .tcardx').length,free:document.querySelectorAll('#tpl .tprice.free').length,lock:document.querySelectorAll('#tpl .tcardx.lock').length,price:[...document.querySelectorAll('#tpl .tcardx.lock .tprice')].every(e=>e.textContent==='€0.99')}));
-  ok(cards.all===18&&cards.free===9&&cards.lock===9&&cards.price,'store: 18 templates, 9 free (Bible study too), 9 locked at €0.99 ('+JSON.stringify(cards)+')');
+  const cards=await B.evaluate(()=>({all:document.querySelectorAll('#tpl .tcardx').length,free:document.querySelectorAll('#tpl .tprice.free').length,lock:document.querySelectorAll('#tpl .tcardx.lock').length,price:[...document.querySelectorAll('#tpl .tcardx.lock .tprice:not(.sk)')].every(e=>e.textContent==='€1.99'),sk:[...document.querySelectorAll('#tpl .tprice.sk')].map(e=>e.textContent).join()}));
+  ok(cards.all===20&&cards.free===9&&cards.lock===11&&cards.price&&cards.sk==='🔥 100 days,🔥 200 days','store: 20 templates, 9 free (Bible study too), 9 at €1.99, 2 streak rewards (100 and 200 days) ('+JSON.stringify(cards)+')');
   await B.click('.tchips >> text=Free');await B.waitForTimeout(200);
   ok(await B.evaluate(()=>document.querySelectorAll('#tpl .tcardx').length===9&&!document.querySelector('#tpl .tcardx.lock')),'filter "Free" shows only the 9 free ones');
   await B.click('.tchips >> text=All');await B.waitForTimeout(200);
@@ -67,7 +67,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.click('#bclose');await B.waitForTimeout(400);await B.click('#storeb');await B.waitForTimeout(300);
   const nb0=await B.evaluate(()=>data.length);
   await B.click('#tpl .tcardx[data-t="habit"]');await B.waitForSelector('#lockd:not(.hidden) .tbuy');
-  ok(await B.evaluate(()=>/Habit tracker/.test($('#lockc').textContent)&&/€0\.99/.test($('#lockc .tbuy').textContent)),'a paid template opens "Buy for €0.99"');
+  ok(await B.evaluate(()=>/Habit tracker/.test($('#lockc').textContent)&&/€1\.99/.test($('#lockc .tbuy').textContent)),'a paid template opens "Buy for €1.99"');
   await B.click('#lockc .tbuy');await B.waitForTimeout(200);
   ok(await B.evaluate(n=>/opens soon/.test($('#lockc .cmsg').textContent)&&data.length===n,nb0),'buying isn\'t open yet: it says so and makes no notebook');
   const t1=await tryWrite(B,async()=>{const F=ACC.F;try{await F.setDoc(F.doc(ACC.db,'owned',ACC.user.uid),{t:['habit'],last:'FREEBIE'});return 'saved!'}catch(e){return e.code}});
@@ -123,7 +123,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await A.fill('#adm-tf input[type=email]','carol@example.com');await A.selectOption('#adm-tf select','all');await A.click('#adm-tf button[type=submit]');
   await C.waitForFunction(()=>ACC.owned.has('all'),null,{timeout:10000}).catch(()=>{});
   await C.waitForTimeout(400);
-  ok(await C.evaluate(()=>ACC.owned.has('all')&&ACC.owned.has('comic')&&!document.querySelector('#tpl .tcardx.lock')),'admin gives Carol all paid templates by email → nothing is locked for her');
+  ok(await C.evaluate(()=>ACC.owned.has('all')&&ACC.owned.has('comic')&&[...document.querySelectorAll('#tpl .tcardx.lock')].map(c=>c.dataset.t).join()==='pixels,gratitude'),'admin gives Carol all paid templates by email → nothing is locked for her (only the 2 streak rewards, which take the days)');
   // ---- templates in your notebooks: a new notebook starting with a template, new pages, page style; the cover label while turning
   await C.click('#storex');await C.waitForTimeout(300);
   await C.click('.cell.add');await C.waitForSelector('#dlg:not(.hidden) #dpg:not(.hidden)');await C.waitForSelector('#dtpl [data-p="tpl:comic"]');
@@ -194,14 +194,14 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   // ---- the store: covers, labels and sticker packs
   await B.click('#storeb');await B.waitForSelector('.skinds');
   const kinds={};for(const k of ['cov','lbl','stk']){await B.click('.skinds [data-k="'+k+'"]');await B.waitForTimeout(300);kinds[k]=await B.evaluate(()=>[document.querySelectorAll('#tpl .tcardx').length,document.querySelectorAll('#tpl .tcardx.lock').length])}
-  ok(kinds.cov+''==='23,6'&&kinds.lbl+''==='13,6'&&kinds.stk+''==='10,3','store: 23 covers (6 paid), 13 labels (6 paid), 10 sticker packs of 7 (3 paid) ('+JSON.stringify(kinds)+')');
+  ok(kinds.cov+''==='26,9'&&kinds.lbl+''==='15,8'&&kinds.stk+''==='11,4','store: 26 covers (6 paid, 3 streak rewards), 15 labels (6 paid, 2 streak), 11 sticker packs of 7 (3 paid, 1 streak) ('+JSON.stringify(kinds)+')');
   await B.click('.skinds [data-k="stk"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="stk-treats"]');await B.waitForSelector('#lockc .tbuy-pv');await B.waitForTimeout(300);
   ok(await B.evaluate(()=>{const p=$('#lockc .tbuy-pv').getBoundingClientRect(),c=$('#lockc').getBoundingClientRect(),im=[...document.querySelectorAll('#lockc .tbuy-pv img')];return im.length===7&&im.every(i=>{const r=i.getBoundingClientRect();return r.width>10&&r.right<=p.right+1&&r.bottom<=p.bottom+1})&&p.height<c.height/3}),'the sticker pack window shows its 7 stickers small, inside the preview');
   await B.click('#lockc >> text=Not now');
   await admin('codes/GALAXY-1',{fields:{kind:{stringValue:'tpl'},tpl:{stringValue:'cov-galaxy'},max:{integerValue:'5'},used:{integerValue:'0'},active:{booleanValue:true},note:{stringValue:''}}});
   await B.click('.skinds [data-k="cov"]');await B.waitForTimeout(300);
   await B.click('#tpl .tcardx[data-t="cov-galaxy"]');await B.waitForSelector('#t-code');
-  ok(await B.evaluate(()=>/€0\.99/.test($('#lockc .tbuy').textContent)&&/Galaxy/.test($('#lockc').textContent)),'a paid cover opens "Buy for €0.99"');
+  ok(await B.evaluate(()=>/€1\.99/.test($('#lockc .tbuy').textContent)&&/Galaxy/.test($('#lockc').textContent)),'a paid cover opens "Buy for €1.99"');
   await B.fill('#t-code','galaxy-1');await B.click('#lockc .codebox button');
   await B.waitForFunction(()=>ACC.owned.has('cov-galaxy'),null,{timeout:10000}).catch(()=>{});
   ok(await B.evaluate(()=>ACC.owned.has('cov-galaxy')),'a store code unlocks the Galaxy cover');
