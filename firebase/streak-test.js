@@ -1,6 +1,7 @@
 // The streak: days in a row you open Foliet, freezes (1, 2 after 100 days; back 2 days after use; extra ones), the rewards
-// (100 days: a cover, a template, a label and a sticker pack you can't buy; then 150, 200, 250, 300; a gift every 100 days
-// from 400), the rules that guard all of it, the Store's Streak tab, the admin giving freezes, offline days, GDPR.
+// (100 days: a cover, a template, a label and a sticker pack you can't buy; then 150, 200, 250, 300, 365, 500, 777 – a
+// Christian gift –, 1,000; then a gold medal every 500 days from 1,500; nothing from the Store for free), the rules that guard
+// all of it, the Store's Streak tab, the admin giving freezes, offline days, GDPR.
 // Also: every paid Store item is €1.99.
 // How to run (from this folder, with Java installed):
 //   npm i --no-save playwright firebase-tools
@@ -31,7 +32,7 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   const shot=async(p,n)=>{if(SHOTS)await p.screenshot({path:path.join(SHOTS,n+'.png')})};
   // the streak in the cloud (admin rights: no rules), and setting it to a day in the past
   const getStk=async uid=>{const r=await (await admin('streak/'+uid,null,'GET')).json();if(!r.fields)return null;const o={};for(const [k,v] of Object.entries(r.fields))o[k]=v.integerValue!=null?+v.integerValue:v.arrayValue?(v.arrayValue.values||[]).map(x=>+x.integerValue):v;return o};
-  const setStk=(uid,o)=>admin('streak/'+uid,{fields:{n:I(o.n),best:I(o.best||o.n),d:I(o.d),s:I(o.s!=null?o.s:o.d-o.n+1),f:I(o.f!=null?o.f:1),fr:I(o.fr||0),b:I(o.b||0),g:I(o.g||0),fz:{arrayValue:{values:(o.fz||[]).map(I)}},at:{timestampValue:new Date().toISOString()},v:I(1)}});
+  const setStk=(uid,o)=>admin('streak/'+uid,{fields:{n:I(o.n),best:I(o.best||o.n),d:I(o.d),s:I(o.s!=null?o.s:o.d-o.n+1),f:I(o.f!=null?o.f:1),fr:I(o.fr||0),b:I(o.b||0),fz:{arrayValue:{values:(o.fz||[]).map(I)}},at:{timestampValue:new Date().toISOString()},v:I(1)}});
   const getOwned=async uid=>{const r=await (await admin('owned/'+uid,null,'GET')).json();return r.fields?{t:(r.fields.t.arrayValue.values||[]).map(v=>v.stringValue),last:r.fields.last.stringValue}:null};
   // a fresh start of the app on this device (another day's first visit: what the device remembers about messages is cleared)
   const restart=async p=>{await p.evaluate(()=>{localStorage.removeItem('sb-stk:'+ACC.user.uid)});await p.reload();await ready(p);await p.waitForFunction(()=>!STRK.busy&&STRK.st,null,{timeout:20000});await p.waitForTimeout(300)};
@@ -43,15 +44,15 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   await A.waitForFunction(()=>STRK.st&&!STRK.busy,null,{timeout:20000});
   const uid=await A.evaluate(()=>ACC.user.uid);
   let st=await getStk(uid);
-  ok(st&&st.n===1&&st.best===1&&st.d===T&&st.s===T&&st.f===1&&st.b===0&&st.g===0,'a new account starts a streak: day 1 in the cloud (streak/{uid}) '+JSON.stringify(st&&{n:st.n,d:st.d-T,f:st.f}));
+  ok(st&&st.n===1&&st.best===1&&st.d===T&&st.s===T&&st.f===1&&st.b===0&&st.g===undefined,'a new account starts a streak: day 1 in the cloud (streak/{uid}) '+JSON.stringify(st&&{n:st.n,d:st.d-T,f:st.f}));
   ok(await A.evaluate(()=>!$('#stkb').classList.contains('hidden')&&$('#stkn').textContent==='1'&&!$('#stkb').classList.contains('cold')),'the flame on the shelf says 1');
   await A.waitForFunction(()=>_toasts.some(t=>/Day 1 of your streak/.test(t)),null,{timeout:10000}).catch(()=>{});
   ok(await A.evaluate(()=>_toasts.some(t=>/Day 1 of your streak/.test(t))),'a message: “Day 1 of your streak. Come back tomorrow…”');
   await A.click('#stkb');await A.waitForSelector('#lockc.stkdlg .stk-num');
   ok(await A.evaluate(()=>{const c=$('#lockc');return c.querySelector('.stk-num').textContent==='1'&&/day in a row/.test(c.textContent)&&c.querySelectorAll('.stk-day').length===7
     &&c.querySelector('.stk-day.today.on')&&c.querySelectorAll('.stk-slot.on').length===1&&/Ready/.test(c.querySelector('.stk-slots').textContent)
-    &&/Your first rewards at 100 days/.test(c.textContent)&&/99 days to go/.test(c.textContent)&&c.querySelectorAll('.stk-r').length===6
-    &&/Golden flame, Year in pixels, Laurel, Milestones/.test(c.textContent)&&/A gift every 100 days, for ever/.test(c.textContent)&&/Get 3 more freezes · €1\.99/.test(c.textContent)}),
+    &&/Your first rewards at 100 days/.test(c.textContent)&&/99 days to go/.test(c.textContent)&&c.querySelectorAll('.stk-r').length===10
+    &&/Golden flame, Year in pixels, Laurel, Milestones/.test(c.textContent)&&/A gold medal every 500 days, for ever/.test(c.textContent)&&/Calvary, Prayer journal/.test(c.textContent)&&!/any item from the Store/.test(c.textContent)&&/Get 3 more freezes · €1\.99/.test(c.textContent)}),
     'the streak window: 1 day, the last 7 days (today lit), 1 freeze ready, 99 days to the first rewards, the rewards road, more freezes for €1.99');
   await shot(A,'stk-1-day1');
   await A.click('#stk-buy');await A.waitForSelector('#fz-buy');await A.click('#fz-buy');
@@ -78,12 +79,13 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   const deny=(fn,arg)=>A.evaluate(async([f,a])=>{const F=ACC.F,r=F.doc(ACC.db,'streak',ACC.user.uid),o=F.doc(ACC.db,'owned',ACC.user.uid);
     try{await (new Function('F','r','o','a','ACC','return ('+f+')(F,r,o,a,ACC)'))(F,r,o,a,ACC);return 'allowed'}catch(e){return e.code}},[fn.toString(),arg]);
   await setStk(uid,{n:5,d:T-1});
-  const base={n:5,best:5,d:T-1,s:T-5,f:1,fr:0,b:0,g:0,fz:[],v:1};
+  const base={n:5,best:5,d:T-1,s:T-5,f:1,fr:0,b:0,fz:[],v:1};
   ok(await deny((F,r,o,a)=>F.setDoc(r,{...a,n:7,best:7,d:a.d+1,at:F.serverTimestamp()}),base)==='permission-denied','rules: two days added for one day → refused');
   ok(await deny((F,r,o,a)=>F.setDoc(r,{...a,n:6,best:6,d:a.d+6,at:F.serverTimestamp()}),base)==='permission-denied','rules: a day in the future → refused');
   ok(await deny((F,r,o,a)=>F.setDoc(r,{...a,n:6,best:6,d:a.d+1,b:5,at:F.serverTimestamp()}),base)==='permission-denied','rules: giving yourself extra freezes → refused');
   ok(await deny((F,r,o,a)=>F.setDoc(o,{t:['cov-flame'],last:'streak'}),base)==='permission-denied','rules: the 100-day cover before 100 days → refused');
-  ok(await deny((F,r,o,a)=>F.runTransaction(ACC.db,async tx=>{tx.update(r,{g:1,at:F.serverTimestamp()});tx.set(o,{t:['cov-galaxy'],last:'gift'})}),base)==='permission-denied','rules: a gift before 400 days → refused');
+  ok(await deny((F,r,o,a)=>F.setDoc(o,{t:['cov-galaxy'],last:'gift'}),base)==='permission-denied','rules: a paid Store item for free (an old “gift”) → refused');
+  ok(await deny((F,r,o,a)=>F.setDoc(o,{t:['med-1500'],last:'streak'}),base)==='permission-denied','rules: a medal before 1,500 days → refused');
   ok(await deny((F,r,o,a)=>F.setDoc(r,{...a,n:6,best:6,d:a.d+1,at:F.serverTimestamp()}),base)==='allowed','rules: the next day, honestly → allowed');
   await setStk(uid,{n:5,d:T-3,f:1});
   ok(await deny((F,r,o,a)=>F.setDoc(r,{...a,n:6,best:6,d:a.d+3,at:F.serverTimestamp()}),{...base,d:T-3,s:T-7})==='permission-denied','rules: 2 missed days, 1 freeze and no extra → the streak can’t go on');
@@ -110,25 +112,40 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   await shot(A,'stk-4-pixels');
   await A.evaluate(()=>closeBook());await A.waitForTimeout(400);
 
-  // ======== 5) 400 days: the other rewards, then a gift
+  // ======== 5) the rarer rewards: 150–365 days together, 777 (a Christian gift), 1,000 and the medals – nothing from the Store
   await setStk(uid,{n:399,best:399,d:T-1,f:2});await restart(A);
   await A.waitForSelector('#lockc.cel #stk-collect',{timeout:10000});
-  ok(await A.evaluate(()=>$('#lockc').querySelectorAll('.stk-ti').length===4&&/Northern lights/.test($('#lockc').textContent)&&/Constellations/.test($('#lockc').textContent)),'the rewards for 150, 200, 250 and 300 days, all together');
-  await A.click('#stk-collect');await A.waitForSelector('#lockc.cel #gift-fz',{timeout:10000});
-  own=await getOwned(uid);ok(['cov-aurora','gratitude','lbl-seal','cov-constel'].every(id=>own.t.includes(id)),'… collected');
-  ok(await A.evaluate(()=>/A gift for 400 days!/.test($('#lockc').textContent)&&!!document.querySelector('.stk-pick [data-t="cov-galaxy"]')&&!document.querySelector('.stk-pick [data-t="cov-flame"]')),'then the gift: any Store item (Galaxy …) or 3 freezes');
-  await shot(A,'stk-5-gift');
-  await A.click('.stk-pick [data-t="cov-galaxy"]');await A.waitForFunction(()=>$('#lockd').classList.contains('hidden'),null,{timeout:10000});
-  own=await getOwned(uid);st=await getStk(uid);
-  ok(own.t.includes('cov-galaxy')&&own.last==='gift'&&st.g===1,'the gift: Galaxy is yours (and the gift is used)');
-  ok(await deny((F,r,o,a)=>F.runTransaction(ACC.db,async tx=>{const s=(await tx.get(r)).data();tx.update(r,{g:s.g+1,b:s.b+3,at:F.serverTimestamp()})}),base)==='permission-denied','rules: a second gift at 400 days → refused');
-  await setStk(uid,{n:500,best:500,d:T,s:T-499,f:2,g:1});await A.evaluate(()=>{STRK.st={...STRK.st,best:500,n:500,g:1}});
-  await A.evaluate(()=>{stkGiftDlg()});await A.waitForSelector('#gift-fz');await A.click('#gift-fz');await A.waitForFunction(()=>$('#lockd').classList.contains('hidden'),null,{timeout:10000});
-  st=await getStk(uid);ok(st.g===2&&st.b===3,'500 days: the gift as 3 extra freezes');
+  ok(await A.evaluate(()=>{const c=$('#lockc');return c.querySelectorAll('.stk-ti').length===5&&/365 days in a row!/.test(c.textContent)&&/One whole year/.test(c.textContent)&&/Northern lights/.test(c.textContent)&&/Constellations/.test(c.textContent)&&/One year/.test(c.textContent)}),
+    'at 400 days: the rewards for 150, 200, 250, 300 and 365 days, all together (“365 days in a row!”)');
+  await shot(A,'stk-5-365');
+  await A.click('#stk-collect');await A.waitForFunction(()=>$('#lockd').classList.contains('hidden'),null,{timeout:10000});await A.waitForTimeout(800);
+  own=await getOwned(uid);ok(['cov-aurora','gratitude','lbl-seal','cov-constel','stk-year'].every(id=>own.t.includes(id)),'… collected');
+  ok(await A.evaluate(()=>$('#lockd').classList.contains('hidden')&&!document.querySelector('.stk-pick')&&STPK.filter(ownsItem).some(p=>p.id==='stk-year')),'no gift from the Store after them; the One year stickers are in + → Stickers');
+  await setStk(uid,{n:776,best:776,d:T-1,f:2});await restart(A);
+  await A.waitForSelector('#lockc.cel #stk-collect',{timeout:10000});
+  ok(await A.evaluate(()=>{const c=$('#lockc');return /777 days in a row!/.test(c.textContent)&&/Galatians 6:9/.test(c.textContent)&&/Calvary/.test(c.textContent)&&/Prayer journal/.test(c.textContent)&&/Rosette/.test(c.textContent)&&c.querySelectorAll('.stk-ti').length===3}),
+    '777 days: “777 days in a row!” with Galatians 6:9 – the Calvary cover (three crosses on a hill) and the Prayer journal (and the 500-day Rosette label)');
+  await shot(A,'stk-6-777');
+  await A.click('#stk-collect');await A.waitForFunction(()=>$('#lockd').classList.contains('hidden'),null,{timeout:10000});
+  own=await getOwned(uid);ok(['lbl-rosette','cov-calvary','prayer'].every(id=>own.t.includes(id)),'… collected');
+  ok(await A.evaluate(()=>myTpls().some(t=>t.id==='prayer')&&tplById('prayer').g==='faith'&&COVERS.filter(ownsItem).some(c=>c.id==='cov-calvary')),'the Prayer journal is in New notebook (and under Faith), the Calvary cover in Cover style');
+  ok(await deny((F,r,o,a)=>F.runTransaction(ACC.db,async tx=>{const t=(await tx.get(o)).data().t;tx.set(o,{t:[...t,'cov-crown'],last:'streak'})}),base)==='permission-denied','rules: the 1,000-day cover at 777 → refused');
+  await setStk(uid,{n:1499,best:1499,d:T-1,f:2});await restart(A);
+  await A.waitForSelector('#lockc.cel #stk-collect',{timeout:10000});
+  ok(await A.evaluate(()=>{const c=$('#lockc');return /1,500 days in a row!/.test(c.textContent)&&/Golden crown/.test(c.textContent)&&/Medal · 1,500 days/.test(c.textContent)}),'1,500 days: the Golden crown (1,000) and the first gold medal');
+  await shot(A,'stk-7-1500');
+  await A.click('#stk-collect');await A.waitForFunction(()=>$('#lockd').classList.contains('hidden'),null,{timeout:10000});
+  own=await getOwned(uid);ok(own.t.includes('cov-crown')&&own.t.includes('med-1500'),'… collected: the medal is its own item (med-1500)');
+  ok(await A.evaluate(()=>{const pk=STPK.find(p=>p.id==='stk-medals');return ownsItem(pk)&&pk.items.length===1&&STPK.filter(ownsItem).includes(pk)}),'the Streak medals pack has the 1,500 medal');
+  ok(await deny((F,r,o,a)=>F.runTransaction(ACC.db,async tx=>{const t=(await tx.get(o)).data().t;tx.set(o,{t:[...t,'med-2000'],last:'streak'})}),base)==='permission-denied','rules: the 2,000 medal at 1,500 → refused');
+  ok(await deny((F,r,o,a)=>F.runTransaction(ACC.db,async tx=>{const t=(await tx.get(o)).data().t;tx.set(o,{t:[...t,'med-1250'],last:'streak'})}),base)==='permission-denied','rules: a medal that doesn’t exist (1,250) → refused');
+  await setStk(uid,{n:2001,best:2001,d:T-1,f:2});await restart(A);await A.waitForSelector('#lockc.cel #stk-collect',{timeout:10000});
+  await A.click('#stk-collect');await A.waitForFunction(()=>$('#lockd').classList.contains('hidden'),null,{timeout:10000});
+  own=await getOwned(uid);ok(own.t.includes('med-2000')&&await A.evaluate(()=>STPK.find(p=>p.id==='stk-medals').items.length===2),'2,000 days: the next medal, 500 days later');
 
   // ======== 6) the Store: the Streak tab, the rewards in their tabs, €1.99
   await A.click('#storeb');await A.waitForSelector('.skinds [data-k="sk"]');await A.click('.skinds [data-k="sk"]');await A.waitForSelector('.stk-store .stk-num');
-  ok(await A.evaluate(()=>/500/.test($('.stk-store .stk-num').textContent)&&/\+3 extra/.test($('.stk-store').textContent)&&$('.stk-store').querySelectorAll('.stk-st.ok').length===5),'Store → 🔥 Streak: your streak, the extra freezes, every reward ✓ Yours');
+  ok(await A.evaluate(()=>/2002/.test($('.stk-store .stk-num').textContent)&&$('.stk-store').querySelectorAll('.stk-st.ok').length===10&&/✓ 2 medals/.test($('.stk-store').textContent)&&/Next reward at 2500 days/.test($('.stk-store').textContent)),'Store → 🔥 Streak: your streak, every reward ✓ Yours, 2 medals, the next at 2,500');
   await A.click('.skinds [data-k="cov"]');await A.waitForTimeout(300);
   ok(await A.evaluate(()=>{const c=document.querySelector('#tpl .tcardx[data-t="cov-deco"]'),f=document.querySelector('#tpl .tcardx[data-t="cov-flame"]');return /€1\.99/.test(c.textContent)&&/✓ Yours/.test(f.textContent)}),'Covers: paid ones €1.99, the streak ones “✓ Yours”');
   await A.click('#storex').catch(()=>A.evaluate(()=>showStore(false)));await A.waitForTimeout(300);
@@ -145,11 +162,11 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   await giveAdmin(B);await B.evaluate(()=>{ACC.owned.delete('all')});await B.evaluate(()=>showStore(false));
   await B.click('#menub');await B.click('#madm');await B.waitForSelector('.acats',{timeout:15000});await B.click('.acats >> text=Find an account');
   await B.fill('#adm-q','fire@');await B.waitForTimeout(400);
-  ok(await B.evaluate(()=>/Streak 500 days/.test($('#adm-acc').textContent)),'admin → Find an account: the streak (500 days) and freezes');
-  await B.click('#adm-acc .afz');await B.waitForTimeout(1200);st=await getStk(uid);ok(st.b===6,'“Give 3 freezes”: 3 more extra freezes');
+  ok(await B.evaluate(()=>/Streak 2002 days/.test($('#adm-acc').textContent)),'admin → Find an account: the streak (2,002 days) and freezes');
+  await B.click('#adm-acc .afz');await B.waitForTimeout(1200);st=await getStk(uid);ok(st.b===3,'“Give 3 freezes”: 3 extra freezes');
 
   // ======== 9) offline: a day used offline counts when the internet is back
-  await setStk(uid,{n:8,best:500,d:T-1,f:1,g:2,b:6});await restart(A);st=await getStk(uid);ok(st.n===9,'(9 days)');
+  await setStk(uid,{n:8,best:2002,d:T-1,f:1,b:3});await restart(A);st=await getStk(uid);ok(st.n===9,'(9 days)');
   await CA.setOffline(true);
   await A.evaluate(()=>{const n0=Date.now;window._n0=n0;Date.now=()=>n0()+864e5;stkSync()});await A.waitForFunction(()=>!STRK.busy,null,{timeout:30000});
   ok(await A.evaluate(()=>$('#stkn').textContent==='10'&&STRK.q.length===1),'offline the next day: the flame says 10 (kept on the device)');
