@@ -63,7 +63,7 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
 
   // ======== 2) the next day, a missed day (a freeze), two missed days (the end), extra freezes
   await setStk(uid,{n:5,d:T-1});await restart(A);st=await getStk(uid);
-  ok(st.n===6&&st.d===T&&st.f===1,'the next day: 6 days in a row');
+  ok(st.n===6&&st.d===T&&st.f===1&&!('ps' in st)&&!('pd' in st),'the next day: 6 days in a row (no last streak yet, so none written – older rules still take it)');
   ok(/6 days in a row! 94 more to your first rewards/.test(await toastTxt(A)),'… “🔥 6 days in a row! 94 more to your first rewards.”');
   await A.waitForFunction(()=>!$('#stkb').classList.contains('pop'),null,{timeout:5000});
   ok(await A.evaluate(()=>$('#stkn').textContent==='6'),'… the flame on the shelf says 6');

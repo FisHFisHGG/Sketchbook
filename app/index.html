@@ -4383,7 +4383,7 @@ async function stkSync(){
         const s=await tx.get(ref),srv=s.exists()?stkClean(s.data()):null;
         const days=[...new Set([...q,today])].filter(d=>Number.isInteger(d)&&(!srv||d>srv.d)&&d<=today).sort((a,b)=>a-b); // today always (the cloud decides what's new)
         const r=stkStep(srv,days);res={srv,r,days};
-        if(days.length&&r.st)tx.set(ref,{...r.st,at:F.serverTimestamp()});
+        if(days.length&&r.st){const w={...r.st,at:F.serverTimestamp()};if(!w.pd){delete w.ps;delete w.pd;delete w.pn}tx.set(ref,w)} // no last streak: not written (older rules don't know these fields)
       });
       try{await stkTO(run(STRK.q),15000)}
       catch(e){res=null;
