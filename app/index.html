@@ -552,13 +552,22 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .sbanner{grid-column:1/-1;position:relative;overflow:hidden;border-radius:20px;margin:0 0 18px;color:#fff;box-shadow:0 10px 30px var(--sh)}.sb-track{display:flex;transition:transform .5s cubic-bezier(.2,.8,.2,1)}.sb-slide{flex:0 0 100%;min-height:150px;display:flex;align-items:center;gap:18px;padding:24px 26px;box-sizing:border-box}.sb-emoji{font-size:3.4em;line-height:1;flex:none}.sb-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.sb-text b{font-size:1.45em;line-height:1.15}.sb-text span{opacity:.92}.sb-ends{display:inline-block;align-self:flex-start;margin-top:4px;padding:2px 10px;border-radius:999px;background:rgba(0,0,0,.25);font-weight:700;font-size:.78em}.sb-go{flex:none;border:0;border-radius:999px;background:#fff;color:#1c2428;font:inherit;font-weight:700;padding:10px 18px;cursor:pointer}.sb-dots{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;gap:6px}.sb-dots button{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer}.sb-dots button[aria-current="true"]{background:#fff;width:20px;border-radius:4px}@media (max-width:560px){.sb-slide{flex-wrap:wrap;padding:20px 20px 28px;min-height:170px}.sb-emoji{font-size:2.6em}.sb-text b{font-size:1.2em}.sb-go{width:100%}}@media (prefers-reduced-motion:reduce){.sb-track{transition:none}}.tbadge{position:absolute;left:8px;bottom:8px;font-size:.72em;font-weight:700;padding:3px 9px;border-radius:999px;color:#fff}.tbadge.lim{background:#c2473a}.tbadge.new{background:#8a66d6}.aavail{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;width:100%}.abnr-pv{width:100%}.abnr-pv .sbanner{margin:8px 0 0}.aitm-pv{display:flex;flex-wrap:wrap;gap:8px;width:100%}.aitm-pv img{height:72px;border-radius:8px;background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/14px 14px}#adm-bnr,#adm-item{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end}#adm-bnr>b,#adm-item>b,#adm-bnr .cmsg,#adm-item .cmsg,#adm-item>small{width:100%}.tprice.free{background:#2e7d5b}.tprice.own{background:#fff;color:#2e7d5b}.tprice.sk{background:linear-gradient(135deg,#ff7a1a,#e0a526);color:#fff}
 /* the streak (days in a row): the flame on the shelf, the streak window, Store → Streak, the rewards */
 .stkb{position:relative;display:inline-flex;align-items:center;gap:4px;padding-left:9px;padding-right:12px;font-variant-numeric:tabular-nums}.stkb b{font-weight:800}.stkb .ndot{right:1px;top:1px}
-.flm .fo{fill:#ff7a1a}.flm .fi{fill:#ffc53d}.stkb .flm{width:20px;height:20px}
+.flm .fo{fill:#ff7a1a}.flm .fi{fill:#ffc53d}.flm .fc{fill:#fff3c4}.stkb .flm{width:20px;height:20px}
+.stkb b{display:inline-block}.stkb:not(.cold) .flm .fi{transform-box:fill-box;transform-origin:50% 100%;animation:flick 1.5s ease-in-out infinite alternate}
+.stkb.pop{animation:stkpop .9s ease-out}.stkb.pop .flm{animation:flare .9s ease-out}.stkb.pop b{animation:numroll .6s ease-in-out}
+@keyframes stkpop{30%{transform:scale(1.12)}60%{transform:scale(.97)}}
+@keyframes flare{35%{transform:scale(1.5) translateY(-2px);filter:drop-shadow(0 0 6px #ffb347)}}
+@keyframes numroll{0%{transform:none;opacity:1}45%{transform:translateY(-80%);opacity:0}55%{transform:translateY(80%);opacity:0}100%{transform:none;opacity:1}}
+.emb{position:absolute;left:50%;bottom:32%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:#ffb347;box-shadow:0 0 6px #ff9a1f;opacity:0;pointer-events:none;animation:ember 2.6s linear infinite}
+@keyframes ember{0%{transform:translate(0,0) scale(1);opacity:0}12%{opacity:1}100%{transform:translate(var(--x,8px),-64px) scale(.3);opacity:0}}
+@keyframes sway{0%,100%{transform:skewX(0) scale(1)}25%{transform:skewX(-3deg) scale(1.02,.98)}50%{transform:skewX(2.5deg) scale(.98,1.04)}75%{transform:skewX(-1deg) scale(1.01,1)}}
+@keyframes glow{50%{filter:drop-shadow(0 8px 24px rgba(255,122,26,.6))}}
 :is(.stkb,.stk-flame).cold .fo{fill:#9aa3b2}:is(.stkb,.stk-flame).cold .fi{fill:#d3d8e0}
 .fzi{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 #lockd .card.stkdlg{width:min(460px,100%);max-height:calc(100dvh - 32px);overflow:auto;position:relative;text-align:center}#lockd .card.stkdlg.sm{width:min(400px,100%)}
 .stk-x{position:absolute;top:10px;right:10px}
 .stk-hero{display:grid;justify-items:center;gap:2px;margin:2px 0 14px}
-.stk-flame{width:84px;height:84px;filter:drop-shadow(0 6px 14px rgba(255,122,26,.35))}.stk-flame .flm{width:100%;height:100%;overflow:visible}.stk-flame.cold{filter:none}
+.stk-flame{position:relative;width:84px;height:84px;filter:drop-shadow(0 6px 14px rgba(255,122,26,.35));animation:glow 2.8s ease-in-out infinite}.stk-flame:not(.cold) .fo{transform-box:fill-box;transform-origin:50% 100%;animation:sway 2.4s ease-in-out infinite}.stk-flame.cold{animation:none}.cold .fc{fill:#eef1f5}.stk-flame .flm{width:100%;height:100%;overflow:visible}.stk-flame.cold{filter:none}
 .stk-flame .fi{transform-box:fill-box;transform-origin:50% 100%;animation:flick 1.4s ease-in-out infinite alternate}.stk-flame.cold .fi{animation:none}
 @keyframes flick{0%{transform:scale(1,1)}50%{transform:scale(.92,1.08)}100%{transform:scale(1.05,.94)}}
 .stk-num{font-size:3.1em;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}.stk-lbl{font-weight:600;opacity:.8}.stk-best{font-size:.82em;opacity:.6;margin-top:2px}
@@ -597,7 +606,37 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .stk-pv.med{grid-template-columns:1fr;place-items:center;padding:2px}.stk-pv.med img{width:86%}
 .stk-fz3{display:flex;justify-content:center;gap:8px;color:#3ea0ef;margin:6px 0}.stk-fz3 i{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,#4fb3ff 16%,transparent)}.stk-fz3 .fzi{width:26px;height:26px}
 @media (max-width:560px){.stkb{padding-left:7px;padding-right:9px}}
-@media (prefers-reduced-motion:reduce){.stk-flame .fi,.stk-confetti{animation:none}}
+.stk-flame .emb{bottom:30%}
+/* a freeze that saved the streak, a streak that ended (stkFx) */
+#stkfx{position:fixed;inset:0;z-index:63;display:grid;place-items:center;padding:20px;background:rgba(8,12,24,.55);animation:fxin .25s ease-out}@keyframes fxin{from{opacity:0}}
+.fx-card{position:relative;width:min(380px,100%);background:var(--bar);color:var(--ink);border-radius:22px;padding:20px 22px 18px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35);overflow:hidden}
+.fx-card h2{margin:4px 0 6px;font-size:1.25em}.fx-card p{margin:4px 0;opacity:.85}.fx-card .fx-sm{font-size:.82em;opacity:.65}.fx-card .btn{margin-top:14px;width:100%}
+.fx-stage{position:relative;width:170px;height:170px;margin:0 auto 4px}.fx-stage .flm{position:absolute;left:50%;top:50%;width:96px;height:96px;transform:translate(-50%,-50%);overflow:visible}
+.fx-stage .emb{bottom:24%}
+.fzfx .flm{animation:relit .8s 1.9s ease-out both}.fzfx .flm .fo{fill:#8fc4ef;animation:relit-o .6s 1.9s ease-out forwards}.fzfx .flm .fi{fill:#e8f6ff;animation:relit-i .6s 1.9s ease-out forwards}.fzfx .flm .fc{fill:#fff}
+@keyframes relit{0%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) scale(1.2);filter:drop-shadow(0 0 18px rgba(255,150,60,.85))}100%{transform:translate(-50%,-50%) scale(1);filter:drop-shadow(0 6px 14px rgba(255,122,26,.45))}}
+@keyframes relit-o{to{fill:#ff7a1a}}@keyframes relit-i{to{fill:#ffc53d}}
+.fz-ice{position:absolute;left:50%;top:50%;width:124px;height:124px;transform:translate(-50%,-50%) rotate(-4deg);border-radius:22px;background:linear-gradient(140deg,rgba(225,245,255,.85),rgba(150,205,245,.55) 55%,rgba(200,235,255,.78));border:2px solid rgba(255,255,255,.9);box-shadow:inset 0 0 18px rgba(255,255,255,.8),0 6px 18px rgba(80,150,210,.35);animation:iceout .35s 1.75s ease-in forwards}
+.fz-ice::before{content:'';position:absolute;left:12px;top:12px;width:40px;height:9px;border-radius:6px;background:rgba(255,255,255,.75);transform:rotate(-20deg)}
+@keyframes iceout{to{opacity:0;transform:translate(-50%,-50%) rotate(-4deg) scale(1.25)}}
+.fz-crack{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.fz-crack path{fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:120;stroke-dashoffset:120;animation:crack .45s 1.15s ease-out forwards,fade0 .3s 1.8s forwards}
+@keyframes crack{to{stroke-dashoffset:0}}@keyframes fade0{to{opacity:0}}
+.fz-sh{position:absolute;left:50%;top:50%;width:26px;height:22px;background:linear-gradient(140deg,#e9f7ff,#9fd0f5);clip-path:polygon(0 0,100% 30%,60% 100%);opacity:0;animation:shard .75s 1.78s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes shard{0%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--r))}}
+.fz-sf{position:absolute;top:-16px;color:#7fbfef;font-size:14px;line-height:1;opacity:0;animation:snow 1.9s linear both}@keyframes snow{0%{opacity:0;transform:none}15%{opacity:.95}100%{opacity:0;transform:translateY(190px) rotate(180deg)}}
+.endfx .old,.endfx .new{position:absolute;inset:0}.endfx .old{transform-origin:50% 66%;animation:die 1.7s .3s ease-in forwards}
+.endfx .old .fo{animation:grey-o 1.1s .5s forwards}.endfx .old .fi{animation:grey-i 1.1s .5s forwards}.endfx .old .fc{animation:grey-i 1.1s .5s forwards}
+@keyframes grey-o{to{fill:#9aa3b2}}@keyframes grey-i{to{fill:#d3d8e0}}@keyframes die{60%{opacity:.85;transform:scale(.6)}100%{opacity:0;transform:scale(.12) translateY(30px)}}
+.fx-n{position:absolute;left:0;right:0;bottom:0;font-size:1.8em;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.endfx .smk{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.endfx .smk path{fill:none;stroke:rgba(150,155,170,.6);stroke-width:5;stroke-linecap:round;stroke-dasharray:160;stroke-dashoffset:160;opacity:0;animation:smoke 2.2s 1.2s ease-out forwards}
+.endfx .smk path:nth-child(2){animation-delay:1.45s;stroke-width:4}.endfx .smk path:nth-child(3){animation-delay:1.7s;stroke-width:3}
+@keyframes smoke{0%{opacity:0;stroke-dashoffset:160;transform:none}20%{opacity:.9}100%{opacity:0;stroke-dashoffset:0;transform:translateY(-30px)}}
+.endfx .spark{position:absolute;left:50%;top:62%;width:8px;height:8px;margin:-4px;border-radius:50%;background:#ffd27a;box-shadow:0 0 12px 4px rgba(255,190,90,.8);opacity:0;animation:spark .6s 2.4s ease-out forwards}
+@keyframes spark{50%{opacity:1;transform:scale(1.7)}100%{opacity:0;transform:scale(.6)}}
+.endfx .new{opacity:0;transform-origin:50% 62%;animation:born .8s 2.7s cubic-bezier(.2,1.4,.4,1) forwards}.endfx .new .flm{width:56px;height:56px;top:58%}
+@keyframes born{0%{opacity:0;transform:scale(.2)}100%{opacity:1;transform:scale(1)}}
+.fx-card.still *{animation:none!important}.still .fz-ice,.still .fz-crack,.still .fz-sh,.still .fz-sf,.still .old,.still .smk,.still .spark{display:none}.still .new{opacity:1}.still.fx-card .fzfx .flm .fo{fill:#ff7a1a}.still.fx-card .fzfx .flm .fi{fill:#ffc53d}
+@media (prefers-reduced-motion:reduce){.stk-flame,.stk-flame .fo,.stk-flame .fi,.stk-confetti,.emb,.stkb .flm .fi,.stkb.pop,.stkb.pop .flm,.stkb.pop b{animation:none!important}.emb{display:none}}
 .tcardx.lock .pv::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,transparent 55%,rgba(255,255,255,.55))}
 .tbuy-pv{width:150px;aspect-ratio:3/4;margin:0 auto 8px;border-radius:4px 8px 8px 4px;background:#fbfbf6 center/cover;box-shadow:inset 6px 0 0 rgba(0,0,0,.2),0 10px 22px rgba(0,0,0,.25);border:1px solid var(--line)}.tbuy-pv.l{width:200px;aspect-ratio:4/3}
 #lockd .tbuy{width:100%;min-height:46px}#lockd .codebox .sep{text-align:center;opacity:.75;margin:14px 0 8px;font-size:.92em}
@@ -3482,7 +3521,7 @@ const COVERS=[
   {id:'cov-flame',des:'flame',n:'Golden flame',p:0,sk:100,c:'#2a1630',d:'A golden flame that keeps burning, with sparks all around.'},
   {id:'cov-aurora',des:'aurora',n:'Northern lights',p:0,sk:150,c:'#0e2a48',d:'Green and violet lights over the mountains on a starry night.'},
   {id:'cov-constel',des:'constel',n:'Constellations',p:0,sk:300,c:'#16214a',d:'Gold constellations and a crescent moon on a deep blue sky.'},
-  {id:'cov-calvary',des:'calvary',n:'Calvary',p:0,sk:777,c:'#2a1f3d',d:'Three crosses on a hill, far away against the evening light.'},
+  {id:'cov-calvary',des:'calvary',n:'Calvary',p:0,sk:777,hide:1,c:'#2a1f3d',d:'Three crosses on a hill, far away against the evening light.'},
   {id:'cov-crown',des:'crown',n:'Golden crown',p:0,sk:1000,c:'#3a1a5a',d:'A golden crown under rays of light.'}
 ];
 
@@ -4273,8 +4312,8 @@ const FZ_BACK=2,FZ_PACK=3;
 const dayNo=(t=Date.now())=>Math.floor((t-new Date(t).getTimezoneOffset()*6e4)/864e5);
 const fzCap=best=>best>=100?2:1;
 const STK_R=[[100,['cov-flame','pixels','lbl-laurel','stk-wins']],[150,['cov-aurora']],[200,['gratitude']],[250,['lbl-seal']],[300,['cov-constel']],
-  [365,['stk-year']],[500,['lbl-rosette']],[777,['cov-calvary','prayer']],[1000,['cov-crown']]]; // + the rules' stkItems()
-const MEDAL_FROM=MEDAL0,MEDAL_EVERY=500,STK_DAYS=STK_R.map(r=>r[0]);
+  [365,['stk-year']],[500,['lbl-rosette']],[777,['cov-calvary','prayer'],1],[1000,['cov-crown']]]; // + the rules' stkItems(); 1 = hidden (777: a surprise)
+const MEDAL_FROM=MEDAL0,MEDAL_EVERY=500,STK_DAYS=STK_R.filter(r=>!r[2]).map(r=>r[0]);
 const medalDays=best=>{const a=[];for(let d=MEDAL_FROM;d<=best;d+=MEDAL_EVERY)a.push(d);return a};
 const stkGoal=n=>STK_DAYS.find(d=>d>n)||Math.max(MEDAL_FROM,Math.floor(n/MEDAL_EVERY)*MEDAL_EVERY+MEDAL_EVERY); // the next reward
 const stkPrevGoal=g=>[0,...STK_DAYS,...medalDays(g)].filter(m=>m<g).pop()||0;
@@ -4341,10 +4380,10 @@ async function stkSync(){
     if(ACC.user!==u)return;
     if(res){STRK.st=res.r.st||res.srv;STRK.q=STRK.q.filter(d=>STRK.st&&d>STRK.st.d)}
     const st=stkNow();
-    if(st&&st.d===today&&STRK.told!==today){ // once a day: how the streak is doing
+    if(st&&st.d===today&&STRK.told!==today){ // once a day: how the streak is doing (a freeze or the end with an animation)
       STRK.told=today;
       const ev=res&&res.days.length?res.r.ev:stkStep(STRK.st,stkPend()).ev;
-      whenFree(()=>toast(stkMsg(st,ev)));
+      whenFree(()=>{const n=stkNow();if(ev.ended||ev.froze)stkFx(ev.ended?'end':'frz',n||st,ev);else{toast(stkMsg(st));stkPop(st.n)}});
     }
     stkStore();stkPaint();
     stkCheck();
@@ -4354,9 +4393,7 @@ async function stkSync(){
 function stkCheck(){ // rewards waiting? (only once the cloud has said what you own and what your streak is)
   if(ACC.ownSrv&&STRK.st&&stkUnclaimed().any)whenFree(()=>{if(!$('#lockc.cel')&&stkUnclaimed().any)stkCelebrate()});
 }
-function stkMsg(st,ev){
-  if(ev.ended)return 'Your '+ev.ended+'-day streak ended. A new one starts today 🔥';
-  if(ev.froze)return '❄ '+(ev.froze===1?'A streak freeze':ev.froze+' streak freezes')+' kept your streak going: '+st.n+' days in a row 🔥';
+function stkMsg(st){
   if(st.n===1)return '🔥 Day 1 of your streak. Come back tomorrow to keep it going.';
   return '🔥 '+st.n+' days in a row!'+(st.n<100?' '+(100-st.n)+' more to your first rewards.':'');
 }
@@ -4380,7 +4417,31 @@ async function stkClaim(ids){ // the streak's own items → owned/{uid} (the rul
   catch(e){return e&&e.code==='permission-denied'?'You haven’t reached these days yet.':'No connection. Try again when you’re online.'}
 }
 // ----- what you see: the flame on the shelf, the streak window, the rewards -----
-const FLAME='<svg class="flm" viewBox="0 0 24 24" aria-hidden="true"><path class="fo" d="M12 1.8c.9 3.6 6.3 6 6.3 12a6.3 6.3 0 01-12.6 0c0-3 1.4-4.6 2.6-6.1.3 1.8 1.1 2.9 2.2 3.3-.6-3.2.2-6.2 1.5-9.2z"/><path class="fi" d="M12 11.2c.5 1.8 3.1 2.8 3.1 5.6a3.1 3.1 0 01-6.2 0c0-1.5.8-2.5 1.6-3.3.2.9.6 1.4 1.1 1.6-.2-1.4 0-2.7.4-3.9z"/></svg>';
+const FLAME='<svg class="flm" viewBox="0 0 24 24" aria-hidden="true"><path class="fo" d="M12 1.8c.9 3.6 6.3 6 6.3 12a6.3 6.3 0 01-12.6 0c0-3 1.4-4.6 2.6-6.1.3 1.8 1.1 2.9 2.2 3.3-.6-3.2.2-6.2 1.5-9.2z"/><path class="fi" d="M12 11.2c.5 1.8 3.1 2.8 3.1 5.6a3.1 3.1 0 01-6.2 0c0-1.5.8-2.5 1.6-3.3.2.9.6 1.4 1.1 1.6-.2-1.4 0-2.7.4-3.9z"/><path class="fc" d="M12 16.1c.3.9 1.4 1.4 1.4 2.6a1.4 1.4 0 01-2.8 0c0-.8.6-1.3 1-1.6.1.4.2.6.4.7-.1-.6 0-1.1 0-1.7z"/></svg>';
+const embers=(n,delay)=>[...Array(n)].map((_,i)=>"<i class='emb' style='--x:"+((i%2?1:-1)*(5+i*4))+"px;animation-delay:"+(delay+i*.4).toFixed(2)+"s'></i>").join(''); // sparks rising from the flame
+const stillFx=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function stkPop(n){ // the day counts: the flame on the shelf flares up and the number turns over
+  const b=$('#stkb');if(!b||stillFx())return;b.classList.remove('pop');void b.offsetWidth;
+  $('#stkn').textContent=String(Math.max(0,n-1));b.classList.add('pop');setTimeout(()=>{$('#stkn').textContent=String(n)},300);setTimeout(()=>b.classList.remove('pop'),1000);
+}
+// a freeze kept the streak going (the flame thaws out of a block of ice), or the streak ended (it goes out, and a new one lights)
+function stkFx(kind,st,ev){
+  if($('#stkfx'))return;
+  const ov=el('div','');ov.id='stkfx';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');
+  const c=el('div','fx-card'+(stillFx()?' still':''));ov.append(c);
+  const stg=el('div','fx-stage '+(kind==='frz'?'fzfx':'endfx'));stg.setAttribute('aria-hidden','true');
+  const close=()=>{document.removeEventListener('keydown',esc,true);ov.remove();stkCheck()},esc=e=>{if(e.key==='Escape'){e.stopPropagation();close()}};
+  const go=el('button','btn',kind==='frz'?'Keep going 🔥':'Start again 🔥');go.type='button';go.onclick=close;
+  if(kind==='frz'){const t=dayNo(),back=st.fr?Math.max(1,st.fr-t):0,more=st.f+st.b;
+    stg.innerHTML=FLAME+"<div class='fz-ice'></div><svg class='fz-crack' viewBox='0 0 170 170'><path d='M85 28L77 60L92 80L79 110L88 142'/><path d='M77 60L50 69L38 92'/><path d='M92 80L121 73L134 50'/><path d='M79 110L106 124'/></svg>"
+      +[[-72,-48,140],[62,-62,-120],[-82,28,200],[72,40,-160],[-20,-88,90],[12,82,-60],[40,-80,70]].map(([x,y,r])=>"<i class='fz-sh' style='--dx:"+x+"px;--dy:"+y+"px;--r:"+r+"deg'></i>").join('')
+      +[10,30,52,74,96,118,140,156].map((x,i)=>"<i class='fz-sf' style='left:"+x+"px;animation-delay:"+(i*.17).toFixed(2)+"s'>❄</i>").join('')+embers(6,2.4);
+    c.append(stg,el('h2','','Streak freeze used'),el('p','',(ev.froze===1?'You missed a day, and a freeze kept your ':ev.froze+' days were missed – freezes kept your ')+st.n+'-day streak safe.'),
+      el('p','fx-sm',more?'You have '+more+(more===1?' freeze':' freezes')+' ready'+(back?', and another comes back in '+back+(back===1?' day.':' days.'):'.'):back?'Your freeze comes back in '+back+(back===1?' day.':' days.'):''))}
+  else{stg.innerHTML="<div class='old'>"+FLAME+"<b class='fx-n'>"+ev.ended+"</b></div><svg class='smk' viewBox='0 0 170 170'><path d='M85 92C75 76 95 64 84 48S92 24 86 10'/><path d='M76 96C62 82 78 70 68 56S72 34 64 22'/><path d='M94 96C106 84 94 72 102 60S100 40 106 28'/></svg><i class='spark'></i><div class='new'>"+FLAME+"<b class='fx-n'>1</b></div>";
+    c.append(stg,el('h2','','Your '+ev.ended+'-day streak ended'),el('p','','That’s okay – every day is a new start. Your new streak begins today.'),el('p','fx-sm','Your best: '+st.best+' days. Freezes keep a streak going on days you miss.'))}
+  c.append(go);ov.onclick=e=>{if(e.target===ov)close()};document.addEventListener('keydown',esc,true);document.body.append(ov);go.focus();
+}
 const FZIC='<svg class="fzi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 4l3 2.5L15 4M9 20l3-2.5 3 2.5M4 10.5l3.8.5L6.3 14.6M20 10.5l-3.8.5 1.5 3.6M4 13.5l3.8-.5M20 13.5l-3.8-.5"/></svg>';
 function stkPaint(){
   const b=$('#stkb');if(!b)return;const st=stkNow(),t=dayNo();
@@ -4397,7 +4458,7 @@ function stkItemTile(id){ // a small picture of a reward
 }
 function stkView(box,close){ // the streak: used by the streak window and by Store → Streak
   const st=stkNow(),t=dayNo(),n=st?st.n:0;
-  const hero=el('div','stk-hero');const fl=el('div','stk-flame'+(st&&st.d===t?'':' cold'));fl.innerHTML=FLAME;
+  const lit=st&&st.d===t,hero=el('div','stk-hero');const fl=el('div','stk-flame'+(lit?'':' cold'));fl.innerHTML=FLAME+(lit?embers(6,0):'');
   hero.append(fl,el('div','stk-num',String(n)),el('div','stk-lbl',n===1?'day in a row':'days in a row'));
   if(st&&st.best>1)hero.append(el('div','stk-best','Your best: '+st.best+' days'));
   box.append(hero);
@@ -4424,7 +4485,8 @@ function stkView(box,close){ // the streak: used by the streak window and by Sto
   box.append(nx);
   // the road: what you get, and when
   const road=el('div','stk-road');road.append(el('h3','','Rewards'));const un=stkUnclaimed();
-  STK_R.forEach(([m,ids])=>{const r=el('div','stk-r'+(st&&st.best>=m?' got':''));r.dataset.m=m;
+  STK_R.forEach(([m,ids,hid])=>{if(hid&&!(st&&st.best>=m))return; // a hidden reward shows only once it's reached
+    const r=el('div','stk-r'+(st&&st.best>=m?' got':''));r.dataset.m=m;
     const tag=el('div','stk-m');tag.append(el('b','',String(m)),el('small','','days'));
     const mid=el('div','stk-rm');mid.append(el('b','',ids.map(itemName).join(', ')));const tiles=el('div','stk-tiles');ids.forEach(id=>tiles.append(stkItemTile(id)));mid.append(tiles);
     r.append(tag,mid);
@@ -4459,13 +4521,13 @@ function stkBuy(){ // 3 extra freezes from the Store (€1.99; Stripe adds them 
 }
 const STK_SAY={100:'You opened Foliet 100 days in a row. These are yours to keep – you won’t find them anywhere else:',
   365:'One whole year, every single day. Something to celebrate with:',
-  777:'“Let us not be weary in well doing: for in due season we shall reap, if we faint not.” – Galatians 6:9. A gift for you:',
+  777:'“Let us not be weary in well doing: for in due season we shall reap, if we faint not.” – Galatians 6:9. A hidden gift, just for you:',
   1000:'A thousand days in a row. This one is fit for a king:'};
 function stkCelebrate(){ // 100 days (150, 200 … 1,000, then the medals): the rewards, to collect
   const un=stkUnclaimed();if(!un.any)return;
   const [m]=un.groups[un.groups.length-1],all=un.items.slice(0,12);
   return lockDlg((c,close)=>{c.classList.add('stkdlg','cel');
-    const fl=el('div','stk-flame big');fl.innerHTML=FLAME;
+    const fl=el('div','stk-flame big');fl.innerHTML=FLAME+embers(7,.2);
     c.append(el('div','stk-confetti'),fl,el('h2','',m.toLocaleString('en')+' days in a row!'),el('p','lk-sub',STK_SAY[m]||(m>=MEDAL_FROM?'A gold medal with your number, for your Streak medals pack:':'Another milestone. This one is yours to keep:')));
     const tiles=el('div','stk-tiles big');all.forEach(id=>{const w=el('div','stk-ti');w.append(stkItemTile(id),el('span','',itemName(id)));tiles.append(w)});c.append(tiles);
     const msg=el('p','cmsg');msg.setAttribute('role','status');
@@ -5852,7 +5914,7 @@ const TPL=[ // p: price in cents (0 = free) · g: shelf group · des: cover desi
   // the streak's own templates (sk = days in a row to reach; never sold): Store → Streak
   {id:'pixels',g:'life',n:'Year in pixels',d:'A square for every day of the year to colour in: mood, energy, sleep and creativity.',o:'l',c:'#2a1630',tex:'',des:'flame',pages:4,p:0,sk:100},
   {id:'gratitude',g:'life',n:'Gratitude journal',d:'Three good things, someone to thank and the best moment of the day.',o:'p',c:'#0e2a48',tex:'linen',des:'aurora',pages:10,p:0,sk:200},
-  {id:'prayer',g:'faith',n:'Prayer journal',d:'Praise, confession, thanks and requests – and a list of prayers to tick when they’re answered.',o:'p',c:'#2a1f3d',tex:'leather',des:'calvary',pages:10,p:0,sk:777}
+  {id:'prayer',g:'faith',n:'Prayer journal',d:'Praise, confession, thanks and requests – and a list of prayers to tick when they’re answered.',o:'p',c:'#2a1f3d',tex:'leather',des:'calvary',pages:10,p:0,sk:777,hide:1}
 ];
 const TF='"Bricolage Grotesque",system-ui,sans-serif',HF='Caveat,"Bricolage Grotesque",cursive';
 function rr(x,a,b,w,h,r){x.beginPath();x.roundRect?x.roundRect(a,b,w,h,r):x.rect(a,b,w,h)}
@@ -6111,7 +6173,7 @@ async function renderTpl(force){
   (SKIND==='tpl'?TCAT:[['all','All'],['free','Free'],['paid','Paid']]).forEach(([k,n])=>{const b=el('button','',n);b.setAttribute('aria-pressed',TFILT===k);b.onclick=()=>{TFILT=k;renderTpl(true)};chips.append(b)});
   if(SKIND==='sk'){head.append(kinds);box.append(head);const w=el('div','stk-store');stkView(w,null);box.append(w);return} // your streak, its freezes and rewards
   head.append(kinds,chips);const bn=storeBanner();if(bn)box.append(bn);box.append(head);
-  KLIST[SKIND]().filter(shopVis).filter(it=>TFILT==='all'||(TFILT==='free'?!it.p&&!it.sk:TFILT==='paid'?!!it.p:it.g===TFILT)).forEach(it=>box.append(storeCard(it,SKIND)));
+  KLIST[SKIND]().filter(shopVis).filter(it=>!it.hide||ownsItem(it)).filter(it=>TFILT==='all'||(TFILT==='free'?!it.p&&!it.sk:TFILT==='paid'?!!it.p:it.g===TFILT)).forEach(it=>box.append(storeCard(it,SKIND)));
 }
 /* ----- Things you add to the store from the admin panel: banners, sticker packs and covers -----
    shop/{id} = {kind:'banner'|'stk'|'cov', n, d, p (price in cents, 0 = free), pv (1 = p is the admin's own price; older items

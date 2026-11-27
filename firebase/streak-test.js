@@ -51,9 +51,9 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   await A.click('#stkb');await A.waitForSelector('#lockc.stkdlg .stk-num');
   ok(await A.evaluate(()=>{const c=$('#lockc');return c.querySelector('.stk-num').textContent==='1'&&/day in a row/.test(c.textContent)&&c.querySelectorAll('.stk-day').length===7
     &&c.querySelector('.stk-day.today.on')&&c.querySelectorAll('.stk-slot.on').length===1&&/Ready/.test(c.querySelector('.stk-slots').textContent)
-    &&/Your first rewards at 100 days/.test(c.textContent)&&/99 days to go/.test(c.textContent)&&c.querySelectorAll('.stk-r').length===10
-    &&/Golden flame, Year in pixels, Laurel, Milestones/.test(c.textContent)&&/A gold medal every 500 days, for ever/.test(c.textContent)&&/Calvary, Prayer journal/.test(c.textContent)&&!/any item from the Store/.test(c.textContent)&&/Get 3 more freezes · €1\.99/.test(c.textContent)}),
-    'the streak window: 1 day, the last 7 days (today lit), 1 freeze ready, 99 days to the first rewards, the rewards road, more freezes for €1.99');
+    &&/Your first rewards at 100 days/.test(c.textContent)&&/99 days to go/.test(c.textContent)&&c.querySelectorAll('.stk-r').length===9
+    &&/Golden flame, Year in pixels, Laurel, Milestones/.test(c.textContent)&&/A gold medal every 500 days, for ever/.test(c.textContent)&&!/Calvary|Prayer journal|777/.test(c.textContent)&&!/any item from the Store/.test(c.textContent)&&/Get 3 more freezes · €1\.99/.test(c.textContent)}),
+    'the streak window: 1 day, the last 7 days (today lit), 1 freeze ready, 99 days to the first rewards, the rewards road (the 777 gift hidden), more freezes for €1.99');
   await shot(A,'stk-1-day1');
   await A.click('#stk-buy');await A.waitForSelector('#fz-buy');await A.click('#fz-buy');
   ok(await A.evaluate(()=>/3 streak freezes/.test($('#lockc').textContent)&&/Buy for €1\.99/.test($('#fz-buy').textContent)&&/opens soon/.test($('#lockc .cmsg').textContent)),'“Get 3 more freezes”: 3 streak freezes for €1.99 (buying opens with Pro)');
@@ -62,18 +62,38 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   // ======== 2) the next day, a missed day (a freeze), two missed days (the end), extra freezes
   await setStk(uid,{n:5,d:T-1});await restart(A);st=await getStk(uid);
   ok(st.n===6&&st.d===T&&st.f===1,'the next day: 6 days in a row');
-  ok(/6 days in a row! 94 more to your first rewards/.test(await toastTxt(A))&&await A.evaluate(()=>$('#stkn').textContent==='6'),'… “🔥 6 days in a row! 94 more to your first rewards.”');
+  ok(/6 days in a row! 94 more to your first rewards/.test(await toastTxt(A)),'… “🔥 6 days in a row! 94 more to your first rewards.”');
+  await A.waitForFunction(()=>!$('#stkb').classList.contains('pop'),null,{timeout:5000});
+  ok(await A.evaluate(()=>$('#stkn').textContent==='6'),'… the flame on the shelf says 6');
+  ok(await A.evaluate(()=>{stkPop(6);const b=$('#stkb'),pop=b.classList.contains('pop')&&getComputedStyle(b).animationName==='stkpop';return pop}),'… and the flame on the shelf flares up while the number turns over (5 → 6)');
+  ok(await A.evaluate(async()=>{await new Promise(r=>setTimeout(r,1100));return !$('#stkb').classList.contains('pop')&&$('#stkn').textContent==='6'}),'… then settles on 6');
+  // the flame in the window: sparks rising, swaying, glowing
+  await A.click('#stkb');await A.waitForSelector('#lockc.stkdlg .stk-num');
+  ok(await A.evaluate(()=>{const f=$('#lockc .stk-flame');return f.querySelectorAll('.emb').length===6&&getComputedStyle(f.querySelector('.emb')).animationName==='ember'&&getComputedStyle(f.querySelector('.fo')).animationName==='sway'&&getComputedStyle(f).animationName==='glow'}),'the big flame: 6 sparks rising, the flame sways and glows');
+  await A.evaluate(()=>$('#lockd').click());
   await setStk(uid,{n:10,d:T-2,f:1});await restart(A);st=await getStk(uid);
   ok(st.n===11&&st.f===0&&st.fr===T+1&&st.fz.includes(T-1),'a missed day: a freeze keeps the streak (11), it comes back 2 days after the missed day');
-  ok(/A streak freeze kept your streak going: 11 days/.test(await toastTxt(A)),'… “❄ A streak freeze kept your streak going”');
+  await A.waitForSelector('#stkfx .fzfx',{timeout:10000});
+  ok(await A.evaluate(()=>{const c=$('#stkfx');return /Streak freeze used/.test(c.textContent)&&/a freeze kept your 11-day streak safe/.test(c.textContent)&&/Your freeze comes back in 1 day/.test(c.textContent)&&!!c.querySelector('.fz-ice')&&c.querySelectorAll('.fz-sh').length===7&&c.querySelectorAll('.fz-sf').length===8&&getComputedStyle(c.querySelector('.fz-ice')).animationName==='iceout'}),
+    'a freeze saved the streak: the animation (the flame frozen in ice, snow, the ice cracks and shatters, the flame lights again) – “a freeze kept your 11-day streak safe”, it comes back in 1 day');
+  await A.waitForTimeout(2800);await shot(A,'stk-2b-freezefx');
+  ok(await A.evaluate(()=>getComputedStyle($('#stkfx .fzfx .flm .fo')).fill==='rgb(255, 122, 26)'),'… after it, the flame is orange again');
+  await A.click('#stkfx .btn');await A.waitForSelector('#stkfx',{state:'detached'});
   await A.click('#stkb');await A.waitForSelector('#lockc.stkdlg .stk-num');
   ok(await A.evaluate(()=>{const c=$('#lockc'),days=[...c.querySelectorAll('.stk-day')];return days[5].classList.contains('frz')&&days[6].classList.contains('on')&&/Back in 1 day/.test(c.querySelector('.stk-slots').textContent)}),'the window: yesterday frozen ❄, the freeze is back in 1 day');
   await shot(A,'stk-2-frozen');await A.evaluate(()=>$('#lockd').click());
   await setStk(uid,{n:20,d:T-3,f:1});await restart(A);st=await getStk(uid);
   ok(st.n===1&&st.best===20&&st.s===T&&st.f===1,'two missed days with one freeze: the streak ends (best stays 20), the freeze is kept');
-  ok(/Your 20-day streak ended/.test(await toastTxt(A)),'… “Your 20-day streak ended. A new one starts today”');
+  await A.waitForSelector('#stkfx .endfx',{timeout:10000});
+  ok(await A.evaluate(()=>{const c=$('#stkfx');return /Your 20-day streak ended/.test(c.textContent)&&/new streak begins today/.test(c.textContent)&&/Your best: 20 days/.test(c.textContent)&&c.querySelector('.old .fx-n').textContent==='20'&&c.querySelector('.new .fx-n').textContent==='1'&&c.querySelectorAll('.smk path').length===3&&getComputedStyle(c.querySelector('.old')).animationName==='die'}),
+    'the streak ended: the animation (the 20-day flame goes out in smoke, a spark lights a new one: 1) – “Your 20-day streak ended”, your best: 20');
+  await A.waitForTimeout(3600);await shot(A,'stk-2c-endfx');
+  ok(await A.evaluate(()=>+getComputedStyle($('#stkfx .old')).opacity<.05&&+getComputedStyle($('#stkfx .new')).opacity>.95),'… at the end only the new flame is left');
+  await A.keyboard.press('Escape');await A.waitForSelector('#stkfx',{state:'detached'});
   await setStk(uid,{n:20,best:20,d:T-3,f:1,b:2});await restart(A);st=await getStk(uid);
   ok(st.n===21&&st.b===1&&st.f===1&&st.fz.includes(T-2)&&st.fz.includes(T-1),'with extra freezes: 2 missed days = 1 freeze + 1 extra (21 days); the freeze used 2 days ago is back today');
+  await A.waitForSelector('#stkfx .fzfx',{timeout:10000});ok(await A.evaluate(()=>/2 days were missed – freezes kept your 21-day streak safe/.test($('#stkfx').textContent)),'… “2 days were missed – freezes kept your 21-day streak safe”');
+  await A.click('#stkfx .btn');await A.waitForSelector('#stkfx',{state:'detached'});
 
   // ======== 3) the rules: nobody makes up a streak or rewards
   const deny=(fn,arg)=>A.evaluate(async([f,a])=>{const F=ACC.F,r=F.doc(ACC.db,'streak',ACC.user.uid),o=F.doc(ACC.db,'owned',ACC.user.uid);
@@ -121,9 +141,16 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   await A.click('#stk-collect');await A.waitForFunction(()=>$('#lockd').classList.contains('hidden'),null,{timeout:10000});await A.waitForTimeout(800);
   own=await getOwned(uid);ok(['cov-aurora','gratitude','lbl-seal','cov-constel','stk-year'].every(id=>own.t.includes(id)),'… collected');
   ok(await A.evaluate(()=>$('#lockd').classList.contains('hidden')&&!document.querySelector('.stk-pick')&&STPK.filter(ownsItem).some(p=>p.id==='stk-year')),'no gift from the Store after them; the One year stickers are in + → Stickers');
+  // the 777 gift is a surprise: not in the next-reward bar, the road or the Store before it's reached
+  ok(await A.evaluate(()=>stkGoal(500)===1000&&stkGoal(776)===1000),'the 777 gift is hidden: after 500 days the next reward shown is 1,000');
+  await A.click('#storeb');await A.waitForSelector('.skinds [data-k="cov"]');await A.click('.skinds [data-k="cov"]');await A.waitForTimeout(300);
+  let hid=await A.evaluate(()=>!document.querySelector('#tpl [data-t="cov-calvary"]'));await A.click('.skinds [data-k="tpl"]');await A.waitForTimeout(300);
+  hid=hid&&await A.evaluate(()=>!document.querySelector('#tpl [data-t="prayer"]'));await A.click('.skinds [data-k="sk"]');await A.waitForTimeout(300);
+  ok(hid&&await A.evaluate(()=>!/Calvary|Prayer journal|777/.test($('.stk-store').textContent)),'… and not in the Store (Covers, Templates, Streak)');
+  await A.evaluate(()=>showStore(false));
   await setStk(uid,{n:776,best:776,d:T-1,f:2});await restart(A);
   await A.waitForSelector('#lockc.cel #stk-collect',{timeout:10000});
-  ok(await A.evaluate(()=>{const c=$('#lockc');return /777 days in a row!/.test(c.textContent)&&/Galatians 6:9/.test(c.textContent)&&/Calvary/.test(c.textContent)&&/Prayer journal/.test(c.textContent)&&/Rosette/.test(c.textContent)&&c.querySelectorAll('.stk-ti').length===3}),
+  ok(await A.evaluate(()=>{const c=$('#lockc');return /777 days in a row!/.test(c.textContent)&&/Galatians 6:9/.test(c.textContent)&&/A hidden gift, just for you/.test(c.textContent)&&/Calvary/.test(c.textContent)&&/Prayer journal/.test(c.textContent)&&/Rosette/.test(c.textContent)&&c.querySelectorAll('.stk-ti').length===3}),
     '777 days: “777 days in a row!” with Galatians 6:9 – the Calvary cover (three crosses on a hill) and the Prayer journal (and the 500-day Rosette label)');
   await shot(A,'stk-6-777');
   await A.click('#stk-collect');await A.waitForFunction(()=>$('#lockd').classList.contains('hidden'),null,{timeout:10000});
@@ -147,7 +174,7 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   await A.click('#storeb');await A.waitForSelector('.skinds [data-k="sk"]');await A.click('.skinds [data-k="sk"]');await A.waitForSelector('.stk-store .stk-num');
   ok(await A.evaluate(()=>/2002/.test($('.stk-store .stk-num').textContent)&&$('.stk-store').querySelectorAll('.stk-st.ok').length===10&&/✓ 2 medals/.test($('.stk-store').textContent)&&/Next reward at 2500 days/.test($('.stk-store').textContent)),'Store → 🔥 Streak: your streak, every reward ✓ Yours, 2 medals, the next at 2,500');
   await A.click('.skinds [data-k="cov"]');await A.waitForTimeout(300);
-  ok(await A.evaluate(()=>{const c=document.querySelector('#tpl .tcardx[data-t="cov-deco"]'),f=document.querySelector('#tpl .tcardx[data-t="cov-flame"]');return /€1\.99/.test(c.textContent)&&/✓ Yours/.test(f.textContent)}),'Covers: paid ones €1.99, the streak ones “✓ Yours”');
+  ok(await A.evaluate(()=>{const c=document.querySelector('#tpl .tcardx[data-t="cov-deco"]'),f=document.querySelector('#tpl .tcardx[data-t="cov-flame"]'),k=document.querySelector('#tpl .tcardx[data-t="cov-calvary"]');return /€1\.99/.test(c.textContent)&&/✓ Yours/.test(f.textContent)&&k&&/✓ Yours/.test(k.textContent)}),'Covers: paid ones €1.99, the streak ones “✓ Yours” – Calvary too, now that it’s yours');
   await A.click('#storex').catch(()=>A.evaluate(()=>showStore(false)));await A.waitForTimeout(300);
 
   // ======== 7) someone new sees the rewards locked; €1.99 everywhere
