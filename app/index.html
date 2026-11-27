@@ -595,6 +595,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .stk-bh{display:flex;align-items:center;gap:8px;color:#3ea0ef}.stk-bh b{color:var(--ink)}.stk-bh .fzi{width:24px;height:24px}
 .stk-slots{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
 .stk-slot{display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 9px;border-radius:999px;border:1px dashed var(--line);font-size:.84em;font-weight:600;opacity:.75}
+.stk-cd{font-variant-numeric:tabular-nums;letter-spacing:.02em}
 .stk-slot.on{border-style:solid;border-color:#6cc0ff;background:color-mix(in srgb,#4fb3ff 14%,transparent);opacity:1}.stk-slot .fzi{width:18px;height:18px}.stk-slot:not(.on) .fzi{filter:grayscale(1);opacity:.55}
 .stk-sm{font-size:.8em;opacity:.72;margin:6px 0 10px}.stk-buy{width:100%}
 .stk-bh2{font-weight:700;margin-bottom:8px}.stk-next small{display:block;margin-top:6px;opacity:.7}
@@ -4477,6 +4478,17 @@ function stkItemTile(id){ // a small picture of a reward
   const it=itemById(id);if(!it)return el('span','');const k=itemKind(it),pv=el('div','pv stk-pv k-'+k+(k==='tpl'&&it.o==='l'?' l':''));
   itemPreview(pv,it,k);pv.title=it.n;return pv;
 }
+const dayStart=x=>{const u=new Date(x*864e5);return new Date(u.getUTCFullYear(),u.getUTCMonth(),u.getUTCDate()).getTime()}; // the local midnight that starts day x
+const hms=ms=>{const s=Math.max(0,Math.ceil(ms/1e3)),p=v=>String(v).padStart(2,'0');return p(Math.floor(s/3600))+':'+p(Math.floor(s/60)%60)+':'+p(s%60)}; // 05:07:09 (hours can go past 24)
+function stkTick(){ // the countdowns to the next freeze tick every second while one is on screen; at 0 that freeze is ready
+  if(stkTick.iv)return;
+  stkTick.iv=setInterval(()=>{const l=[...document.querySelectorAll('.stk-cd')];if(!l.length){clearInterval(stkTick.iv);stkTick.iv=0;return}
+    let due=false;
+    for(const e of l){const r=+e.dataset.at-Date.now();e.textContent=hms(r);
+      if(r<=0){due=true;const sl=e.closest('.stk-slot');sl.classList.add('on');sl.removeAttribute('title');sl.querySelector('span').textContent='Ready'}}
+    if(due)stkSync();
+  },1000);
+}
 function stkView(box,close){ // the streak: used by the streak window and by Store → Streak
   const st=stkNow(),t=dayNo(),n=st?st.n:0;
   const lit=st&&st.d===t,hero=el('div','stk-hero');const fl=el('div','stk-flame'+(lit?'':' cold'));fl.innerHTML=FLAME+(lit?embers(6,0):'');
@@ -4501,8 +4513,11 @@ function stkView(box,close){ // the streak: used by the streak window and by Sto
   const fz=el('div','stk-box stk-fz');const fh=el('div','stk-bh');fh.innerHTML=FZIC;fh.append(el('b','','Streak freezes'));fz.append(fh);
   const cap=st?fzCap(st.best):1,slots=el('div','stk-slots');
   for(let k=0;k<cap;k++){const ready=st?k<st.f:true,sl=el('div','stk-slot'+(ready?' on':''));sl.innerHTML=FZIC;
-    const back=st&&!ready&&st.fr?Math.max(1,st.fr-t):0;sl.append(el('span','',ready?'Ready':back?'Back in '+back+(back===1?' day':' days'):'Coming back'));slots.append(sl)}
+    const at=st&&!ready&&st.fr?dayStart(st.fr+(k-st.f)*FZ_BACK):0,sp=el('span','',ready?'Ready':at?'Back in ':'Coming back'); // a freeze comes back when its day starts (the next one FZ_BACK days later)
+    if(at){const cd=el('b','stk-cd',hms(at-Date.now()));cd.dataset.at=at;sp.append(cd);sl.title='Back on '+new Date(at).toLocaleString([],{weekday:'long',hour:'2-digit',minute:'2-digit'})}
+    sl.append(sp);slots.append(sl)}
   if(st&&st.b){const ex=el('div','stk-slot on extra');ex.innerHTML=FZIC;ex.append(el('span','','+'+st.b+' extra'));slots.append(ex)}
+  stkTick();
   fz.append(slots,el('p','stk-sm','A freeze saves your streak on a day you don’t open Foliet. It comes back '+FZ_BACK+' days later. At 100 days you get a second one. Extra freezes wait until you need them.'));
   const buy=el('button','ib stk-buy','Get '+FZ_PACK+' more freezes · '+euro(ITEM_P));buy.type='button';buy.id='stk-buy';buy.onclick=()=>stkBuy();fz.append(buy);box.append(fz);
   // the next reward
