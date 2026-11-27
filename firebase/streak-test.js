@@ -86,7 +86,7 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   await A.click('#stkfx .btn');await A.waitForSelector('#stkfx',{state:'detached'});
   await A.click('#stkb');await A.waitForSelector('#lockc.stkdlg .stk-num');
   ok(await A.evaluate(()=>{const c=$('#lockc'),days=[...c.querySelectorAll('.stk-day')],f=days[5];return f.classList.contains('frz')&&!!f.querySelector('.flm')&&getComputedStyle(f.querySelector('.flm .fo')).fill==='rgb(143, 196, 239)'&&getComputedStyle(f.querySelector('i'),'::after').animationName==='glint'&&/Frozen/.test(f.title)&&days[6].classList.contains('on')&&getComputedStyle(c.querySelector('.stk-slot:not(.on) .fzi')).filter==='grayscale(1)'&&/Frozen: you weren’t here/.test(c.querySelector('.stk-legend').textContent)}),
-    'the window: yesterday stays a frozen (blue, glinting) flame – “Frozen: you weren’t here, a freeze kept the streak” –, the freeze is back tomorrow (its ice cube grey until then)');
+    'the window: yesterday stays a frozen (blue, glinting) flame – “Frozen: you weren’t here, a freeze covered the day” –, the freeze is back tomorrow (its ice cube grey until then)');
   { // instead of “Back in 1 day”: a countdown of 48 hours from the moment the freeze saved the streak
     const cd=await A.evaluate(()=>{const e=$('#lockc .stk-slot:not(.on) .stk-cd'),at=+e.dataset.at;return {txt:e.textContent,at,left:at-Date.now(),slot:e.closest('.stk-slot').textContent}});
     await A.waitForTimeout(2100);const txt2=await A.evaluate(()=>$('#lockc .stk-cd').textContent);
@@ -106,21 +106,29 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
       return r.st.n===11&&r.st.f===0&&r.st.fr===noon+H&&r2.ev.ended===11&&r3.st.n===13&&r3.ev.froze===1&&r3.st.fr===dayStart(D+3)+9*36e5+H
         &&stkClean({...base,fr:D+1}).fr===dayStart(D+1)}),
     'the 48 hours: a freeze used today at noon is back at noon in 2 days – missing tomorrow ends the streak, missing the day after is covered (an old saved day is read as its midnight)');
+  ok(await A.evaluate(()=>{const D=dayNo(),at5=dayStart(D)+17*36e5,H=48*36e5,b=o=>({n:10,best:10,s:o.d-9,f:1,fr:0,b:0,fz:[],ps:0,pd:0,pn:0,v:1,...o});
+      const e1=stkStep(b({d:D-2}),[D],at5); // there on the 26th, missed the 27th, opened on the 28th at 17:00
+      const e2=stkStep(b({d:D-3}),[D],at5); // there on the 26th, missed the 27th and the 28th, opened on the 29th at 17:00
+      const e3=stkStep(b({d:D-3,b:1}),[D],at5); // the same, with one extra freeze
+      return e1.st.n===11&&e1.ev.froze===1&&e1.st.f===0&&e1.st.fr===at5+H&&e1.st.fz.includes(D-1)
+        &&e2.ev.ended===10&&e2.ev.lost===1&&e2.ev.missed===2&&e2.st.n===1&&e2.st.s===D&&e2.st.f===0&&e2.st.fr===at5+H&&stkDay(e2.st,D-2)==='frz'&&stkDay(e2.st,D-1)==='end'
+        &&e3.st.n===11&&e3.ev.froze===2&&e3.st.f===0&&e3.st.b===0}),
+    'the owner’s examples: missed the 27th, back on the 28th at 17:00 → saved (11 days), the freeze is back on the 30th at 17:00; missed the 27th and 28th, back on the 29th → the freeze covers the 27th and is used up, the streak ends on the 28th, a new one starts; with an extra freeze too, both days are covered');
   await A.evaluate(()=>$('#lockd').click());
   await setStk(uid,{n:20,d:T-3,f:1});await restart(A);st=await getStk(uid);
-  ok(st.n===1&&st.best===20&&st.s===T&&st.f===1,'two missed days with one freeze: the streak ends (best stays 20), the freeze is kept');
+  ok(st.n===1&&st.best===20&&st.s===T&&st.f===0&&st.fr>Date.now()+47*36e5&&st.fz.includes(T-2)&&!st.fz.includes(T-1),'two missed days with one freeze: the freeze is used on the first one, and the streak ends anyway on the second (best stays 20); the freeze comes back in 48 hours');
   await A.waitForSelector('#stkfx .endfx',{timeout:10000});
-  ok(await A.evaluate(()=>{const c=$('#stkfx');return /Your 20-day streak ended/.test(c.textContent)&&/new streak begins today/.test(c.textContent)&&/Your best: 20 days/.test(c.textContent)&&c.querySelector('.old .fx-n').textContent==='20'&&c.querySelector('.new .fx-n').textContent==='1'&&c.querySelectorAll('.smk path').length===3&&getComputedStyle(c.querySelector('.old')).animationName==='die'}),
-    'the streak ended: the animation (the 20-day flame goes out in smoke, a spark lights a new one: 1) – “Your 20-day streak ended”, your best: 20');
+  ok(await A.evaluate(()=>{const c=$('#stkfx');return /Your 20-day streak ended/.test(c.textContent)&&/new streak begins today/.test(c.textContent)&&/Your best: 20 days/.test(c.textContent)&&/A freeze covered 1 of the 2 days you missed\. It comes back in 48 hours\./.test(c.textContent)&&c.querySelector('.old .fx-n').textContent==='20'&&c.querySelector('.new .fx-n').textContent==='1'&&c.querySelectorAll('.smk path').length===3&&getComputedStyle(c.querySelector('.old')).animationName==='die'}),
+    'the streak ended: the animation (the 20-day flame goes out in smoke, a spark lights a new one: 1) – “Your 20-day streak ended”, “A freeze covered 1 of the 2 days you missed. It comes back in 48 hours.”, your best: 20');
   await A.waitForTimeout(3600);await shot(A,'stk-2c-endfx');
   ok(await A.evaluate(()=>+getComputedStyle($('#stkfx .old')).opacity<.05&&+getComputedStyle($('#stkfx .new')).opacity>.95),'… at the end only the new flame is left');
   await A.keyboard.press('Escape');await A.waitForSelector('#stkfx',{state:'detached'});
   st=await getStk(uid);ok(st.ps===T-22&&st.pd===T-3&&st.pn===20,'the last streak is kept in the cloud (its first and last day, 20 days)');
   await A.click('#stkb');await A.waitForSelector('#lockc.stkdlg .stk-num');
   ok(await A.evaluate(()=>{const c=$('#lockc'),k=[...c.querySelectorAll('.stk-day')].map(d=>d.className.replace('stk-day ','').replace(' today',''));
-      const e=c.querySelector('.stk-day.end');return k.join()==='on,on,on,on,end,end,on'&&!!e.querySelector('.wisp')&&getComputedStyle(e.querySelector('.wisp')).animationName==='wisp'&&getComputedStyle(e.querySelector('.flm .fo')).fill==='rgb(154, 163, 178)'
-        &&/the streak ended here/.test(e.title)&&/Went out: you forgot to come/.test(c.querySelector('.stk-legend').textContent)&&/Your last streak: 20 days · ended 2 days ago/.test(c.querySelector('.stk-hero').textContent)}),
-    'the window: the days of the last streak, then the 2 forgotten days stay as grey flames gone out (with smoke) – “Went out: you forgot to come” –, today a new flame; “Your last streak: 20 days · ended 2 days ago”');
+      const e=c.querySelector('.stk-day.end');return k.join()==='on,on,on,on,frz,end,on'&&!!e.querySelector('.wisp')&&getComputedStyle(e.querySelector('.wisp')).animationName==='wisp'&&getComputedStyle(e.querySelector('.flm .fo')).fill==='rgb(154, 163, 178)'
+        &&/the streak ended here/.test(e.title)&&/Went out: you forgot to come/.test(c.querySelector('.stk-legend').textContent)&&/Frozen: you weren’t here/.test(c.querySelector('.stk-legend').textContent)&&/Your last streak: 20 days · ended yesterday/.test(c.querySelector('.stk-hero').textContent)}),
+    'the window: the days of the last streak, the first missed day frozen (the freeze was used), the second a grey flame gone out (with smoke) – both in the legend –, today a new flame; “Your last streak: 20 days · ended yesterday”');
   await shot(A,'stk-2d-ended');await A.evaluate(()=>$('#lockd').click());
   await setStk(uid,{n:20,best:20,d:T-3,f:1,b:2});await restart(A);st=await getStk(uid);
   ok(st.n===21&&st.b===1&&st.f===0&&st.fr>Date.now()+47*36e5&&st.fz.includes(T-2)&&st.fz.includes(T-1),'with extra freezes: 2 missed days = 1 freeze + 1 extra (21 days); the freeze is back in 48 hours');

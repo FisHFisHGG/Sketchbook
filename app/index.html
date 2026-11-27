@@ -4318,7 +4318,8 @@ async function touchProfile(u){
      b = extra freezes (bought in the Store or given by the admin – they never run out by themselves) ·
      fz = the frozen days (the last 60, for the week row).
    A day you miss uses a freeze – the ones that come back first, then the extra ones – and keeps the streak (it doesn't add a
-   day). A gap with too few freezes ends it (the freezes stay) and a new one starts. Rewards: STK_R (the streak's own items,
+   day). A gap with too few freezes still uses them, one on each of the first days missed, and ends on the first day none is
+   left; a new one starts. Rewards: STK_R (the streak's own items,
    never sold – owned/{uid} with last:'streak'), rarer as the streak grows; then from 1,500 days a gold medal sticker with
    the number every 500 days, for ever (med-1500, med-2000 … in the Streak medals pack). Nothing from the Store is free.
    On the device: sb-stk:<uid> = {st: what the cloud has, q: days used that the cloud hasn't seen yet (offline), told: the
@@ -4349,7 +4350,7 @@ function fzBack(st,t){ // the freezes that have come back by the time t (ms): ea
 }
 // the state after these days used (sorted, each after st0.d); ev = what happened, for the messages
 function stkStep(st0,days,now=Date.now()){
-  let st=st0?{...st0,fz:[...st0.fz]}:null;const ev={from:st0?st0.n:0,froze:0,ended:0,best0:st0?st0.best:0};
+  let st=st0?{...st0,fz:[...st0.fz]}:null;const ev={from:st0?st0.n:0,froze:0,ended:0,lost:0,missed:0,best0:st0?st0.best:0};
   for(const day of days){
     if(!st){st={n:1,best:1,d:day,s:day,f:1,fr:0,b:0,fz:[],ps:0,pd:0,pn:0,v:1};continue}
     if(day<=st.d)continue;
@@ -4362,7 +4363,10 @@ function stkStep(st0,days,now=Date.now()){
       else ok=false;
     }
     if(ok){st=t;st.n++;ev.froze+=fr}
-    else{ev.ended=st.n;ev.froze=0;st.ps=st.s;st.pd=st.d;st.pn=st.n;st.n=1;st.s=day} // not enough freezes: the streak ends (it's kept as the last one, to show), the freezes stay
+    else{ // not enough freezes: the ones you had were still used, one on each of the first days you missed (those days
+      // show frozen), and the streak ends on the first day none was left; it's kept as the last one, to show
+      ev.ended=st.n;ev.froze=0;ev.lost=fr;ev.missed=day-st.d-1;
+      st=t;st.ps=st.s;st.pd=st.d;st.pn=st.n;st.n=1;st.s=day}
     fzBack(st,Math.min(now,dayStart(day+1)-1));st.d=day;
     if(st.n>st.best){if(st.best<100&&st.n>=100)st.f=Math.min(2,st.f+1);st.best=st.n} // 100 days: a second freeze, ready
   }
@@ -4441,7 +4445,7 @@ function stkPop(n){ // the day counts: the flame on the shelf flares up and the 
   const b=$('#stkb');if(!b||stillFx())return;b.classList.remove('pop');void b.offsetWidth;
   $('#stkn').textContent=String(Math.max(0,n-1));b.classList.add('pop');setTimeout(()=>{$('#stkn').textContent=String(n)},300);setTimeout(()=>b.classList.remove('pop'),1000);
 }
-// a freeze kept the streak going (the flame thaws out of a block of ice), or the streak ended (it goes out, and a new one lights)
+// a freeze covered the day going (the flame thaws out of a block of ice), or the streak ended (it goes out, and a new one lights)
 function stkFx(kind,st,ev){
   if($('#stkfx'))return;
   const ov=el('div','');ov.id='stkfx';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');
@@ -4456,7 +4460,10 @@ function stkFx(kind,st,ev){
     c.append(stg,el('h2','','Streak freeze used'),el('p','',(ev.froze===1?'You missed a day, and a freeze kept your ':ev.froze+' days were missed – freezes kept your ')+st.n+'-day streak safe.'),
       el('p','fx-sm',more?'You have '+more+(more===1?' freeze':' freezes')+' ready'+(back?', and another comes back in '+back+(back===1?' hour.':' hours.'):'.'):back?'Your freeze comes back in '+back+(back===1?' hour.':' hours.'):''))}
   else{stg.innerHTML="<div class='old'>"+FLAME+"<b class='fx-n'>"+ev.ended+"</b></div><svg class='smk' viewBox='0 0 170 170'><path d='M85 92C75 76 95 64 84 48S92 24 86 10'/><path d='M76 96C62 82 78 70 68 56S72 34 64 22'/><path d='M94 96C106 84 94 72 102 60S100 40 106 28'/></svg><i class='spark'></i><div class='new'>"+FLAME+"<b class='fx-n'>1</b></div>";
-    c.append(stg,el('h2','','Your '+ev.ended+'-day streak ended'),el('p','','That’s okay – every day is a new start. Your new streak begins today.'),el('p','fx-sm','Your best: '+st.best+' days. Freezes keep a streak going on days you miss.'))}
+    c.append(stg,el('h2','','Your '+ev.ended+'-day streak ended'),el('p','','That’s okay – every day is a new start. Your new streak begins today.'));
+    if(ev.lost){const left=st.fr?st.fr-Date.now():0,h=left>0?Math.max(1,Math.round(left/36e5)):0; // freezes were used, but not enough for every day missed
+      c.append(el('p','fx-sm',(ev.lost===1?'A freeze covered 1':'Freezes covered '+ev.lost)+' of the '+ev.missed+' days you missed.'+(h?' It comes back in '+h+(h===1?' hour.':' hours.'):'')))}
+    c.append(el('p','fx-sm','Your best: '+st.best+' days. Freezes keep a streak going on days you miss.'))}
   c.append(go);ov.onclick=e=>{if(e.target===ov)close()};document.addEventListener('keydown',esc,true);document.body.append(ov);go.focus();
 }
 const FZIC='<svg class="fzi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 11L2.8 6.4v11L12 22z" fill="#bfe7ff"/><path d="M12 11l9.2-4.6v11L12 22z" fill="#86caf5"/><path d="M2.8 14.6l9.2 4.6V22l-9.2-4.6z" fill="#a1d9fc"/><path d="M12 19.2l9.2-4.6v2.8L12 22z" fill="#6cbaef"/><path d="M12 1.8l9.2 4.6L12 11 2.8 6.4z" fill="#eef9ff"/><path d="M12 4.4l4.9 2.3L12 9.1 7.1 6.7z" fill="#fff" opacity=".75"/><path d="M2.8 6.4L12 11l9.2-4.6M12 11v11" fill="none" stroke="#fff" stroke-width="1.1" stroke-linejoin="round" opacity=".95"/><g fill="none" stroke="#fff" stroke-linecap="round"><path d="M4.9 9.6v4.2M18.2 10.1l1.5-.75" stroke-width="1.3"/><circle cx="8.4" cy="15.3" r=".75" stroke-width=".75"/><circle cx="9.8" cy="12.9" r=".45" stroke-width=".7"/><circle cx="16.2" cy="15.9" r=".55" stroke-width=".7"/></g><path d="M12 1.8l9.2 4.6v11L12 22l-9.2-4.6v-11z" fill="none" stroke="#3b9fe3" stroke-width="1.3" stroke-linejoin="round"/></svg>'; // an ice cube: see-through, white edges catching the light, air bubbles
@@ -4472,7 +4479,7 @@ function stkDay(st,x){ // a day in the week row: on (used), frz (frozen), end (m
   if(!st)return 'off';
   if(x>=st.s&&x<=st.d)return st.fz.includes(x)?'frz':'on';
   if(x>st.d)return 'todo';
-  if(st.pd&&x>st.pd)return 'end';
+  if(st.pd&&x>st.pd)return st.fz.includes(x)?'frz':'end'; // between the last streak and this one: frozen, or the day it went out
   if(st.pd&&x>=st.ps)return st.fz.includes(x)?'frz':'on';
   return 'off';
 }
@@ -4496,7 +4503,8 @@ function stkView(box,close){ // the streak: used by the streak window and by Sto
   const lit=st&&st.d===t,hero=el('div','stk-hero');const fl=el('div','stk-flame'+(lit?'':' cold'));fl.innerHTML=FLAME+(lit?embers(6,0):'');
   hero.append(fl,el('div','stk-num',String(n)),el('div','stk-lbl',n===1?'day in a row':'days in a row'));
   if(st&&st.best>1)hero.append(el('div','stk-best','Your best: '+st.best+' days'));
-  if(st&&st.pn>1&&st.pd>=t-30)hero.append(el('div','stk-last','Your last streak: '+st.pn+' days · ended '+(t-st.pd-1<=1?'yesterday':(t-st.pd-1)+' days ago')));
+  if(st&&st.pn>1&&st.pd>=t-30){const lc=Math.max(st.pd,...st.fz.filter(x=>x>st.pd&&x<st.s)),ago=t-lc-1; // it ended the day after the last day it covered
+    hero.append(el('div','stk-last','Your last streak: '+st.pn+' days · ended '+(ago<=1?'yesterday':ago+' days ago')))}
   box.append(hero);
   const wk=el('div','stk-week');wk.setAttribute('aria-label','The last 7 days');
   const seen=new Set();
@@ -4504,10 +4512,10 @@ function stkView(box,close){ // the streak: used by the streak window and by Sto
     const c=el('div','stk-day '+s+(d===t?' today':''));const dot=el('i','');
     if(s==='on'||s==='frz')dot.innerHTML=FLAME;else if(s==='end')dot.innerHTML=FLAME+"<svg class='wisp' viewBox='0 0 10 16' aria-hidden='true'><path d='M5 15C2 12 8 10 5 7S7 3 5 1'/></svg>";
     c.append(el('span','',DOW[new Date((d+.5)*864e5).getUTCDay()]),dot);
-    c.title=s==='on'?'You were here':s==='frz'?'Frozen – you weren’t here, a freeze kept the streak':s==='end'?'Missed – the streak ended here':s==='todo'?'To come':'Missed';wk.append(c)}
+    c.title=s==='on'?'You were here':s==='frz'?'Frozen – you weren’t here, a freeze covered the day':s==='end'?'Missed – the streak ended here':s==='todo'?'To come':'Missed';wk.append(c)}
   box.append(wk);
   if(seen.has('frz')||seen.has('end')){const lg=el('div','stk-legend'); // what the icy and the grey flames mean
-    if(seen.has('frz')){const a=el('span','stk-lg frz');a.innerHTML='<i>'+FLAME+'</i>';a.append('Frozen: you weren’t here, a freeze kept the streak');lg.append(a)}
+    if(seen.has('frz')){const a=el('span','stk-lg frz');a.innerHTML='<i>'+FLAME+'</i>';a.append('Frozen: you weren’t here, a freeze covered the day');lg.append(a)}
     if(seen.has('end')){const a=el('span','stk-lg end');a.innerHTML='<i>'+FLAME+'</i>';a.append('Went out: you forgot to come, the streak ended');lg.append(a)}
     box.append(lg)}
   box.append(el('p','stk-tip',st&&st.d===t?'Come back tomorrow to keep it going.':'Open Foliet every day to keep it going.'));
