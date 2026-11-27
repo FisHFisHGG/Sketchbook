@@ -57,8 +57,11 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
     &&/Golden flame, Year in pixels, Laurel, Milestones/.test(c.textContent)&&/A gold medal every 500 days, for ever/.test(c.textContent)&&!/Calvary|Prayer journal|777/.test(c.textContent)&&!/any item from the Store/.test(c.textContent)&&/Get 3 more freezes · €1\.99/.test(c.textContent)}),
     'the streak window: 1 day, the last 7 days (today lit), 1 freeze ready, 99 days to the first rewards, the rewards road (the 777 gift hidden), more freezes for €1.99');
   await shot(A,'stk-1-day1');
+  const cube=f=>!!f&&f.querySelectorAll('path[fill]').length>=5&&f.querySelectorAll('circle').length===3; // an ice cube: its faces and air bubbles
+  ok(await A.evaluate(c=>{const k=eval(c),b=$('#lockc .stk-bh .fzi'),r=$('#lockc .stk-slot.on .fzi');return k(b)&&k(r)&&b.getBoundingClientRect().width===24&&getComputedStyle(r).filter==='none'},cube.toString()),'the freezes show as ice cubes (not a snowflake): in the title and on the ready freeze');
   await A.click('#stk-buy');await A.waitForSelector('#fz-buy');await A.click('#fz-buy');
   ok(await A.evaluate(()=>/3 streak freezes/.test($('#lockc').textContent)&&/Buy for €1\.99/.test($('#fz-buy').textContent)&&/opens soon/.test($('#lockc .cmsg').textContent)),'“Get 3 more freezes”: 3 streak freezes for €1.99 (buying opens with Pro)');
+  ok(await A.evaluate(c=>{const k=eval(c),l=[...document.querySelectorAll('#lockc .stk-fz3 .fzi')];return l.length===3&&l.every(k)},cube.toString()),'… with 3 ice cubes');await shot(A,'stk-1b-buy');
   await A.keyboard.press('Escape');await A.evaluate(()=>{const d=$('#lockd');if(!d.classList.contains('hidden'))d.click()});await A.waitForTimeout(200);
 
   // ======== 2) the next day, a missed day (a freeze), two missed days (the end), extra freezes
@@ -82,8 +85,8 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   ok(await A.evaluate(()=>getComputedStyle($('#stkfx .fzfx .flm .fo')).fill==='rgb(255, 122, 26)'),'… after it, the flame is orange again');
   await A.click('#stkfx .btn');await A.waitForSelector('#stkfx',{state:'detached'});
   await A.click('#stkb');await A.waitForSelector('#lockc.stkdlg .stk-num');
-  ok(await A.evaluate(()=>{const c=$('#lockc'),days=[...c.querySelectorAll('.stk-day')],f=days[5];return f.classList.contains('frz')&&!!f.querySelector('.flm')&&getComputedStyle(f.querySelector('.flm .fo')).fill==='rgb(143, 196, 239)'&&getComputedStyle(f.querySelector('i'),'::after').animationName==='glint'&&/Frozen/.test(f.title)&&days[6].classList.contains('on')&&/Back in 1 day/.test(c.querySelector('.stk-slots').textContent)&&/Frozen: you weren’t here/.test(c.querySelector('.stk-legend').textContent)}),
-    'the window: yesterday stays a frozen (blue, glinting) flame – “Frozen: you weren’t here, a freeze kept the streak” –, the freeze is back in 1 day');
+  ok(await A.evaluate(()=>{const c=$('#lockc'),days=[...c.querySelectorAll('.stk-day')],f=days[5];return f.classList.contains('frz')&&!!f.querySelector('.flm')&&getComputedStyle(f.querySelector('.flm .fo')).fill==='rgb(143, 196, 239)'&&getComputedStyle(f.querySelector('i'),'::after').animationName==='glint'&&/Frozen/.test(f.title)&&days[6].classList.contains('on')&&/Back in 1 day/.test(c.querySelector('.stk-slots').textContent)&&getComputedStyle(c.querySelector('.stk-slot:not(.on) .fzi')).filter==='grayscale(1)'&&/Frozen: you weren’t here/.test(c.querySelector('.stk-legend').textContent)}),
+    'the window: yesterday stays a frozen (blue, glinting) flame – “Frozen: you weren’t here, a freeze kept the streak” –, the freeze is back in 1 day (its ice cube grey until then)');
   await shot(A,'stk-2-frozen');await A.evaluate(()=>$('#lockd').click());
   await setStk(uid,{n:20,d:T-3,f:1});await restart(A);st=await getStk(uid);
   ok(st.n===1&&st.best===20&&st.s===T&&st.f===1,'two missed days with one freeze: the streak ends (best stays 20), the freeze is kept');
@@ -224,7 +227,9 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
     ok(await P.evaluate(()=>{const r=$('#stkb').getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth&&document.documentElement.scrollWidth<=innerWidth&&$('#stkn').textContent==='1'}),'phone '+w+' px: the flame fits in the shelf’s top bar');
     await P.evaluate(()=>{stkOpen()});await P.waitForSelector('#lockc.stkdlg .stk-num');
     ok(await P.evaluate(()=>{const c=$('#lockc').getBoundingClientRect();return c.left>=0&&c.right<=innerWidth+1&&document.documentElement.scrollWidth<=innerWidth&&[...$('#lockc').querySelectorAll('.stk-r,.stk-week,.stk-box')].every(e=>e.getBoundingClientRect().right<=c.right+1)}),'phone '+w+' px: the streak window fits');
-    await shot(P,'stk-phone-'+w);await CP.close()}
+    await shot(P,'stk-phone-'+w);
+    if(w===390){await P.evaluate(()=>{setTheme('dark')});await P.waitForTimeout(300);await shot(P,'stk-phone-dark')} // the ice cubes on a dark screen too
+    await CP.close()}
 
   const errs=[...A.errs,...B.errs].filter(e=>!/Failed to fetch|network|offline|unavailable/i.test(e));ok(!errs.length,'no errors on the pages '+errs.join(' | '));
   await b.close();console.log(fails?'FAILED: '+fails:'ALL PASSED');process.exit(fails?1:0);
