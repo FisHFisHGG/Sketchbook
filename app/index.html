@@ -576,7 +576,20 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .stk-day i{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);background:var(--desk);box-sizing:border-box}
 .stk-day.on i{background:color-mix(in srgb,#ff7a1a 16%,transparent);border-color:#ff9a3c}.stk-day.frz i{background:color-mix(in srgb,#4fb3ff 18%,transparent);border-color:#6cc0ff;color:#3ea0ef}
 .stk-day.today span{color:var(--accent);opacity:1;font-weight:800}.stk-day.today i{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 28%,transparent)}
-.stk-day .flm{width:20px;height:20px}.stk-day .fzi{width:18px;height:18px}
+.stk-day .flm{width:20px;height:20px}.stk-day .fzi{width:18px;height:18px}.stk-day i{position:relative;overflow:hidden}
+.stk-day.frz i,.stk-lg.frz i{background:linear-gradient(160deg,#eef8ff,#c4e3fb);border-color:#7cc0f2}
+:is(.stk-day,.stk-lg).frz .flm .fo{fill:#8fc4ef}:is(.stk-day,.stk-lg).frz .flm .fi{fill:#e8f6ff}:is(.stk-day,.stk-lg).frz .flm .fc{fill:#fff}
+.stk-day.frz i::after{content:'';position:absolute;inset:-2px;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.95) 50%,transparent 62%);background-size:300% 100%;background-position:130% 0;animation:glint 3.4s ease-in-out infinite}
+.stk-day.frz i::before{content:'✦';position:absolute;top:2px;right:4px;font-size:7px;line-height:1;color:#fff;text-shadow:0 0 3px #7cc0f2;animation:twinkle 2.4s ease-in-out infinite}
+@keyframes glint{0%,55%{background-position:130% 0}100%{background-position:-30% 0}}@keyframes twinkle{0%,100%{opacity:.15;transform:scale(.6)}50%{opacity:1;transform:scale(1.15)}}
+.stk-day.end i,.stk-lg.end i{border-style:dashed;border-color:#b9c0cb;background:color-mix(in srgb,var(--ink) 5%,transparent)}
+:is(.stk-day,.stk-lg).end .flm{opacity:.6}:is(.stk-day,.stk-lg).end .flm .fo{fill:#9aa3b2}:is(.stk-day,.stk-lg).end .flm .fi,:is(.stk-day,.stk-lg).end .flm .fc{fill:#d3d8e0}
+.stk-day.end .flm{transform:translateY(3px) scale(.85)}.stk-day.end span{opacity:.5;text-decoration:line-through}
+.stk-day .wisp{position:absolute;left:50%;top:1px;width:9px;height:14px;margin-left:-4.5px;fill:none;stroke:#a7aebb;stroke-width:1.6;stroke-linecap:round;opacity:0;animation:wisp 2.8s ease-out infinite}
+@keyframes wisp{0%{opacity:0;transform:translateY(5px)}30%{opacity:.9}100%{opacity:0;transform:translateY(-5px)}}
+.stk-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:10px 0 0;font-size:.74em;opacity:.8}
+.stk-lg{display:inline-flex;align-items:center;gap:6px;text-align:left}.stk-lg i{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);box-sizing:border-box}.stk-lg .flm{width:13px;height:13px}
+.stk-last{font-size:.8em;opacity:.6;margin-top:2px}
 .stk-tip{font-size:.85em;opacity:.7;margin:10px 0 14px}
 .stk-box{border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:0 0 12px;text-align:left;background:color-mix(in srgb,var(--desk) 55%,transparent)}
 .stk-bh{display:flex;align-items:center;gap:8px;color:#3ea0ef}.stk-bh b{color:var(--ink)}.stk-bh .fzi{width:20px;height:20px}
@@ -636,7 +649,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .endfx .new{opacity:0;transform-origin:50% 62%;animation:born .8s 2.7s cubic-bezier(.2,1.4,.4,1) forwards}.endfx .new .flm{width:56px;height:56px;top:58%}
 @keyframes born{0%{opacity:0;transform:scale(.2)}100%{opacity:1;transform:scale(1)}}
 .fx-card.still *{animation:none!important}.still .fz-ice,.still .fz-crack,.still .fz-sh,.still .fz-sf,.still .old,.still .smk,.still .spark{display:none}.still .new{opacity:1}.still.fx-card .fzfx .flm .fo{fill:#ff7a1a}.still.fx-card .fzfx .flm .fi{fill:#ffc53d}
-@media (prefers-reduced-motion:reduce){.stk-flame,.stk-flame .fo,.stk-flame .fi,.stk-confetti,.emb,.stkb .flm .fi,.stkb.pop,.stkb.pop .flm,.stkb.pop b{animation:none!important}.emb{display:none}}
+@media (prefers-reduced-motion:reduce){.stk-day.frz i::after,.stk-day.frz i::before,.stk-day .wisp,.stk-flame,.stk-flame .fo,.stk-flame .fi,.stk-confetti,.emb,.stkb .flm .fi,.stkb.pop,.stkb.pop .flm,.stkb.pop b{animation:none!important}.emb{display:none}}
 .tcardx.lock .pv::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,transparent 55%,rgba(255,255,255,.55))}
 .tbuy-pv{width:150px;aspect-ratio:3/4;margin:0 auto 8px;border-radius:4px 8px 8px 4px;background:#fbfbf6 center/cover;box-shadow:inset 6px 0 0 rgba(0,0,0,.2),0 10px 22px rgba(0,0,0,.25);border:1px solid var(--line)}.tbuy-pv.l{width:200px;aspect-ratio:4/3}
 #lockd .tbuy{width:100%;min-height:46px}#lockd .codebox .sep{text-align:center;opacity:.75;margin:14px 0 8px;font-size:.92em}
@@ -4325,7 +4338,7 @@ function stkLoad(){
 }
 function stkStore(){if(stkKey())lsSet(stkKey(),JSON.stringify({st:STRK.st,q:STRK.q,told:STRK.told}))}
 function stkClean(v){const i=x=>Number.isInteger(x)?x:0;
-  return {n:Math.max(1,i(v.n)),best:Math.max(1,i(v.best)),d:i(v.d),s:i(v.s),f:i(v.f),fr:i(v.fr),b:i(v.b),fz:Array.isArray(v.fz)?v.fz.filter(Number.isInteger).slice(-60):[],v:1}}
+  return {n:Math.max(1,i(v.n)),best:Math.max(1,i(v.best)),d:i(v.d),s:i(v.s),f:i(v.f),fr:i(v.fr),b:i(v.b),fz:Array.isArray(v.fz)?v.fz.filter(Number.isInteger).slice(-60):[],ps:i(v.ps),pd:i(v.pd),pn:i(v.pn),v:1}}
 function fzBack(st,day){ // the freezes that have come back by this day
   const cap=fzCap(st.best);
   while(st.f<cap&&st.fr&&day>=st.fr){st.f++;st.fr=st.f<cap?st.fr+FZ_BACK:0}
@@ -4335,7 +4348,7 @@ function fzBack(st,day){ // the freezes that have come back by this day
 function stkStep(st0,days){
   let st=st0?{...st0,fz:[...st0.fz]}:null;const ev={from:st0?st0.n:0,froze:0,ended:0,best0:st0?st0.best:0};
   for(const day of days){
-    if(!st){st={n:1,best:1,d:day,s:day,f:1,fr:0,b:0,fz:[],v:1};continue}
+    if(!st){st={n:1,best:1,d:day,s:day,f:1,fr:0,b:0,fz:[],ps:0,pd:0,pn:0,v:1};continue}
     if(day<=st.d)continue;
     const t={...st,fz:[...st.fz]};let ok=true,fr=0;
     for(let m=st.d+1;m<day&&ok;m++){ // the days missed in between
@@ -4345,11 +4358,11 @@ function stkStep(st0,days){
       else ok=false;
     }
     if(ok){st=t;st.n++;ev.froze+=fr}
-    else{ev.ended=st.n;ev.froze=0;st.n=1;st.s=day;st.fz=[]} // not enough freezes: the streak ends, the freezes stay
+    else{ev.ended=st.n;ev.froze=0;st.ps=st.s;st.pd=st.d;st.pn=st.n;st.n=1;st.s=day} // not enough freezes: the streak ends (it's kept as the last one, to show), the freezes stay
     fzBack(st,day);st.d=day;
     if(st.n>st.best){if(st.best<100&&st.n>=100)st.f=Math.min(2,st.f+1);st.best=st.n} // 100 days: a second freeze, ready
   }
-  if(st)st.fz=st.fz.filter(x=>x>=st.s).slice(-60);
+  if(st)st.fz=st.fz.filter(x=>x>=(st.pd?Math.min(st.s,st.ps):st.s)&&x>st.d-60).slice(-60);
   return {st,ev};
 }
 const stkPend=()=>STRK.q.filter(d=>!STRK.st||d>STRK.st.d).sort((a,b)=>a-b);
@@ -4451,6 +4464,14 @@ function stkPaint(){
   $('#stkd').classList.toggle('hidden',!(ACC.ownSrv&&stkUnclaimed().any));
 }
 const DOW=['Su','Mo','Tu','We','Th','Fr','Sa'];
+function stkDay(st,x){ // a day in the week row: on (used), frz (frozen), end (missed – the last streak ended), todo, off
+  if(!st)return 'off';
+  if(x>=st.s&&x<=st.d)return st.fz.includes(x)?'frz':'on';
+  if(x>st.d)return 'todo';
+  if(st.pd&&x>st.pd)return 'end';
+  if(st.pd&&x>=st.ps)return st.fz.includes(x)?'frz':'on';
+  return 'off';
+}
 function stkItemTile(id){ // a small picture of a reward
   if(/^med-\d+$/.test(id)){const pv=el('div','pv stk-pv k-stk stkp med'),m=new Image();m.alt='';m.src=medalURL(+id.slice(4));pv.append(m);pv.title=itemName(id);return pv}
   const it=itemById(id);if(!it)return el('span','');const k=itemKind(it),pv=el('div','pv stk-pv k-'+k+(k==='tpl'&&it.o==='l'?' l':''));
@@ -4461,14 +4482,21 @@ function stkView(box,close){ // the streak: used by the streak window and by Sto
   const lit=st&&st.d===t,hero=el('div','stk-hero');const fl=el('div','stk-flame'+(lit?'':' cold'));fl.innerHTML=FLAME+(lit?embers(6,0):'');
   hero.append(fl,el('div','stk-num',String(n)),el('div','stk-lbl',n===1?'day in a row':'days in a row'));
   if(st&&st.best>1)hero.append(el('div','stk-best','Your best: '+st.best+' days'));
+  if(st&&st.pn>1&&st.pd>=t-30)hero.append(el('div','stk-last','Your last streak: '+st.pn+' days · ended '+(t-st.pd-1<=1?'yesterday':(t-st.pd-1)+' days ago')));
   box.append(hero);
   const wk=el('div','stk-week');wk.setAttribute('aria-label','The last 7 days');
-  for(let d=t-6;d<=t;d++){const s=!st?'off':d>=st.s&&d<=st.d?(st.fz.includes(d)?'frz':'on'):d>st.d?'todo':'off';
+  const seen=new Set();
+  for(let d=t-6;d<=t;d++){const s=stkDay(st,d);seen.add(s);
     const c=el('div','stk-day '+s+(d===t?' today':''));const dot=el('i','');
-    if(s==='on')dot.innerHTML=FLAME;else if(s==='frz')dot.innerHTML=FZIC;
+    if(s==='on'||s==='frz')dot.innerHTML=FLAME;else if(s==='end')dot.innerHTML=FLAME+"<svg class='wisp' viewBox='0 0 10 16' aria-hidden='true'><path d='M5 15C2 12 8 10 5 7S7 3 5 1'/></svg>";
     c.append(el('span','',DOW[new Date((d+.5)*864e5).getUTCDay()]),dot);
-    c.title=s==='on'?'Used':s==='frz'?'Frozen – the streak went on':s==='todo'?'To come':'Missed';wk.append(c)}
-  box.append(wk,el('p','stk-tip',st&&st.d===t?'Come back tomorrow to keep it going.':'Open Foliet every day to keep it going.'));
+    c.title=s==='on'?'You were here':s==='frz'?'Frozen – you weren’t here, a freeze kept the streak':s==='end'?'Missed – the streak ended here':s==='todo'?'To come':'Missed';wk.append(c)}
+  box.append(wk);
+  if(seen.has('frz')||seen.has('end')){const lg=el('div','stk-legend'); // what the icy and the grey flames mean
+    if(seen.has('frz')){const a=el('span','stk-lg frz');a.innerHTML='<i>'+FLAME+'</i>';a.append('Frozen: you weren’t here, a freeze kept the streak');lg.append(a)}
+    if(seen.has('end')){const a=el('span','stk-lg end');a.innerHTML='<i>'+FLAME+'</i>';a.append('Went out: you forgot to come, the streak ended');lg.append(a)}
+    box.append(lg)}
+  box.append(el('p','stk-tip',st&&st.d===t?'Come back tomorrow to keep it going.':'Open Foliet every day to keep it going.'));
   // freezes
   const fz=el('div','stk-box stk-fz');const fh=el('div','stk-bh');fh.innerHTML=FZIC;fh.append(el('b','','Streak freezes'));fz.append(fh);
   const cap=st?fzCap(st.best):1,slots=el('div','stk-slots');
