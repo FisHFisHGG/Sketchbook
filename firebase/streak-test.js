@@ -32,7 +32,9 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   const shot=async(p,n)=>{if(SHOTS)await p.screenshot({path:path.join(SHOTS,n+'.png')})};
   // the streak in the cloud (admin rights: no rules), and setting it to a day in the past
   const getStk=async uid=>{const r=await (await admin('streak/'+uid,null,'GET')).json();if(!r.fields)return null;const o={};for(const [k,v] of Object.entries(r.fields))o[k]=v.integerValue!=null?+v.integerValue:v.arrayValue?(v.arrayValue.values||[]).map(x=>+x.integerValue):v;return o};
-  const setStk=(uid,o)=>admin('streak/'+uid,{fields:{n:I(o.n),best:I(o.best||o.n),d:I(o.d),s:I(o.s!=null?o.s:o.d-o.n+1),f:I(o.f!=null?o.f:1),fr:I(o.fr||0),b:I(o.b||0),fz:{arrayValue:{values:(o.fz||[]).map(I)}},at:{timestampValue:new Date().toISOString()},v:I(1)}});
+  // first wait until the app has finished its own streak write (opening the streak window saves today too) – otherwise
+  // its transaction retries on top of the state written here and uses the freeze before the restart
+  const setStk=async(uid,o)=>{await A.waitForFunction(()=>!STRK.busy,null,{timeout:20000});return admin('streak/'+uid,{fields:{n:I(o.n),best:I(o.best||o.n),d:I(o.d),s:I(o.s!=null?o.s:o.d-o.n+1),f:I(o.f!=null?o.f:1),fr:I(o.fr||0),b:I(o.b||0),fz:{arrayValue:{values:(o.fz||[]).map(I)}},at:{timestampValue:new Date().toISOString()},v:I(1)}})};
   const getOwned=async uid=>{const r=await (await admin('owned/'+uid,null,'GET')).json();return r.fields?{t:(r.fields.t.arrayValue.values||[]).map(v=>v.stringValue),last:r.fields.last.stringValue}:null};
   // a fresh start of the app on this device (another day's first visit: what the device remembers about messages is cleared)
   const restart=async p=>{await p.evaluate(()=>{localStorage.removeItem('sb-stk:'+ACC.user.uid)});await p.reload();await ready(p);await p.waitForFunction(()=>!STRK.busy&&STRK.st,null,{timeout:20000});await p.waitForTimeout(300)};
