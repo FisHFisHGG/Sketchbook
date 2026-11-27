@@ -76,29 +76,36 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
   await A.click('#stkb');await A.waitForSelector('#lockc.stkdlg .stk-num');
   ok(await A.evaluate(()=>{const f=$('#lockc .stk-flame');return f.querySelectorAll('.emb').length===6&&getComputedStyle(f.querySelector('.emb')).animationName==='ember'&&getComputedStyle(f.querySelector('.fo')).animationName==='sway'&&getComputedStyle(f).animationName==='glow'}),'the big flame: 6 sparks rising, the flame sways and glows');
   await A.evaluate(()=>$('#lockd').click());
-  await setStk(uid,{n:10,d:T-2,f:1});await restart(A);st=await getStk(uid);
-  ok(st.n===11&&st.f===0&&st.fr===T+1&&st.fz.includes(T-1),'a missed day: a freeze keeps the streak (11), it comes back 2 days after the missed day');
+  await setStk(uid,{n:10,d:T-2,f:1});const t0=Date.now();await restart(A);st=await getStk(uid);const t1=Date.now(),H48=48*36e5;
+  ok(st.n===11&&st.f===0&&st.fr>=t0+H48&&st.fr<=t1+H48&&st.fz.includes(T-1),'a missed day: a freeze keeps the streak (11), it comes back 48 hours after it saved the streak (when you opened Foliet)');
   await A.waitForSelector('#stkfx .fzfx',{timeout:10000});
-  ok(await A.evaluate(()=>{const c=$('#stkfx');return /Streak freeze used/.test(c.textContent)&&/a freeze kept your 11-day streak safe/.test(c.textContent)&&/Your freeze comes back in 1 day/.test(c.textContent)&&!!c.querySelector('.fz-ice')&&c.querySelectorAll('.fz-sh').length===7&&c.querySelectorAll('.fz-sf').length===8&&getComputedStyle(c.querySelector('.fz-ice')).animationName==='iceout'}),
-    'a freeze saved the streak: the animation (the flame frozen in ice, snow, the ice cracks and shatters, the flame lights again) – “a freeze kept your 11-day streak safe”, it comes back in 1 day');
+  ok(await A.evaluate(()=>{const c=$('#stkfx');return /Streak freeze used/.test(c.textContent)&&/a freeze kept your 11-day streak safe/.test(c.textContent)&&/Your freeze comes back in 48 hours/.test(c.textContent)&&!!c.querySelector('.fz-ice')&&c.querySelectorAll('.fz-sh').length===7&&c.querySelectorAll('.fz-sf').length===8&&getComputedStyle(c.querySelector('.fz-ice')).animationName==='iceout'}),
+    'a freeze saved the streak: the animation (the flame frozen in ice, snow, the ice cracks and shatters, the flame lights again) – “a freeze kept your 11-day streak safe”, it comes back in 48 hours');
   await A.waitForTimeout(2800);await shot(A,'stk-2b-freezefx');
   ok(await A.evaluate(()=>getComputedStyle($('#stkfx .fzfx .flm .fo')).fill==='rgb(255, 122, 26)'),'… after it, the flame is orange again');
   await A.click('#stkfx .btn');await A.waitForSelector('#stkfx',{state:'detached'});
   await A.click('#stkb');await A.waitForSelector('#lockc.stkdlg .stk-num');
   ok(await A.evaluate(()=>{const c=$('#lockc'),days=[...c.querySelectorAll('.stk-day')],f=days[5];return f.classList.contains('frz')&&!!f.querySelector('.flm')&&getComputedStyle(f.querySelector('.flm .fo')).fill==='rgb(143, 196, 239)'&&getComputedStyle(f.querySelector('i'),'::after').animationName==='glint'&&/Frozen/.test(f.title)&&days[6].classList.contains('on')&&getComputedStyle(c.querySelector('.stk-slot:not(.on) .fzi')).filter==='grayscale(1)'&&/Frozen: you weren’t here/.test(c.querySelector('.stk-legend').textContent)}),
     'the window: yesterday stays a frozen (blue, glinting) flame – “Frozen: you weren’t here, a freeze kept the streak” –, the freeze is back tomorrow (its ice cube grey until then)');
-  { // instead of “Back in 1 day”: a countdown to the moment the freeze is back (midnight, when tomorrow starts)
-    const cd=await A.evaluate(()=>{const e=$('#lockc .stk-slot:not(.on) .stk-cd'),at=+e.dataset.at;return {txt:e.textContent,at,left:at-Date.now(),day:dayNo(at),before:dayNo(at-1000),slot:e.closest('.stk-slot').textContent}});
+  { // instead of “Back in 1 day”: a countdown of 48 hours from the moment the freeze saved the streak
+    const cd=await A.evaluate(()=>{const e=$('#lockc .stk-slot:not(.on) .stk-cd'),at=+e.dataset.at;return {txt:e.textContent,at,left:at-Date.now(),slot:e.closest('.stk-slot').textContent}});
     await A.waitForTimeout(2100);const txt2=await A.evaluate(()=>$('#lockc .stk-cd').textContent);
     const sec=x=>{const [h,m,s]=x.split(':').map(Number);return h*3600+m*60+s};
-    ok(/^Back in \d\d:\d\d:\d\d$/.test(cd.slot)&&cd.day===T+1&&cd.before===T&&cd.left>0&&cd.left<=864e5&&Math.abs(sec(cd.txt)-cd.left/1e3)<=2&&sec(cd.txt)-sec(txt2)>=1&&sec(cd.txt)-sec(txt2)<=3,
-      'the grey freeze shows a countdown in hours, minutes and seconds (“Back in '+cd.txt+'”) to midnight, when it comes back – and it ticks ('+cd.txt+' → '+txt2+')');
+    ok(/^Back in 4[78]:\d\d:\d\d$/.test(cd.slot)&&cd.at===st.fr&&cd.left>H48-6e5&&cd.left<=H48&&Math.abs(sec(cd.txt)-cd.left/1e3)<=2&&sec(cd.txt)-sec(txt2)>=1&&sec(cd.txt)-sec(txt2)<=3,
+      'the grey freeze shows a countdown in hours, minutes and seconds (“Back in '+cd.txt+'”), from 48 hours when the freeze saved the streak – and it ticks ('+cd.txt+' → '+txt2+')');
     await shot(A,'stk-2-frozen');
     // when the countdown reaches 0, that freeze turns ready on the spot
     await A.evaluate(()=>{const e=$('#lockc .stk-cd');e.dataset.at=Date.now()+1200});
     await A.waitForFunction(()=>!$('#lockc .stk-cd')&&$('#lockc .stk-slot.on')&&/Ready/.test($('#lockc .stk-slots').textContent),null,{timeout:5000});
     ok(true,'… at 00:00:00 the ice cube turns ready (“Ready”)');
   }
+  ok(await A.evaluate(()=>{const D=dayNo(),noon=dayStart(D)+12*36e5,H=48*36e5,base={n:10,best:10,d:D-2,s:D-11,f:1,fr:0,b:0,fz:[],ps:0,pd:0,pn:0,v:1};
+      const r=stkStep(base,[D],noon); // missed yesterday, opened today at noon: a freeze saves it, back at noon in 2 days
+      const r2=stkStep(r.st,[D+2],dayStart(D+2)+10*36e5); // then missed tomorrow: the freeze isn't back yet – the streak ends
+      const r3=stkStep({...r.st,d:D+1,n:12},[D+3],dayStart(D+3)+9*36e5); // came tomorrow, missed the day after: back at noon that day – it covers it
+      return r.st.n===11&&r.st.f===0&&r.st.fr===noon+H&&r2.ev.ended===11&&r3.st.n===13&&r3.ev.froze===1&&r3.st.fr===dayStart(D+3)+9*36e5+H
+        &&stkClean({...base,fr:D+1}).fr===dayStart(D+1)}),
+    'the 48 hours: a freeze used today at noon is back at noon in 2 days – missing tomorrow ends the streak, missing the day after is covered (an old saved day is read as its midnight)');
   await A.evaluate(()=>$('#lockd').click());
   await setStk(uid,{n:20,d:T-3,f:1});await restart(A);st=await getStk(uid);
   ok(st.n===1&&st.best===20&&st.s===T&&st.f===1,'two missed days with one freeze: the streak ends (best stays 20), the freeze is kept');
@@ -116,8 +123,8 @@ const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5
     'the window: the days of the last streak, then the 2 forgotten days stay as grey flames gone out (with smoke) – “Went out: you forgot to come” –, today a new flame; “Your last streak: 20 days · ended 2 days ago”');
   await shot(A,'stk-2d-ended');await A.evaluate(()=>$('#lockd').click());
   await setStk(uid,{n:20,best:20,d:T-3,f:1,b:2});await restart(A);st=await getStk(uid);
-  ok(st.n===21&&st.b===1&&st.f===1&&st.fz.includes(T-2)&&st.fz.includes(T-1),'with extra freezes: 2 missed days = 1 freeze + 1 extra (21 days); the freeze used 2 days ago is back today');
-  await A.waitForSelector('#stkfx .fzfx',{timeout:10000});ok(await A.evaluate(()=>/2 days were missed – freezes kept your 21-day streak safe/.test($('#stkfx').textContent)),'… “2 days were missed – freezes kept your 21-day streak safe”');
+  ok(st.n===21&&st.b===1&&st.f===0&&st.fr>Date.now()+47*36e5&&st.fz.includes(T-2)&&st.fz.includes(T-1),'with extra freezes: 2 missed days = 1 freeze + 1 extra (21 days); the freeze is back in 48 hours');
+  await A.waitForSelector('#stkfx .fzfx',{timeout:10000});ok(await A.evaluate(()=>/2 days were missed – freezes kept your 21-day streak safe/.test($('#stkfx').textContent)&&/You have 1 freeze ready, and another comes back in 48 hours/.test($('#stkfx').textContent)),'… “2 days were missed – freezes kept your 21-day streak safe”, “You have 1 freeze ready, and another comes back in 48 hours”');
   await A.click('#stkfx .btn');await A.waitForSelector('#stkfx',{state:'detached'});
 
   // ======== 3) the rules: nobody makes up a streak or rewards

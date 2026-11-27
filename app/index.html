@@ -4313,7 +4313,8 @@ async function touchProfile(u){
    streak/{uid} = {n, best, d, s, f, fr, b, fz, at, v:1} – every change is checked by the rules (stkOk, stkNext):
      n = days used in this streak · best = the longest ever · d = the last day used · s = the day this streak began
      (day numbers = days since 1 Jan 1970 in your own time zone, dayNo()) · f = freezes ready: 1, or 2 once you've reached
-     100 days (fzCap) · fr = the day the next one comes back (FZ_BACK days after it was used; 0 = none on the way) ·
+     100 days (fzCap) · fr = when the next one comes back, in ms (48 hours – FZ_MS – after it saved the streak, i.e. after
+     you opened Foliet and it covered the day you missed; 0 = none on the way; older entries had a day number, see stkClean) ·
      b = extra freezes (bought in the Store or given by the admin – they never run out by themselves) ·
      fz = the frozen days (the last 60, for the week row).
    A day you miss uses a freeze – the ones that come back first, then the extra ones – and keeps the streak (it doesn't add a
@@ -4322,8 +4323,9 @@ async function touchProfile(u){
    the number every 500 days, for ever (med-1500, med-2000 … in the Streak medals pack). Nothing from the Store is free.
    On the device: sb-stk:<uid> = {st: what the cloud has, q: days used that the cloud hasn't seen yet (offline), told: the
    last day a message was shown}; stkSync() sends them as soon as it can. */
-const FZ_BACK=2,FZ_PACK=3;
+const FZ_MS=48*36e5,FZ_PACK=3; // a used freeze comes back 48 hours later
 const dayNo=(t=Date.now())=>Math.floor((t-new Date(t).getTimezoneOffset()*6e4)/864e5);
+const dayStart=x=>{const u=new Date(x*864e5);return new Date(u.getUTCFullYear(),u.getUTCMonth(),u.getUTCDate()).getTime()}; // the local midnight that starts day x
 const fzCap=best=>best>=100?2:1;
 const STK_R=[[100,['cov-flame','pixels','lbl-laurel','stk-wins']],[150,['cov-aurora']],[200,['gratitude']],[250,['lbl-seal']],[300,['cov-constel']],
   [365,['stk-year']],[500,['lbl-rosette']],[777,['cov-calvary','prayer'],1],[1000,['cov-crown']]]; // + the rules' stkItems(); 1 = hidden (777: a surprise)
@@ -4339,35 +4341,36 @@ function stkLoad(){
 }
 function stkStore(){if(stkKey())lsSet(stkKey(),JSON.stringify({st:STRK.st,q:STRK.q,told:STRK.told}))}
 function stkClean(v){const i=x=>Number.isInteger(x)?x:0;
-  return {n:Math.max(1,i(v.n)),best:Math.max(1,i(v.best)),d:i(v.d),s:i(v.s),f:i(v.f),fr:i(v.fr),b:i(v.b),fz:Array.isArray(v.fz)?v.fz.filter(Number.isInteger).slice(-60):[],ps:i(v.ps),pd:i(v.pd),pn:i(v.pn),v:1}}
-function fzBack(st,day){ // the freezes that have come back by this day
+  return {n:Math.max(1,i(v.n)),best:Math.max(1,i(v.best)),d:i(v.d),s:i(v.s),f:i(v.f),fr:(x=>x>0&&x<1e10?dayStart(x):x)(i(v.fr)),b:i(v.b),fz:Array.isArray(v.fz)?v.fz.filter(Number.isInteger).slice(-60):[],ps:i(v.ps),pd:i(v.pd),pn:i(v.pn),v:1}}
+function fzBack(st,t){ // the freezes that have come back by the time t (ms): each one 48 hours after the one before
   const cap=fzCap(st.best);
-  while(st.f<cap&&st.fr&&day>=st.fr){st.f++;st.fr=st.f<cap?st.fr+FZ_BACK:0}
+  while(st.f<cap&&st.fr&&t>=st.fr){st.f++;st.fr=st.f<cap?st.fr+FZ_MS:0}
   if(st.f>=cap)st.fr=0;
 }
 // the state after these days used (sorted, each after st0.d); ev = what happened, for the messages
-function stkStep(st0,days){
+function stkStep(st0,days,now=Date.now()){
   let st=st0?{...st0,fz:[...st0.fz]}:null;const ev={from:st0?st0.n:0,froze:0,ended:0,best0:st0?st0.best:0};
   for(const day of days){
     if(!st){st={n:1,best:1,d:day,s:day,f:1,fr:0,b:0,fz:[],ps:0,pd:0,pn:0,v:1};continue}
     if(day<=st.d)continue;
     const t={...st,fz:[...st.fz]};let ok=true,fr=0;
+    const at=day===dayNo(now)?now:dayStart(day); // when you opened Foliet that day (a day used offline: its start)
     for(let m=st.d+1;m<day&&ok;m++){ // the days missed in between
-      fzBack(t,m);
-      if(t.f>0){t.f--;if(!t.fr)t.fr=m+FZ_BACK;t.fz.push(m);fr++}
+      fzBack(t,dayStart(m+1)-1); // a freeze back before that day ended covers it
+      if(t.f>0){t.f--;if(!t.fr)t.fr=at+FZ_MS;t.fz.push(m);fr++} // used now: back in 48 hours
       else if(t.b>0){t.b--;t.fz.push(m);fr++}
       else ok=false;
     }
     if(ok){st=t;st.n++;ev.froze+=fr}
     else{ev.ended=st.n;ev.froze=0;st.ps=st.s;st.pd=st.d;st.pn=st.n;st.n=1;st.s=day} // not enough freezes: the streak ends (it's kept as the last one, to show), the freezes stay
-    fzBack(st,day);st.d=day;
+    fzBack(st,Math.min(now,dayStart(day+1)-1));st.d=day;
     if(st.n>st.best){if(st.best<100&&st.n>=100)st.f=Math.min(2,st.f+1);st.best=st.n} // 100 days: a second freeze, ready
   }
   if(st)st.fz=st.fz.filter(x=>x>=(st.pd?Math.min(st.s,st.ps):st.s)&&x>st.d-60).slice(-60);
   return {st,ev};
 }
 const stkPend=()=>STRK.q.filter(d=>!STRK.st||d>STRK.st.d).sort((a,b)=>a-b);
-function stkNow(){const q=stkPend(),st=q.length?stkStep(STRK.st,q).st:STRK.st;if(st){const t={...st};fzBack(t,Math.max(t.d,dayNo()));return t}return null}
+function stkNow(){const q=stkPend(),st=q.length?stkStep(STRK.st,q).st:STRK.st;if(st){const t={...st};fzBack(t,Date.now());return t}return null}
 const stkTO=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej({code:'timeout'}),ms))]);
 async function stkSync(){
   const u=ACC.user,uid=stkUid();if(!uid||VIEWC)return;
@@ -4446,12 +4449,12 @@ function stkFx(kind,st,ev){
   const stg=el('div','fx-stage '+(kind==='frz'?'fzfx':'endfx'));stg.setAttribute('aria-hidden','true');
   const close=()=>{document.removeEventListener('keydown',esc,true);ov.remove();stkCheck()},esc=e=>{if(e.key==='Escape'){e.stopPropagation();close()}};
   const go=el('button','btn',kind==='frz'?'Keep going 🔥':'Start again 🔥');go.type='button';go.onclick=close;
-  if(kind==='frz'){const t=dayNo(),back=st.fr?Math.max(1,st.fr-t):0,more=st.f+st.b;
+  if(kind==='frz'){const left=st.fr?st.fr-Date.now():0,back=left>0?Math.max(1,Math.round(left/36e5)):0,more=st.f+st.b;
     stg.innerHTML=FLAME+"<div class='fz-ice'></div><svg class='fz-crack' viewBox='0 0 170 170'><path d='M85 28L77 60L92 80L79 110L88 142'/><path d='M77 60L50 69L38 92'/><path d='M92 80L121 73L134 50'/><path d='M79 110L106 124'/></svg>"
       +[[-72,-48,140],[62,-62,-120],[-82,28,200],[72,40,-160],[-20,-88,90],[12,82,-60],[40,-80,70]].map(([x,y,r])=>"<i class='fz-sh' style='--dx:"+x+"px;--dy:"+y+"px;--r:"+r+"deg'></i>").join('')
       +[10,30,52,74,96,118,140,156].map((x,i)=>"<i class='fz-sf' style='left:"+x+"px;animation-delay:"+(i*.17).toFixed(2)+"s'>❄</i>").join('')+embers(6,2.4);
     c.append(stg,el('h2','','Streak freeze used'),el('p','',(ev.froze===1?'You missed a day, and a freeze kept your ':ev.froze+' days were missed – freezes kept your ')+st.n+'-day streak safe.'),
-      el('p','fx-sm',more?'You have '+more+(more===1?' freeze':' freezes')+' ready'+(back?', and another comes back in '+back+(back===1?' day.':' days.'):'.'):back?'Your freeze comes back in '+back+(back===1?' day.':' days.'):''))}
+      el('p','fx-sm',more?'You have '+more+(more===1?' freeze':' freezes')+' ready'+(back?', and another comes back in '+back+(back===1?' hour.':' hours.'):'.'):back?'Your freeze comes back in '+back+(back===1?' hour.':' hours.'):''))}
   else{stg.innerHTML="<div class='old'>"+FLAME+"<b class='fx-n'>"+ev.ended+"</b></div><svg class='smk' viewBox='0 0 170 170'><path d='M85 92C75 76 95 64 84 48S92 24 86 10'/><path d='M76 96C62 82 78 70 68 56S72 34 64 22'/><path d='M94 96C106 84 94 72 102 60S100 40 106 28'/></svg><i class='spark'></i><div class='new'>"+FLAME+"<b class='fx-n'>1</b></div>";
     c.append(stg,el('h2','','Your '+ev.ended+'-day streak ended'),el('p','','That’s okay – every day is a new start. Your new streak begins today.'),el('p','fx-sm','Your best: '+st.best+' days. Freezes keep a streak going on days you miss.'))}
   c.append(go);ov.onclick=e=>{if(e.target===ov)close()};document.addEventListener('keydown',esc,true);document.body.append(ov);go.focus();
@@ -4478,7 +4481,6 @@ function stkItemTile(id){ // a small picture of a reward
   const it=itemById(id);if(!it)return el('span','');const k=itemKind(it),pv=el('div','pv stk-pv k-'+k+(k==='tpl'&&it.o==='l'?' l':''));
   itemPreview(pv,it,k);pv.title=it.n;return pv;
 }
-const dayStart=x=>{const u=new Date(x*864e5);return new Date(u.getUTCFullYear(),u.getUTCMonth(),u.getUTCDate()).getTime()}; // the local midnight that starts day x
 const hms=ms=>{const s=Math.max(0,Math.ceil(ms/1e3)),p=v=>String(v).padStart(2,'0');return p(Math.floor(s/3600))+':'+p(Math.floor(s/60)%60)+':'+p(s%60)}; // 05:07:09 (hours can go past 24)
 function stkTick(){ // the countdowns to the next freeze tick every second while one is on screen; at 0 that freeze is ready
   if(stkTick.iv)return;
@@ -4513,12 +4515,12 @@ function stkView(box,close){ // the streak: used by the streak window and by Sto
   const fz=el('div','stk-box stk-fz');const fh=el('div','stk-bh');fh.innerHTML=FZIC;fh.append(el('b','','Streak freezes'));fz.append(fh);
   const cap=st?fzCap(st.best):1,slots=el('div','stk-slots');
   for(let k=0;k<cap;k++){const ready=st?k<st.f:true,sl=el('div','stk-slot'+(ready?' on':''));sl.innerHTML=FZIC;
-    const at=st&&!ready&&st.fr?dayStart(st.fr+(k-st.f)*FZ_BACK):0,sp=el('span','',ready?'Ready':at?'Back in ':'Coming back'); // a freeze comes back when its day starts (the next one FZ_BACK days later)
+    const at=st&&!ready&&st.fr?st.fr+(k-st.f)*FZ_MS:0,sp=el('span','',ready?'Ready':at?'Back in ':'Coming back'); // a freeze comes back 48 hours after it saved your streak (the next one 48 hours after that)
     if(at){const cd=el('b','stk-cd',hms(at-Date.now()));cd.dataset.at=at;sp.append(cd);sl.title='Back on '+new Date(at).toLocaleString([],{weekday:'long',hour:'2-digit',minute:'2-digit'})}
     sl.append(sp);slots.append(sl)}
   if(st&&st.b){const ex=el('div','stk-slot on extra');ex.innerHTML=FZIC;ex.append(el('span','','+'+st.b+' extra'));slots.append(ex)}
   stkTick();
-  fz.append(slots,el('p','stk-sm','A freeze saves your streak on a day you don’t open Foliet. It comes back '+FZ_BACK+' days later. At 100 days you get a second one. Extra freezes wait until you need them.'));
+  fz.append(slots,el('p','stk-sm','A freeze saves your streak on a day you don’t open Foliet. It comes back 48 hours after it saves your streak. At 100 days you get a second one. Extra freezes wait until you need them.'));
   const buy=el('button','ib stk-buy','Get '+FZ_PACK+' more freezes · '+euro(ITEM_P));buy.type='button';buy.id='stk-buy';buy.onclick=()=>stkBuy();fz.append(buy);box.append(fz);
   // the next reward
   const goal=stkGoal(n),prev=stkPrevGoal(goal);

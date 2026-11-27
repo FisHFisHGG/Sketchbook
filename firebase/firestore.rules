@@ -91,8 +91,8 @@ service cloud.firestore {
     }
     // ----- the streak (days in a row) -----
     // n = days used in this streak, best = the longest ever, d = the last day used, s = the day it began (day numbers:
-    // days since 1970 in the person's own time zone), f = freezes ready (1, or 2 after 100 days), fr = the day the next one
-    // comes back (0 = none on the way), b = extra freezes (bought or given), fz = frozen days (the last 60),
+    // days since 1970 in the person's own time zone), f = freezes ready (1, or 2 after 100 days), fr = when the next one
+    // comes back (ms, 48 hours after it saved the streak; older entries: a day number; 0 = none on the way), b = extra freezes (bought or given), fz = frozen days (the last 60),
     // ps / pd / pn = the last streak that ended: its first day, its last day and its days (0 = none) – shown in the week row.
     // The app can only add one day for each day that really passed, and only up to today.
     function utcDay() { return request.time.toMillis() / 86400000; }
