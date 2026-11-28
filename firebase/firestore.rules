@@ -8,7 +8,8 @@ rules_version = '2';
 //                        Made by you in the console, from the admin panel, or by redeeming a code.
 // codes/{CODE}           promo codes: {kind:'pro', days, card?, …} or {kind:'tpl', tpl: template id | 'all', …},
 //                        plus {max, used, active, note, created}
-// owned/{uid}            paid templates this person has: {t: [ids | 'all'], last: CODE | 'admin'}
+// owned/{uid}            what this person has from the Store: {t: [ids | 'all'], last: CODE | 'admin' | 'free' | 'streak'}
+// streak/{uid}           days in a row this person opened Foliet, and freezes: {n, best, d, s, f, fr, b, fz, ps, pd, pn, at, v}
 // offers/{uid}           a card offer from a code that asks for a card: {code, days, at}; 24 hours to add a card
 // shares/{code}         a live link: {owner, slug, title, o, n, edit, on, m}; shares/{code}/r/{rec} = its pages (+ pictures)
 // shop/{id}              banners and items added from the admin panel (sticker packs, covers), with from/until
@@ -88,6 +89,69 @@ service cloud.firestore {
         && (!('from' in it) || it.from == null || it.from <= request.time)
         && (!('until' in it) || it.until == null || it.until > request.time);
     }
+    // ----- the streak (days in a row) -----
+    // n = days used in this streak, best = the longest ever, d = the last day used, s = the day it began (day numbers:
+    // days since 1970 in the person's own time zone), f = freezes ready (1, or 2 after 100 days), fr = when the next one
+    // comes back (ms, 48 hours after it saved the streak; older entries: a day number; 0 = none on the way), b = extra freezes (bought or given), fz = frozen days (the last 60),
+    // ps / pd / pn = the last streak that ended: its first day, its last day and its days (0 = none) – shown in the week row.
+    // The app can only add one day for each day that really passed, and only up to today.
+    function utcDay() { return request.time.toMillis() / 86400000; }
+    function isToday(day) { return day >= utcDay() - 1 && day <= utcDay() + 1; } // any time zone
+    function stkCap(best) { return best >= 100 ? 2 : 1; }
+    function stkOk(d) {
+      return d.keys().hasOnly(['n', 'best', 'd', 's', 'f', 'fr', 'b', 'fz', 'ps', 'pd', 'pn', 'at', 'v'])
+        && d.n is int && d.best is int && d.d is int && d.s is int && d.f is int && d.fr is int && d.b is int
+        && d.fz is list && d.fz.size() <= 60 && d.v is int
+        && d.n >= 1 && d.best >= d.n && d.s <= d.d && d.n <= d.d - d.s + 1
+        && d.f >= 0 && d.f <= stkCap(d.best) && d.fr >= 0 && d.b >= 0 && d.b <= 999
+        && d.get('ps', 0) is int && d.get('pd', 0) is int && d.get('pn', 0) is int
+        && d.get('pd', 0) < d.s && d.get('ps', 0) <= d.get('pd', 0) && d.get('pn', 0) <= d.best
+        && d.at == request.time;
+    }
+    // a new day: the streak goes on (one more for each day used since; the days missed in between need freezes:
+    // the extra ones used, plus the ones that come back – at most the slots, plus one every 2 days after the first
+    // missed day, counted only on missed days), or a new one starts
+    function stkNext(o, d) {
+      let days = d.d - o.d;
+      let used = d.n - o.n;
+      return d.b <= o.b
+        && ((d.n > o.best && d.best == d.n) || (d.n <= o.best && d.best == o.best))
+        && ((days == 0 && d.n == o.n && d.s == o.s)
+          || (days > 0 && isToday(d.d) && (
+               (d.s == o.s && used >= 1 && used <= days
+                 && 2 * ((days - used) - (o.b - d.b) - stkCap(d.best)) <= days - 2)
+               || (d.s > o.d && d.n <= 7))));
+    }
+    // the streak's own items (never sold): four at 100 days, then 150, 200, 250, 300, 365, 500, 777 (two) and 1,000 –
+    // the same list as STK_R in the app
+    function stkItems(best) {
+      return (best >= 100 ? ['cov-flame', 'pixels', 'lbl-laurel', 'stk-wins'] : [])
+        .concat(best >= 150 ? ['cov-aurora'] : [])
+        .concat(best >= 200 ? ['gratitude'] : [])
+        .concat(best >= 250 ? ['lbl-seal'] : [])
+        .concat(best >= 300 ? ['cov-constel'] : [])
+        .concat(best >= 365 ? ['stk-year'] : [])
+        .concat(best >= 500 ? ['lbl-rosette'] : [])
+        .concat(best >= 777 ? ['cov-calvary', 'prayer'] : [])
+        .concat(best >= 1000 ? ['cov-crown'] : []);
+    }
+    function validStreakClaim(uid, prev) {
+      let d = request.resource.data;
+      let st = get(/databases/$(database)/documents/streak/$(uid)).data;
+      return d.keys().hasOnly(['t', 'last']) && d.last == 'streak'
+        && d.t.hasAll(prev) && d.t.size() <= prev.size() + 4
+        && d.t.toSet().difference(prev.toSet()).hasOnly(stkItems(st.best));
+    }
+    // then a gold medal sticker at 1,500 days and every 500 after, for ever: med-1500, med-2000 … (one per write)
+    function medalNum(id) { return int(id.split('-')[1]); }
+    function validMedalClaim(uid, prev) {
+      let d = request.resource.data;
+      let id = d.t[d.t.size() - 1];
+      return d.keys().hasOnly(['t', 'last']) && d.last == 'streak' && d.t == prev.concat([id])
+        && id is string && id.matches('^med-[1-9][0-9]{3,5}$')
+        && medalNum(id) >= 1500 && medalNum(id) % 500 == 0
+        && medalNum(id) <= get(/databases/$(database)/documents/streak/$(uid)).data.best;
+    }
     // this code was really used in this same write: by the Pro record or by the templates record
     function redeemedHere(uid, code) {
       let pp = /databases/$(database)/documents/pro/$(uid);
@@ -161,8 +225,23 @@ service cloud.firestore {
       allow get: if owner(uid) || isAdmin();
       allow list, write: if isAdmin();
       allow delete: if owner(uid); // deleting the account
-      allow create: if owner(uid) && (validTplRedeem(uid, []) || validFreeClaim([]));
-      allow update: if owner(uid) && (validTplRedeem(uid, resource.data.t) || validFreeClaim(resource.data.t));
+      allow create: if owner(uid) && (validTplRedeem(uid, []) || validFreeClaim([]) || validStreakClaim(uid, []) || validMedalClaim(uid, []));
+      allow update: if owner(uid) && (validTplRedeem(uid, resource.data.t) || validFreeClaim(resource.data.t)
+        || validStreakClaim(uid, resource.data.t) || validMedalClaim(uid, resource.data.t));
+    }
+
+    match /streak/{uid} { // days in a row (all plans) – see stkOk / stkNext
+      allow get: if owner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow delete: if owner(uid); // deleting the account
+      allow create: if owner(uid) && stkOk(request.resource.data) && isToday(request.resource.data.d)
+        && request.resource.data.n <= 7 && request.resource.data.best == request.resource.data.n
+        && request.resource.data.b == 0;
+      allow update: if owner(uid) && stkOk(request.resource.data) && stkNext(resource.data, request.resource.data);
+      // the admin gives extra freezes (Admin panel → Find an account); later Stripe adds the bought ones (admin rights)
+      allow update: if isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['b', 'at'])
+        && request.resource.data.b is int && request.resource.data.b >= 0 && request.resource.data.b <= 999
+        && request.resource.data.at == request.time;
     }
 
     // live links: anyone can look (no account), the owner (Pro) shares, Pro accounts edit when the owner allows it
@@ -273,9 +352,14 @@ service cloud.firestore {
         && request.resource.data.at == request.time;
     }
 
-    match /config/{id} { // admin settings: config/costs (running costs), config/public (payments + welcome offer, read by every account)
+    match /config/{id} { // admin settings: config/costs (running costs), config/public (payments + welcome offer, read by every account),
+                         // config/launch (the day Foliet was launched: set once by an admin, then never changed or deleted)
       allow read: if isAdmin() || (id == 'public' && signedIn());
-      allow write: if isAdmin();
+      allow write: if isAdmin() && id != 'launch';
+      allow create: if isAdmin() && id == 'launch'
+        && request.resource.data.keys().hasOnly(['d', 'at', 'by'])
+        && request.resource.data.d is string && request.resource.data.d.matches('^20[2-9][0-9]-[01][0-9]-[0-3][0-9]$')
+        && request.resource.data.at == request.time && request.resource.data.by == request.auth.uid;
     }
 
     match /admins/{uid} {

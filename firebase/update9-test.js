@@ -1,4 +1,4 @@
-// Update 9: new prices (€5.99 a month, €44.99 a year), no "Free" badge on the landing, Pro codes that ask for a card
+// Update 9: prices (now €4.99 a month, €29.99 a year), no "Free" badge on the landing, Pro codes that ask for a card
 // (an offer that lasts 24 hours, Stripe free trial), and the welcome offer for new accounts (% off Pro yearly).
 // Stripe isn't connected in the emulator: the test plays the extension's part (it adds the checkout url, the stripeRole claim).
 // How to run (from this folder, with Java installed):
@@ -15,8 +15,8 @@ const claim=(uid,c)=>fetch('http://127.0.0.1:9099/identitytoolkit.googleapis.com
   // ---- the landing page and the terms
   const land=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8'),terms=fs.readFileSync(path.join(__dirname,'..','terms.html'),'utf8');
   ok(!/<span class="soon">Free<\/span>/.test(land)&&!/Included free/.test(land)&&/<h3>Private notebooks<\/h3>/.test(land),'landing: no "Free" badge on "Private notebooks" (only Pro features get a badge)');
-  ok(/"price":"5\.99"/.test(land)&&/"price":"44\.99"/.test(land)&&/€44\.99/.test(land)&&/'€5\.99','per month'/.test(land)&&/That’s €3\.75 a month/.test(land)&&/Save 37%/.test(land),'landing: Pro €5.99 a month, €44.99 a year (€3.75 a month, save 37%)');
-  ok(/€5\.99 a month or €44\.99 a year/.test(terms),'terms: the new prices');
+  ok(/"price":"4\.99"/.test(land)&&/"price":"29\.99"/.test(land)&&/€29\.99/.test(land)&&/'€4\.99','per month'/.test(land)&&/That’s €2\.50 a month/.test(land)&&/Save 50%/.test(land),'landing: Pro €4.99 a month, €29.99 a year (€2.50 a month, save 50%)');
+  ok(/€4\.99 a month or €29\.99 a year/.test(terms),'terms: the new prices');
 
   require('http').createServer((q,res)=>{let f=decodeURIComponent(new URL(q.url,'http://x').pathname);if(!f.startsWith('/app/')){res.writeHead(404);return res.end()}
     f=path.join(ROOT,f.slice(4));if(f.endsWith(path.sep)||f===ROOT)f=path.join(f,'index.html');
@@ -35,7 +35,7 @@ const claim=(uid,c)=>fetch('http://127.0.0.1:9099/identitytoolkit.googleapis.com
   const CA=await ctxOf(),A=await open(CA,'A');await signUp(A,'boss9@example.com');
   const aid=await A.evaluate(()=>ACC.user.uid);await admin('admins/'+aid,{fields:{note:{stringValue:'test'}}});
   await A.evaluate(()=>checkAdmin(ACC.user));await A.waitForTimeout(400);
-  ok(await A.evaluate(()=>{upsell('');const t=$('#up .upp').textContent;$('#up').classList.add('hidden');return t==='€5.99 a month or €44.99 a year'}),'app: the Pro window says €5.99 a month or €44.99 a year');
+  ok(await A.evaluate(()=>{upsell('');const t=$('#up .upp').textContent;$('#up').classList.add('hidden');return t==='€4.99 a month or €29.99 a year'}),'app: the Pro window says €4.99 a month or €29.99 a year');
   await A.click('#menub');await A.click('#madm');await A.waitForSelector('.acats',{timeout:15000});await A.click('.acats >> text=Codes & discounts');
   ok(await A.evaluate(()=>$('#adm-kind').value==='pro'&&!!$('#adm-card')&&!$('.adm-cardw').classList.contains('hidden')),'admin: a Pro code can “Ask for a card first”');
   await A.check('#adm-card');
@@ -57,7 +57,7 @@ const claim=(uid,c)=>fetch('http://127.0.0.1:9099/identitytoolkit.googleapis.com
   ok(rr.ok&&rr.card&&rr.days===90,'Bea types CARD-3M: it is accepted as a card offer');
   await B.evaluate(r=>cardOffer({days:r.days}),rr);await B.waitForSelector('#offer');
   const ow=await B.evaluate(()=>({h:$('#offer h2').textContent,t:$('#offer').textContent,left:$('#offer .off-left').textContent}));
-  ok(ow.h==='You’ve got 3 months of Foliet Pro'&&/add a card/.test(ow.t)&&/€5\.99 a month unless you cancel/.test(ow.t),'a window: "You’ve got 3 months of Foliet Pro", add a card to start, then €5.99 a month unless she cancels');
+  ok(ow.h==='You’ve got 3 months of Foliet Pro'&&/add a card/.test(ow.t)&&/€4\.99 a month unless you cancel/.test(ow.t),'a window: "You’ve got 3 months of Foliet Pro", add a card to start, then €4.99 a month unless she cancels');
   ok(/This offer ends in 2[34] h/.test(ow.left),'… with the time left: '+ow.left);
   const offer=await (await admin('offers/'+bid,null,'GET')).json(),proB=await admin('pro/'+bid,null,'GET');
   ok(offer.fields&&offer.fields.code.stringValue==='CARD-3M'&&offer.fields.days.integerValue==='90'&&proB.status===404&&await B.evaluate(()=>!ACC.pro),'her offer is saved (offers/{uid}); no Pro yet');
@@ -105,22 +105,22 @@ const claim=(uid,c)=>fetch('http://127.0.0.1:9099/identitytoolkit.googleapis.com
   // ---- the welcome offer for new accounts
   const CD=await ctxOf(),D=await open(CD,'D');await signUp(D,'dana9@example.com');
   await A.click('#adm-r');await A.waitForSelector('#adm-intro',{timeout:15000});
-  ok(await A.evaluate(()=>$('#adm-ipct').value==='10'&&$('#adm-ihr').value==='3'&&$('#adm-ilast').value==='48'&&/€40\.49/.test($('#adm-intro').textContent)),'admin → Welcome offer: 10% off Pro yearly by default, after 3 hours, for 48 hours (€40.49 instead of €44.99)');
+  ok(await A.evaluate(()=>$('#adm-ipct').value==='10'&&$('#adm-ihr').value==='3'&&$('#adm-ilast').value==='48'&&/€26\.99/.test($('#adm-intro').textContent)),'admin → Welcome offer: 10% off Pro yearly by default, after 3 hours, for 48 hours (€26.99 instead of €29.99)');
   await A.fill('#adm-ipct','15');await A.fill('#adm-ihr','0');await A.fill('#adm-ipromo','promo_WELCOME');
-  ok(await A.evaluate(()=>/€38\.24/.test($('#adm-intro').textContent)),'… the price follows the percent (15% → €38.24)');
+  ok(await A.evaluate(()=>/€25\.49/.test($('#adm-intro').textContent)),'… the price follows the percent (15% → €25.49)');
   await A.click('#adm-intro >> text=Preview');await A.waitForSelector('#offer[data-k="intro"]');
   ok(await A.evaluate(()=>/15% off Pro yearly/.test($('#offer h2').textContent)),'… Preview');await A.click('#offer .fbn-no');
   await A.click('#adm-intro button[type=submit]');await A.waitForTimeout(800);
   await reload(D);await D.waitForSelector('#offer[data-k="intro"]',{timeout:8000}).catch(()=>{}); // after the start window
   const iw=await D.evaluate(()=>{const o=$('#offer[data-k="intro"]');return o&&{h:o.querySelector('h2').textContent,t:o.textContent,left:o.querySelector('.off-left').textContent}});
-  ok(iw&&iw.h==='A welcome gift: 15% off Pro yearly'&&/€38\.24 instead of €44\.99/.test(iw.t)&&/This offer ends in (4[78]) h/.test(iw.left),'Dana comes back: “A welcome gift: 15% off Pro yearly” – €38.24 instead of €44.99, ends in 48 h');
+  ok(iw&&iw.h==='A welcome gift: 15% off Pro yearly'&&/€25\.49 instead of €29\.99/.test(iw.t)&&/This offer ends in (4[78]) h/.test(iw.left),'Dana comes back: “A welcome gift: 15% off Pro yearly” – €25.49 instead of €29.99, ends in 48 h');
   await goneTo(D);await D.click('#offer .btn');await D.waitForTimeout(1200);
   const did=await D.evaluate(()=>ACC.user.uid);ss=await sessions(did);const s2=ss[0]&&ss[0].f;
   ok(ss.length===1&&s2.price.stringValue==='price_year'&&s2.promotion_code.stringValue==='promo_WELCOME'&&!s2.trial_period_days,'“Get Pro yearly” opens Stripe Checkout for Pro yearly with the welcome promotion code');
   await D.click('#offer .fbn-no');await reload(D);await D.waitForTimeout(1500);
   ok(await D.evaluate(()=>!$('#offer')),'it shows only once');
   await D.evaluate(()=>upsell(''));
-  ok(await D.evaluate(()=>!$('#upbuy').classList.contains('hidden')&&/€5\.99 a month/.test($('#upbuy').textContent)&&/€38\.24 your first year/.test($('#upbuy').textContent)&&/15% welcome offer · ends in/.test($('#upbuy').textContent)),'the Pro window can sell Pro now, with her welcome price while it lasts');
+  ok(await D.evaluate(()=>!$('#upbuy').classList.contains('hidden')&&/€4\.99 a month/.test($('#upbuy').textContent)&&/€25\.49 your first year/.test($('#upbuy').textContent)&&/15% welcome offer · ends in/.test($('#upbuy').textContent)),'the Pro window can sell Pro now, with her welcome price while it lasts');
   // a brand-new account doesn't get it on its very first visit
   const CE=await ctxOf(),E=await open(CE,'E');await signUp(E,'emil9@example.com');await E.waitForTimeout(2500);
   ok(await E.evaluate(()=>!$('#offer')),'never on the very first visit');

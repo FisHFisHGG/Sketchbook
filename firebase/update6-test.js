@@ -55,10 +55,10 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
 
   // ---- template store
   await B.click('#storeb');await B.waitForSelector('.tstore',{timeout:10000});
-  const cards=await B.evaluate(()=>({all:document.querySelectorAll('#tpl .tcardx').length,free:document.querySelectorAll('#tpl .tprice.free').length,lock:document.querySelectorAll('#tpl .tcardx.lock').length,price:[...document.querySelectorAll('#tpl .tcardx.lock .tprice')].every(e=>e.textContent==='€0.99')}));
-  ok(cards.all===17&&cards.free===8&&cards.lock===9&&cards.price,'store: 17 templates, 8 free, 9 locked at €0.99 ('+JSON.stringify(cards)+')');
+  const cards=await B.evaluate(()=>({all:document.querySelectorAll('#tpl .tcardx').length,free:document.querySelectorAll('#tpl .tprice.free').length,lock:document.querySelectorAll('#tpl .tcardx.lock').length,price:[...document.querySelectorAll('#tpl .tcardx.lock .tprice:not(.sk)')].every(e=>e.textContent==='€1.99'),sk:[...document.querySelectorAll('#tpl .tprice.sk')].map(e=>e.textContent).join()}));
+  ok(cards.all===20&&cards.free===9&&cards.lock===11&&cards.price&&cards.sk==='🔥 100 days,🔥 200 days','store: 20 templates, 9 free (Bible study too), 9 at €1.99, 2 streak rewards shown (100 and 200 days – the hidden one isn’t) ('+JSON.stringify(cards)+')');
   await B.click('.tchips >> text=Free');await B.waitForTimeout(200);
-  ok(await B.evaluate(()=>document.querySelectorAll('#tpl .tcardx').length===8&&!document.querySelector('#tpl .tcardx.lock')),'filter "Free" shows only the 8 free ones');
+  ok(await B.evaluate(()=>document.querySelectorAll('#tpl .tcardx').length===9&&!document.querySelector('#tpl .tcardx.lock')),'filter "Free" shows only the 9 free ones');
   await B.click('.tchips >> text=All');await B.waitForTimeout(200);
   await B.click('#tpl .tcardx[data-t="cornell"]');await B.waitForSelector('#t-new');
   ok(await B.evaluate(()=>/Free template/.test($('#lockc').textContent)&&/New notebook with these pages/.test($('#t-new').textContent)),'tapping a free template: "✓ Free template" + "New notebook with these pages"');
@@ -67,7 +67,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.click('#bclose');await B.waitForTimeout(400);await B.click('#storeb');await B.waitForTimeout(300);
   const nb0=await B.evaluate(()=>data.length);
   await B.click('#tpl .tcardx[data-t="habit"]');await B.waitForSelector('#lockd:not(.hidden) .tbuy');
-  ok(await B.evaluate(()=>/Habit tracker/.test($('#lockc').textContent)&&/€0\.99/.test($('#lockc .tbuy').textContent)),'a paid template opens "Buy for €0.99"');
+  ok(await B.evaluate(()=>/Habit tracker/.test($('#lockc').textContent)&&/€1\.99/.test($('#lockc .tbuy').textContent)),'a paid template opens "Buy for €1.99"');
   await B.click('#lockc .tbuy');await B.waitForTimeout(200);
   ok(await B.evaluate(n=>/opens soon/.test($('#lockc .cmsg').textContent)&&data.length===n,nb0),'buying isn\'t open yet: it says so and makes no notebook');
   const t1=await tryWrite(B,async()=>{const F=ACC.F;try{await F.setDoc(F.doc(ACC.db,'owned',ACC.user.uid),{t:['habit'],last:'FREEBIE'});return 'saved!'}catch(e){return e.code}});
@@ -123,21 +123,21 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await A.fill('#adm-tf input[type=email]','carol@example.com');await A.selectOption('#adm-tf select','all');await A.click('#adm-tf button[type=submit]');
   await C.waitForFunction(()=>ACC.owned.has('all'),null,{timeout:10000}).catch(()=>{});
   await C.waitForTimeout(400);
-  ok(await C.evaluate(()=>ACC.owned.has('all')&&ACC.owned.has('comic')&&!document.querySelector('#tpl .tcardx.lock')),'admin gives Carol all paid templates by email → nothing is locked for her');
+  ok(await C.evaluate(()=>ACC.owned.has('all')&&ACC.owned.has('comic')&&[...document.querySelectorAll('#tpl .tcardx.lock')].map(c=>c.dataset.t).join()==='pixels,gratitude'),'admin gives Carol all paid templates by email → nothing is locked for her (only the streak rewards, which take the days)');
   // ---- templates in your notebooks: a new notebook starting with a template, new pages, page style; the cover label while turning
   await C.click('#storex');await C.waitForTimeout(300);
   await C.click('.cell.add');await C.waitForSelector('#dlg:not(.hidden) #dpg:not(.hidden)');await C.waitForSelector('#dtpl [data-p="tpl:comic"]');
-  ok(await C.evaluate(()=>document.querySelectorAll('#dpats button').length===4&&document.querySelectorAll('#dtpl button').length===17&&/change any page later with Page style/.test($('#dpg').textContent)),'"New notebook" asks how the pages look: blank, lined, grid, dots or one of her 17 templates (and says it can be changed later)');
+  ok(await C.evaluate(()=>document.querySelectorAll('#dpats button').length===4&&document.querySelectorAll('#dtpl button').length===18&&/change any page later with Page style/.test($('#dpg').textContent)),'"New notebook" asks how the pages look: blank, lined, grid, dots or one of her 18 templates (and says it can be changed later)');
   await C.click('#dlg .opts [data-o="l"]');await C.click('#dtpl [data-p="tpl:comic"]');await C.click('#dyes');await C.waitForSelector('#bv:not(.hidden)');
   ok(await C.evaluate(()=>cur.o==='l'&&cur.ps[0]&&cur.ps[0].p==='tpl'&&cur.ps[0].t==='comic'&&!!cur.bg[0]),'the new landscape notebook starts with a Comic book page');
   const lb=await C.evaluate(()=>{prep(0);setAng(60);const l=document.querySelector('#fl .lbl'),r=l.getBoundingClientRect(),w=document.querySelector('#fl .sl').offsetWidth,f=parseFloat(getComputedStyle(l).fontSize);endFlip(false);return {f,w,h:Math.round(r.height)}});
   ok(lb.f<lb.w*.2&&lb.h<lb.w,'the name on the cover keeps its size while the cover turns ('+JSON.stringify(lb)+')');
   await C.click('#badd');await C.waitForSelector('#npd:not(.hidden)');await C.waitForSelector('#nptpl button');
-  ok(await C.evaluate(()=>document.querySelectorAll('#nptpl button').length===17),'"New pages" also offers her templates');
-  await C.click('#npyes');await C.waitForTimeout(1200);
-  ok(await C.evaluate(()=>cur.pages.length===4&&cur.ps.slice(1).every((s,i)=>s.p==='tpl'&&s.t==='comic'&&s.k===i+1)&&!!cur.bg[3]),'"Like the last page" adds more Comic book pages');
-  await C.click('#badd');await C.waitForSelector('#nptpl [data-p="tpl:music"]');await C.click('#nptpl [data-p="tpl:music"]');await C.click('#npyes');await C.waitForTimeout(1200);
-  ok(await C.evaluate(()=>cur.pages.length===6&&cur.ps[4].t==='music'&&cur.ps[5].t==='music'&&cur.ps[5].k===1),'… or pages of another template (Sheet music)');
+  ok(await C.evaluate(()=>document.querySelectorAll('#nptpl button').length===18),'"New pages" also offers her templates');
+  await C.click('#npw [data-k="end"]');await C.click('#npyes');await C.waitForTimeout(1200);
+  ok(await C.evaluate(()=>cur.pages.length===3&&cur.ps.slice(1).every((s,i)=>s.p==='tpl'&&s.t==='comic'&&s.k===i+1)&&!!cur.bg[2]),'"Like the last page" adds 2 more Comic book pages (at the end)');
+  await C.click('#badd');await C.waitForSelector('#nptpl [data-p="tpl:music"]');await C.click('#nptpl [data-p="tpl:music"]');await C.click('#npw [data-k="end"]');await C.click('#npyes');await C.waitForTimeout(1200);
+  ok(await C.evaluate(()=>cur.pages.length===5&&cur.ps[3].t==='music'&&cur.ps[4].t==='music'&&cur.ps[4].k===1),'… or pages of another template (Sheet music)');
   await C.evaluate(()=>showEditor(1));await C.waitForTimeout(700);
   await C.click('#pstyle');await C.waitForSelector('#ptpl button');
   ok(await C.evaluate(()=>document.querySelector('#ptpl [data-p="tpl:comic"]').getAttribute('aria-pressed')==='true'),'Page style shows which template the page uses');
@@ -149,9 +149,9 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await C.click('#pcols [data-c="#000000"]');await C.waitForTimeout(900);
   ok(await C.evaluate(b0=>cur.ps[1].c==='#000000'&&cur.ps[1].t==='recipe'&&cur.bg[1]!==b0,bg0),'on black paper the template is drawn again with light lines');
   await C.click('#psx');await C.click('#plus');await C.click('#stabs [data-p="stick"]');await C.waitForTimeout(300);
-  ok(await C.evaluate(()=>document.querySelectorAll('#spane .eg.st').length===9&&!!document.querySelector('#spane [data-pk="stk-space"]')),'with everything unlocked, + → Stickers shows all 9 packs');
+  ok(await C.evaluate(()=>document.querySelectorAll('#spane .eg.st').length===10&&!!document.querySelector('#spane [data-pk="stk-space"]')),'with everything unlocked, + → Stickers shows all 10 packs');
   await C.click('#stabs [data-p="label"]');await C.waitForSelector('#spane [data-l="lbl-gold"]');
-  ok(await C.evaluate(()=>document.querySelectorAll('#spane [data-l]').length===12),'… and + → Labels all 12 labels');
+  ok(await C.evaluate(()=>document.querySelectorAll('#spane [data-l]').length===13),'… and + → Labels all 13 labels');
   await C.click('#shx');await C.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await C.click('#bclose');await C.waitForTimeout(300);
   await A.waitForSelector('#adm-tf',{timeout:15000});await A.waitForTimeout(300);
   const card=(p,label)=>p.evaluate(l=>{const c=[...document.querySelectorAll('#adm-body .acard')].find(x=>x.querySelector('span').textContent===l);return c?c.querySelector('b').textContent:null},label);
@@ -165,7 +165,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   // ---- cover designs
   await B.evaluate(()=>{showBrowse(data.find(x=>x.title==='Cornell notes'));showEditor(-1)});await B.waitForTimeout(600);
   await B.click('#cst');await B.waitForSelector('#csheet:not(.hidden)');
-  ok(await B.evaluate(()=>document.querySelectorAll('#cdes button').length===17&&!$('#cdes [data-k="galaxy"]')&&/More covers in the Store/.test($('#cdes').textContent)),'Cover style: None + the 16 free designs (paid ones are in the Store)');
+  ok(await B.evaluate(()=>document.querySelectorAll('#cdes button').length===18&&!!$('#cdes [data-k="cross"]')&&!$('#cdes [data-k="galaxy"]')&&/More covers in the Store/.test($('#cdes').textContent)),'Cover style: None + the 17 free designs, Cross at sunrise too (paid ones are in the Store)');
   await B.click('#cdes [data-k="waves"]');await B.waitForTimeout(200);
   ok(await B.evaluate(()=>cur.design==='waves'&&/svg/.test($('#paper').style.backgroundImage)),'choosing "Waves" paints it on the cover');
   await B.click('#cdes [data-k=""]');await B.waitForTimeout(100);
@@ -178,12 +178,12 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.evaluate(()=>{showBrowse(data.find(x=>x.title==='Cornell notes'));showEditor(-1)});await B.waitForTimeout(900);
   ok(await B.evaluate(()=>cur.cobjs.length===1&&cur.cobjs[0].lb&&cur.cobjs[0].lb.id==='lbl-classic'&&cur.cobjs[0].lb.t==='Cornell notes'&&!!cur.cpv),'editing a plain cover turns its name tag into a label object (Classic, "Cornell notes")');
   await B.click('#plus');await B.click('#stabs [data-p="label"]');await B.waitForSelector('#spane [data-l]');
-  ok(await B.evaluate(()=>document.querySelectorAll('#spane [data-l]').length===6&&!document.querySelector('#spane [data-l="lbl-gold"]')&&/More labels are in the Store/.test($('#spane').textContent)),'+ → Labels: the 6 free shapes (the paid ones are in the Store)');
+  ok(await B.evaluate(()=>document.querySelectorAll('#spane [data-l]').length===7&&!!document.querySelector('#spane [data-l="lbl-verse"]')&&!document.querySelector('#spane [data-l="lbl-gold"]')&&/More labels are in the Store/.test($('#spane').textContent)),'+ → Labels: the 7 free labels, Scripture too (the paid ones are in the Store)');
   await B.click('#spane [data-l="lbl-strip"]');await B.waitForTimeout(900);
   ok(await B.evaluate(()=>cur.cobjs.length===2&&cur.cobjs[1].lb.id==='lbl-strip'&&cur.cobjs[1].y>cur.cobjs[0].y&&!!selO&&selO._o===cur.cobjs[1]),'a Long strip label is added (below the first one) and selected');
   await B.click('#o-edit');await B.waitForSelector('#lb-t');await B.fill('#lb-t','Summer 2026');await B.press('#lb-t','Enter');await B.waitForTimeout(800);
   ok(await B.evaluate(()=>cur.cobjs[1].lb.t==='Summer 2026'&&/^data:image\/png/.test(cur.cobjs[1].src)),'✎ changes the words on the label');
-  await B.click('#photo');await B.waitForSelector('#up:not(.hidden)');
+  await B.click('#plus');await B.click('#photo');await B.waitForSelector('#up:not(.hidden)');
   ok(await B.evaluate(()=>/photo on the cover is part of Pro/.test($('#upm').textContent)),'free plan: a photo on the cover asks for Pro');
   await B.click('#upno');
   await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.waitForTimeout(300);
@@ -194,14 +194,14 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   // ---- the store: covers, labels and sticker packs
   await B.click('#storeb');await B.waitForSelector('.skinds');
   const kinds={};for(const k of ['cov','lbl','stk']){await B.click('.skinds [data-k="'+k+'"]');await B.waitForTimeout(300);kinds[k]=await B.evaluate(()=>[document.querySelectorAll('#tpl .tcardx').length,document.querySelectorAll('#tpl .tcardx.lock').length])}
-  ok(kinds.cov+''==='22,6'&&kinds.lbl+''==='12,6'&&kinds.stk+''==='9,3','store: 22 covers (6 paid), 12 labels (6 paid), 9 sticker packs of 7 (3 paid) ('+JSON.stringify(kinds)+')');
+  ok(kinds.cov+''==='27,10'&&kinds.lbl+''==='16,9'&&kinds.stk+''==='13,6','store: 27 covers (6 paid, 4 streak rewards shown), 16 labels (6 paid, 3 streak), 13 sticker packs (3 paid, 3 streak) ('+JSON.stringify(kinds)+')');
   await B.click('.skinds [data-k="stk"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="stk-treats"]');await B.waitForSelector('#lockc .tbuy-pv');await B.waitForTimeout(300);
   ok(await B.evaluate(()=>{const p=$('#lockc .tbuy-pv').getBoundingClientRect(),c=$('#lockc').getBoundingClientRect(),im=[...document.querySelectorAll('#lockc .tbuy-pv img')];return im.length===7&&im.every(i=>{const r=i.getBoundingClientRect();return r.width>10&&r.right<=p.right+1&&r.bottom<=p.bottom+1})&&p.height<c.height/3}),'the sticker pack window shows its 7 stickers small, inside the preview');
   await B.click('#lockc >> text=Not now');
   await admin('codes/GALAXY-1',{fields:{kind:{stringValue:'tpl'},tpl:{stringValue:'cov-galaxy'},max:{integerValue:'5'},used:{integerValue:'0'},active:{booleanValue:true},note:{stringValue:''}}});
   await B.click('.skinds [data-k="cov"]');await B.waitForTimeout(300);
   await B.click('#tpl .tcardx[data-t="cov-galaxy"]');await B.waitForSelector('#t-code');
-  ok(await B.evaluate(()=>/€0\.99/.test($('#lockc .tbuy').textContent)&&/Galaxy/.test($('#lockc').textContent)),'a paid cover opens "Buy for €0.99"');
+  ok(await B.evaluate(()=>/€1\.99/.test($('#lockc .tbuy').textContent)&&/Galaxy/.test($('#lockc').textContent)),'a paid cover opens "Buy for €1.99"');
   await B.fill('#t-code','galaxy-1');await B.click('#lockc .codebox button');
   await B.waitForFunction(()=>ACC.owned.has('cov-galaxy'),null,{timeout:10000}).catch(()=>{});
   ok(await B.evaluate(()=>ACC.owned.has('cov-galaxy')),'a store code unlocks the Galaxy cover');
@@ -212,7 +212,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await B.evaluate(()=>showEditor(-1));await B.waitForTimeout(800);await B.click('#cst');await B.waitForSelector('#csheet:not(.hidden)');
   ok(await B.evaluate(()=>!!$('#cdes [data-k="galaxy"]')&&!$('#cdes [data-k="skyline"]')),'Cover style now lists Galaxy too (not the covers he doesn\'t own)');
   await B.click('#csx');await B.click('#plus');await B.click('#stabs [data-p="stick"]');await B.waitForTimeout(300);
-  ok(await B.evaluate(()=>[...document.querySelectorAll('#spane .eg.st')].map(g=>g.dataset.pk).join()==='stk-basics,stk-marks,stk-tags,stk-days,stk-doodles,stk-desk'&&document.querySelectorAll('#spane .eg.st button').length===42&&[...document.querySelectorAll('#spane .eg.st')].every(g=>g.children.length===7)),'+ → Stickers: the 6 free packs, 7 stickers each (42)');
+  ok(await B.evaluate(()=>[...document.querySelectorAll('#spane .eg.st')].map(g=>g.dataset.pk).join()==='stk-basics,stk-marks,stk-tags,stk-days,stk-doodles,stk-desk,stk-faith'&&document.querySelectorAll('#spane .eg.st button').length===49&&[...document.querySelectorAll('#spane .eg.st')].every(g=>g.children.length===7)),'+ → Stickers: the 7 free packs, 7 stickers each (49)');
   await B.click('#shx');await B.evaluate(()=>{$('#ed').classList.add('hidden');showBrowse()});await B.click('#bclose');await B.waitForTimeout(300);
   await B.click('#storeb');await B.click('.skinds [data-k="lbl"]');await B.waitForTimeout(300);await B.click('#tpl .tcardx[data-t="lbl-oval"]');await B.waitForSelector('#t-use');
   await B.selectOption('#t-book',hid);await B.click('#t-use');await B.waitForSelector('#bv:not(.hidden)');await B.waitForTimeout(400);
@@ -236,8 +236,8 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   const mk=await b.newPage();
   await mk.setContent('<style>@page{size:600px 800px;margin:0}body{margin:0}div{width:600px;height:800px;page-break-after:always}</style><div style="background:#d33"></div><div style="background:#3a3"></div><div style="background:#33d"></div><div style="background:#dd3"></div>');
   const pdfPath=path.join(require('os').tmpdir(),'u6-test.pdf');fs.writeFileSync(pdfPath,await mk.pdf({width:'600px',height:'800px',printBackground:true}));await mk.close();
-  await P.setInputFiles('#pdff',pdfPath);await P.waitForSelector('#pdfd',{timeout:15000});
-  ok(/4 pages/.test(await P.evaluate(()=>$('#pdfd .pd-sub').textContent))&&/first page you import becomes the cover/.test(await P.evaluate(()=>$('#pdfd').textContent)),'PDF import says: 4 pages, the first becomes the cover');
+  await P.setInputFiles('#pdff',pdfPath);await P.waitForSelector('#pdfd',{timeout:15000});await P.waitForSelector('#pi-go',{timeout:15000});
+  ok(/4 pages/.test(await P.evaluate(()=>$('#pdfd .pd-sub').textContent))&&await P.evaluate(()=>$('#pi-cov').checked&&/Use the first page as the cover/.test($('#pdfd').textContent)&&$('#pi-go').textContent==='Import the cover + 3 pages'),'PDF import says: 4 pages, the first becomes the cover (“Import the cover + 3 pages”)');
   await P.click('#pi-go');await P.waitForSelector('#bv:not(.hidden)',{timeout:30000});
   const pd=await P.evaluate(async()=>{const px=async u=>{const im=new Image();im.src=u;await im.decode();const c=document.createElement('canvas');c.width=c.height=1;const x=c.getContext('2d');x.drawImage(im,im.width/2,im.height/2,1,1,0,0,1,1);return [...x.getImageData(0,0,1,1).data].slice(0,3)};
     return {n:cur.pages.length,cov:await px(cur.cbg),obj:cur.cobjs.length,p1:await px(cur.bg[0]),p3:await px(cur.bg[2])}});
@@ -248,7 +248,7 @@ const listDocs=async c=>{const r=await admin(c,null,'GET');const j=await r.json(
   await P.evaluate(()=>showEditor(-1));await P.waitForTimeout(800);
   ok(await P.evaluate(()=>$('#bgimg').classList.contains('on')),'the PDF\'s first page shows as the cover photo in the editor');
   const sh=await b.newPage({viewport:{width:300,height:400}});await sh.setContent('<body style="margin:0;background:#2050d0"></body>');const phPath=path.join(require('os').tmpdir(),'u6-photo.png');await sh.screenshot({path:phPath});await sh.close();
-  const [fc]=await Promise.all([P.waitForEvent('filechooser'),P.click('#photo')]);await fc.setFiles(phPath);await P.waitForTimeout(1200);
+  await P.click('#plus');const [fc]=await Promise.all([P.waitForEvent('filechooser'),P.click('#photo')]);await fc.setFiles(phPath);await P.waitForTimeout(1200);
   const cp=await P.evaluate(async()=>{const im=new Image();im.src=cur.cbg;await im.decode();const c=document.createElement('canvas');c.width=c.height=1;c.getContext('2d').drawImage(im,im.width/2,im.height/2,1,1,0,0,1,1);return [...c.getContext('2d').getImageData(0,0,1,1).data].slice(0,3)});
   ok(cp[2]>180&&cp[0]<80&&!(await P.evaluate(()=>cur.cobjs.length)),'Pro: the photo button on the cover sets the cover photo (blue) – not a loose object ('+cp+')');
   const bx=await P.locator('#cv').boundingBox();await P.mouse.move(bx.x+bx.width*.3,bx.y+bx.height*.5);await P.mouse.down();await P.mouse.move(bx.x+bx.width*.7,bx.y+bx.height*.55,{steps:8});await P.mouse.up();await P.waitForTimeout(1200);
