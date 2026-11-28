@@ -491,6 +491,14 @@ h2{font-size:clamp(1.9rem,4vw,2.9rem);letter-spacing:-.03em;line-height:1.05;mar
 .eq{margin:0;line-height:34px;color:#56626c;font-size:.95rem}
 .plan li.no{color:#8a949b;text-decoration:line-through}
 .closing{text-align:left}
+/* the Google Play badge at the bottom: not out yet, so it only says "Coming soon" (not a link) */
+.soonstore{margin-top:34px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}
+.gplay{display:inline-flex;align-items:center;gap:11px;height:56px;padding:0 20px 0 14px;border-radius:11px;background:#000;color:#fff;border:1px solid #a6a6a6;user-select:none;-webkit-user-select:none;cursor:default;box-shadow:0 6px 18px -10px var(--sh)}
+.gplay svg{width:30px;height:30px;flex:none}
+.gplay span{display:flex;flex-direction:column;align-items:flex-start;line-height:1.08}
+.gplay small{font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;font-weight:600;color:#e8e8e8}
+.gplay b{font-size:1.36rem;font-weight:600;letter-spacing:-.01em}
+.soonstore p{margin:0;color:var(--muted);font-size:.92rem;max-width:36ch}
 footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:.92rem}
 
 .btn:disabled{opacity:.6;cursor:default}
@@ -740,6 +748,10 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
     <div class="wrap">
       <h2>Open a blank page.</h2>
       <a class="btn pri" href="app/">Start free</a>
+      <div class="soonstore">
+        <div class="gplay" role="img" aria-label="Coming soon on Google Play"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00c3ff" d="M3.6 1.9 13.8 12 3.6 22.1c-.35-.2-.6-.6-.6-1.1V3c0-.5.25-.9.6-1.1z"/><path fill="#00e676" d="M3.6 1.9c.4-.2.9-.2 1.4.1l12.1 6.9L13.8 12z"/><path fill="#ffd400" d="m17.1 8.9 3.5 2c1 .6 1 1.6 0 2.2l-3.5 2-3.3-3.1z"/><path fill="#ff3a44" d="m13.8 12 3.3 3.1L5 22c-.5.3-1 .3-1.4.1z"/></svg><span><small>Coming soon on</small><b>Google Play</b></span></div>
+        <p>Until then, Foliet works in your phone’s browser – add it to your home screen from the browser menu.</p>
+      </div>
     </div>
   </section>
 </main>
